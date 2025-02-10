@@ -150,10 +150,11 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
         }
         else if (type == "Enemy") {
             std::string enemyTypeStr;
-            int enemyX, enemyY;
+            int enemyX, enemyY, px1, py1, px2, py2;
             std::vector<Vec2<float>> patrolPoints;
 
-            if (!(file >> enemyTypeStr >> enemyX >> enemyY)) {
+            // ✅ Read enemy type and spawn location (plus patrol points)
+            if (!(file >> enemyTypeStr >> enemyX >> enemyY >> px1 >> py1 >> px2 >> py2)) {
                 std::cerr << "[WARNING] Incomplete Enemy entry. Skipping.\n";
                 continue;
             }
@@ -163,22 +164,19 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
 
             auto enemy = entityManager.addEntity("enemy");
 
-            // Extract actual enemy type from string (removing "Enemy" prefix)
-            std::string animationPrefix;
-            if (enemyTypeStr == "EnemyFast") {
-                animationPrefix = "EnemyFast";
-            } else if (enemyTypeStr == "EnemyStrong") {  
-                animationPrefix = "EnemyStrong";
-            } else if (enemyTypeStr == "EnemyElite") {
-                animationPrefix = "EnemyElite";
-            } else if (enemyTypeStr == "EnemyNormal") {
-                animationPrefix = "EnemyNormal";
-            } else {
-                std::cerr << "[WARNING] Unknown enemy type: " << enemyTypeStr << " defaulting to Normal." << std::endl;
-                animationPrefix = "EnemyNormal";
-            }
+            // ✅ Convert `enemyTypeStr` to `EnemyType` (Fixing the error)
+            EnemyType enemyType;
+            if (enemyTypeStr == "EnemyFast")
+                enemyType = EnemyType::Fast;
+            else if (enemyTypeStr == "EnemyStrong")
+                enemyType = EnemyType::Strong;
+            else if (enemyTypeStr == "EnemyElite")
+                enemyType = EnemyType::Elite;
+            else
+                enemyType = EnemyType::Normal;
 
-            // Assign animations
+            // ✅ Assign animations correctly
+            std::string animationPrefix = enemyTypeStr;
             std::string runAnimName = animationPrefix + "_Run";
             std::string standAnimName = animationPrefix + "_Stand";
 
@@ -195,59 +193,33 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
                 std::cerr << "[ERROR] Missing animations for " << enemyTypeStr << " enemy!" << std::endl;
             }
 
-            // Assign state (Separate "if" conditions for easy future modifications)
-            if (enemyTypeStr == "EnemyFast") {
+            // ✅ Assign correct state
+            if (enemyType == EnemyType::Fast) {
                 enemy->add<CState>("patrol", false, 0.0f, false, 0.0f, 0.0f, 0.0f);
-            }
-
-            if (enemyTypeStr == "EnemyStrong") {
-                enemy->add<CState>("idle", false, 0.0f, false, 0.0f, 0.0f, 0.0f);
-            }
-
-            if (enemyTypeStr == "EnemyElite") {
-                enemy->add<CState>("idle", false, 0.0f, false, 0.0f, 0.0f, 0.0f);
-            }
-
-            if (enemyTypeStr == "EnemyNormal") {
+            } else {
                 enemy->add<CState>("idle", false, 0.0f, false, 0.0f, 0.0f, 0.0f);
             }
 
             enemy->add<CTransform>(Vec2<float>(realX, realY));
 
-            // Bounding box size (same for all enemies)
             Vec2<float> enemyBBSize(PLAYER_BB_SIZE, PLAYER_BB_SIZE);
             enemy->add<CBoundingBox>(enemyBBSize, enemyBBSize * 0.5f);
-
             enemy->add<CGravity>(GRAVITY_VAL);
             enemy->add<CHealth>(10);
 
-            // Read patrol points
-            int px, py;
-            while (file >> px >> py) {
-                float patrolX = px * GRID_SIZE + (GRID_SIZE * 0.5f);
-                float patrolY = windowHeight - (py * GRID_SIZE) - (GRID_SIZE * 0.5f);
-                patrolPoints.push_back(Vec2<float>(patrolX, patrolY));
-            }
-            if (patrolPoints.empty()) {
-                patrolPoints.push_back(Vec2<float>(realX, realY));
-            }
+            // ✅ Convert patrol points to world coordinates
+            patrolPoints.push_back(Vec2<float>(px1 * GRID_SIZE + (GRID_SIZE * 0.5f),
+                                            windowHeight - (py1 * GRID_SIZE) - (GRID_SIZE * 0.5f)));
+            patrolPoints.push_back(Vec2<float>(px2 * GRID_SIZE + (GRID_SIZE * 0.5f),
+                                            windowHeight - (py2 * GRID_SIZE) - (GRID_SIZE * 0.5f)));
 
-            // Determine enemy type enum
-            EnemyType enemyType;
-            if (enemyTypeStr == "EnemyFast")
-                enemyType = EnemyType::Fast;
-            else if (enemyTypeStr == "EnemyStrong")
-                enemyType = EnemyType::Strong;
-            else if (enemyTypeStr == "EnemyElite")
-                enemyType = EnemyType::Elite;
-            else
-                enemyType = EnemyType::Normal;
-
+            // ✅ Assign `CEnemyAI` with the correct `EnemyType`
             enemy->add<CEnemyAI>(enemyType);
             enemy->get<CEnemyAI>().patrolPoints = patrolPoints;
             enemy->get<CEnemyAI>().currentPatrolIndex = 0;
 
-            std::cout << "[DEBUG] Spawned " << enemyTypeStr << " Enemy at (" << enemyX << ", " << enemyY << ")" << std::endl;
+            std::cout << "[DEBUG] Spawned " << enemyTypeStr << " Enemy at (" << enemyX << ", " << enemyY << ") with patrol (" 
+                    << px1 << "," << py1 << ") <-> (" << px2 << "," << py2 << ")" << std::endl;
         }
         else {
             std::cerr << "[WARNING] Unknown entity type: " << type << std::endl;

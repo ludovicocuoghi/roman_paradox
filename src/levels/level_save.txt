@@ -144,7 +144,6 @@ Tile Brick 44 6
 Tile Brick 41 6
 Tile Brick 45 6
 Tile Brick 46 6
-Tile Brick 47 6
 Tile Brick 48 6
 Tile Brick 49 6
 Tile Brick 43 7
@@ -153,7 +152,6 @@ Tile Brick 45 7
 Tile Brick 46 7
 Tile Brick 48 7
 Tile Brick 49 7
-Tile Brick 47 7
 Tile Brick 6 26
 Tile Brick 7 26
 Tile Brick 8 26
@@ -192,16 +190,13 @@ Tile Brick 51 6
 Tile Brick 52 6
 Tile Ground 51 5
 Tile Ground 51 4
-Tile Ground 51 3
 Tile Ground 51 2
 Tile Ground 51 1
 Tile Ground 51 0
 Tile Ground 52 0
 Tile Ground 52 1
 Tile Ground 52 2
-Tile Ground 52 3
 Tile Ground 52 4
-Tile Ground 53 3
 Tile Ground 53 2
 Tile Ground 53 1
 Tile Ground 53 0
@@ -221,7 +216,6 @@ Tile Ground 63 0
 Tile Ground 56 1
 Tile Ground 52 5
 Tile Ground 53 4
-Tile Ground 54 3
 Tile Ground 55 2
 Tile Ground 56 2
 Tile Ground 57 1
@@ -287,6 +281,13 @@ Tile Brick 91 10
 Tile Brick 91 9
 Tile PipeTall 81 14
 Tile PipeTall 90 14
+Tile Ground 47 0
+Tile Ground 48 0
+Tile Ground 49 1
+Tile Ground 50 2
+Tile Ground 50 1
+Tile Ground 50 0
+Tile Ground 49 0
 Dec BushTall 0 5
 Dec BushTall 2 5
 Dec BushSmall 9 2
@@ -344,3 +345,7 @@ Dec CloudSmall 70 9
 Player 2 2
 
 Enemy EnemyElite 3 2 3 2 5 2
+
+Enemy EnemyFast 32 2 32 2 34 2
+
+Enemy EnemyStrong 46 8 46 8 48 8

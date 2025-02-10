@@ -212,6 +212,7 @@ public:
     float detectionRadius;
     float attackRadius;
     float speedMultiplier;
+    float patrolWaitTime = 0.0f;
     int damage;
     std::vector<Vec2<float>> patrolPoints;
     int currentPatrolIndex;
