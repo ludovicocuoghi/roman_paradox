@@ -28,16 +28,20 @@ void CollisionSystem::handlePlayerTileCollisions() {
         // Calculate the player's rectangle based on its current position.
         sf::FloatRect pRect = playerBB.getRect(transform.pos);
         bool wasOnGround = state.onGround;
-        state.onGround = false;  // Reset; will be set if a ground collision is detected.
-        float minOverlapY = std::numeric_limits<float>::max();
+        state.onGround = false; // Reset; will be set if a ground collision is detected
 
         // Iterate over all tiles.
         for (auto& tile : m_entityManager.getEntities("tile")) {
+            // Ensure tile has the necessary components
+            if (!tile->has<CTransform>() || !tile->has<CBoundingBox>() || !tile->has<CAnimation>())
+                continue;
+
             auto& tileTransform = tile->get<CTransform>();
-            auto& tileBB = tile->get<CBoundingBox>();
+            auto& tileBB        = tile->get<CBoundingBox>();
+            auto& tileAnim      = tile->get<CAnimation>().animation;
             sf::FloatRect tRect = tileBB.getRect(tileTransform.pos);
 
-            // If there is no intersection, skip this tile.
+            // If there is no intersection, skip to the next tile.
             if (!pRect.intersects(tRect))
                 continue;
 
@@ -48,59 +52,77 @@ void CollisionSystem::handlePlayerTileCollisions() {
                              std::max(pRect.top, tRect.top);
 
             if (overlapX < overlapY) {
-                // Horizontal collision: adjust the horizontal position.
-                transform.pos.x += (transform.pos.x < tileTransform.pos.x) ? -overlapX : overlapX;
+                // Horizontal collision: adjust horizontal position.
+                if (transform.pos.x < tileTransform.pos.x)
+                    transform.pos.x -= overlapX;
+                else
+                    transform.pos.x += overlapX;
                 velocity.x = 0.f;
-            } else {
-                if (velocity.y > 0) {
-                    // Player is falling: if the bottom of the player exceeds the tile's top, resolve landing.
-                    if ((pRect.top + pRect.height) > tRect.top && overlapY < minOverlapY) {
-                        minOverlapY = overlapY;
-                        transform.pos.y -= overlapY;  // Move the player upward.
+            }
+            else {
+                // Vertical collision:
+                if (transform.pos.y < tileTransform.pos.y) {
+                    // Player is above the tile -> landing.
+                    transform.pos.y -= overlapY;
+                    velocity.y = 0.f;
+                    state.onGround = true;
+                }
+                else {
+                    // Player is hitting the tile from below (moving upward)
+                    if (velocity.y < 0) {
+                        transform.pos.y += overlapY;
                         velocity.y = 0.f;
-                        state.onGround = true;
-                    }
-                } else if (velocity.y < 0) {
-                    // Player is moving upward: if the top of the player's rectangle is below
-                    // the bottom edge of the tile, then a head collision occurred.
-                    if (pRect.top > (tRect.top + tRect.height) && overlapY < minOverlapY) {
-                        minOverlapY = overlapY;
-                        // Check if this tile is a treasure box that hasn't been triggered.
-                        if (tile->has<CAnimation>() &&
-                            tile->get<CAnimation>().animation.getName() == "TreasureBoxAnim") {
-                            if (!tile->has<CState>() || tile->get<CState>().state != "inactive") {
-                                // Trigger the treasure box event:
-                                // 1. Change the animation to "TreasureBoxHit".
-                                tile->get<CAnimation>().animation = m_game.assets().getAnimation("TreasureBoxHit");
-                                // 2. Mark the box as inactive.
-                                if (tile->has<CState>())
-                                    tile->get<CState>().state = "inactive";
-                                else
-                                    tile->add<CState>("inactive");
-                                // 3. Spawn an item at the tile's position.
-                                m_spawner->spawnItem(tileTransform.pos, "TreasureItem");
+                        std::string animName = tileAnim.getName();
+
+                        // Only break Box1 and Box2 from below.
+                        if (animName == "Box1" || animName == "Box2") {
+                            // Break the box: create fragments and spawn an item.
+                            m_spawner->createBlockFragments(tileTransform.pos, animName);
+                            m_spawner->spawnItem(tileTransform.pos, animName);
+                            tile->destroy();
+                            std::cout << "[DEBUG] " << animName << " broken from below!\n";
+                        }
+                        // Handle question/treasure box: set inactive, change animation, and spawn item.
+                        else if (animName == "TreasureBoxAnim" || animName == "QuestionAnim") {
+                            auto& tileState = tile->get<CState>();
+                            if (tileState.state == "inactive") {
+                                tileState.state = "activated";
+                                if (m_game.assets().hasAnimation("TreasureBoxHit")) {
+                                    tile->get<CAnimation>().animation = m_game.assets().getAnimation("TreasureBoxHit");
+                                    tile->get<CAnimation>().repeat = false;
+                                    std::cout << "[DEBUG] Treasure box hit from below.\n";
+                                }
+                                m_spawner->spawnItem(tileTransform.pos, "TreasureBoxAnim");
                             }
                         }
-                        transform.pos.y += overlapY;  // Move the player downward to resolve the collision.
-                        velocity.y = 0.f;
+                        // If the tile is a Brick, do nothing when hit from below.
                     }
                 }
             }
+
+            // Update the player's rectangle after collision resolution.
+            pRect = playerBB.getRect(transform.pos);
         }
 
-        if (state.onGround && !wasOnGround) {
-            std::cout << "[DEBUG] Player landed! Jump reset.\n";
-            state.state = "idle";
+        // Update player's state based on collisions and velocity (if not attacking).
+        if (state.state != "attack") {
+            if (state.onGround)
+                state.state = (std::abs(velocity.x) > 1.f) ? "run" : "idle";
+            else
+                state.state = "air";
         }
+        if (state.onGround && !wasOnGround)
+            std::cout << "[DEBUG] Player landed! Jump reset.\n";
     }
 }
+
 // ----------------------------------
 // 👹 ENEMY - TILE COLLISIONS
-// ----------------------------------
+// (Remains unchanged)
 void CollisionSystem::handleEnemyTileCollisions() {
     for (auto& enemy : m_entityManager.getEntities("enemy")) {
         auto& transform = enemy->get<CTransform>();
-        auto& enemyBB = enemy->get<CBoundingBox>();
+        auto& enemyBB   = enemy->get<CBoundingBox>();
         sf::FloatRect eRect = enemyBB.getRect(transform.pos);
 
         bool onGround = false;
@@ -108,7 +130,7 @@ void CollisionSystem::handleEnemyTileCollisions() {
 
         for (auto& tile : m_entityManager.getEntities("tile")) {
             auto& tileTransform = tile->get<CTransform>();
-            auto& tileBB = tile->get<CBoundingBox>();
+            auto& tileBB        = tile->get<CBoundingBox>();
             sf::FloatRect tRect = tileBB.getRect(tileTransform.pos);
 
             if (!eRect.intersects(tRect))
@@ -122,7 +144,8 @@ void CollisionSystem::handleEnemyTileCollisions() {
             if (overlapX < overlapY) {
                 transform.pos.x += (transform.pos.x < tileTransform.pos.x) ? -overlapX : overlapX;
                 transform.velocity.x = 0.f;
-            } else {
+            }
+            else {
                 if (transform.velocity.y > 0) {
                     if ((eRect.top + eRect.height) > tRect.top && overlapY < minOverlapY) {
                         minOverlapY = overlapY;
@@ -130,7 +153,8 @@ void CollisionSystem::handleEnemyTileCollisions() {
                         transform.velocity.y = 0.f;
                         onGround = true;
                     }
-                } else if (transform.velocity.y < 0) {
+                }
+                else if (transform.velocity.y < 0) {
                     if (eRect.top < (tRect.top + tRect.height) && overlapY < minOverlapY) {
                         minOverlapY = overlapY;
                         transform.pos.y += overlapY;
@@ -147,16 +171,16 @@ void CollisionSystem::handleEnemyTileCollisions() {
 
 // ----------------------------------
 // ⚔️ PLAYER - ENEMY COLLISIONS
-// ----------------------------------
+// (Remains unchanged)
 void CollisionSystem::handlePlayerEnemyCollisions() {
     for (auto& enemy : m_entityManager.getEntities("enemy")) {
         auto& enemyTrans = enemy->get<CTransform>();
-        auto& enemyBB = enemy->get<CBoundingBox>();
+        auto& enemyBB    = enemy->get<CBoundingBox>();
         sf::FloatRect enemyRect = enemyBB.getRect(enemyTrans.pos);
 
         for (auto& player : m_entityManager.getEntities("player")) {
             auto& pTrans = player->get<CTransform>();
-            auto& pBB = player->get<CBoundingBox>();
+            auto& pBB    = player->get<CBoundingBox>();
             sf::FloatRect playerRect = pBB.getRect(pTrans.pos);
 
             if (enemyRect.intersects(playerRect)) {
@@ -177,40 +201,67 @@ void CollisionSystem::handlePlayerEnemyCollisions() {
 }
 
 // ----------------------------------
-// 🗡️ SWORD - ENEMY COLLISIONS
+// 🗡️ SWORD - ENEMY & TILE COLLISIONS
 // ----------------------------------
 void CollisionSystem::handleSwordCollisions() {
     for (auto& sword : m_entityManager.getEntities("sword")) {
+        if (!sword->has<CTransform>() || !sword->has<CBoundingBox>())
+            continue;
+
         auto& swTrans = sword->get<CTransform>();
-        auto& swBB = sword->get<CBoundingBox>();
+        auto& swBB    = sword->get<CBoundingBox>();
         sf::FloatRect swordRect = swBB.getRect(swTrans.pos);
 
+        // 1) SWORD <-> TILE (e.g., to break Box1 and Box2; Brick should never break)
+        for (auto& tile : m_entityManager.getEntities("tile")) {
+            if (!tile->has<CTransform>() || !tile->has<CBoundingBox>() || !tile->has<CAnimation>())
+                continue;
+
+            auto& tileTransform = tile->get<CTransform>();
+            auto& tileBB        = tile->get<CBoundingBox>();
+            auto& tileAnim      = tile->get<CAnimation>().animation;
+            sf::FloatRect tileRect = tileBB.getRect(tileTransform.pos);
+
+            if (swordRect.intersects(tileRect)) {
+                std::string animName = tileAnim.getName();
+                // For sword collisions, only break Box1 and Box2 (and optionally TreasureBox/Question block)
+                if (animName == "Box1" || animName == "Box2") {
+                    m_spawner->createBlockFragments(tileTransform.pos, animName);
+                    m_spawner->spawnItem(tileTransform.pos, animName);
+                    tile->destroy();
+                    std::cout << "[DEBUG] " << animName << " broken by sword!\n";
+                }
+                // If you want the treasure box to also be broken by the sword, you can add:
+                else if (animName == "TreasureBoxAnim" || animName == "QuestionAnim") {
+                    auto& tileState = tile->get<CState>();
+                    if (tileState.state == "inactive") {
+                        tileState.state = "activated";
+                        if (m_game.assets().hasAnimation("TreasureBoxHit")) {
+                            tile->get<CAnimation>().animation = m_game.assets().getAnimation("TreasureBoxHit");
+                            tile->get<CAnimation>().repeat = false;
+                            std::cout << "[DEBUG] Treasure box hit by sword.\n";
+                        }
+                        m_spawner->spawnItem(tileTransform.pos, "TreasureBoxAnim");
+                    }
+                }
+            }
+        }
+
+        // 2) SWORD <-> ENEMY
         for (auto& enemy : m_entityManager.getEntities("enemy")) {
+            if (!enemy->has<CTransform>() || !enemy->has<CBoundingBox>())
+                continue;
+
             auto& enemyTrans = enemy->get<CTransform>();
-            auto& enemyBB = enemy->get<CBoundingBox>();
-            auto& enemyState = enemy->get<CState>();
+            auto& enemyBB    = enemy->get<CBoundingBox>();
             sf::FloatRect enemyRect = enemyBB.getRect(enemyTrans.pos);
 
             if (swordRect.intersects(enemyRect)) {
-                if (enemy->has<CHealth>()) {
-                    auto& health = enemy->get<CHealth>();
-                    if (health.invulnerabilityTimer > 0.f)
-                        continue;
-                }
-
-                float attackDirection = (swTrans.pos.x < enemyTrans.pos.x) ? 1.f : -1.f;
-                Vec2<float> hitDirection = { attackDirection, -0.5f };
-
+                std::cout << "[DEBUG] Enemy took a hit from the sword!\n";
+                // Here you can reduce health, apply knockback, or destroy the enemy.
+                // Example:
                 Physics::Forces::ApplyKnockback(enemy, hitDirection, 1.0f);
-                enemyState.state = "knockback";
-
-                if (enemy->has<CHealth>()) {
-                    auto& health = enemy->get<CHealth>();
-                    health.takeDamage(1);
-                    health.invulnerabilityTimer = 0.5f;
-                    std::cout << "[DEBUG] Enemy hit by sword! Knocked back. Health: " 
-                              << health.currentHealth << "\n";
-                }
+                enemy->get<CHealth>().takeDamage(10);
             }
         }
     }

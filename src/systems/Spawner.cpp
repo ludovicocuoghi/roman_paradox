@@ -7,11 +7,13 @@
 #include <random>
 #include "SpriteUtils.h"  // Per flipSpriteLeft / flipSpriteRight
 
+// Costruttore
 Spawner::Spawner(GameEngine& game, EntityManager& entityManager)
     : m_game(game), m_entityManager(entityManager)
 {
 }
 
+// Spawn della spada del giocatore
 std::shared_ptr<Entity> Spawner::spawnSword(std::shared_ptr<Entity> player) {
     auto sword = m_entityManager.addEntity("sword");
     auto& pTrans = player->get<CTransform>();
@@ -34,6 +36,7 @@ std::shared_ptr<Entity> Spawner::spawnSword(std::shared_ptr<Entity> player) {
     return sword;
 }
 
+// Spawn della spada del nemico
 std::shared_ptr<Entity> Spawner::spawnEnemySword(std::shared_ptr<Entity> enemy) {
     auto sword = m_entityManager.addEntity("enemySword");
     auto& enemyAI = enemy->get<CEnemyAI>();
@@ -68,6 +71,7 @@ std::shared_ptr<Entity> Spawner::spawnEnemySword(std::shared_ptr<Entity> enemy) 
     return sword;
 }
 
+// Spawn di un oggetto (item) in base al tipo di tile
 std::shared_ptr<Entity> Spawner::spawnItem(const Vec2<float>& position, const std::string& tileType) {
     static std::random_device rd;
     static std::mt19937 gen(rd());
@@ -114,4 +118,81 @@ std::shared_ptr<Entity> Spawner::spawnItem(const Vec2<float>& position, const st
     std::cout << "[DEBUG] Spawned " << itemName << " from " << tileType
               << " at (" << spawnPos.x << ", " << spawnPos.y << ")" << std::endl;
     return item;
+}
+
+// ------------------------------------------------
+// Aggiornamento dei frammenti (effetto di rottura del blocco)
+// ------------------------------------------------
+void Spawner::updateFragments(float deltaTime)
+{
+    for (auto& fragment : m_entityManager.getEntities("fragment"))
+    {
+        auto& transform = fragment->get<CTransform>();
+        auto& anim      = fragment->get<CAnimation>(); // Animazione del frammento (es. Brick)
+        auto& lifespan  = fragment->get<CLifeSpan>();
+
+        // Aggiorna la posizione del frammento
+        transform.pos += transform.velocity * deltaTime;
+
+        // Riduci l'alpha per effettuare il fade-out
+        sf::Color color = anim.animation.getMutableSprite().getColor();
+        float alpha = (lifespan.remainingTime / lifespan.totalTime) * 255.0f;
+        color.a = static_cast<int>(std::max(0.0f, alpha));
+        anim.animation.getMutableSprite().setColor(color);
+
+        // Distruggi il frammento quando è completamente scomparso
+        lifespan.remainingTime -= deltaTime;
+        if (lifespan.remainingTime <= 0.0f) {
+            fragment->destroy();
+        }
+    }
+}
+
+// ------------------------------------------------
+// Creazione dei frammenti per la rottura del blocco (Brick o Box)
+// ------------------------------------------------
+void Spawner::createBlockFragments(const Vec2<float>& position, const std::string & blockType)
+{
+    const float spreadSpeed = 400.f;
+
+    std::vector<Vec2<float>> directions = {
+        {-1, -1}, {0, -1}, {1, -1},  // Up-Left, Up, Up-Right
+        {-1,  0}, {1,  0},            // Left, Right
+        {-1,  1}, {0,  1}, {1,  1}     // Down-Left, Down, Down-Right
+    };
+
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
+    std::uniform_int_distribution<int> angleDist(0, 359);
+    std::uniform_int_distribution<int> rotationSpeedDist(0, 199);
+
+    for (auto dir : directions)
+    {
+        auto fragment = m_entityManager.addEntity("fragment");
+
+        // Imposta posizione e velocità per il frammento
+        fragment->add<CTransform>(position, Vec2<float>(dir.x * spreadSpeed, dir.y * spreadSpeed));
+
+        // Usa l'animazione corretta in base al tipo di blocco (Brick o Box)
+        if (m_game.assets().hasAnimation(blockType)) {
+            const Animation& anim = m_game.assets().getAnimation(blockType);
+            fragment->add<CAnimation>(anim, false);
+
+            // Scala il frammento
+            sf::Sprite& sprite = fragment->get<CAnimation>().animation.getMutableSprite();
+            sf::Vector2i textureSize = anim.getSize();
+            float scaleX = FRAGMENT_SIZE / static_cast<float>(textureSize.x);
+            float scaleY = FRAGMENT_SIZE / static_cast<float>(textureSize.y);
+            sprite.setScale(scaleX, scaleY);
+        }
+        else {
+            std::cerr << "[ERROR] Missing animation for fragments: " << blockType << "\n";
+        }
+
+        // Applica una rotazione casuale
+        fragment->add<CRotation>(angleDist(gen), rotationSpeedDist(gen));
+
+        // Imposta una breve durata per il frammento (es. 0.6 secondi per il fade-out)
+        fragment->add<CLifeSpan>(0.6f);
+    }
 }

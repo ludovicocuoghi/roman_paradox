@@ -6,24 +6,24 @@
 #include "GameEngine.h"
 #include "Vec2.hpp"
 
-// Forward declaration dell'entità (assicurati che Entity sia definito in un header appropriato)
-class Entity;
+class Entity; // forward declaration
 
 class Spawner {
 public:
-    // Costruttore: riceve i riferimenti necessari.
     Spawner(GameEngine& game, EntityManager& entityManager);
 
-    // Genera la spada del giocatore.
+    // Funzioni di spawn per spade e oggetti:
     std::shared_ptr<Entity> spawnSword(std::shared_ptr<Entity> player);
-
-    // Genera la spada del nemico.
     std::shared_ptr<Entity> spawnEnemySword(std::shared_ptr<Entity> enemy);
-
-    // Genera un oggetto raccoltabile in base al tipo di tile.
     std::shared_ptr<Entity> spawnItem(const Vec2<float>& position, const std::string& tileType);
+
+    // Funzioni per la gestione degli effetti di rottura dei blocchi:
+    void updateFragments(float deltaTime);
+    void createBlockFragments(const Vec2<float>& position, const std::string & blockType);
 
 private:
     GameEngine& m_game;
     EntityManager& m_entityManager;
+
+    static constexpr float FRAGMENT_SIZE = 16.f;
 };
