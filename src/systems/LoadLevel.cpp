@@ -163,37 +163,65 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
 
             auto enemy = entityManager.addEntity("enemy");
 
-            // Se il tipo è "Fast", usa l'animazione per la pattuglia e imposta lo stato "patrol"
-            if (enemyTypeStr == "Fast") {
-                if (m_game.assets().hasAnimation("EnemyFast_Run")) {
-                    const Animation& anim = m_game.assets().getAnimation("EnemyFast_Run");
-                    enemy->add<CAnimation>(anim, true);
-                } else {
-                    std::cerr << "[ERROR] Missing EnemyFast_Run animation!" << std::endl;
-                }
+            // Extract actual enemy type from string (removing "Enemy" prefix)
+            std::string animationPrefix;
+            if (enemyTypeStr == "EnemyFast") {
+                animationPrefix = "EnemyFast";
+            } else if (enemyTypeStr == "EnemyStrong") {  
+                animationPrefix = "EnemyStrong";
+            } else if (enemyTypeStr == "EnemyElite") {
+                animationPrefix = "EnemyElite";
+            } else if (enemyTypeStr == "EnemyNormal") {
+                animationPrefix = "EnemyNormal";
+            } else {
+                std::cerr << "[WARNING] Unknown enemy type: " << enemyTypeStr << " defaulting to Normal." << std::endl;
+                animationPrefix = "EnemyNormal";
+            }
+
+            // Assign animations
+            std::string runAnimName = animationPrefix + "_Run";
+            std::string standAnimName = animationPrefix + "_Stand";
+
+            std::cout << "[DEBUG] Enemy Type: " << enemyTypeStr << " | Using Animations: " << standAnimName << " / " << runAnimName << std::endl;
+
+            if (m_game.assets().hasAnimation(runAnimName)) {
+                const Animation& anim = m_game.assets().getAnimation(runAnimName);
+                enemy->add<CAnimation>(anim, true);
+            } else if (m_game.assets().hasAnimation(standAnimName)) {
+                std::cerr << "[WARNING] Missing " << runAnimName << " animation, falling back to " << standAnimName << std::endl;
+                const Animation& anim = m_game.assets().getAnimation(standAnimName);
+                enemy->add<CAnimation>(anim, true);
+            } else {
+                std::cerr << "[ERROR] Missing animations for " << enemyTypeStr << " enemy!" << std::endl;
+            }
+
+            // Assign state (Separate "if" conditions for easy future modifications)
+            if (enemyTypeStr == "EnemyFast") {
                 enemy->add<CState>("patrol", false, 0.0f, false, 0.0f, 0.0f, 0.0f);
             }
-            // Per altri tipi di enemy, usa una animazione di default e lo stato "idle"
-            else {
-                if (m_game.assets().hasAnimation("EnemyStand")) {
-                    const Animation& anim = m_game.assets().getAnimation("EnemyStand");
-                    enemy->add<CAnimation>(anim, true);
-                } else {
-                    std::cerr << "[ERROR] Missing EnemyStand animation!" << std::endl;
-                }
+
+            if (enemyTypeStr == "EnemyStrong") {
+                enemy->add<CState>("idle", false, 0.0f, false, 0.0f, 0.0f, 0.0f);
+            }
+
+            if (enemyTypeStr == "EnemyElite") {
+                enemy->add<CState>("idle", false, 0.0f, false, 0.0f, 0.0f, 0.0f);
+            }
+
+            if (enemyTypeStr == "EnemyNormal") {
                 enemy->add<CState>("idle", false, 0.0f, false, 0.0f, 0.0f, 0.0f);
             }
 
             enemy->add<CTransform>(Vec2<float>(realX, realY));
 
-            // Imposta una bounding box; qui si usa PLAYER_BB_SIZE come placeholder
+            // Bounding box size (same for all enemies)
             Vec2<float> enemyBBSize(PLAYER_BB_SIZE, PLAYER_BB_SIZE);
             enemy->add<CBoundingBox>(enemyBBSize, enemyBBSize * 0.5f);
 
             enemy->add<CGravity>(GRAVITY_VAL);
             enemy->add<CHealth>(10);
 
-            // Leggi i punti di pattugliamento dal file
+            // Read patrol points
             int px, py;
             while (file >> px >> py) {
                 float patrolX = px * GRID_SIZE + (GRID_SIZE * 0.5f);
@@ -204,13 +232,13 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
                 patrolPoints.push_back(Vec2<float>(realX, realY));
             }
 
-            // Determina il tipo di enemy in base alla stringa letta
+            // Determine enemy type enum
             EnemyType enemyType;
-            if (enemyTypeStr == "Fast")
+            if (enemyTypeStr == "EnemyFast")
                 enemyType = EnemyType::Fast;
-            else if (enemyTypeStr == "Heavy")
+            else if (enemyTypeStr == "EnemyStrong")
                 enemyType = EnemyType::Strong;
-            else if (enemyTypeStr == "Elite")
+            else if (enemyTypeStr == "EnemyElite")
                 enemyType = EnemyType::Elite;
             else
                 enemyType = EnemyType::Normal;
@@ -219,7 +247,7 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
             enemy->get<CEnemyAI>().patrolPoints = patrolPoints;
             enemy->get<CEnemyAI>().currentPatrolIndex = 0;
 
-            std::cout << "[DEBUG] Enemy Spawned at (" << enemyX << ", " << enemyY << ")" << std::endl;
+            std::cout << "[DEBUG] Spawned " << enemyTypeStr << " Enemy at (" << enemyX << ", " << enemyY << ")" << std::endl;
         }
         else {
             std::cerr << "[WARNING] Unknown entity type: " << type << std::endl;

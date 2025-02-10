@@ -343,5 +343,4 @@ Dec CloudSmall 70 9
 
 Player 2 2
 
-Enemy EnemyFast 3 2 3 2 5 2
-
+Enemy EnemyElite 3 2 3 2 5 2

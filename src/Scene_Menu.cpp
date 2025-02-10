@@ -58,7 +58,7 @@ void Scene_Menu::sRender() {
     float spacing = 80.f;
 
     // Render title
-    text.setString("MEGA MARIO");
+    text.setString("ROME INTERGALACTIC PARADOX");
     text.setPosition(m_game.window().getSize().x / 2 - text.getLocalBounds().width / 2, 50.f);
     m_game.window().draw(text);
 

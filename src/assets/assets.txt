@@ -1,52 +1,52 @@
-Texture TexStandAnim a_stand100Anim.png
-Texture TexRun a_run1004.png
-Texture TexAir a_air1002.png
-Texture TexHit a_hit100nosword.png
-Texture TexSword sword.png
+Texture TexStandAnim /player_alien/a_stand100Anim.png
+Texture TexRun /player_alien/a_run1004.png
+Texture TexAir /player_alien/a_air1002.png
+Texture TexHit /player_alien/a_hit100nosword.png
+Texture TexSword /sword/sword.png
 
-Texture TexGrapeSmall smallgrape.png
-Texture TexGrapeBig biggrape.png
-Texture TexCoinGold coinAnimgold.png
-Texture TexCoinSilver coinAnimsilver.png
-Texture TexCoinBronze coinAnimbronze.png
+Texture TexGrapeSmall /Collectables/smallgrape.png
+Texture TexGrapeBig /Collectables/biggrape.png
+Texture TexCoinGold /Collectables/coinAnimgold.png
+Texture TexCoinSilver /Collectables/coinAnimsilver.png
+Texture TexCoinBronze /Collectables/coinAnimbronze.png
 
-Texture TexBrick brick.png
+Texture TexBrick /Tile/brick.png
 
-Texture TexBox1 box.png
-Texture TexBox2 box2.png
-Texture TexGround ground.png
+Texture TexBox1 /Tile/box.png
+Texture TexBox2 /Tile/box2.png
+Texture TexGround /Tile/ground.png
 
-Texture TexBushSmall smallbush.png
-Texture TexBushTall tallbush.png
+Texture TexBushSmall /Dec/smallbush.png
+Texture TexBushTall /Dec/tallbush.png
 
-Texture TexPipeTall pipetall.png
-Texture TexPipe pipe.png
+Texture TexPipeTall /Tile/pipetall.png
+Texture TexPipe /Tile/pipe.png
 
-Texture TexCloudSmall smallcloud.png
-Texture TexCloudBig bigcloud.png
+Texture TexCloudSmall /Dec/smallcloud.png
+Texture TexCloudBig /Dec/bigcloud.png
 
-Texture TexTreasureBoxAnim treasurebox_anim.png
-Texture TexTreasureBoxHit treasurebox_hit.png
+Texture TexTreasureBoxAnim /Tile/treasurebox_anim.png
+Texture TexTreasureBoxHit /Tile/treasurebox_hit.png
 
-Texture TexStandAnimEnemyFast stand.png
-Texture TexRunEnemyFast run.png
-Texture TexAirEnemyFast air.png
-Texture TexHitEnemyFast hitnosword.png
+Texture TexStandAnimEnemyFast /ancient_roman/silver/stand1002_silver.png
+Texture TexRunEnemyFast /ancient_roman/silver/run1004_silver.png
+Texture TexAirEnemyFast /ancient_roman/silver/air1002_silver.png
+Texture TexHitEnemyFast /ancient_roman/silver/hit100nosword_silver.png
 
-Texture TexStandAnimEnemyStrong stand.png
-Texture TexRunEnemyStrong run.png
-Texture TexAirEnemyStrong air.png
-Texture TexHitEnemyStrong hitnosword.png
+Texture TexStandAnimEnemyStrong /ancient_roman/bronze/stand1002_bronze.png
+Texture TexRunEnemyStrong /ancient_roman/bronze/run1004_bronze.png
+Texture TexAirEnemyStrong /ancient_roman/bronze/air1002_bronze.png
+Texture TexHitEnemyStrong /ancient_roman/bronze/hit100nosword_bronze.png
 
-Texture TexStandAnimEnemyElite stand.png
-Texture TexRunEnemyElite run.png
-Texture TexAirEnemyElite air.png
-Texture TexHitEnemyElite hitnosword.png
+Texture TexStandAnimEnemyElite /ancient_roman/black/stand1002_black.png
+Texture TexRunEnemyElite /ancient_roman/black/run1004_black.png
+Texture TexAirEnemyElite /ancient_roman/black/air1002_black.png
+Texture TexHitEnemyElite /ancient_roman/black/hit100nosword_black.png
 
-Texture TexStandAnimEnemyNormal stand.png
-Texture TexRunEnemyNormal run.png
-Texture TexAirEnemyNormal air.png
-Texture TexHitEnemyNormal hitnosword.png
+Texture TexStandAnimEnemyNormal /ancient_roman/gold/stand1002_gold.png
+Texture TexRunEnemyNormal /ancient_roman/gold/run1004_gold.png
+Texture TexAirEnemyNormal /ancient_roman/gold/air1002_gold.png
+Texture TexHitEnemyNormal /ancient_roman/gold/hit100nosword_gold.png
 
 Animation PlayerStand TexStandAnim 100 100 6 8
 Animation PlayerRun TexRun 100 100 4 6
@@ -94,6 +94,6 @@ Animation EnemyNormal_Stand TexStandAnimEnemyNormal 100 100 1 0
 Animation EnemyNormal_Run TexRunEnemyNormal 100 100 4 6
 Animation EnemyNormal_Attack TexHitEnemyNormal 100 100 1 0
 
-Font Tech font.ttf
-Font Menu font.ttf
-Font Mario font.ttf
+Font Tech fonts/font.ttf
+Font Menu fonts/font.ttf
+Font Mario fonts/font.ttf

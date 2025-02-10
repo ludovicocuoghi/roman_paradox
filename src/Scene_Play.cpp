@@ -73,15 +73,15 @@ void Scene_Play::selectRandomBackground() {
     // Randomly select one of the three backgrounds
     switch (selection) {
         case 0:
-            m_backgroundPath = "src/images/day1.png";
+            m_backgroundPath = "src/images/Background/day1.png";
             m_timeofday = "Day";
             break;
         case 1:
-            m_backgroundPath = "src/images/night1.png";
+            m_backgroundPath = "src/images/Background/night1.png";
             m_timeofday = "Night";
             break;
         case 2:
-            m_backgroundPath = "src/images/sunset1.png";
+            m_backgroundPath = "src/images/Background/sunset1.png";
             m_timeofday = "Sunset";
             break;
     }
