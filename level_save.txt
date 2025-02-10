@@ -1,0 +1,6 @@
+Tile Ground 6 4
+Tile Ground 5 3
+Tile Ground 4 4
+Tile Ground 5 5
+Tile Ground 6 5
+Tile Ground 1 1

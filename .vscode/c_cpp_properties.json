@@ -1,0 +1,23 @@
+{
+  "configurations": [
+      {
+          "name": "Mac",
+          "includePath": [
+              "${workspaceFolder}/src",  
+              "${workspaceFolder}/src/imgui",              // ImGui include folder
+              "${workspaceFolder}/src/imgui-sfml",         // ImGui-SFML include folder
+              "/opt/homebrew/opt/sfml@2/include"           // SFML include folder
+          ],
+          "defines": [],
+          "macFrameworkPath": [
+              "/System/Library/Frameworks",
+              "/Library/Frameworks"
+          ],
+          "compilerPath": "/usr/bin/clang++",
+          "cStandard": "c11",
+          "cppStandard": "c++20",
+          "intelliSenseMode": "macos-clang-x64"
+      }
+  ],
+  "version": 4
+}

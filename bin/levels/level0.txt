@@ -1,0 +1,13 @@
+Tile Ground 0 0
+Tile Ground 1 0
+Tile Ground 2 0
+Tile Ground 3 0
+Tile Ground 4 0
+Tile Ground 5 0
+Tile Ground 6 0
+Tile Ground 7 0
+Tile Ground 8 0
+Tile Ground 9 0
+
+Player 2 1
+Enemy Fast 4 1 4 1 5 1
