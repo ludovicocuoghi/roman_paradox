@@ -370,7 +370,6 @@ void Scene_LevelEditor::renderImGui() {
     
     ImGui::End();
 }
-
 void Scene_LevelEditor::saveLevel(const std::string& filePath) {
     m_entityManager.update();
     std::ofstream out(filePath);
@@ -379,7 +378,7 @@ void Scene_LevelEditor::saveLevel(const std::string& filePath) {
         return;
     }
     
-    // Salva le tile: converti le coordinate da quelle del gioco a quelle con origine in basso a sinistra
+    // Save tiles
     for (auto& tile : m_entityManager.getEntities("tile")) {
         auto& transform = tile->get<CTransform>();
         int gridX = static_cast<int>(transform.pos.x / tileSize);
@@ -388,7 +387,7 @@ void Scene_LevelEditor::saveLevel(const std::string& filePath) {
         out << "Tile " << tile->get<CAnimation>().animation.getName() << " " << gridX << " " << savedGridY << "\n";
     }
     
-    // Salva le decorazioni
+    // Save decorations
     for (auto& dec : m_entityManager.getEntities("decoration")) {
         auto& transform = dec->get<CTransform>();
         int gridX = static_cast<int>(transform.pos.x / tileSize);
@@ -397,21 +396,26 @@ void Scene_LevelEditor::saveLevel(const std::string& filePath) {
         out << "Dec " << dec->get<CAnimation>().animation.getName() << " " << gridX << " " << savedGridY << "\n";
     }
     
-    // Salva gli enemy
+    //Save Player
+    out << "Player 2 2\n";
+
+    // Save enemies with patrol points (adding +2 to X positions)
     for (auto& enemy : m_entityManager.getEntities("enemy")) {
         auto& transform = enemy->get<CTransform>();
         int gridX = static_cast<int>(transform.pos.x / tileSize);
         int gridY = static_cast<int>(transform.pos.y / tileSize);
         int savedGridY = worldHeight - 1 - gridY;
-        // Determina il tipo di enemy da salvare (ad es. "EnemyFast")
+        
+        // Determine enemy type
         std::string enemyType = enemy->get<CEnemyAI>().enemyType == EnemyType::Fast ? "EnemyFast" :
                                 enemy->get<CEnemyAI>().enemyType == EnemyType::Strong ? "EnemyStrong" :
                                 enemy->get<CEnemyAI>().enemyType == EnemyType::Elite ? "EnemyElite" :
                                 "EnemyNormal";
-        out << "Enemy " << enemyType << " " << gridX << " " << savedGridY << "\n";
+        
+        // Add patrol points (original X +2)
+        out << "Enemy " << enemyType << " " << gridX << " " << savedGridY <<  " " << gridX << " " << savedGridY 
+            << " " << (gridX + 2) << " " << savedGridY << "\n";
     }
-    
-    // Salva eventuali altri elementi (player, ecc.) se necessario.
     out.close();
     std::cout << "[DEBUG] Level saved to " << filePath << "\n";
 }
@@ -489,7 +493,7 @@ void Scene_LevelEditor::loadLevel(const std::string& filePath) {
     std::cout << "[DEBUG] Level loaded from " << filePath << "\n";
 }
 void Scene_LevelEditor::loadTileOptions() {
-    m_tileOptions = { "Ground", "Brick", "Box1", "Box2", "PipeTall", "PipeShort", "TreasureBoxAnim" };
+    m_tileOptions = { "Ground", "Brick", "Box1", "Box2", "PipeTall", "Pipe", "TreasureBoxAnim" };
     if (!m_tileOptions.empty()) {
         m_selectedTile = m_tileOptions[0];
     }

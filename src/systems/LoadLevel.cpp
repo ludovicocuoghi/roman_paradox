@@ -62,12 +62,15 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
             // Correct positioning for pipes
             if (assetType == "PipeTall") {
                 realY += GRID_SIZE / 2 * 3;
+                realX += GRID_SIZE / 2;
             }
             else if (assetType == "PipeShort") {
                 realY += GRID_SIZE / 2;
+                realX += GRID_SIZE / 2;
             }
             else if (assetType == "Pipe") {
                 realY += GRID_SIZE / 2 * 2;
+                realX += GRID_SIZE / 2;
             }
 
             auto tile = entityManager.addEntity("tile");

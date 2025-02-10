@@ -253,6 +253,40 @@ Tile Ground 73 1
 Tile Ground 73 0
 Tile Ground 74 0
 Tile Ground 74 1
+Tile PipeTall 8 5
+Tile PipeTall 10 5
+Tile Ground 75 1
+Tile Ground 75 0
+Tile Ground 79 1
+Tile Ground 79 0
+Tile Ground 80 1
+Tile Ground 80 0
+Tile Ground 81 1
+Tile Ground 81 0
+Tile PipeTall 74 5
+Tile PipeTall 79 5
+Tile Brick 76 7
+Tile Brick 81 8
+Tile Brick 82 8
+Tile Brick 83 8
+Tile Brick 84 8
+Tile Brick 85 8
+Tile Brick 87 8
+Tile Brick 86 8
+Tile Brick 88 8
+Tile Brick 89 8
+Tile Brick 90 8
+Tile Brick 91 8
+Tile Brick 81 9
+Tile Brick 82 9
+Tile Brick 82 10
+Tile Brick 81 10
+Tile Brick 90 9
+Tile Brick 90 10
+Tile Brick 91 10
+Tile Brick 91 9
+Tile PipeTall 81 14
+Tile PipeTall 90 14
 Dec BushTall 0 5
 Dec BushTall 2 5
 Dec BushSmall 9 2
@@ -306,8 +340,8 @@ Dec CloudBig 33 35
 Dec CloudBig 31 35
 Dec CloudSmall 58 11
 Dec CloudSmall 70 9
+
 Player 2 2
-Enemy EnemyNormal 4 2 4 2 6 2
-Enemy EnemyFast 33 2 33 2 35 2
-Enemy EnemyFast 44 8 44 8 46 8
-Enemy EnemyFast 60 2 60 2 62 2
+
+Enemy EnemyFast 3 2 3 2 5 2
+
