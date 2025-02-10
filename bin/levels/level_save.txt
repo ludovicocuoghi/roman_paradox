@@ -22,8 +22,6 @@ Tile Ground 11 0
 Tile Ground 10 1
 Tile Ground 10 0
 Tile Ground 11 1
-Tile Box1 5 2
-Tile Box2 6 2
 Tile TreasureBoxAnim 7 3
 Tile Brick 12 3
 Tile Brick 13 3

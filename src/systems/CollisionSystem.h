@@ -22,4 +22,5 @@ private:
     void handleEnemyTileCollisions();
     void handlePlayerEnemyCollisions();
     void handleSwordCollisions();
+    void handlePlayerCollectibleCollisions();
 };

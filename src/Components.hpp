@@ -29,19 +29,15 @@ public:
     int maxHealth;              // Salute massima
     float invulnerabilityTimer; // Timer di invulnerabilità in secondi
 
-    // Costruttore di default (necessario per il tuple)
     CHealth()
         : currentHealth(0), maxHealth(0), invulnerabilityTimer(0.f) {}
 
-    // Costruttore per impostare salute corrente e massima uguali
     CHealth(int health)
         : currentHealth(health), maxHealth(health), invulnerabilityTimer(0.f) {}
 
-    // Costruttore per impostare salute corrente e massima in modo diverso
     CHealth(int current, int max)
         : currentHealth(current), maxHealth(max), invulnerabilityTimer(0.f) {}
 
-    // Applica danno se l'entity non è in invulnerabilità
     void takeDamage(int damage) {
         if (invulnerabilityTimer <= 0.f) {
             currentHealth -= damage;
@@ -50,14 +46,12 @@ public:
         }
     }
 
-    // (Facoltativo) Funzione per guarire l'entity
     void heal(int amount) {
         currentHealth += amount;
         if (currentHealth > maxHealth)
             currentHealth = maxHealth;
     }
 
-    // Aggiorna il timer di invulnerabilità (da chiamare ogni frame)
     void update(float deltaTime) {
         if (invulnerabilityTimer > 0.f) {
             invulnerabilityTimer -= deltaTime;
@@ -66,13 +60,11 @@ public:
         }
     }
 
-    // Restituisce true se l'entity è ancora viva (currentHealth > 0)
     bool isAlive() const {
         return currentHealth > 0;
     }
 };
 
-// Lifespan Component
 class CLifeSpan : public Component {
 public:
     float remainingTime;
@@ -83,7 +75,6 @@ public:
         : remainingTime(time), totalTime(time) {}
 };
 
-// Input Component
 class CInput : public Component {
 public:
     bool up = false;
@@ -93,13 +84,12 @@ public:
     bool shoot = false;
 };
 
-// Bounding Box Component
 class CBoundingBox : public Component {
 public:
     Vec2<float> size;
     Vec2<float> halfSize;
 
-    // ✅ Fix: Ensure this constructor accepts both size and offset
+    // Costruttore: accetta dimensione e offset
     CBoundingBox(const Vec2<float>& s = {0, 0}, const Vec2<float>& hs = {0, 0})
         : size(s), halfSize(hs) {}
 
@@ -108,7 +98,6 @@ public:
     }
 };
 
-// Animation Component
 class CAnimation : public Component {
 public:
     Animation animation;
@@ -123,11 +112,9 @@ public:
     }
 };
 
-// Gravity Component
 class CGravity : public Component {
 public:
     float gravity;
-
     explicit CGravity(float g = 800.0f) : gravity(g) {}
 };
 
@@ -140,13 +127,14 @@ public:
     // Campi per il salto e il knockback
     bool isJumping = false;
     float jumpTime = 0.0f;
-    float knockbackTime = 0.0f;
+    float knockbackTimer = 0.0f; // Corretto: ora si chiama knockbackTimer
     bool onGround = false;
 
     // Campi per l'attacco
     float attackTime = 0.0f;       // Durata dell'attacco (per l'animazione)
     float attackCooldown = 0.0f;   // Tempo di attesa prima che un nuovo attacco sia possibile
 
+    // Costruttore con parametri opzionali
     CState(const std::string& s = "idle", bool inv = false, float timer = 0.0f,
            bool jumping = false, float jTime = 0.0f, float attTime = 0.0f, float attCooldown = 0.0f)
         : state(s),
@@ -154,7 +142,7 @@ public:
           invincibilityTimer(timer),
           isJumping(jumping),
           jumpTime(jTime),
-          knockbackTime(0.0f),
+          knockbackTimer(0.0f), // Inizializza knockbackTimer a 0
           onGround(false),
           attackTime(attTime),
           attackCooldown(attCooldown)
@@ -171,12 +159,12 @@ public:
             if (attackCooldown < 0.f)
                 attackCooldown = 0.f;
         }
-        if (knockbackTime > 0.f) {
-            knockbackTime -= deltaTime;
-            if (knockbackTime < 0.f)
-                knockbackTime = 0.f;
+        if (knockbackTimer > 0.f) {
+            knockbackTimer -= deltaTime;
+            if (knockbackTimer < 0.f)
+                knockbackTimer = 0.f;
         }
-        // Se necessario, aggiornare anche jumpTime qui
+        // Puoi aggiornare anche jumpTime qui se necessario.
     }
 };
 
@@ -196,7 +184,7 @@ public:
 class CRotation : public Component {
 public:
     float angle = 0.0f;
-    float speed = 0.0f;  // Rotation speed
+    float speed = 0.0f;  // Velocità di rotazione
 
     CRotation() = default;
     CRotation(float a, float s) : angle(a), speed(s) {}
@@ -227,12 +215,10 @@ public:
     int damage;
     std::vector<Vec2<float>> patrolPoints;
     int currentPatrolIndex;
-    float facingDirection; // already used for sprite flipping
-    bool swordSpawned;     // NEW: to avoid spamming swords
+    float facingDirection; // Usato per il flipping dello sprite
+    bool swordSpawned;     // Per evitare di spawnare ripetutamente la spada
 
-    CEnemyAI() = default;  // Fix: missing semicolon
-
-    // Fix: New constructor to accept EnemyType
+    CEnemyAI() = default;
     CEnemyAI(EnemyType type)
         : enemyType(type),
           enemyState(EnemyState::Patrol),

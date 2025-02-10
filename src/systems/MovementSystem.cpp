@@ -28,8 +28,8 @@ void MovementSystem::update(float deltaTime) {
 
         // Gestione dello stato "knockback"
         if (state.state == "knockback") {
-            state.knockbackTime -= deltaTime;
-            if (state.knockbackTime > 0.f) {
+            state.knockbackTimer -= deltaTime;
+            if (state.knockbackTimer > 0.f) {
                 transform.pos += transform.velocity * deltaTime;
             } else {
                 state.state = state.onGround ? "idle" : "air";
