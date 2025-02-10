@@ -304,6 +304,10 @@ Dec CloudBig 39 36
 Dec CloudBig 37 36
 Dec CloudBig 33 35
 Dec CloudBig 31 35
-
+Dec CloudSmall 58 11
+Dec CloudSmall 70 9
 Player 2 2
-Enemy Fast 4 2 4 2 6 2
+Enemy EnemyNormal 4 2 4 2 6 2
+Enemy EnemyFast 33 2 33 2 35 2
+Enemy EnemyFast 44 8 44 8 46 8
+Enemy EnemyFast 60 2 60 2 62 2

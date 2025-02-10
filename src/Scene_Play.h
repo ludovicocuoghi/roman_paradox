@@ -44,8 +44,7 @@ public:
     // Utility functions for game logic
     bool isPathClear(Vec2<float> start, Vec2<float> end);
     bool isObstacleInFront(Vec2<float> enemyPos, float direction);
-    void createBlockFragments(Vec2<float> position, const std::string & blockType);
-    void updateFragments(float deltaTime);
+    void UpdateFragments(float deltaTime);
     void lifeCheckPlayerDeath();
     void lifeCheckEnemyDeath();
     void showGameOverScreen();
@@ -64,10 +63,6 @@ public:
     const float playerBBsize = 80.f;
     const int gridSize     = 96;
     const float ATTACK_DURATION = 0.1f;
-
-    const float MaxJumpDuration  = 0.4f;
-    const float JumpAcceleration = 2000.f;
-    const float MaxUpwardVelocity = -800.f;
 
     bool m_firstCameraUpdate = true;
     void selectRandomBackground();

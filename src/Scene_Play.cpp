@@ -14,13 +14,6 @@
 #include <cmath>
 #include "systems/CollisionSystem.h"
 #include "systems/SpriteUtils.h"
-
-// Define internal constants for clarity and easy adjustments
-namespace {
-    constexpr float MAX_FALL_SPEED          = 1000.f;
-    constexpr float FRAGMENT_SIZE           = 16.f;
-}
-
 Scene_Play::Scene_Play(GameEngine& game, const std::string& levelPath)
     : Scene(game),  // Inizializza la base class Scene (che non ha costruttore di default)
     m_levelPath(levelPath),                                   // (1)
@@ -120,7 +113,7 @@ void Scene_Play::update(float deltaTime) {
         sEnemyAI(deltaTime);
         sCollision();
         sAnimation(deltaTime);
-        updateFragments(deltaTime);
+        UpdateFragments(deltaTime);
 
         // Aggiorna i timer per CHealth e CState
         for (auto& entity : m_entityManager.getEntities()) {
@@ -183,85 +176,9 @@ void Scene_Play::sAnimation(float deltaTime)
 {
     m_animationSystem.update(deltaTime);
 }
-// Fragment Update (for brick break effect)
-//
-void Scene_Play::updateFragments(float deltaTime)
-{
-    for (auto& fragment : m_entityManager.getEntities("fragment"))
-    {
-        auto& transform = fragment->get<CTransform>();
-        auto& anim      = fragment->get<CAnimation>(); // Brick texture
-        auto& lifespan  = fragment->get<CLifeSpan>();
-
-        // Move fragment
-        transform.pos += transform.velocity * deltaTime;
-
-        // Fade out by reducing alpha
-        sf::Color color = anim.animation.getMutableSprite().getColor();
-        float alpha = (lifespan.remainingTime / lifespan.totalTime) * 255.0f;
-        color.a = static_cast<int>(std::max(0.0f, alpha));
-        anim.animation.getMutableSprite().setColor(color);
-
-        // Destroy when fully faded
-        lifespan.remainingTime -= deltaTime;
-        if (lifespan.remainingTime <= 0.0f) {
-            fragment->destroy();
-        }
-    }
-}
 
 //
-// Create Brick Fragments (on brick break)
-//
-// Nuova funzione per creare le particelle in base al tipo di blocco (Brick o Box)
-void Scene_Play::createBlockFragments(Vec2<float> position, const std::string & blockType)
-{
-    const float spreadSpeed = 400.f;
-
-    std::vector<Vec2<float>> directions = {
-        {-1, -1}, {0, -1}, {1, -1},  // Up-Left, Up, Up-Right
-        {-1,  0}, {1,  0},            // Left, Right
-        {-1,  1}, {0,  1}, {1,  1}     // Down-Left, Down, Down-Right
-    };
-
-    static std::random_device rd;
-    static std::mt19937 gen(rd());
-    std::uniform_int_distribution<int> angleDist(0, 359);
-    std::uniform_int_distribution<int> rotationSpeedDist(0, 199);
-
-    for (auto dir : directions)
-    {
-        auto fragment = m_entityManager.addEntity("fragment");
-
-        // Imposta la posizione e la velocità
-        fragment->add<CTransform>(position, Vec2<float>(dir.x * spreadSpeed, dir.y * spreadSpeed));
-
-        // Usa l'animazione corretta in base al tipo di blocco (Brick o Box)
-        if (m_game.assets().hasAnimation(blockType)) {
-            const Animation& anim = m_game.assets().getAnimation(blockType);
-            fragment->add<CAnimation>(anim, false);
-
-            // Scala la particella
-            sf::Sprite& sprite = fragment->get<CAnimation>().animation.getMutableSprite();
-            sf::Vector2i textureSize = anim.getSize();
-            float scaleX = FRAGMENT_SIZE / static_cast<float>(textureSize.x);
-            float scaleY = FRAGMENT_SIZE / static_cast<float>(textureSize.y);
-            sprite.setScale(scaleX, scaleY);
-        }
-        else {
-            std::cerr << "[ERROR] Missing animation for fragments: " << blockType << "\n";
-        }
-
-        // Applica una rotazione casuale
-        fragment->add<CRotation>(angleDist(gen), rotationSpeedDist(gen));
-
-        // Imposta una breve durata (0.6 secondi per il fade-out)
-        fragment->add<CLifeSpan>(0.6f);
-    }
-}
-
-//
-// Collision Handling
+//Collision Handliong
 //
 void Scene_Play::sCollision() {
     CollisionSystem collisionSystem(m_entityManager, m_game, &m_spawner);
@@ -315,7 +232,7 @@ void Scene_Play::sDoAction(const Action& action)
             }
         }
         else if (action.name() == "JUMP") {
-            // Player must be on ground AND in idle/run/attack if you want jump from attack stance
+            // Player must abe on ground AND in idle/run/attack if you want jump from attack stance
             if (state.onGround && (state.state == "idle" || state.state == "run" || state.state == "attack")) {
                 state.isJumping = true;
                 state.jumpTime  = 0.0f;
@@ -345,6 +262,11 @@ void Scene_Play::sDoAction(const Action& action)
             state.isJumping = false;
         }
     }
+}
+
+// Wrapper: chiama il metodo updateFragments del Spawner
+void Scene_Play::UpdateFragments(float deltaTime) {
+    m_spawner.updateFragments(deltaTime);
 }
 
 //
