@@ -5,12 +5,10 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 
-SwordCollisionSystem::SwordCollisionSystem(GameEngine& game, EntityManager& entityManager)
-    : m_game(game), m_entityManager(entityManager)
-{
-}
+SwordCollisionSystem::SwordCollisionSystem(EntityManager& entityManager)
+    : m_entityManager(entityManager) {}
 
-void SwordCollisionSystem::updateSwordCollisions(float deltaTime) {
+void SwordCollisionSystem::updateSwordCollisions() {
     // Per ogni spada del giocatore, controlla le collisioni con i nemici.
     for (auto& sword : m_entityManager.getEntities("sword")) {
         if (!sword->has<CTransform>() || !sword->has<CBoundingBox>())

@@ -1,17 +1,16 @@
 #pragma once
 
-#include "EntityManager.hpp"
 #include "GameEngine.h"
+#include "EntityManager.hpp"
+#include "Components.hpp"
+#include <SFML/Graphics.hpp>
 
 class SwordCollisionSystem {
 public:
-    // Costruttore: riceve i riferimenti necessari.
-    SwordCollisionSystem(GameEngine& game, EntityManager& entityManager);
+    SwordCollisionSystem(EntityManager& entityManager);
 
-    // Aggiorna le collisioni tra spade e nemici per un dato deltaTime.
-    void updateSwordCollisions(float deltaTime);
+    void updateSwordCollisions();
 
 private:
-    GameEngine& m_game;
     EntityManager& m_entityManager;
 };

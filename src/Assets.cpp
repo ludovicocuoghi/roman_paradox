@@ -37,7 +37,7 @@ void Assets::addTexture(const std::string& name, const std::string& path) {
 // Load and store fonts
 void Assets::addFont(const std::string& name, const std::string& path) {
     sf::Font font;
-    std::string fullPath = "bin/fonts/" + path;
+    std::string fullPath = "bin/" + path;
 
     if (!font.loadFromFile(fullPath)) {
         std::cerr << "[ERROR] Failed to load font: " << fullPath << ". Using default.\n";

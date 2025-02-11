@@ -229,13 +229,15 @@ void PlayRenderer::render() {
         }
     }
 
-    // --- Render linea di debug tra enemy e player (se presenti) ---
-    if (!m_entityManager.getEntities("enemy").empty() &&
-        !m_entityManager.getEntities("player").empty())
-    {
-        auto& enemyTrans = m_entityManager.getEntities("enemy")[0]->get<CTransform>();
-        auto& playerTrans = m_entityManager.getEntities("player")[0]->get<CTransform>();
-        drawDebugLine(enemyTrans.pos, playerTrans.pos, sf::Color::Cyan);
+    // --- Render debug line between each enemy and the player (if present) ---
+    auto enemies = m_entityManager.getEntities("enemy");
+    auto players = m_entityManager.getEntities("player");
+    if (!enemies.empty() && !players.empty()) {
+        auto& playerTrans = players[0]->get<CTransform>();
+        for (auto& enemy : enemies) {
+            auto& enemyTrans = enemy->get<CTransform>();
+            drawDebugLine(enemyTrans.pos, playerTrans.pos, sf::Color::Cyan);
+        }
     }
 
     // --- RENDER UI (fissata in posizione sullo schermo) ---

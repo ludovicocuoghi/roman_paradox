@@ -10,7 +10,7 @@ AnimationSystem::AnimationSystem(GameEngine& game, EntityManager& entityManager,
 }
 
 void AnimationSystem::update(float deltaTime) {
-    // --- Aggiornamento animazioni del giocatore ---
+    // --- Player Animation ---
     for (auto& entity : m_entityManager.getEntities("player")) {
         if (!entity->has<CAnimation>() || !entity->has<CState>()) continue;
 
@@ -56,7 +56,7 @@ void AnimationSystem::update(float deltaTime) {
         canim.animation.update(deltaTime);
     }
 
-    // --- Aggiornamento animazioni dei tile (es. blocchi con domanda) ---
+    // --- Tile Animation (e.g., Question Blocks) ---
     for (auto& entity : m_entityManager.getEntities("tile")) {
         if (!entity->has<CAnimation>() || !entity->has<CState>()) continue;
 
@@ -73,7 +73,7 @@ void AnimationSystem::update(float deltaTime) {
         anim.animation.update(deltaTime);
     }
 
-    // --- Aggiornamento animazioni per collectable (es. monete, grappoli) ---
+    // --- Collectable Animation (e.g., Coins, Items) ---
     for (auto& entity : m_entityManager.getEntities("collectable")) {
         if (!entity->has<CAnimation>()) continue;
 
@@ -81,7 +81,7 @@ void AnimationSystem::update(float deltaTime) {
         anim.animation.update(deltaTime);
     }
 
-    // --- Aggiornamento animazioni dei nemici ---
+    // --- Enemy Animation ---
     for (auto& enemy : m_entityManager.getEntities("enemy")) {
         if (!enemy->has<CAnimation>() || !enemy->has<CEnemyAI>()) continue;
 
@@ -98,17 +98,17 @@ void AnimationSystem::update(float deltaTime) {
 
         std::string desiredAnim;
         switch (ai.enemyState) {
-            case EnemyState::Patrol: desiredAnim = baseAnimName + "_Run"; break;
-            case EnemyState::Chase:  desiredAnim = baseAnimName + "_Chase"; break;
+            case EnemyState::Follow: desiredAnim = baseAnimName + "_Run"; break;  // Fix: Renamed from Chase
             case EnemyState::Attack: desiredAnim = baseAnimName + "_Attack"; break;
-            default:                desiredAnim = baseAnimName + "_Run"; break;
+            case EnemyState::Knockback: desiredAnim = baseAnimName + "_Hit"; break;
+            default: desiredAnim = baseAnimName + "_Idle"; break;
         }
 
         if (m_game.assets().hasAnimation(desiredAnim) &&
             canim.animation.getName() != desiredAnim)
         {
             canim.animation = m_game.assets().getAnimation(desiredAnim);
-            // Se lo stato è "Attack" non eseguire il looping
+            // Disable looping for Attack animations
             canim.repeat = (ai.enemyState != EnemyState::Attack);
             if (ai.facingDirection < 0)
                 flipSpriteLeft(canim.animation.getMutableSprite());

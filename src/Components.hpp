@@ -4,59 +4,60 @@
 #include <string>
 #include <SFML/Graphics.hpp>
 #include "Animation.hpp"
+#include <vector>
 
-// Base Component
+// Base Component.
 class Component {
 public:
     virtual ~Component() = default;
 };
 
-// Transform Component
+// Transform Component.
 struct CTransform {
     Vec2<float> pos;
     Vec2<float> velocity;
     Vec2<float> scale;
     float rotation;
 
-    CTransform(const Vec2<float>& p = {0, 0}, const Vec2<float>& v = {0, 0}, 
-               const Vec2<float>& s = {1, 1}, float r = 0.0f)
+    CTransform(const Vec2<float>& p = {0, 0},
+               const Vec2<float>& v = {0, 0},
+               const Vec2<float>& s = {1, 1},
+               float r = 0.0f)
         : pos(p), velocity(v), scale(s), rotation(r) {}
 };
 
 class CHealth : public Component {
 public:
-    int currentHealth;          // Salute attuale
-    int maxHealth;              // Salute massima
-    float invulnerabilityTimer; // Timer di invulnerabilità in secondi
+    int currentHealth;
+    int maxHealth;
+    float invulnerabilityTimer;
 
-    CHealth()
-        : currentHealth(0), maxHealth(0), invulnerabilityTimer(0.f) {}
-
-    CHealth(int health)
-        : currentHealth(health), maxHealth(health), invulnerabilityTimer(0.f) {}
-
-    CHealth(int current, int max)
-        : currentHealth(current), maxHealth(max), invulnerabilityTimer(0.f) {}
+    CHealth() : currentHealth(0), maxHealth(0), invulnerabilityTimer(0.f) {}
+    CHealth(int health) : currentHealth(health), maxHealth(health), invulnerabilityTimer(0.f) {}
+    CHealth(int current, int max) : currentHealth(current), maxHealth(max), invulnerabilityTimer(0.f) {}
 
     void takeDamage(int damage) {
         if (invulnerabilityTimer <= 0.f) {
             currentHealth -= damage;
-            if (currentHealth < 0)
+            if (currentHealth < 0) {
                 currentHealth = 0;
+            }
         }
     }
 
     void heal(int amount) {
         currentHealth += amount;
-        if (currentHealth > maxHealth)
+        if (currentHealth > maxHealth) {
             currentHealth = maxHealth;
+        }
     }
 
     void update(float deltaTime) {
         if (invulnerabilityTimer > 0.f) {
             invulnerabilityTimer -= deltaTime;
-            if (invulnerabilityTimer < 0.f)
+            if (invulnerabilityTimer < 0.f) {
                 invulnerabilityTimer = 0.f;
+            }
         }
     }
 
@@ -71,8 +72,7 @@ public:
     float totalTime;
 
     CLifeSpan() : remainingTime(0.f), totalTime(0.f) {}
-    CLifeSpan(float time)
-        : remainingTime(time), totalTime(time) {}
+    CLifeSpan(float time) : remainingTime(time), totalTime(time) {}
 };
 
 class CInput : public Component {
@@ -89,7 +89,6 @@ public:
     Vec2<float> size;
     Vec2<float> halfSize;
 
-    // Costruttore: accetta dimensione e offset
     CBoundingBox(const Vec2<float>& s = {0, 0}, const Vec2<float>& hs = {0, 0})
         : size(s), halfSize(hs) {}
 
@@ -115,66 +114,62 @@ public:
 class CGravity : public Component {
 public:
     float gravity;
-    explicit CGravity(float g = 800.0f) : gravity(g) {}
+    explicit CGravity(float g = 800.f) : gravity(g) {}
 };
 
 class CState : public Component {
 public:
-    std::string state = "idle";
-    bool isInvincible = false;
-    float invincibilityTimer = 0.0f;
+    std::string state;  // "idle", "run", "attack" (only for players)
+    bool isInvincible;
+    float invincibilityTimer;
+    bool isJumping;
+    float jumpTime;
+    float knockbackTimer;
+    bool onGround;
+    float attackTime;
+    float attackCooldown;
 
-    // Campi per il salto e il knockback
-    bool isJumping = false;
-    float jumpTime = 0.0f;
-    float knockbackTimer = 0.0f; // Corretto: ora si chiama knockbackTimer
-    bool onGround = false;
-
-    // Campi per l'attacco
-    float attackTime = 0.0f;       // Durata dell'attacco (per l'animazione)
-    float attackCooldown = 0.0f;   // Tempo di attesa prima che un nuovo attacco sia possibile
-
-    // Costruttore con parametri opzionali
-    CState(const std::string& s = "idle", bool inv = false, float timer = 0.0f,
-           bool jumping = false, float jTime = 0.0f, float attTime = 0.0f, float attCooldown = 0.0f)
+    CState(const std::string& s = "idle")
         : state(s),
-          isInvincible(inv),
-          invincibilityTimer(timer),
-          isJumping(jumping),
-          jumpTime(jTime),
-          knockbackTimer(0.0f), // Inizializza knockbackTimer a 0
+          isInvincible(false),
+          invincibilityTimer(0.f),
+          isJumping(false),
+          jumpTime(0.f),
+          knockbackTimer(0.f),
           onGround(false),
-          attackTime(attTime),
-          attackCooldown(attCooldown)
+          attackTime(0.f),
+          attackCooldown(0.f)
     {}
 
     void update(float deltaTime) {
         if (isInvincible && invincibilityTimer > 0.f) {
             invincibilityTimer -= deltaTime;
-            if (invincibilityTimer <= 0.f)
+            if (invincibilityTimer <= 0.f) {
                 isInvincible = false;
+            }
         }
         if (attackCooldown > 0.f) {
             attackCooldown -= deltaTime;
-            if (attackCooldown < 0.f)
+            if (attackCooldown < 0.f) {
                 attackCooldown = 0.f;
+            }
         }
         if (knockbackTimer > 0.f) {
             knockbackTimer -= deltaTime;
-            if (knockbackTimer < 0.f)
+            if (knockbackTimer < 0.f) {
                 knockbackTimer = 0.f;
+            }
         }
-        // Puoi aggiornare anche jumpTime qui se necessario.
     }
 };
 
 class CShape : public Component {
 public:
     int sides = 0;
-    float radius = 0.0f;
+    float radius = 0.f;
     sf::Color fillColor = sf::Color::White;
     sf::Color outlineColor = sf::Color::Transparent;
-    float outlineThickness = 0.0f;
+    float outlineThickness = 0.f;
 
     CShape() = default;
     CShape(int s, float r, const sf::Color& fill, const sf::Color& outline, float thickness)
@@ -183,14 +178,13 @@ public:
 
 class CRotation : public Component {
 public:
-    float angle = 0.0f;
-    float speed = 0.0f;  // Velocità di rotazione
+    float angle = 0.f;
+    float speed = 0.f;
 
     CRotation() = default;
     CRotation(float a, float s) : angle(a), speed(s) {}
 };
 
-// New Enums for Enemy AI
 enum class EnemyType {
     Fast,
     Normal,
@@ -198,37 +192,82 @@ enum class EnemyType {
     Elite
 };
 
-enum class EnemyState {
-    Patrol,
-    Chase,
-    Attack,
-    Returning
+enum class EnemyBehavior {
+    FollowOne,  // Only follows when player is in line-of-sight
+    FollowTwo   // Keeps following once the player is spotted
 };
 
+enum class EnemyState {
+    Idle,
+    Recognition,
+    Patrol,
+    Follow,     // The enemy is following the player
+    Attack,     // The enemy is attacking
+    Knockback   // The enemy is being pushed back
+};
+
+// Reordered fields: declare 'patrolPoints' before 'enemyState' 
+// so that 'enemyState' can safely check patrolPoints in its own initialization.
 class CEnemyAI : public Component {
 public:
+    // Basic properties
     EnemyType enemyType;
-    EnemyState enemyState;
-    float detectionRadius;
-    float attackRadius;
-    float speedMultiplier;
-    float patrolWaitTime = 0.0f;
-    int damage;
-    std::vector<Vec2<float>> patrolPoints;
-    int currentPatrolIndex;
-    float facingDirection; // Usato per il flipping dello sprite
-    bool swordSpawned;     // Per evitare di spawnare ripetutamente la spada
+    EnemyBehavior enemyBehavior;
 
-    CEnemyAI() = default;
-    CEnemyAI(EnemyType type)
+    // Patrol Behavior
+    std::vector<Vec2<float>> patrolPoints;
+    EnemyState enemyState;  // Now declared after 'patrolPoints'
+
+    // Movement & Combat Stats
+    float speedMultiplier;
+    int damage;
+
+    // Vision & Attack Parameters
+    float lineOfSightRange;
+    float attackRadius;
+
+    int currentPatrolIndex;
+    float patrolWaitTime;
+
+    // Jumping & Movement
+    float facingDirection;
+    float jumpCooldown;
+
+    // Attack Handling
+    bool swordSpawned;
+    float attackCooldown;
+    float attackTimer;
+
+    // Knockback Handling
+    float knockbackTimer;
+
+    // Recognition Handling
+    float recognitionTimer;
+    float maxRecognitionTime;
+    bool inRecognitionArea;
+    Vec2<float> lastSeenPlayerPos;
+
+    // Constructor
+    CEnemyAI(EnemyType type = EnemyType::Normal, EnemyBehavior behavior = EnemyBehavior::FollowOne)
         : enemyType(type),
-          enemyState(EnemyState::Patrol),
-          detectionRadius(200.f),
-          attackRadius(100.f),
+          enemyBehavior(behavior),
+          patrolPoints(),
+          enemyState(patrolPoints.empty() ? EnemyState::Idle : EnemyState::Patrol),
           speedMultiplier(1.0f),
           damage(10),
+          lineOfSightRange(200.f),
+          attackRadius(100.f),
           currentPatrolIndex(0),
+          patrolWaitTime(0.f),
           facingDirection(1.f),
-          swordSpawned(false)
+          jumpCooldown(0.5f),
+          swordSpawned(false),
+          attackCooldown(0.f),
+          attackTimer(0.f),
+          knockbackTimer(0.f),
+          recognitionTimer(0.f),
+          maxRecognitionTime(5.0f),
+          inRecognitionArea(false),
+          lastSeenPlayerPos(Vec2<float>(0.f, 0.f))
     {}
 };

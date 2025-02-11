@@ -27,7 +27,7 @@ void CollisionSystem::handlePlayerTileCollisions() {
         auto& state     = player->get<CState>();
 
         sf::FloatRect pRect = playerBB.getRect(transform.pos);
-        bool wasOnGround = state.onGround;
+        //bool wasOnGround = state.onGround;
         state.onGround = false; // Reset
 
         for (auto& tile : m_entityManager.getEntities("tile")) {
@@ -111,6 +111,9 @@ void CollisionSystem::handlePlayerTileCollisions() {
 // ----------------------------------
 // 👹 ENEMY - TILE COLLISIONS (invariata)
 void CollisionSystem::handleEnemyTileCollisions() {
+    // Impulso di salto per il nemico (modifica in base alle tue necessità)
+    const float enemyJumpForce = 300.f;
+
     for (auto& enemy : m_entityManager.getEntities("enemy")) {
         auto& transform = enemy->get<CTransform>();
         auto& enemyBB   = enemy->get<CBoundingBox>();
@@ -118,10 +121,14 @@ void CollisionSystem::handleEnemyTileCollisions() {
 
         bool onGround = false;
         float minOverlapY = std::numeric_limits<float>::max();
+        bool sideCollisionDetected = false;
 
+        // Cicla su tutte le tile
         for (auto& tile : m_entityManager.getEntities("tile")) {
+            if (!tile->has<CTransform>() || !tile->has<CBoundingBox>())
+                continue;
             auto& tileTransform = tile->get<CTransform>();
-            auto& tileBB        = tile->get<CBoundingBox>();
+            auto& tileBB = tile->get<CBoundingBox>();
             sf::FloatRect tRect = tileBB.getRect(tileTransform.pos);
 
             if (!eRect.intersects(tRect))
@@ -133,9 +140,13 @@ void CollisionSystem::handleEnemyTileCollisions() {
                              std::max(eRect.top, tRect.top);
 
             if (overlapX < overlapY) {
+                // Collisione orizzontale (side collision)
+                sideCollisionDetected = true;
+                // Sposta il nemico per risolvere la collisione
                 transform.pos.x += (transform.pos.x < tileTransform.pos.x) ? -overlapX : overlapX;
                 transform.velocity.x = 0.f;
             } else {
+                // Collisione verticale
                 if (transform.velocity.y > 0) {
                     if ((eRect.top + eRect.height) > tRect.top && overlapY < minOverlapY) {
                         minOverlapY = overlapY;
@@ -151,10 +162,15 @@ void CollisionSystem::handleEnemyTileCollisions() {
                     }
                 }
             }
+            // Aggiorna il rettangolo del nemico dopo aver risolto la collisione con questa tile
+            eRect = enemyBB.getRect(transform.pos);
         }
 
-        //if (onGround)
-        //   std::cout << "[DEBUG] Enemy landed at: (" << transform.pos.x << ", " << transform.pos.y << ")\n";
+        // Se è stata rilevata una collisione laterale e il nemico è a terra,
+        // applica l'impulso di salto.
+        if (sideCollisionDetected && onGround) {
+            transform.velocity.y = -enemyJumpForce*2;
+        }
     }
 }
 
@@ -163,32 +179,50 @@ void CollisionSystem::handleEnemyTileCollisions() {
 void CollisionSystem::handlePlayerEnemyCollisions() {
     for (auto& enemy : m_entityManager.getEntities("enemy")) {
         auto& enemyTrans = enemy->get<CTransform>();
-        auto& enemyBB    = enemy->get<CBoundingBox>();
+        auto& enemyBB = enemy->get<CBoundingBox>();
         sf::FloatRect enemyRect = enemyBB.getRect(enemyTrans.pos);
-
         for (auto& player : m_entityManager.getEntities("player")) {
             auto& pTrans = player->get<CTransform>();
-            auto& pBB    = player->get<CBoundingBox>();
+            auto& pBB = player->get<CBoundingBox>();
             sf::FloatRect playerRect = pBB.getRect(pTrans.pos);
-
             if (enemyRect.intersects(playerRect)) {
-                auto& playerState = player->get<CState>();
+                // Determine overlaps
+                float overlapX = std::min(enemyRect.left + enemyRect.width, playerRect.left + playerRect.width) -
+                                 std::max(enemyRect.left, playerRect.left);
+                float overlapY = std::min(enemyRect.top + enemyRect.height, playerRect.top + playerRect.height) -
+                                 std::max(enemyRect.top, playerRect.top);
+                // If vertical overlap is less than horizontal, treat as vertical collision
+                if (overlapY < overlapX) {
+                    // If enemy is above player, push enemy downwards so it doesn't stay on top
+                    if (enemyRect.top < playerRect.top) {
+                        enemyTrans.pos.y += overlapY;
+                    } else {
+                        enemyTrans.pos.y -= overlapY;
+                    }
+                } else {
+                    // Horizontal collision: separate them horizontally
+                    if (enemyTrans.pos.x < pTrans.pos.x) {
+                        enemyTrans.pos.x -= overlapX / 2.f;
+                        pTrans.pos.x += overlapX / 2.f;
+                    } else {
+                        enemyTrans.pos.x += overlapX / 2.f;
+                        pTrans.pos.x -= overlapX / 2.f;
+                    }
+                }
 
-                // Se il giocatore è già in knockback o il timer è attivo, salta l'applicazione del danno
+                auto& playerState = player->get<CState>();
                 if (playerState.state == "knockback" || playerState.knockbackTimer > 0.f)
                     continue;
-
                 player->get<CHealth>().takeDamage(1);
                 Vec2<float> hitDirection = { (enemyTrans.pos.x < pTrans.pos.x) ? 1.f : -1.f, 0.f };
                 Physics::Forces::ApplyKnockback(player, hitDirection, 1400.0f);
                 playerState.state = "knockback";
-                std::cout << "[DEBUG] Player hit by enemy! Knocked back hard.\n";
+                std::cout << "[DEBUG] Player hit by enemy! Knocked back.\n";
             }
         }
     }
 }
 
-// ----------------------------------
 // 🗡️ SWORD - ENEMY & TILE COLLISIONS
 // ----------------------------------
 void CollisionSystem::handleSwordCollisions() {

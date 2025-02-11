@@ -85,7 +85,7 @@ private:
     sf::View m_cameraView;                // (15)
     int m_score = 0;                      // (16)
     MovementSystem m_movementSystem;
-    EnemyAISystem m_enemyAISystem;
     Spawner m_spawner;
+    EnemyAISystem m_enemyAISystem;
     SwordCollisionSystem m_swordCollisionSystem;
 };

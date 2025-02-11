@@ -43,30 +43,47 @@ std::shared_ptr<Entity> Spawner::spawnEnemySword(std::shared_ptr<Entity> enemy) 
     auto& eTrans = enemy->get<CTransform>();
 
     float dir = enemyAI.facingDirection;
-    float offsetX = (dir < 0) ? -50.f : 50.f;
+    float offsetX = (dir < 0) ? -40.f : 40.f;
     float offsetY = 10.f;
     Vec2<float> swordPos = eTrans.pos + Vec2<float>(offsetX, offsetY);
     sword->add<CTransform>(swordPos);
-    sword->add<CLifeSpan>(0.3f);
-    // Memorizza l'ID del nemico nello stato per eventuale logica successiva
+    // Set a shorter lifespan (0.2 seconds) so the sword disappears quickly when not attacking.
+    sword->add<CLifeSpan>(0.2f);
+    // Store the enemy's id in the state (if needed)
     sword->add<CState>(std::to_string(enemy->id()));
 
-    if (m_game.assets().hasAnimation("Sword")) {
-        auto& swordAnim = m_game.assets().getAnimation("Sword");
-        sword->add<CAnimation>(swordAnim, true);
+    std::cout << "[DEBUG] Spawned enemy sword at (" << swordPos.x << ", " << swordPos.y << ")\n";
+
+    if (m_game.assets().hasAnimation("EnemySword")) {
+        auto& swordAnim = m_game.assets().getAnimation("EnemySword");
+        // Non-repeating animation for the attack swing
+        sword->add<CAnimation>(swordAnim, false);
         sf::Vector2i animSize = swordAnim.getSize();
         float w = static_cast<float>(animSize.x);
         float h = static_cast<float>(animSize.y);
         Vec2<float> boxSize(w, h);
         Vec2<float> halfSize(w * 0.5f, h * 0.5f);
         sword->add<CBoundingBox>(boxSize, halfSize);
-        // Flip dello sprite in base alla direzione del nemico
+        if (dir < 0)
+            flipSpriteLeft(sword->get<CAnimation>().animation.getMutableSprite());
+        else
+            flipSpriteRight(sword->get<CAnimation>().animation.getMutableSprite());
+    } else if (m_game.assets().hasAnimation("Sword")) {
+        // Fallback to generic sword animation
+        auto& swordAnim = m_game.assets().getAnimation("Sword");
+        sword->add<CAnimation>(swordAnim, false);
+        sf::Vector2i animSize = swordAnim.getSize();
+        float w = static_cast<float>(animSize.x);
+        float h = static_cast<float>(animSize.y);
+        Vec2<float> boxSize(w, h);
+        Vec2<float> halfSize(w * 0.5f, h * 0.5f);
+        sword->add<CBoundingBox>(boxSize, halfSize);
         if (dir < 0)
             flipSpriteLeft(sword->get<CAnimation>().animation.getMutableSprite());
         else
             flipSpriteRight(sword->get<CAnimation>().animation.getMutableSprite());
     } else {
-        std::cerr << "[ERROR] Missing Sword animation for enemy sword!\n";
+        std::cerr << "[ERROR] Missing enemy sword animation!\n";
     }
     return sword;
 }

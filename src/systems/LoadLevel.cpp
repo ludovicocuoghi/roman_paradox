@@ -140,7 +140,21 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
                 Vec2<float> bboxSize(PLAYER_BB_SIZE, PLAYER_BB_SIZE);
                 player->add<CBoundingBox>(bboxSize, bboxSize * 0.5f);
                 player->add<CGravity>(GRAVITY_VAL);
-                player->add<CState>("idle", false, 0.0f, false, 0.0f, 0.0f, 0.0f);
+                player->add<CState>("idle");  // Only one argument is needed
+
+                player->add<CState>("idle");  // Just pass the string, nothing else
+                auto& state = player->get<CState>();
+
+                // Set additional properties manually
+                state.isInvincible = false;
+                state.invincibilityTimer = 0.0f;
+                state.isJumping = false;
+                state.jumpTime = 0.0f;
+                state.knockbackTimer = 0.0f;
+                state.onGround = false;
+                state.attackTime = 0.0f;
+                state.attackCooldown = 0.0f;
+                
                 player->add<CHealth>(10);
                 playerSpawned = true;
                 std::cout << "[DEBUG] Player Spawned at (" << x << ", " << y << ")" << std::endl;
@@ -153,18 +167,19 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
             int enemyX, enemyY, px1, py1, px2, py2;
             std::vector<Vec2<float>> patrolPoints;
 
-            // ✅ Read enemy type and spawn location (plus patrol points)
+            // Read enemy type, spawn position, and patrol points
             if (!(file >> enemyTypeStr >> enemyX >> enemyY >> px1 >> py1 >> px2 >> py2)) {
                 std::cerr << "[WARNING] Incomplete Enemy entry. Skipping.\n";
                 continue;
             }
 
+            // Convert grid coordinates to world coordinates (center of the cell)
             float realX = enemyX * GRID_SIZE + (GRID_SIZE * 0.5f);
             float realY = windowHeight - (enemyY * GRID_SIZE) - (GRID_SIZE * 0.5f);
 
             auto enemy = entityManager.addEntity("enemy");
 
-            // ✅ Convert `enemyTypeStr` to `EnemyType` (Fixing the error)
+            // Convert enemyTypeStr to an EnemyType
             EnemyType enemyType;
             if (enemyTypeStr == "EnemyFast")
                 enemyType = EnemyType::Fast;
@@ -175,31 +190,37 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
             else
                 enemyType = EnemyType::Normal;
 
-            // ✅ Assign animations correctly
-            std::string animationPrefix = enemyTypeStr;
-            std::string runAnimName = animationPrefix + "_Run";
-            std::string standAnimName = animationPrefix + "_Stand";
+            // Set speed multiplier based on enemy type
+            float speedMultiplier = 1.0f;
+            if (enemyType == EnemyType::Fast)
+                speedMultiplier = 1.5f;
+            else if (enemyType == EnemyType::Strong)
+                speedMultiplier = 0.7f;
+            else if (enemyType == EnemyType::Elite)
+                speedMultiplier = 1.5f;
 
-            std::cout << "[DEBUG] Enemy Type: " << enemyTypeStr << " | Using Animations: " << standAnimName << " / " << runAnimName << std::endl;
+            // Configure animations based on type
+            std::string runAnimName = enemyTypeStr + "_Run";
+            std::string standAnimName = enemyTypeStr + "_Stand";
+
+            std::cout << "[DEBUG] Enemy Type: " << enemyTypeStr 
+                    << " | Using Animations: " << standAnimName << " / " << runAnimName << std::endl;
 
             if (m_game.assets().hasAnimation(runAnimName)) {
                 const Animation& anim = m_game.assets().getAnimation(runAnimName);
                 enemy->add<CAnimation>(anim, true);
             } else if (m_game.assets().hasAnimation(standAnimName)) {
-                std::cerr << "[WARNING] Missing " << runAnimName << " animation, falling back to " << standAnimName << std::endl;
+                std::cerr << "[WARNING] Missing " << runAnimName << " animation, falling back to " 
+                        << standAnimName << std::endl;
                 const Animation& anim = m_game.assets().getAnimation(standAnimName);
                 enemy->add<CAnimation>(anim, true);
             } else {
                 std::cerr << "[ERROR] Missing animations for " << enemyTypeStr << " enemy!" << std::endl;
             }
 
-            // ✅ Assign correct state
-            if (enemyType == EnemyType::Fast) {
-                enemy->add<CState>("patrol", false, 0.0f, false, 0.0f, 0.0f, 0.0f);
-            } else {
-                enemy->add<CState>("idle", false, 0.0f, false, 0.0f, 0.0f, 0.0f);
-            }
+            // Remove: enemy->add<CState>("patrol", false, 0.0f, false, 0.0f, 0.0f, 0.0f); ❌
 
+            // Add core components
             enemy->add<CTransform>(Vec2<float>(realX, realY));
 
             Vec2<float> enemyBBSize(PLAYER_BB_SIZE, PLAYER_BB_SIZE);
@@ -207,18 +228,28 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
             enemy->add<CGravity>(GRAVITY_VAL);
             enemy->add<CHealth>(10);
 
-            // ✅ Convert patrol points to world coordinates
+            // Convert patrol points to world coordinates
             patrolPoints.push_back(Vec2<float>(px1 * GRID_SIZE + (GRID_SIZE * 0.5f),
                                             windowHeight - (py1 * GRID_SIZE) - (GRID_SIZE * 0.5f)));
             patrolPoints.push_back(Vec2<float>(px2 * GRID_SIZE + (GRID_SIZE * 0.5f),
                                             windowHeight - (py2 * GRID_SIZE) - (GRID_SIZE * 0.5f)));
 
-            // ✅ Assign `CEnemyAI` with the correct `EnemyType`
-            enemy->add<CEnemyAI>(enemyType);
+            // Determine AI behavior: FollowOne (sees player) or FollowTwo (remembers player)
+            EnemyBehavior behavior = (enemyType == EnemyType::Elite) ? EnemyBehavior::FollowTwo : EnemyBehavior::FollowOne;
+
+            // Initialize enemy AI component with type & behavior
+            enemy->add<CEnemyAI>(enemyType, behavior);
+
+            // Set patrol points (if relevant)
             enemy->get<CEnemyAI>().patrolPoints = patrolPoints;
             enemy->get<CEnemyAI>().currentPatrolIndex = 0;
+            enemy->get<CEnemyAI>().speedMultiplier = speedMultiplier;
 
-            std::cout << "[DEBUG] Spawned " << enemyTypeStr << " Enemy at (" << enemyX << ", " << enemyY << ") with patrol (" 
+            // Set enemy to Idle (default) or Follow if in range of the player
+            enemy->get<CEnemyAI>().enemyState = EnemyState::Idle;
+
+            std::cout << "[DEBUG] Spawned " << enemyTypeStr << " Enemy at (" 
+                    << enemyX << ", " << enemyY << ") with patrol ("
                     << px1 << "," << py1 << ") <-> (" << px2 << "," << py2 << ")" << std::endl;
         }
         else {

@@ -271,7 +271,6 @@ void Scene_LevelEditor::removeEnemy(int gridX, int gridY) {
 }
 
 void Scene_LevelEditor::drawGrid() {
-    sf::Vector2u windowSize = m_game.window().getSize();
     sf::Color gridColor(255, 255, 255, 100);
     
     // Disegna linee della griglia

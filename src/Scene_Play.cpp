@@ -33,9 +33,9 @@ Scene_Play::Scene_Play(GameEngine& game, const std::string& levelPath)
     m_cameraView(game.window().getDefaultView()),             // (15)
     m_score(0),
     m_movementSystem(game, m_entityManager, m_cameraView, m_lastDirection),
-    m_enemyAISystem(game, m_entityManager),
     m_spawner(game, m_entityManager),
-    m_swordCollisionSystem(game, m_entityManager)
+    m_enemyAISystem(m_entityManager, m_spawner, m_game),
+    m_swordCollisionSystem(m_entityManager)
 {
     // Aggiorna la vista con quella predefinita della finestra
     m_cameraView = m_game.window().getDefaultView();
@@ -135,7 +135,7 @@ void Scene_Play::update(float deltaTime) {
         }
 
         // Aggiorna le collisioni delle spade
-        m_swordCollisionSystem.updateSwordCollisions(deltaTime);
+        m_swordCollisionSystem.updateSwordCollisions();
 
         // Verifica la morte degli enemy
         lifeCheckEnemyDeath();

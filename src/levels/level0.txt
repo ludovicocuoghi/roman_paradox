@@ -10,6 +10,6 @@ Tile Ground 8 0
 Tile Ground 9 0
 Player 2 1
 
-Enemy EnemyFast 5 2 5 2 7 2
+Enemy EnemyFast 5 1 5 1 7 1
 
-Enemy EnemyElite 3 2 3 2 5 2
+Enemy EnemyStrong 3 1 3 1 5 1

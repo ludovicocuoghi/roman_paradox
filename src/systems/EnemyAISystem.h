@@ -1,26 +1,18 @@
 #pragma once
 
 #include "EntityManager.hpp"
-#include "GameEngine.h"
-#include <SFML/Graphics.hpp>
-#include "Components.hpp"
-#include "Vec2.hpp"
-#include <cmath>
-#include <algorithm>
+#include "Spawner.h"
+#include "GameEngine.h" // Make sure to include the GameEngine header
 
-// Il modulo EnemyAISystem gestisce l'aggiornamento dell'IA dei nemici.
 class EnemyAISystem {
 public:
-    // Costruttore: riceve i riferimenti necessari.
-    EnemyAISystem(GameEngine& game, EntityManager& entityManager);
-
-    // Aggiorna l'IA dei nemici in base a deltaTime.
+    // Updated constructor declaration with GameEngine parameter
+    EnemyAISystem(EntityManager& entityManager, Spawner& spawner, GameEngine& game);
+    
     void update(float deltaTime);
 
 private:
-    GameEngine& m_game;
     EntityManager& m_entityManager;
-
-    // Costante di configurazione per la gravità
-    static constexpr float MAX_FALL_SPEED = 1000.f;
+    Spawner* m_spawner;
+    GameEngine& m_game; // Added member to access assets
 };
