@@ -128,7 +128,6 @@ void Scene_Play::update(float deltaTime) {
             std::string tag = entity->tag();
             if ((tag == "sword" || tag == "enemySword" || tag == "fragment") && entity->has<CLifeSpan>()) {
                 auto& lifespan = entity->get<CLifeSpan>();
-                std::cout << "[DEBUG] Lifespan remaining for" << tag << ":" << lifespan.remainingTime << "\n";
                 lifespan.remainingTime -= deltaTime;
                 if (lifespan.remainingTime <= 0.f)
                     entity->destroy();

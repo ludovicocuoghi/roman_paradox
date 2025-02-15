@@ -17,7 +17,7 @@ std::shared_ptr<Entity> Spawner::spawnSword(std::shared_ptr<Entity> player) {
     auto sword = m_entityManager.addEntity("sword");
     auto& pTrans = player->get<CTransform>();
     sword->add<CTransform>(pTrans.pos);
-    sword->add<CLifeSpan>(0.3f); // Player sword duration
+    sword->add<CLifeSpan>(0.2f); // Player sword duration
 
     if (m_game.assets().hasAnimation("Sword")) {
         auto& swordAnim = m_game.assets().getAnimation("Sword");

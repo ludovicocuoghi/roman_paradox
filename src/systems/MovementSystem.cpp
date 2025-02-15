@@ -2,7 +2,7 @@
 #include <algorithm>
 #include <cmath>
 #include <SFML/Window/Keyboard.hpp>
-#include "SpriteUtils.h"  // Per flipSpriteLeft / flipSpriteRight
+#include "SpriteUtils.h"
 
 MovementSystem::MovementSystem(GameEngine& game,
                                EntityManager& entityManager,
@@ -16,35 +16,29 @@ MovementSystem::MovementSystem(GameEngine& game,
 }
 
 void MovementSystem::update(float deltaTime) {
-    // --- MOVIMENTO DEL GIOCATORE ---
+    // Player movement
     for (auto& entity : m_entityManager.getEntities("player")) {
         auto& transform = entity->get<CTransform>();
         auto& state     = entity->get<CState>();
         auto& canim     = entity->get<CAnimation>();
 
-        // Applica la gravità base
         float baseGravity = entity->get<CGravity>().gravity;
         transform.velocity.y += baseGravity * deltaTime;
 
-        // Se il giocatore sta saltando e il boost non è terminato...
+        // Jump boost
         if (state.isJumping && state.jumpTime < maxJumpHoldTime) {
-            // Applica un impulso extra verso l'alto
             transform.velocity.y -= jumpBoostAcceleration * deltaTime;
             state.jumpTime += deltaTime;
-            // Clampa la velocità in salita
             if (transform.velocity.y < MaxUpwardVelocity)
                 transform.velocity.y = MaxUpwardVelocity;
         } else {
-            // Se non si sta più saltando e il giocatore sta cadendo, aumenta la gravità per accelerare la caduta
             if (transform.velocity.y > 0) {
                 transform.velocity.y += baseGravity * (GravityMultiplier - 1.0f) * deltaTime;
             }
         }
 
-        // Clampa la velocità di caduta
         transform.velocity.y = std::min(transform.velocity.y, MAX_FALL_SPEED);
 
-        // Gestione dello stato "knockback"
         if (state.state == "knockback") {
             state.knockbackTimer -= deltaTime;
             if (state.knockbackTimer > 0.f) {
@@ -54,7 +48,6 @@ void MovementSystem::update(float deltaTime) {
                 transform.velocity.x = 0.f;
             }
         } else {
-            // Movimento orizzontale
             transform.velocity.x = 0.f;
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
                 transform.velocity.x = -xSpeed;
@@ -66,17 +59,16 @@ void MovementSystem::update(float deltaTime) {
             transform.pos += transform.velocity * deltaTime;
         }
 
-        // Flip dello sprite
+        // Sprite flip
         if (m_lastDirection < 0)
             flipSpriteLeft(canim.animation.getMutableSprite());
         else
             flipSpriteRight(canim.animation.getMutableSprite());
     }
 
-    // --- MOVIMENTO DELLA CAMERA (invariato) ---
+    // Camera movement
     for (auto& entity : m_entityManager.getEntities("player")) {
         auto& transform = entity->get<CTransform>();
-
         float screenWidth  = m_game.window().getSize().x;
         float screenHeight = m_game.window().getSize().y;
         float thresholdX   = screenWidth * 0.25f;
@@ -103,7 +95,7 @@ void MovementSystem::update(float deltaTime) {
         m_cameraView.setCenter(std::round(smoothCameraX), std::round(smoothCameraY));
     }
 
-    // --- LOGICA DI SEGUIMENTO DELLA SPADA (invariata) ---
+    // Sword follows player
     auto players = m_entityManager.getEntities("player");
     if (!players.empty()) {
         auto& player = players[0];
@@ -116,7 +108,6 @@ void MovementSystem::update(float deltaTime) {
         for (auto& sword : m_entityManager.getEntities("sword")) {
             if (!sword->has<CTransform>()) continue;
             auto& swTrans = sword->get<CTransform>();
-
             swTrans.pos.x = pTrans.pos.x + offsetX;
             swTrans.pos.y = pTrans.pos.y + offsetY;
 
