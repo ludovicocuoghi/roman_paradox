@@ -1,23 +1,19 @@
 #include "Spawner.h"
-#include "Entity.hpp"
-#include "Components.hpp"
-#include "Animation.hpp"
-#include "Vec2.hpp"
+#include "SpriteUtils.h"
 #include <iostream>
 #include <random>
-#include "SpriteUtils.h"
 
 Spawner::Spawner(GameEngine& game, EntityManager& entityManager)
     : m_game(game), m_entityManager(entityManager)
 {
 }
 
-// Player sword spawn
+// Spawn della spada del player
 std::shared_ptr<Entity> Spawner::spawnSword(std::shared_ptr<Entity> player) {
     auto sword = m_entityManager.addEntity("sword");
     auto& pTrans = player->get<CTransform>();
     sword->add<CTransform>(pTrans.pos);
-    sword->add<CLifeSpan>(0.2f); // Player sword duration
+    sword->add<CLifeSpan>(PLAYER_SWORD_DURATION); // Durata della spada del player
 
     if (m_game.assets().hasAnimation("Sword")) {
         auto& swordAnim = m_game.assets().getAnimation("Sword");
@@ -34,18 +30,18 @@ std::shared_ptr<Entity> Spawner::spawnSword(std::shared_ptr<Entity> player) {
     return sword;
 }
 
-// Enemy sword spawn
+// Spawn della spada del nemico
 std::shared_ptr<Entity> Spawner::spawnEnemySword(std::shared_ptr<Entity> enemy) {
     auto sword = m_entityManager.addEntity("enemySword");
     auto& enemyAI = enemy->get<CEnemyAI>();
     auto& eTrans = enemy->get<CTransform>();
 
     float dir = enemyAI.facingDirection;
-    float offsetX = (dir < 0) ? -50.f : 50.f;
-    float offsetY = 10.f;
+    float offsetX = (dir < 0) ? -ENEMY_SWORD_OFFSET_X : ENEMY_SWORD_OFFSET_X;
+    float offsetY = ENEMY_SWORD_OFFSET_Y;
     Vec2<float> swordPos = eTrans.pos + Vec2<float>(offsetX, offsetY);
     sword->add<CTransform>(swordPos);
-    sword->add<CLifeSpan>(0.3f);
+    sword->add<CLifeSpan>(ENEMY_SWORD_DURATION);
     sword->add<CState>(std::to_string(enemy->id()));
 
     std::cout << "[DEBUG] Spawned enemy sword at (" << swordPos.x << ", " << swordPos.y << ")\n";
@@ -83,7 +79,7 @@ std::shared_ptr<Entity> Spawner::spawnEnemySword(std::shared_ptr<Entity> enemy) 
     return sword;
 }
 
-// Item spawn
+// Spawn degli item
 std::shared_ptr<Entity> Spawner::spawnItem(const Vec2<float>& position, const std::string& tileType) {
     static std::random_device rd;
     static std::mt19937 gen(rd());
@@ -91,19 +87,18 @@ std::shared_ptr<Entity> Spawner::spawnItem(const Vec2<float>& position, const st
     Vec2<float> spawnPos = position;
 
     if (tileType == "Box1" || tileType == "Box2") {
-        std::uniform_int_distribution<> dist(0, 9);
+        std::uniform_int_distribution<> dist(BOX_ITEM_DIST_MIN, BOX_ITEM_DIST_MAX);
         int roll = dist(gen);
-        if (roll < 5)
+        if (roll < BOX_ITEM_THRESHOLD_COINBRONZE)
             itemName = "CoinBronze";
-        else if (roll < 9)
+        else if (roll < BOX_ITEM_THRESHOLD_GRAPESMALL)
             itemName = "GrapeSmall";
         else
             itemName = "CoinSilver";
     } else if (tileType == "TreasureBoxAnim") {
-        std::uniform_int_distribution<> dist(0, 1);
+        std::uniform_int_distribution<> dist(TREASURE_BOX_DIST_MIN, TREASURE_BOX_DIST_MAX);
         itemName = (dist(gen) == 0) ? "CoinGold" : "GrapeBig";
-        float tileSize = 96.0f;
-        spawnPos.y -= tileSize;
+        spawnPos.y -= TREASURE_BOX_TILE_SIZE;
     } else {
         std::cerr << "[ERROR] Unknown tile type in spawnItem: " << tileType << std::endl;
         return nullptr;
@@ -121,8 +116,7 @@ std::shared_ptr<Entity> Spawner::spawnItem(const Vec2<float>& position, const st
     }
     auto& anim = item->get<CAnimation>().animation;
     Vec2<float> animSize(static_cast<float>(anim.getSize().x), static_cast<float>(anim.getSize().y));
-    float scaleFactor = 0.3f;
-    Vec2<float> bboxSize = animSize * scaleFactor;
+    Vec2<float> bboxSize = animSize * COLLECTABLE_SCALE_FACTOR;
     Vec2<float> bboxOffset = bboxSize * 0.5f;
     item->add<CBoundingBox>(bboxSize, bboxOffset);
     item->add<CState>(itemName);
@@ -132,7 +126,7 @@ std::shared_ptr<Entity> Spawner::spawnItem(const Vec2<float>& position, const st
     return item;
 }
 
-// Update fragments
+// Aggiornamento dei frammenti
 void Spawner::updateFragments(float deltaTime) {
     for (auto& fragment : m_entityManager.getEntities("fragment")) {
         auto& transform = fragment->get<CTransform>();
@@ -142,7 +136,7 @@ void Spawner::updateFragments(float deltaTime) {
         transform.pos += transform.velocity * deltaTime;
 
         sf::Color color = anim.animation.getMutableSprite().getColor();
-        float alpha = (lifespan.remainingTime / lifespan.totalTime) * 255.0f;
+        float alpha = (lifespan.remainingTime / lifespan.totalTime) * ALPHA_MAX;
         color.a = static_cast<int>(std::max(0.0f, alpha));
         anim.animation.getMutableSprite().setColor(color);
 
@@ -153,10 +147,8 @@ void Spawner::updateFragments(float deltaTime) {
     }
 }
 
-// Create block fragments
+// Creazione dei frammenti del blocco
 void Spawner::createBlockFragments(const Vec2<float>& position, const std::string & blockType) {
-    const float spreadSpeed = 400.f;
-
     std::vector<Vec2<float>> directions = {
         {-1, -1}, {0, -1}, {1, -1},
         {-1,  0}, {1,  0},
@@ -165,12 +157,12 @@ void Spawner::createBlockFragments(const Vec2<float>& position, const std::strin
 
     static std::random_device rd;
     static std::mt19937 gen(rd());
-    std::uniform_int_distribution<int> angleDist(0, 359);
-    std::uniform_int_distribution<int> rotationSpeedDist(0, 199);
+    std::uniform_int_distribution<int> angleDist(FRAGMENT_ANGLE_MIN, FRAGMENT_ANGLE_MAX);
+    std::uniform_int_distribution<int> rotationSpeedDist(FRAGMENT_ROTATION_SPEED_MIN, FRAGMENT_ROTATION_SPEED_MAX);
 
     for (auto dir : directions) {
         auto fragment = m_entityManager.addEntity("fragment");
-        fragment->add<CTransform>(position, Vec2<float>(dir.x * spreadSpeed, dir.y * spreadSpeed));
+        fragment->add<CTransform>(position, Vec2<float>(dir.x * FRAGMENT_SPREAD_SPEED, dir.y * FRAGMENT_SPREAD_SPEED));
 
         if (m_game.assets().hasAnimation(blockType)) {
             const Animation& anim = m_game.assets().getAnimation(blockType);
@@ -185,6 +177,6 @@ void Spawner::createBlockFragments(const Vec2<float>& position, const std::strin
         }
 
         fragment->add<CRotation>(angleDist(gen), rotationSpeedDist(gen));
-        fragment->add<CLifeSpan>(0.6f);
+        fragment->add<CLifeSpan>(FRAGMENT_DURATION);
     }
 }

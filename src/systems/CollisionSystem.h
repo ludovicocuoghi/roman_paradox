@@ -18,7 +18,7 @@ public:
     static constexpr int PLAYER_SWORD_DAMAGE = 3;
     static constexpr float PLAYER_SWORD_INVULNERABILITY_TIME = 0.5f;
     static constexpr int PLAYER_SWORD_KNOCKBACK_ROLL_MIN = 1;
-    static constexpr int PLAYER_SWORD_KNOCKBACK_ROLL_MAX = 50;
+    static constexpr int PLAYER_SWORD_KNOCKBACK_ROLL_MAX = 20;
     static constexpr int PLAYER_SWORD_KNOCKBACK_ROLL_TRIGGER = 1;
     static constexpr float PLAYER_SWORD_KNOCKBACK_STRENGTH = 800.0f;
     static constexpr float PLAYER_SWORD_KNOCKBACK_Y_DIRECTION = -0.5f;

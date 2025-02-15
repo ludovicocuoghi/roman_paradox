@@ -85,6 +85,17 @@ void EnemyAISystem::update(float deltaTime)
                       << " pos.x=" << enemyTrans.pos.x
                       << " timer=" << enemyAI.knockbackTimer << "\n";
 
+            // Aggiunto: distruggi subito le spade nemiche associate all'enemy
+            auto enemySwords = m_entityManager.getEntities("enemySword");
+            for (auto& sword : enemySwords) {
+                if (sword->has<CState>()) {
+                    auto& swordState = sword->get<CState>();
+                    if (swordState.state == std::to_string(enemy->id())) {
+                        sword->destroy();
+                    }
+                }
+            }
+
             if (enemyAI.knockbackTimer > 0.f) {
                 enemyTrans.velocity.x *= KNOCKBACK_DECAY_FACTOR;
                 enemyTrans.pos += enemyTrans.velocity * deltaTime;
@@ -124,6 +135,13 @@ void EnemyAISystem::update(float deltaTime)
         float dx = playerTrans.pos.x - enemyTrans.pos.x;
         float dy = playerTrans.pos.y - enemyTrans.pos.y;
         float distance = std::sqrt(dx * dx + dy * dy);
+
+        // Controllo: se il giocatore è praticamente sulla stessa X e sopra il nemico, passa a Idle.
+        if (std::fabs(dx) < 1.0f && playerTrans.pos.y < enemyTrans.pos.y) {
+            enemyAI.enemyState = EnemyState::Idle;
+            enemyTrans.velocity.x = 0.f;
+            continue; // Salta l'update per questo nemico
+        }
 
         bool canSeePlayer  = checkLineOfSight(enemyTrans.pos, playerTrans.pos, m_entityManager);
         bool playerVisible = (distance < PLAYER_VISIBLE_DISTANCE) || canSeePlayer;

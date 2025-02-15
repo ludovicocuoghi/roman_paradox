@@ -16,7 +16,7 @@ MovementSystem::MovementSystem(GameEngine& game,
 }
 
 void MovementSystem::update(float deltaTime) {
-    // Player movement
+    // Movimento del giocatore
     for (auto& entity : m_entityManager.getEntities("player")) {
         auto& transform = entity->get<CTransform>();
         auto& state     = entity->get<CState>();
@@ -26,14 +26,14 @@ void MovementSystem::update(float deltaTime) {
         transform.velocity.y += baseGravity * deltaTime;
 
         // Jump boost
-        if (state.isJumping && state.jumpTime < maxJumpHoldTime) {
-            transform.velocity.y -= jumpBoostAcceleration * deltaTime;
+        if (state.isJumping && state.jumpTime < MAX_JUMP_HOLD_TIME) {
+            transform.velocity.y -= JUMP_BOOST_ACCELERATION * deltaTime;
             state.jumpTime += deltaTime;
-            if (transform.velocity.y < MaxUpwardVelocity)
-                transform.velocity.y = MaxUpwardVelocity;
+            if (transform.velocity.y < MAX_UPWARD_VELOCITY)
+                transform.velocity.y = MAX_UPWARD_VELOCITY;
         } else {
             if (transform.velocity.y > 0) {
-                transform.velocity.y += baseGravity * (GravityMultiplier - 1.0f) * deltaTime;
+                transform.velocity.y += baseGravity * (GRAVITY_MULTIPLIER - 1.0f) * deltaTime;
             }
         }
 
@@ -50,29 +50,29 @@ void MovementSystem::update(float deltaTime) {
         } else {
             transform.velocity.x = 0.f;
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-                transform.velocity.x = -xSpeed;
+                transform.velocity.x = -X_SPEED;
                 m_lastDirection = -1.f;
             } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-                transform.velocity.x = xSpeed;
+                transform.velocity.x = X_SPEED;
                 m_lastDirection = 1.f;
             }
             transform.pos += transform.velocity * deltaTime;
         }
 
-        // Sprite flip
+        // Inversione dello sprite in base alla direzione
         if (m_lastDirection < 0)
             flipSpriteLeft(canim.animation.getMutableSprite());
         else
             flipSpriteRight(canim.animation.getMutableSprite());
     }
 
-    // Camera movement
+    // Movimento della telecamera
     for (auto& entity : m_entityManager.getEntities("player")) {
         auto& transform = entity->get<CTransform>();
         float screenWidth  = m_game.window().getSize().x;
         float screenHeight = m_game.window().getSize().y;
-        float thresholdX   = screenWidth * 0.25f;
-        float thresholdY   = screenHeight * 0.15f;
+        float thresholdX   = screenWidth * CAMERA_THRESHOLD_X_FACTOR;
+        float thresholdY   = screenHeight * CAMERA_THRESHOLD_Y_FACTOR;
 
         sf::Vector2f cameraCenter = m_cameraView.getCenter();
 
@@ -95,15 +95,15 @@ void MovementSystem::update(float deltaTime) {
         m_cameraView.setCenter(std::round(smoothCameraX), std::round(smoothCameraY));
     }
 
-    // Sword follows player
+    // La spada segue il giocatore
     auto players = m_entityManager.getEntities("player");
     if (!players.empty()) {
         auto& player = players[0];
         auto& pTrans = player->get<CTransform>();
 
         float dir = m_lastDirection;
-        float offsetX = (dir < 0) ? -80.f : 30.f;
-        float offsetY = 10.f;
+        float offsetX = (dir < 0) ? SWORD_OFFSET_X_LEFT : SWORD_OFFSET_X_RIGHT;
+        float offsetY = SWORD_OFFSET_Y;
 
         for (auto& sword : m_entityManager.getEntities("sword")) {
             if (!sword->has<CTransform>()) continue;
