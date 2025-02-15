@@ -29,7 +29,6 @@ public:
 
     // Enemy Sword vs Player
     static constexpr float ENEMY_SWORD_KNOCKBACK_STRENGTH = 3000.0f;
-    static constexpr int ENEMY_SWORD_DAMAGE = 1;
     static constexpr float PLAYER_HIT_INVULNERABILITY_TIME = 0.5f;
     static constexpr float PLAYER_KNOCKBACK_TIMER = 0.5f;
 

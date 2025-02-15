@@ -21,7 +21,8 @@ Texture TexBushSmall /Dec/smallbush.png
 Texture TexBushTall /Dec/tallbush.png
 
 Texture TexPipeTall /Tile/pipetall-3.png
-Texture TexPipe /Tile/pipe.png
+Texture TexPipe /Tile/pipeshort-3.png
+Texture TexPipeBroken /Tile/pipebroken.png
 
 Texture TexCloudSmall /Dec/smallcloud.png
 Texture TexCloudBig /Dec/bigcloud.png
@@ -74,9 +75,12 @@ Animation Box2 TexBox2 96 96 1 0
 Animation Brick TexBrick 96 96 1 0
 
 Animation BushSmall TexBushSmall 192 96 1 0
-Animation BushTall TexBushTall 92 384 1 0
-Animation PipeTall TexPipeTall 128 381 1 0
-Animation Pipe TexPipe 192 288 1 0
+Animation BushTall TexBushTall 96 384 1 0
+
+Animation PipeTall TexPipeTall 96 384 1 0
+Animation PipeBroken TexPipeBroken 96 288 1 0
+Animation Pipe TexPipe 96 192 1 0
+
 Animation CloudSmall TexCloudSmall 260 96 1 0
 Animation CloudBig TexCloudBig 520 192 1 0
 

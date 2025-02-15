@@ -22,7 +22,7 @@ private:
     int m_mode = 0;       // 0 = Tile, 1 = Decoration, 2 = Enemy
     float m_zoom = 1.0f;  // Zoom factor (1.0 = default)
     sf::Vector2f m_baseViewSize; // Salviamo la dimensione base del view
-    float m_panSpeed = 1200.0f; 
+    float m_panSpeed = 3000.0f; 
     bool m_isDragging = false;
     sf::Vector2i m_lastMousePos;
     float MIN_ZOOM = 0.1f;

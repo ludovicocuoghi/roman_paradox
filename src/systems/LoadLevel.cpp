@@ -9,7 +9,7 @@ LoadLevel::LoadLevel(GameEngine& game)
 
 void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
 {
-    // Reinitialize the EntityManager
+    // Reinizializza l'EntityManager
     entityManager = EntityManager();
 
     std::ifstream file(levelPath);
@@ -18,7 +18,7 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
         return;
     }
 
-    // Retrieve the window height from the game engine
+    // Recupera l'altezza della finestra dal game engine
     const int windowHeight = m_game.window().getSize().y;
     bool playerSpawned = false;
 
@@ -27,14 +27,14 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
 
     std::cout << "[DEBUG] Loading level from: " << levelPath << std::endl;
 
-    // Mapping tile types to their corresponding animation names
+    // Mapping dei tipi di tile alle animazioni corrispondenti
     std::unordered_map<std::string, std::string> tileAnimations = {
         {"Ground", "Ground"},
         {"Brick", "Brick"},
         {"Box1", "Box1"},
         {"Box2", "Box2"},
         {"PipeTall", "PipeTall"},
-        {"PipeShort", "PipeShort"},
+        {"PipeBroken", "PipeBroken"},
         {"Pipe", "Pipe"},
         {"Pole", "Pole"},
         {"PoleTop", "PoleTop"},
@@ -56,16 +56,17 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
                 continue;
             }
 
-            float realX = x * LoadLevel::GRID_SIZE + (LoadLevel::HALF_GRID);
-            float realY = windowHeight - (y * LoadLevel::GRID_SIZE) - (LoadLevel::HALF_GRID);
+            // Compute base coordinates (same as in the editor)
+            float realX = x * LoadLevel::GRID_SIZE + LoadLevel::HALF_GRID;
+            float realY = windowHeight - (y * LoadLevel::GRID_SIZE) - LoadLevel::HALF_GRID;
 
-            // Correzioni per i pipe
+            // Apply pipe-specific offsets
             if (assetType == "PipeTall") {
                 realY += LoadLevel::GRID_SIZE * LoadLevel::PIPETALL_REALY_OFFSET_MULTIPLIER;
                 realX += LoadLevel::GRID_SIZE * LoadLevel::PIPE_REALX_OFFSET_MULTIPLIER;
             }
-            else if (assetType == "PipeShort") {
-                realY += LoadLevel::GRID_SIZE * LoadLevel::PIPESHORT_REALY_OFFSET_MULTIPLIER;
+            else if (assetType == "PipeBroken") {
+                realY += LoadLevel::GRID_SIZE * LoadLevel::PIPEBROKEN_REALY_OFFSET_MULTIPLIER;
                 realX += LoadLevel::GRID_SIZE * LoadLevel::PIPE_REALX_OFFSET_MULTIPLIER;
             }
             else if (assetType == "Pipe") {
@@ -103,8 +104,8 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
                 continue;
             }
 
-            float realX = x * LoadLevel::GRID_SIZE + (LoadLevel::HALF_GRID);
-            float realY = windowHeight - (y * LoadLevel::GRID_SIZE) - (LoadLevel::HALF_GRID);
+            float realX = x * LoadLevel::GRID_SIZE + LoadLevel::HALF_GRID;
+            float realY = windowHeight - (y * LoadLevel::GRID_SIZE) - LoadLevel::HALF_GRID;
             auto decor = entityManager.addEntity("decoration");
 
             if (m_game.assets().hasAnimation(assetType)) {
@@ -129,8 +130,8 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
                 continue;
             }
 
-            float realX = x * LoadLevel::GRID_SIZE + (LoadLevel::HALF_GRID);
-            float realY = windowHeight - (y * LoadLevel::GRID_SIZE) - (LoadLevel::HALF_GRID);
+            float realX = x * LoadLevel::GRID_SIZE + LoadLevel::HALF_GRID;
+            float realY = windowHeight - (y * LoadLevel::GRID_SIZE) - LoadLevel::HALF_GRID;
             auto player = entityManager.addEntity("player");
 
             if (m_game.assets().hasAnimation("PlayerStand")) {
@@ -143,7 +144,7 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
                 player->add<CState>("idle");
 
                 auto& state = player->get<CState>();
-                // Impostazione manuale di alcune proprietà
+                // Impostazione delle proprietà iniziali
                 state.isInvincible = false;
                 state.invincibilityTimer = 0.0f;
                 state.isJumping = false;
@@ -153,7 +154,7 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
                 state.attackTime = 0.0f;
                 state.attackCooldown = 0.0f;
                 
-                player->add<CHealth>(10);
+                player->add<CHealth>(PLAYER_HEALTH);
                 playerSpawned = true;
                 std::cout << "[DEBUG] Player Spawned at (" << x << ", " << y << ")" << std::endl;
             } else {
@@ -171,29 +172,37 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
                 continue;
             }
 
-            float realX = enemyX * LoadLevel::GRID_SIZE + (LoadLevel::HALF_GRID);
-            float realY = windowHeight - (enemyY * LoadLevel::GRID_SIZE) - (LoadLevel::HALF_GRID);
+            float realX = enemyX * LoadLevel::GRID_SIZE + LoadLevel::HALF_GRID;
+            float realY = windowHeight - (enemyY * LoadLevel::GRID_SIZE) - LoadLevel::HALF_GRID;
 
             auto enemy = entityManager.addEntity("enemy");
 
-            // Conversione del tipo enemy
+            // Conversione del tipo enemy e impostazione dei parametri in base al tipo
             EnemyType enemyType;
-            if (enemyTypeStr == "EnemyFast")
-                enemyType = EnemyType::Fast;
-            else if (enemyTypeStr == "EnemyStrong")
-                enemyType = EnemyType::Strong;
-            else if (enemyTypeStr == "EnemyElite")
-                enemyType = EnemyType::Elite;
-            else
-                enemyType = EnemyType::Normal;
-
             float speedMultiplier = 1.0f;
-            if (enemyType == EnemyType::Fast)
-                speedMultiplier = 1.5f;
-            else if (enemyType == EnemyType::Strong)
-                speedMultiplier = 0.7f;
-            else if (enemyType == EnemyType::Elite)
-                speedMultiplier = 1.5f;
+            int enemyHealth = 10;
+            int enemyDamage = 3; // valore di default
+            if (enemyTypeStr == "EnemyFast") {
+                enemyType = EnemyType::Fast;
+                speedMultiplier = LoadLevel::ENEMY_FAST_SPEED_MULTIPLIER;
+                enemyHealth = LoadLevel::ENEMY_FAST_HEALTH;
+                enemyDamage = LoadLevel::ENEMY_FAST_DAMAGE;
+            } else if (enemyTypeStr == "EnemyStrong") {
+                enemyType = EnemyType::Strong;
+                speedMultiplier = LoadLevel::ENEMY_STRONG_SPEED_MULTIPLIER;
+                enemyHealth = LoadLevel::ENEMY_STRONG_HEALTH;
+                enemyDamage = LoadLevel::ENEMY_STRONG_DAMAGE;
+            } else if (enemyTypeStr == "EnemyElite") {
+                enemyType = EnemyType::Elite;
+                speedMultiplier = LoadLevel::ENEMY_ELITE_SPEED_MULTIPLIER;
+                enemyHealth = LoadLevel::ENEMY_ELITE_HEALTH;
+                enemyDamage = LoadLevel::ENEMY_ELITE_DAMAGE;
+            } else {
+                enemyType = EnemyType::Normal;
+                speedMultiplier = LoadLevel::ENEMY_NORMAL_SPEED_MULTIPLIER;
+                enemyHealth = LoadLevel::ENEMY_NORMAL_HEALTH;
+                enemyDamage = LoadLevel::ENEMY_NORMAL_DAMAGE;
+            }
 
             std::string runAnimName = enemyTypeStr + "_Run";
             std::string standAnimName = enemyTypeStr + "_Stand";
@@ -218,21 +227,20 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
             Vec2<float> enemyBBSize(LoadLevel::PLAYER_BB_SIZE, LoadLevel::PLAYER_BB_SIZE);
             enemy->add<CBoundingBox>(enemyBBSize, enemyBBSize * 0.5f);
             enemy->add<CGravity>(LoadLevel::GRAVITY_VAL);
-            enemy->add<CHealth>(10);
+            enemy->add<CHealth>(enemyHealth);
+
+            // Aggiunta del parametro danno nel componente CEnemyAI
+            enemy->add<CEnemyAI>(enemyType, (enemyType == EnemyType::Elite) ? EnemyBehavior::FollowTwo : EnemyBehavior::FollowOne);
+            enemy->get<CEnemyAI>().damage = enemyDamage;
+            enemy->get<CEnemyAI>().speedMultiplier = speedMultiplier;
 
             // Conversione dei punti di pattugliamento
             patrolPoints.push_back(Vec2<float>(px1 * LoadLevel::GRID_SIZE + LoadLevel::HALF_GRID,
                                                windowHeight - (py1 * LoadLevel::GRID_SIZE) - LoadLevel::HALF_GRID));
             patrolPoints.push_back(Vec2<float>(px2 * LoadLevel::GRID_SIZE + LoadLevel::HALF_GRID,
                                                windowHeight - (py2 * LoadLevel::GRID_SIZE) - LoadLevel::HALF_GRID));
-
-            EnemyBehavior behavior = (enemyType == EnemyType::Elite) ? EnemyBehavior::FollowTwo : EnemyBehavior::FollowOne;
-
-            enemy->add<CEnemyAI>(enemyType, behavior);
-
             enemy->get<CEnemyAI>().patrolPoints = patrolPoints;
             enemy->get<CEnemyAI>().currentPatrolIndex = 0;
-            enemy->get<CEnemyAI>().speedMultiplier = speedMultiplier;
             enemy->get<CEnemyAI>().enemyState = EnemyState::Idle;
 
             std::cout << "[DEBUG] Spawned " << enemyTypeStr << " Enemy at (" 

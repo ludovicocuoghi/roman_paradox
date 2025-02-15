@@ -316,7 +316,7 @@ void CollisionSystem::handleSwordCollisions() {
             // Danno al player
             if (player->has<CHealth>()) {
                 auto& health = player->get<CHealth>();
-                health.takeDamage(ENEMY_SWORD_DAMAGE);
+                health.takeDamage(enemySword->get<CEnemyAI>().damage);
                 health.invulnerabilityTimer = PLAYER_HIT_INVULNERABILITY_TIME;
                 std::cout << "[DEBUG] Player hit by enemy sword! Health: " << health.currentHealth << "\n";
             }
