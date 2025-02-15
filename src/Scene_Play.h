@@ -14,8 +14,6 @@
 #include "systems/MovementSystem.h"
 #include "systems/EnemyAISystem.h"
 #include "systems/Spawner.h"
-#include "systems/SwordCollisionSystem.h"
-
 class Scene_Play : public Scene {
 public:
     // Constructor: Pass a reference to the game engine and the level file path.
@@ -87,5 +85,4 @@ private:
     MovementSystem m_movementSystem;
     Spawner m_spawner;
     EnemyAISystem m_enemyAISystem;
-    SwordCollisionSystem m_swordCollisionSystem;
 };

@@ -34,8 +34,7 @@ Scene_Play::Scene_Play(GameEngine& game, const std::string& levelPath)
     m_score(0),
     m_movementSystem(game, m_entityManager, m_cameraView, m_lastDirection),
     m_spawner(game, m_entityManager),
-    m_enemyAISystem(m_entityManager, m_spawner, m_game),
-    m_swordCollisionSystem(m_entityManager)
+    m_enemyAISystem(m_entityManager, m_spawner, m_game)
 {
     // Aggiorna la vista con quella predefinita della finestra
     m_cameraView = m_game.window().getDefaultView();
@@ -109,38 +108,34 @@ void Scene_Play::init()
 void Scene_Play::update(float deltaTime) {
     if (!m_gameOver) {
         m_entityManager.update();
+        
+        // Update immediate timers (invulnerability, knockback, etc.) before collisions.
+        for (auto& entity : m_entityManager.getEntities()) {
+            if (entity->has<CHealth>())
+                entity->get<CHealth>().update(deltaTime);
+            if (entity->has<CState>())
+                entity->get<CState>().update(deltaTime);
+        }
+        
         sMovement(deltaTime);
         sEnemyAI(deltaTime);
-        sCollision();
+        sCollision();  // Calls updateCollisions() which now includes sword collisions.
         sAnimation(deltaTime);
         UpdateFragments(deltaTime);
-
-        // Aggiorna i timer per CHealth e CState
+        
+        // Update CLifeSpan for ephemeral entities AFTER collision processing.
         for (auto& entity : m_entityManager.getEntities()) {
-            if (entity->has<CHealth>()) {
-                entity->get<CHealth>().update(deltaTime);
-            }
-            if (entity->has<CState>()) {
-                entity->get<CState>().update(deltaTime);
-            }
-            // Aggiorna CLifeSpan solo per entità effimere (sword, enemySword, fragment)
             std::string tag = entity->tag();
             if ((tag == "sword" || tag == "enemySword" || tag == "fragment") && entity->has<CLifeSpan>()) {
                 auto& lifespan = entity->get<CLifeSpan>();
+                std::cout << "[DEBUG] Lifespan remaining for" << tag << ":" << lifespan.remainingTime << "\n";
                 lifespan.remainingTime -= deltaTime;
-                if (lifespan.remainingTime <= 0.f) {
+                if (lifespan.remainingTime <= 0.f)
                     entity->destroy();
-                }
             }
         }
-
-        // Aggiorna le collisioni delle spade
-        m_swordCollisionSystem.updateSwordCollisions();
-
-        // Verifica la morte degli enemy
+        
         lifeCheckEnemyDeath();
-
-        // Controlla se il giocatore è morto o fuori limite
         lifeCheckPlayerDeath();
     } else {
         m_game.window().setView(m_game.window().getDefaultView());
@@ -148,7 +143,6 @@ void Scene_Play::update(float deltaTime) {
     }
     sRender();
 }
-//
 // Rendering
 //
 

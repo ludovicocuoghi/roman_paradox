@@ -3,6 +3,7 @@ Texture TexRun /player_alien/a_run1004.png
 Texture TexAir /player_alien/a_air1002.png
 Texture TexHit /player_alien/a_hit100nosword.png
 Texture TexSword /sword/sword.png
+Texture TexEnemySword /sword/sword.png
 
 Texture TexGrapeSmall /Collectables/smallgrape.png
 Texture TexGrapeBig /Collectables/biggrape.png
@@ -19,7 +20,7 @@ Texture TexGround /Tile/ground.png
 Texture TexBushSmall /Dec/smallbush.png
 Texture TexBushTall /Dec/tallbush.png
 
-Texture TexPipeTall /Tile/pipetall.png
+Texture TexPipeTall /Tile/pipetall-3.png
 Texture TexPipe /Tile/pipe.png
 
 Texture TexCloudSmall /Dec/smallcloud.png
@@ -54,6 +55,7 @@ Animation PlayerAir TexAir 100 130 1 0
 Animation PlayerAttack TexHit 100 100 1 0
 
 Animation Sword TexSword 48 13 1 0
+Animation EnemySword TexEnemySword 48 13 1 0
 
 Animation GrapeBig TexGrapeBig 100 80 1 0
 Animation GrapeSmall TexGrapeSmall 64 64 1 0
@@ -73,7 +75,7 @@ Animation Brick TexBrick 96 96 1 0
 
 Animation BushSmall TexBushSmall 192 96 1 0
 Animation BushTall TexBushTall 92 384 1 0
-Animation PipeTall TexPipeTall 192 384 1 0
+Animation PipeTall TexPipeTall 128 381 1 0
 Animation Pipe TexPipe 192 288 1 0
 Animation CloudSmall TexCloudSmall 260 96 1 0
 Animation CloudBig TexCloudBig 520 192 1 0

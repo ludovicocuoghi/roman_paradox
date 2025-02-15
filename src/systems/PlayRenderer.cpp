@@ -1,5 +1,5 @@
 #include "PlayRenderer.h"
-#include "Animation.hpp"  // Per Animation e la sua interfaccia
+#include "Animation.hpp"
 #include <iostream>
 #include <cmath>
 #include "SpriteUtils.h"
@@ -38,33 +38,27 @@ void PlayRenderer::setTimeOfDay(const std::string& tod) {
 }
 
 void PlayRenderer::render() {
-    // Pulisce la finestra prima di disegnare
     m_game.window().clear();
 
-    // --- BACKGROUND A SCALA FISSA ---
+    // Draw background (scaled to window)
     sf::Vector2u windowSize = m_game.window().getSize();
     sf::Vector2u textureSize = m_backgroundTexture.getSize();
     float scaleX = static_cast<float>(windowSize.x) / static_cast<float>(textureSize.x);
     float scaleY = static_cast<float>(windowSize.y) / static_cast<float>(textureSize.y);
-    float zoomFactor = 1.f;
-    m_backgroundSprite.setScale(scaleX * zoomFactor, scaleY * zoomFactor);
+    m_backgroundSprite.setScale(scaleX, scaleY);
 
-    // Usa la vista di default per disegnare lo sfondo
     sf::View defaultView = m_game.window().getDefaultView();
     m_game.window().setView(defaultView);
     m_game.window().draw(m_backgroundSprite);
 
-    // Ripristina la vista della telecamera
     m_game.window().setView(m_cameraView);
-
     sf::RectangleShape debugBox;
 
-    // --- DISEGNA LA GRIGLIA, se abilitata ---
     if (m_showGrid) {
         drawGrid();
     }
 
-    // --- RENDER DECORATIONS ---
+    // Render decorations
     for (auto& dec : m_entityManager.getEntities("decoration")) {
         auto& transform = dec->get<CTransform>();
         if (dec->has<CAnimation>()) {
@@ -77,7 +71,7 @@ void PlayRenderer::render() {
         }
     }
 
-    // --- RENDER TILES ---
+    // Render tiles
     for (auto& tile : m_entityManager.getEntities("tile")) {
         auto& transform = tile->get<CTransform>();
         if (tile->has<CAnimation>()) {
@@ -100,7 +94,7 @@ void PlayRenderer::render() {
         }
     }
 
-    // --- RENDER FRAGMENTS ---
+    // Render fragments
     for (auto& fragment : m_entityManager.getEntities("fragment")) {
         auto& transform = fragment->get<CTransform>();
         if (fragment->has<CAnimation>()) {
@@ -114,7 +108,7 @@ void PlayRenderer::render() {
         }
     }
 
-    // --- RENDER ITEMS (collectable) ---
+    // Render items
     for (auto& item : m_entityManager.getEntities()) {
         if (item->tag() != "collectable") continue;
         auto& transform = item->get<CTransform>();
@@ -138,7 +132,7 @@ void PlayRenderer::render() {
         }
     }
 
-    // --- RENDER PLAYER ---
+    // Render player
     for (auto& player : m_entityManager.getEntities("player")) {
         auto& transform = player->get<CTransform>();
         if (player->has<CAnimation>()) {
@@ -160,7 +154,7 @@ void PlayRenderer::render() {
         }
     }
 
-    // --- RENDER ENEMIES ---
+    // Render enemies
     for (auto& enemy : m_entityManager.getEntities("enemy")) {
         auto& transform = enemy->get<CTransform>();
         if (enemy->has<CAnimation>()) {
@@ -182,7 +176,7 @@ void PlayRenderer::render() {
         }
     }
 
-    // --- RENDER SWORD ---
+    // Render player sword
     for (auto& sword : m_entityManager.getEntities("sword")) {
         if (!sword->has<CTransform>()) continue;
         auto& swTrans = sword->get<CTransform>();
@@ -204,11 +198,13 @@ void PlayRenderer::render() {
         }
     }
 
-    // --- RENDER ENEMY SWORDS ---
+    // Render enemy swords
     for (auto& esword : m_entityManager.getEntities("enemySword")) {
         if (!esword->has<CTransform>()) continue;
         auto& esTrans = esword->get<CTransform>();
+        std::cout << "Rendering enemy sword at " << esTrans.pos.x << "," << esTrans.pos.y << "\n";
         if (esword->has<CAnimation>()) {
+            std::cout << "Rendering enemy sword\n";
             auto& anim = esword->get<CAnimation>();
             sf::Sprite sprite = anim.animation.getSprite();
             sprite.setPosition(esTrans.pos.x, esTrans.pos.y);
@@ -217,6 +213,7 @@ void PlayRenderer::render() {
             m_game.window().draw(sprite);
         }
         if (m_showBoundingBoxes && esword->has<CBoundingBox>()) {
+            std::cout << "Rendering enemy sword bounding box\n";
             auto& bbox = esword->get<CBoundingBox>();
             debugBox.setSize(sf::Vector2f(bbox.size.x, bbox.size.y));
             float dir = (esTrans.pos.x < 0) ? -1.f : 1.f;
@@ -229,21 +226,11 @@ void PlayRenderer::render() {
         }
     }
 
-    // --- Render debug line between each enemy and the player (if present) ---
-    auto enemies = m_entityManager.getEntities("enemy");
-    auto players = m_entityManager.getEntities("player");
-    if (!enemies.empty() && !players.empty()) {
-        auto& playerTrans = players[0]->get<CTransform>();
-        for (auto& enemy : enemies) {
-            auto& enemyTrans = enemy->get<CTransform>();
-            drawDebugLine(enemyTrans.pos, playerTrans.pos, sf::Color::Cyan);
-        }
-    }
+    // Optional debug lines between enemies and player are commented out
 
-    // --- RENDER UI (fissata in posizione sullo schermo) ---
+    // Render UI
     m_game.window().setView(defaultView);
 
-    // Render del punteggio (angolo in alto a sinistra)
     sf::Text scoreText;
     scoreText.setFont(m_game.assets().getFont("Menu"));
     scoreText.setCharacterSize(60);
@@ -252,7 +239,6 @@ void PlayRenderer::render() {
     scoreText.setPosition(20, 20);
     m_game.window().draw(scoreText);
 
-    // Render del Time of Day (angolo in alto a destra)
     sf::Text timeTextDisplay;
     timeTextDisplay.setFont(m_game.assets().getFont("Menu"));
     timeTextDisplay.setCharacterSize(60);
@@ -272,7 +258,6 @@ void PlayRenderer::drawGrid() {
     const int worldHeight = 20;
     sf::Color gridColor(255, 255, 255, 100);
 
-    // Linee verticali
     for (int x = 0; x <= worldWidth; ++x) {
         sf::Vertex line[] = {
             sf::Vertex(sf::Vector2f(x * gridSize, windowHeight - (worldHeight * gridSize)), gridColor),
@@ -281,7 +266,6 @@ void PlayRenderer::drawGrid() {
         m_game.window().draw(line, 2, sf::Lines);
     }
 
-    // Linee orizzontali
     for (int y = 0; y <= worldHeight; ++y) {
         sf::Vertex line[] = {
             sf::Vertex(sf::Vector2f(0, windowHeight - (y * gridSize)), gridColor),
@@ -290,7 +274,6 @@ void PlayRenderer::drawGrid() {
         m_game.window().draw(line, 2, sf::Lines);
     }
 
-    // Etichette coordinate
     const sf::Font& font = m_game.assets().getFont("Menu");
     for (int x = 0; x < worldWidth; ++x) {
         for (int y = 0; y < worldHeight; ++y) {
