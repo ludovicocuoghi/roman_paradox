@@ -5,8 +5,7 @@
 #include <algorithm>
 #include <iostream>
 
-constexpr float MAX_FALL_SPEED_F = 600.f;
-
+// Le funzioni statiche di utilità rimangono invariate
 static bool segmentsIntersect(const Vec2<float>& p1, const Vec2<float>& p2,
                               const Vec2<float>& q1, const Vec2<float>& q2)
 {
@@ -80,21 +79,24 @@ void EnemyAISystem::update(float deltaTime)
         auto& enemyAI    = enemy->get<CEnemyAI>();
         auto& anim       = enemy->get<CAnimation>();
 
-        // Knockback
+        // Gestione del knockback
         if (enemyAI.enemyState == EnemyState::Knockback) {
+            std::cout << "[DEBUG] Knockback: vel.x=" << enemyTrans.velocity.x
+                      << " pos.x=" << enemyTrans.pos.x
+                      << " timer=" << enemyAI.knockbackTimer << "\n";
+
             if (enemyAI.knockbackTimer > 0.f) {
-                enemyTrans.velocity.x *= 0.95f;
-                enemyTrans.pos.x      += enemyTrans.velocity.x * deltaTime;
-                enemyTrans.pos.y      += enemyTrans.velocity.y * deltaTime;
+                enemyTrans.velocity.x *= KNOCKBACK_DECAY_FACTOR;
+                enemyTrans.pos += enemyTrans.velocity * deltaTime;
                 enemyAI.knockbackTimer -= deltaTime;
                 continue;
             } else {
                 enemyAI.knockbackTimer = 0.f;
-                enemyAI.enemyState = EnemyState::Follow;
+                enemyAI.enemyState = EnemyState::Follow; // oppure "idle"
             }
         }
 
-        // Gravity / Ground
+        // Gravità / Controllo a terra
         bool isOnGround = false;
         if (enemy->has<CBoundingBox>()) {
             auto& bb = enemy->get<CBoundingBox>();
@@ -111,20 +113,20 @@ void EnemyAISystem::update(float deltaTime)
             }
         }
         if (!isOnGround) {
-            float grav = enemy->has<CGravity>() ? enemy->get<CGravity>().gravity : 800.f;
+            float grav = enemy->has<CGravity>() ? enemy->get<CGravity>().gravity : DEFAULT_GRAVITY;
             enemyTrans.velocity.y += grav * deltaTime;
-            enemyTrans.velocity.y  = std::clamp(enemyTrans.velocity.y, -MAX_FALL_SPEED_F, MAX_FALL_SPEED_F);
+            enemyTrans.velocity.y = std::clamp(enemyTrans.velocity.y, -MAX_FALL_SPEED, MAX_FALL_SPEED);
         } else {
             enemyTrans.velocity.y = 0.f;
         }
 
-        // Distance / Line of Sight
+        // Calcolo della distanza / Line of Sight
         float dx = playerTrans.pos.x - enemyTrans.pos.x;
         float dy = playerTrans.pos.y - enemyTrans.pos.y;
         float distance = std::sqrt(dx * dx + dy * dy);
 
         bool canSeePlayer  = checkLineOfSight(enemyTrans.pos, playerTrans.pos, m_entityManager);
-        bool playerVisible = (distance < 500.f) || canSeePlayer;
+        bool playerVisible = (distance < PLAYER_VISIBLE_DISTANCE) || canSeePlayer;
 
         bool shouldFollow = false;
         switch (enemyAI.enemyBehavior) {
@@ -141,7 +143,7 @@ void EnemyAISystem::update(float deltaTime)
                 break;
         }
 
-        // Cooldown
+        // Gestione del cooldown per l'attacco
         if (enemyAI.attackCooldown > 0.f) {
             enemyAI.attackCooldown -= deltaTime;
             if (enemyAI.attackCooldown < 0.f) {
@@ -149,14 +151,13 @@ void EnemyAISystem::update(float deltaTime)
             }
         }
 
-        // Attack Logic
-        const float attackRange = 100.f;
-        if (shouldFollow && distance < attackRange 
+        // Logica d'attacco
+        if (shouldFollow && distance < ATTACK_RANGE 
             && enemyAI.attackCooldown <= 0.f 
             && enemyAI.enemyState != EnemyState::Attack)
         {
             enemyAI.enemyState   = EnemyState::Attack;
-            enemyAI.attackTimer  = 0.3f; 
+            enemyAI.attackTimer  = ATTACK_TIMER_DEFAULT;
             enemyAI.swordSpawned = false;
 
             std::cout << "[DEBUG] Enemy " << enemy->id() 
@@ -180,15 +181,15 @@ void EnemyAISystem::update(float deltaTime)
             }
         }
 
-        // Attack Update
+        // Aggiornamento durante l'attacco
         if (enemyAI.enemyState == EnemyState::Attack) {
             std::cout << "[DEBUG] Enemy " << enemy->id() 
                       << " AttackTimer: " << enemyAI.attackTimer << "\n";
             enemyTrans.velocity.x = 0.f;
             enemyAI.attackTimer -= deltaTime;
 
-            // Spawn sword
-            if (!enemyAI.swordSpawned && enemyAI.attackTimer <= 0.7f) {
+            // Spawn della spada nemica
+            if (!enemyAI.swordSpawned && enemyAI.attackTimer <= SWORD_SPAWN_THRESHOLD) {
                 m_spawner->spawnEnemySword(enemy);
                 enemyAI.swordSpawned = true;
                 std::cout << "[DEBUG] Enemy " << enemy->id() 
@@ -197,7 +198,7 @@ void EnemyAISystem::update(float deltaTime)
             }
 
             if (enemyAI.attackTimer <= 0.f) {
-                enemyAI.attackCooldown = 0.4f;
+                enemyAI.attackCooldown = ATTACK_COOLDOWN;
                 enemyAI.enemyState     = EnemyState::Follow;
                 enemyAI.attackTimer    = 0.f;
 
@@ -207,14 +208,13 @@ void EnemyAISystem::update(float deltaTime)
             }
         }
 
-        // Follow
+        // Stato Follow
         if (enemyAI.enemyState == EnemyState::Follow) {
-            float moveSpeed = 100.f;
             if (dx > 0.f) {
-                enemyTrans.velocity.x = moveSpeed;
+                enemyTrans.velocity.x = FOLLOW_MOVE_SPEED;
                 enemyAI.facingDirection = 1.f;
             } else if (dx < 0.f) {
-                enemyTrans.velocity.x = -moveSpeed;
+                enemyTrans.velocity.x = -FOLLOW_MOVE_SPEED;
                 enemyAI.facingDirection = -1.f;
             } else {
                 enemyTrans.velocity.x = 0.f;
@@ -234,15 +234,15 @@ void EnemyAISystem::update(float deltaTime)
             }
         }
 
-        // Recognition
+        // Stato Recognition
         if (enemyAI.enemyState == EnemyState::Recognition) {
-            float recognitionMoveSpeed = 80.0f;
+            float recognitionMoveSpeed = RECOGNITION_MOVE_SPEED;
             float distanceToLastSeen = std::sqrt(
                 std::pow(enemyAI.lastSeenPlayerPos.x - enemyTrans.pos.x, 2) +
                 std::pow(enemyAI.lastSeenPlayerPos.y - enemyTrans.pos.y, 2)
             );
 
-            if (distanceToLastSeen > 15.f) {
+            if (distanceToLastSeen > RECOGNITION_DISTANCE_THRESHOLD) {
                 if (enemyAI.lastSeenPlayerPos.x > enemyTrans.pos.x) {
                     enemyTrans.velocity.x = recognitionMoveSpeed;
                     enemyAI.facingDirection = 1.f;
@@ -286,9 +286,8 @@ void EnemyAISystem::update(float deltaTime)
             }
         }
 
-        // Patrol
+        // Stato Patrol
         if (enemyAI.enemyState == EnemyState::Patrol) {
-            float patrolSpeed = 70.0f;
             if (enemyAI.patrolPoints.empty()) {
                 enemyAI.enemyState = EnemyState::Idle;
             } else {
@@ -297,11 +296,11 @@ void EnemyAISystem::update(float deltaTime)
                 float dyPatrol = target.y - enemyTrans.pos.y;
                 float patrolDist = std::sqrt(dxPatrol * dxPatrol + dyPatrol * dyPatrol);
 
-                if (patrolDist < 10.f) {
+                if (patrolDist < PATROL_DISTANCE_THRESHOLD) {
                     enemyTrans.velocity.x = 0.f;
                     anim.animation.reset();
                     enemyAI.patrolWaitTime += deltaTime;
-                    if (enemyAI.patrolWaitTime >= 2.0f) {
+                    if (enemyAI.patrolWaitTime >= PATROL_WAIT_DURATION) {
                         enemyAI.patrolWaitTime = 0.f;
                         enemyAI.currentPatrolIndex =
                             (enemyAI.currentPatrolIndex + 1) % enemyAI.patrolPoints.size();
@@ -309,11 +308,11 @@ void EnemyAISystem::update(float deltaTime)
                 } else {
                     enemyAI.patrolWaitTime = 0.f;
                     if (dxPatrol > 0.f) {
-                        enemyTrans.velocity.x = patrolSpeed;
+                        enemyTrans.velocity.x = PATROL_SPEED;
                         enemyAI.facingDirection = 1.f;
                         anim.animation.reset();
                     } else if (dxPatrol < 0.f) {
-                        enemyTrans.velocity.x = -patrolSpeed;
+                        enemyTrans.velocity.x = -PATROL_SPEED;
                         enemyAI.facingDirection = -1.f;
                         anim.animation.reset();
                     } else {
@@ -324,17 +323,17 @@ void EnemyAISystem::update(float deltaTime)
             }
         }
 
-        // Idle
+        // Stato Idle
         if (enemyAI.enemyState == EnemyState::Idle) {
             enemyTrans.velocity.x = 0.f;
             anim.animation.reset();
         }
 
-        // Position update
+        // Aggiornamento della posizione
         enemyTrans.pos.x += enemyTrans.velocity.x * deltaTime;
         enemyTrans.pos.y += enemyTrans.velocity.y * deltaTime;
 
-        // Flip sprite
+        // Gestione del flip dello sprite
         if (enemyAI.facingDirection < 0.f) {
             flipSpriteLeft(anim.animation.getMutableSprite());
         } else {

@@ -11,6 +11,32 @@ public:
     // Constructor declaration only (no inline definition here)
     CollisionSystem(EntityManager& entityManager, GameEngine& game, Spawner* spawner);
 
+    static constexpr float PLAYER_RUN_VELOCITY_THRESHOLD = 1.f;
+    static constexpr float COLLISION_SEPARATION_FACTOR = 0.5f;
+
+    // Player Sword vs Enemy
+    static constexpr int PLAYER_SWORD_DAMAGE = 3;
+    static constexpr float PLAYER_SWORD_INVULNERABILITY_TIME = 0.5f;
+    static constexpr int PLAYER_SWORD_KNOCKBACK_ROLL_MIN = 1;
+    static constexpr int PLAYER_SWORD_KNOCKBACK_ROLL_MAX = 50;
+    static constexpr int PLAYER_SWORD_KNOCKBACK_ROLL_TRIGGER = 1;
+    static constexpr float PLAYER_SWORD_KNOCKBACK_STRENGTH = 800.0f;
+    static constexpr float PLAYER_SWORD_KNOCKBACK_Y_DIRECTION = -0.5f;
+
+    // Timer per il knockback del nemico
+    static constexpr float ENEMY_KNOCKBACK_AI_TIMER = 0.4f;
+    static constexpr float ENEMY_KNOCKBACK_STATE_TIMER = 1.0f;
+
+    // Enemy Sword vs Player
+    static constexpr float ENEMY_SWORD_KNOCKBACK_STRENGTH = 3000.0f;
+    static constexpr int ENEMY_SWORD_DAMAGE = 1;
+    static constexpr float PLAYER_HIT_INVULNERABILITY_TIME = 0.5f;
+    static constexpr float PLAYER_KNOCKBACK_TIMER = 0.5f;
+
+    // Collectibles
+    static constexpr int COLLECTIBLE_SMALL_GRAPE_POINTS = 5;
+    static constexpr int COLLECTIBLE_BIG_GRAPE_HEAL = 10;
+
     void updateCollisions();
 
 private:

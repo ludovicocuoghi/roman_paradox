@@ -98,8 +98,9 @@ namespace Physics
             // Imposta il timer di knockback per 1 secondo.
             state.knockbackTimer = 1.0f;
             state.state = "knockback";
-            std::cout << "[DEBUG] Knockback applied to entity at (" 
-                    << transform.pos.x << ", " << transform.pos.y << ") with velocity.x = " << transform.velocity.x << "\n";
+            std::cout << "[DEBUG] Knockback on " << entity->tag()
+                    << " (ID=" << entity->id() << ") at ("
+                    << transform.pos.x << ", " << transform.pos.y << ")...\n";
         }
     };
 }
