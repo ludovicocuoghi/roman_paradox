@@ -254,7 +254,7 @@ public:
           patrolPoints(),
           enemyState(patrolPoints.empty() ? EnemyState::Idle : EnemyState::Patrol),
           speedMultiplier(1.0f),
-          damage(10),
+          damage(1),
           lineOfSightRange(200.f),
           attackRadius(100.f),
           currentPatrolIndex(0),

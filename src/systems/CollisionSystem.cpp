@@ -6,13 +6,14 @@
 #include <random>
 #include <SFML/Graphics.hpp>
 
-CollisionSystem::CollisionSystem(EntityManager& entityManager, GameEngine& game, Spawner* spawner)
-    : m_entityManager(entityManager), m_game(game), m_spawner(spawner) {}
+CollisionSystem::CollisionSystem(EntityManager& entityManager, GameEngine& game, Spawner* spawner, int& score)
+    : m_entityManager(entityManager), m_game(game), m_spawner(spawner), m_score(score) {}
 
 void CollisionSystem::updateCollisions() {
     handlePlayerTileCollisions();
     handleEnemyTileCollisions();
     handlePlayerEnemyCollisions();
+    handleEnemyEnemyCollisions();
     handleSwordCollisions();
     handlePlayerCollectibleCollisions();
 }
@@ -20,51 +21,69 @@ void CollisionSystem::updateCollisions() {
 // Player - Tile
 void CollisionSystem::handlePlayerTileCollisions() {
     for (auto& player : m_entityManager.getEntities("player")) {
+        // Ensure we have the needed components
+        if (!player->has<CTransform>() || !player->has<CBoundingBox>() || !player->has<CState>())
+            continue;
+
         auto& transform = player->get<CTransform>();
         auto& velocity  = transform.velocity;
         auto& playerBB  = player->get<CBoundingBox>();
         auto& state     = player->get<CState>();
 
+        // Get the bounding box for the player's current position
         sf::FloatRect pRect = playerBB.getRect(transform.pos);
+        // Reset onGround each frame; we’ll set it to true if we land on a tile
         state.onGround = false;
 
+        // Check collision with each tile
         for (auto& tile : m_entityManager.getEntities("tile")) {
+            // Make sure the tile has the needed components
             if (!tile->has<CTransform>() || !tile->has<CBoundingBox>() || !tile->has<CAnimation>())
                 continue;
 
             auto& tileTransform = tile->get<CTransform>();
             auto& tileBB        = tile->get<CBoundingBox>();
             auto& tileAnim      = tile->get<CAnimation>().animation;
+
             sf::FloatRect tRect = tileBB.getRect(tileTransform.pos);
 
+            // If no intersection, skip
             if (!pRect.intersects(tRect))
                 continue;
 
+            // Calculate overlap on X and Y
             float overlapX = std::min(pRect.left + pRect.width, tRect.left + tRect.width)
                            - std::max(pRect.left, tRect.left);
             float overlapY = std::min(pRect.top + pRect.height, tRect.top + tRect.height)
                            - std::max(pRect.top, tRect.top);
 
+            // Decide which axis to fix based on which overlap is smaller
             if (overlapX < overlapY) {
-                // Collisione orizzontale
-                if (transform.pos.x < tileTransform.pos.x)
+                // Fix X overlap
+                if (transform.pos.x < tileTransform.pos.x) {
+                    // Player is left of tile, push left
                     transform.pos.x -= overlapX;
-                else
+                } else {
+                    // Player is right of tile, push right
                     transform.pos.x += overlapX;
+                }
+                // Stop horizontal velocity
                 velocity.x = 0.f;
             } else {
-                // Collisione verticale
+                // Fix Y overlap
                 if (transform.pos.y < tileTransform.pos.y) {
+                    // Player is above the tile
                     transform.pos.y -= overlapY;
                     velocity.y = 0.f;
-                    state.onGround = true;
+                    state.onGround = true; // Landed on tile
                 } else {
+                    // Player hit the tile from below
                     if (velocity.y < 0) {
                         transform.pos.y += overlapY;
                         velocity.y = 0.f;
-                        std::string animName = tileAnim.getName();
 
-                        // Breakable from below
+                        // Example: breakable or special tiles
+                        std::string animName = tileAnim.getName();
                         if (animName == "Box1" || animName == "Box2") {
                             m_spawner->createBlockFragments(tileTransform.pos, animName);
                             m_spawner->spawnItem(tileTransform.pos, animName);
@@ -85,25 +104,43 @@ void CollisionSystem::handlePlayerTileCollisions() {
                     }
                 }
             }
+
+            // Update pRect in case we moved the player
             pRect = playerBB.getRect(transform.pos);
         }
+
+        // Update player state if not attacking
         if (state.state != "attack") {
-            if (state.onGround)
-                state.state = (std::abs(velocity.x) > PLAYER_RUN_VELOCITY_THRESHOLD) ? "run" : "idle";
-            else
+            if (state.onGround) {
+                state.state = (std::abs(velocity.x) > PLAYER_RUN_VELOCITY_THRESHOLD)
+                              ? "run" : "idle";
+            } else {
                 state.state = "air";
+            }
         }
     }
 }
 
+
+
 // Enemy - Tile
 void CollisionSystem::handleEnemyTileCollisions() {
     for (auto& enemy : m_entityManager.getEntities("enemy")) {
-        auto& transform = enemy->get<CTransform>();
-        auto& enemyBB   = enemy->get<CBoundingBox>();
-        sf::FloatRect eRect = enemyBB.getRect(transform.pos);
+        if (!enemy->has<CTransform>() || !enemy->has<CBoundingBox>())
+            continue;
 
-        float minOverlapY = std::numeric_limits<float>::max();
+        auto& transform = enemy->get<CTransform>();
+        auto& velocity  = transform.velocity;
+        auto& enemyBB   = enemy->get<CBoundingBox>();
+
+        // If you want to track onGround for enemies:
+        bool onGround = false;
+        if (enemy->has<CState>()) {
+            enemy->get<CState>().onGround = false;
+        }
+
+        // Get bounding rect for enemy
+        sf::FloatRect eRect = enemyBB.getRect(transform.pos);
 
         for (auto& tile : m_entityManager.getEntities("tile")) {
             if (!tile->has<CTransform>() || !tile->has<CBoundingBox>())
@@ -122,26 +159,108 @@ void CollisionSystem::handleEnemyTileCollisions() {
                            - std::max(eRect.top, tRect.top);
 
             if (overlapX < overlapY) {
-                // Collisione orizzontale
-                transform.pos.x += (transform.pos.x < tileTransform.pos.x) ? -overlapX : overlapX;
-                transform.velocity.x = 0.f;
+                // Fix horizontal overlap
+                if (transform.pos.x < tileTransform.pos.x) {
+                    transform.pos.x -= overlapX;
+                } else {
+                    transform.pos.x += overlapX;
+                }
+                velocity.x = 0.f;
             } else {
-                // Collisione verticale
-                if (transform.velocity.y > 0) {
-                    if ((eRect.top + eRect.height) > tRect.top && overlapY < minOverlapY) {
-                        minOverlapY = overlapY;
-                        transform.pos.y -= overlapY;
-                        transform.velocity.y = 0.f;
-                    }
-                } else if (transform.velocity.y < 0) {
-                    if (eRect.top < (tRect.top + tRect.height) && overlapY < minOverlapY) {
-                        minOverlapY = overlapY;
-                        transform.pos.y += overlapY;
-                        transform.velocity.y = 0.f;
-                    }
+                // Fix vertical overlap
+                if (transform.pos.y < tileTransform.pos.y) {
+                    // Enemy above tile
+                    transform.pos.y -= overlapY;
+                    velocity.y = 0.f;
+                    onGround = true;
+                } else {
+                    // Enemy below tile (jumped into it)
+                    transform.pos.y += overlapY;
+                    velocity.y = 0.f;
                 }
             }
+
+            // Update eRect if the enemy was moved
             eRect = enemyBB.getRect(transform.pos);
+        }
+
+        // If you track onGround for enemies
+        if (enemy->has<CState>()) {
+            enemy->get<CState>().onGround = onGround;
+        }
+    }
+}
+
+void CollisionSystem::handleEnemyEnemyCollisions() {
+    // Get a list of all enemies
+    auto enemies = m_entityManager.getEntities("enemy");
+
+    // Compare every pair of enemies (i < j) so we don't repeat or compare an enemy with itself
+    for (size_t i = 0; i < enemies.size(); i++) {
+        for (size_t j = i + 1; j < enemies.size(); j++) {
+            auto e1 = enemies[i];
+            auto e2 = enemies[j];
+
+            // Ensure both have transforms and bounding boxes
+            if (!e1->has<CTransform>() || !e1->has<CBoundingBox>())
+                continue;
+            if (!e2->has<CTransform>() || !e2->has<CBoundingBox>())
+                continue;
+
+            auto& t1 = e1->get<CTransform>();
+            auto& bb1 = e1->get<CBoundingBox>();
+            sf::FloatRect r1 = bb1.getRect(t1.pos);
+
+            auto& t2 = e2->get<CTransform>();
+            auto& bb2 = e2->get<CBoundingBox>();
+            sf::FloatRect r2 = bb2.getRect(t2.pos);
+
+            // Check intersection
+            if (!r1.intersects(r2))
+                continue;
+
+            // Calculate overlap on X and Y
+            float overlapX = std::min(r1.left + r1.width,  r2.left + r2.width)
+                           - std::max(r1.left,            r2.left);
+            float overlapY = std::min(r1.top + r1.height, r2.top + r2.height)
+                           - std::max(r1.top,             r2.top);
+
+            // Decide which axis to resolve based on smaller overlap
+            if (overlapX < overlapY) {
+                // --- Resolve horizontally ---
+                // We'll push each enemy half the overlap
+                float push = overlapX * 0.5f;
+
+                // If e1 is left of e2
+                if (t1.pos.x < t2.pos.x) {
+                    t1.pos.x -= push;
+                    t2.pos.x += push;
+                } else {
+                    t1.pos.x += push;
+                    t2.pos.x -= push;
+                }
+
+                // Optionally zero out their horizontal velocities so they stop sliding into each other
+                if (std::abs(t1.velocity.x) > 0.f) t1.velocity.x = 0.f;
+                if (std::abs(t2.velocity.x) > 0.f) t2.velocity.x = 0.f;
+            }
+            else {
+                // --- Resolve vertically ---
+                float push = overlapY * 0.5f;
+
+                // If e1 is above e2
+                if (t1.pos.y < t2.pos.y) {
+                    t1.pos.y -= push;
+                    t2.pos.y += push;
+                } else {
+                    t1.pos.y += push;
+                    t2.pos.y -= push;
+                }
+
+                // Optionally zero out their vertical velocities
+                if (std::abs(t1.velocity.y) > 0.f) t1.velocity.y = 0.f;
+                if (std::abs(t2.velocity.y) > 0.f) t2.velocity.y = 0.f;
+            }
         }
     }
 }
@@ -149,49 +268,90 @@ void CollisionSystem::handleEnemyTileCollisions() {
 // Player - Enemy
 void CollisionSystem::handlePlayerEnemyCollisions() {
     for (auto& enemy : m_entityManager.getEntities("enemy")) {
+        // Skip enemy if in attack state.
         if (enemy->has<CEnemyAI>()) {
             auto& enemyAI = enemy->get<CEnemyAI>();
             if (enemyAI.enemyState == EnemyState::Attack)
                 continue;
         }
-
         auto& enemyTrans = enemy->get<CTransform>();
         auto& enemyBB    = enemy->get<CBoundingBox>();
         sf::FloatRect enemyRect = enemyBB.getRect(enemyTrans.pos);
+
+        // Check enemy on-ground state.
+        bool enemyOnGround = false;
+        if (enemy->has<CState>())
+            enemyOnGround = enemy->get<CState>().onGround;
 
         for (auto& player : m_entityManager.getEntities("player")) {
             auto& pTrans = player->get<CTransform>();
             auto& pBB    = player->get<CBoundingBox>();
             sf::FloatRect playerRect = pBB.getRect(pTrans.pos);
 
-            if (enemyRect.intersects(playerRect)) {
-                float overlapX = std::min(enemyRect.left + enemyRect.width, playerRect.left + playerRect.width)
-                               - std::max(enemyRect.left, playerRect.left);
-                float overlapY = std::min(enemyRect.top + enemyRect.height, playerRect.top + playerRect.height)
-                               - std::max(enemyRect.top, playerRect.top);
+            // Check player on-ground state.
+            bool playerOnGround = false;
+            if (player->has<CState>())
+                playerOnGround = player->get<CState>().onGround;
 
-                // Separazione semplice usando il fattore definito
+            if (enemyRect.intersects(playerRect)) {
+                // Compute overlaps along X and Y.
+                float overlapX = std::min(enemyRect.left + enemyRect.width, playerRect.left + playerRect.width)
+                                 - std::max(enemyRect.left, playerRect.left);
+                float overlapY = std::min(enemyRect.top + enemyRect.height, playerRect.top + playerRect.height)
+                                 - std::max(enemyRect.top, playerRect.top);
+
+                const float MIN_VERTICAL_SEPARATION = 5.f;
+                float separation = std::max(overlapY * COLLISION_SEPARATION_FACTOR, MIN_VERTICAL_SEPARATION);
+                const float bounceSpeed = 100.f;
+
                 if (overlapX < overlapY) {
+                    // Horizontal collision resolution (unchanged)
                     if (enemyTrans.pos.x < pTrans.pos.x) {
                         enemyTrans.pos.x -= overlapX * COLLISION_SEPARATION_FACTOR;
                         pTrans.pos.x     += overlapX * COLLISION_SEPARATION_FACTOR;
+                        enemyTrans.velocity.x = -std::max(std::abs(enemyTrans.velocity.x), bounceSpeed);
+                        pTrans.velocity.x     = std::max(std::abs(pTrans.velocity.x), bounceSpeed);
                     } else {
                         enemyTrans.pos.x += overlapX * COLLISION_SEPARATION_FACTOR;
                         pTrans.pos.x     -= overlapX * COLLISION_SEPARATION_FACTOR;
+                        enemyTrans.velocity.x = std::max(std::abs(enemyTrans.velocity.x), bounceSpeed);
+                        pTrans.velocity.x     = -std::max(std::abs(pTrans.velocity.x), bounceSpeed);
                     }
                 } else {
+                    // Vertical collision resolution.
+                    // If enemy is above player:
                     if (enemyTrans.pos.y < pTrans.pos.y) {
-                        enemyTrans.pos.y -= overlapY * COLLISION_SEPARATION_FACTOR;
-                        pTrans.pos.y     += overlapY * COLLISION_SEPARATION_FACTOR;
+                        if (playerOnGround) {
+                            // Player is fixed on the ground; push enemy upward only.
+                            enemyTrans.pos.y -= separation;
+                            enemyTrans.velocity.y = -std::max(std::abs(enemyTrans.velocity.y), bounceSpeed);
+                        } else {
+                            // Normal resolution: enemy upward, player downward.
+                            enemyTrans.pos.y -= separation;
+                            pTrans.pos.y     += separation;
+                            enemyTrans.velocity.y = -std::max(std::abs(enemyTrans.velocity.y), bounceSpeed);
+                            pTrans.velocity.y     = std::max(std::abs(pTrans.velocity.y), bounceSpeed);
+                        }
                     } else {
-                        enemyTrans.pos.y += overlapY * COLLISION_SEPARATION_FACTOR;
-                        pTrans.pos.y     -= overlapY * COLLISION_SEPARATION_FACTOR;
+                        // Enemy is below player:
+                        if (enemyOnGround) {
+                            // Enemy is on ground; push player upward only.
+                            pTrans.pos.y -= separation;
+                            pTrans.velocity.y = -std::max(std::abs(pTrans.velocity.y), bounceSpeed);
+                        } else {
+                            // Normal resolution: enemy downward, player upward.
+                            enemyTrans.pos.y += separation;
+                            pTrans.pos.y     -= separation;
+                            enemyTrans.velocity.y = std::max(std::abs(enemyTrans.velocity.y), bounceSpeed);
+                            pTrans.velocity.y     = -std::max(std::abs(pTrans.velocity.y), bounceSpeed);
+                        }
                     }
                 }
             }
         }
     }
 }
+
 
 void CollisionSystem::handleSwordCollisions() {
     // Player sword
@@ -316,9 +476,10 @@ void CollisionSystem::handleSwordCollisions() {
             // Danno al player
             if (player->has<CHealth>()) {
                 auto& health = player->get<CHealth>();
-                health.takeDamage(enemySword->get<CEnemyAI>().damage);
+                int enemyDamage = enemySword->get<CEnemyAI>().damage;
+                health.takeDamage(enemyDamage);
+                std::cout << "[DEBUG] Player hit by enemy sword! Damage: " << enemyDamage << " " << "Health: " << health.currentHealth << "\n" ;
                 health.invulnerabilityTimer = PLAYER_HIT_INVULNERABILITY_TIME;
-                std::cout << "[DEBUG] Player hit by enemy sword! Health: " << health.currentHealth << "\n";
             }
             if (player->has<CState>()) {
                 player->get<CState>().state = "knockback";
@@ -349,7 +510,6 @@ void CollisionSystem::handleSwordCollisions() {
     }
 }
 
-// Player - Collectibles
 void CollisionSystem::handlePlayerCollectibleCollisions() {
     for (auto& player : m_entityManager.getEntities("player")) {
         if (!player->has<CTransform>() || !player->has<CBoundingBox>())
@@ -357,26 +517,31 @@ void CollisionSystem::handlePlayerCollectibleCollisions() {
         auto& pTrans = player->get<CTransform>();
         auto& pBB    = player->get<CBoundingBox>();
         sf::FloatRect pRect = pBB.getRect(pTrans.pos);
+        std::cout << "Score: " << m_score << std::endl;
 
         for (auto& item : m_entityManager.getEntities("collectable")) {
             if (!item->has<CTransform>() || !item->has<CBoundingBox>() || !item->has<CState>())
                 continue;
             auto& iTrans = item->get<CTransform>();
             auto& iBB    = item->get<CBoundingBox>();
+            auto& health = player->get<CHealth>();
+            
             sf::FloatRect iRect = iBB.getRect(iTrans.pos);
 
             if (pRect.intersects(iRect)) {
                 std::string itemType = item->get<CState>().state;
                 if (itemType == "GrapeSmall") {
-                    std::cout << "[DEBUG] Collected small grape (+" 
-                              << COLLECTIBLE_SMALL_GRAPE_POINTS << " points)!\n";
-                    // Incrementa il punteggio del player
+                    health.heal(COLLECTIBLE_SMALL_GRAPE_POINTS);
                 } else if (itemType == "GrapeBig") {
                     if (player->has<CHealth>()) {
-                        player->get<CHealth>().heal(COLLECTIBLE_BIG_GRAPE_HEAL);
-                        std::cout << "[DEBUG] Collected big grape (+" 
-                                  << COLLECTIBLE_BIG_GRAPE_HEAL << " health)!\n";
+                        health.heal(COLLECTIBLE_BIG_GRAPE_HEAL);
                     }
+                } else if (itemType == "CoinGold") {
+                    m_score += COLLECTIBLE_GOLD_COIN_POINTS;
+                } else if (itemType == "CoinSilver") {
+                    m_score += COLLECTIBLE_SILVER_COIN_POINTS;
+                } else if (itemType == "CoinBronze") {
+                    m_score += COLLECTIBLE_BRONZE_COIN_POINTS;
                 }
                 item->destroy();
             }

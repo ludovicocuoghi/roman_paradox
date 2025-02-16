@@ -11,10 +11,9 @@ MovementSystem::MovementSystem(GameEngine& game,
       m_cameraView(cameraView),
       m_lastDirection(lastDirection)
 {
+    // Optionally, you can set m_currentZoom to something else here
+    // m_currentZoom = 1.5f;
 }
-
-// Add a member variable in your MovementSystem, for example:
-float m_currentZoom = 1.0f; // starts unzoomed
 
 void MovementSystem::updateCamera()
 {
@@ -24,27 +23,26 @@ void MovementSystem::updateCamera()
     }
     auto& transform = players[0]->get<CTransform>();
 
-    // 1) Define an offset (e.g., +200 to the right, -100 up).
+    // Offset for the camera
     sf::Vector2f offset(200.f, -100.f);
 
-    // 2) 'targetPos' is where we want the camera to focus,
-    //    i.e., the player plus our offset.
+    // 'targetPos' is player pos + offset
     sf::Vector2f targetPos = transform.pos + offset;
 
-    // 3) Current camera center
+    // Current camera center
     sf::Vector2f cameraCenter = m_cameraView.getCenter();
 
-    // 4) Trap zone dimensions
-    float halfTrapZoneWidth  = 150.f;  // 300px total
-    float halfTrapZoneHeight = 200.f;  // 400px total
+    // Trap zone dimensions
+    float halfTrapZoneWidth  = 150.f;
+    float halfTrapZoneHeight = 200.f;
 
-    // 5) Check how far the offsetted position is from camera center
+    // Calculate how far 'targetPos' is from the camera center
     float dx = targetPos.x - cameraCenter.x;
     float dy = targetPos.y - cameraCenter.y;
 
     sf::Vector2f desiredCenter = cameraCenter;
 
-    // 6) Horizontal trap zone check
+    // Horizontal trap zone check
     if (dx < -halfTrapZoneWidth) {
         desiredCenter.x = targetPos.x + halfTrapZoneWidth;
     } 
@@ -52,7 +50,7 @@ void MovementSystem::updateCamera()
         desiredCenter.x = targetPos.x - halfTrapZoneWidth;
     }
 
-    // 7) Vertical trap zone check
+    // Vertical trap zone check
     if (dy < -halfTrapZoneHeight) {
         desiredCenter.y = targetPos.y + halfTrapZoneHeight;
     } 
@@ -60,24 +58,38 @@ void MovementSystem::updateCamera()
         desiredCenter.y = targetPos.y - halfTrapZoneHeight;
     }
 
-    // 8) Now we set the camera center without adding offset again,
-    //    because we've already accounted for it in 'targetPos'
+    // Set the camera center
     m_cameraView.setCenter(desiredCenter);
+    // Example: One-time zoom to 1.1f
+    if (m_currentZoom != 1.1f) {
+        float zoomFactor = 1.1f / m_currentZoom;
+        m_cameraView.zoom(zoomFactor);
+        m_currentZoom = 1.1f;
+
+        // Debug prints:
+        std::cout << "Current zoom factor: " << m_currentZoom << "\n";
+        std::cout << "Zooming view by: " << zoomFactor << "\n";
+        
+        // Also helpful to see the final View size:
+        auto size = m_cameraView.getSize();
+        std::cout << "View size after zoom: " << size.x << " x " << size.y << "\n";
+    }
+
+    // Apply the final camera
     m_game.window().setView(m_cameraView);
 }
+
 void MovementSystem::update(float deltaTime)
 {
-    // Player movement
+    // -- Player movement, etc. --
     for (auto& entity : m_entityManager.getEntities("player")) {
         auto& transform = entity->get<CTransform>();
         auto& state     = entity->get<CState>();
         auto& canim     = entity->get<CAnimation>();
 
-        // Apply gravity
+        // Gravity, jump logic, etc.
         float baseGravity = entity->get<CGravity>().gravity;
         transform.velocity.y += baseGravity * deltaTime;
-
-        // Jump logic
         if (state.isJumping && state.jumpTime < MAX_JUMP_HOLD_TIME) {
             transform.velocity.y -= JUMP_BOOST_ACCELERATION * deltaTime;
             state.jumpTime += deltaTime;
@@ -89,11 +101,8 @@ void MovementSystem::update(float deltaTime)
                 transform.velocity.y += baseGravity * (GRAVITY_MULTIPLIER - 1.0f) * deltaTime;
             }
         }
-
-        // Cap fall speed
         transform.velocity.y = std::min(transform.velocity.y, MAX_FALL_SPEED);
 
-        // Knockback or normal movement
         if (state.state == "knockback") {
             state.knockbackTimer -= deltaTime;
             if (state.knockbackTimer > 0.f) {
@@ -103,7 +112,6 @@ void MovementSystem::update(float deltaTime)
                 transform.velocity.x = 0.f;
             }
         } else {
-            // Left/right movement
             transform.velocity.x = 0.f;
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
                 transform.velocity.x = -X_SPEED;
@@ -123,10 +131,10 @@ void MovementSystem::update(float deltaTime)
         }
     }
 
-    // Update camera with the trap zone logic
+    // Update camera
     updateCamera();
 
-    // Sword follows the player
+    // Sword follows player
     auto players = m_entityManager.getEntities("player");
     if (!players.empty()) {
         auto& player = players[0];
@@ -153,6 +161,5 @@ void MovementSystem::update(float deltaTime)
         }
     }
 
-    // Finalize the camera on the window
     m_game.window().setView(m_cameraView);
 }

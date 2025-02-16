@@ -56,7 +56,7 @@ public:
     // sRender() now delegates all drawing to PlayRenderer
     void sRender() override;
 
-    // --- Configuration Constants (magic numbers) ---
+    // --- Configuration Constants
     const float gravityVal = 1000.f;
     const float xSpeed     = 350.f;
     const float ySpeed     = 350.f;
@@ -70,7 +70,7 @@ public:
 private:
     std::string m_levelPath;              // (1)
     EntityManager m_entityManager;        // (2)
-    float m_lastDirection = 1.f;          // (3)  <-- spostato in alto
+    float m_lastDirection = 1.f;          // (3) 
     AnimationSystem m_animationSystem;    // (4)
     PlayRenderer m_playRenderer;          // (5)
     sf::Texture m_backgroundTexture;      // (6)

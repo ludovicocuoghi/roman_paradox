@@ -47,7 +47,7 @@ Scene_Play::Scene_Play(GameEngine& game, const std::string& levelPath)
       m_entityManager(),
       m_lastDirection(1.f),
       m_animationSystem(game, m_entityManager, m_lastDirection),
-      m_playRenderer(game, m_entityManager, m_backgroundSprite, m_backgroundTexture, m_cameraView),
+      m_playRenderer(game, m_entityManager, m_backgroundSprite, m_backgroundTexture, m_cameraView, m_score),
       m_backgroundTexture(),
       m_backgroundSprite(),
       m_game(game),
@@ -88,10 +88,10 @@ void Scene_Play::selectBackgroundFromLevel(const std::string& levelPath) {
         m_timeofday = "ANCIENT ROME (DAY)";
     } else if (levelName == "ancient_rome_level_2_sunset.txt") {
         m_backgroundPath = "src/images/Background/ancient_rome_level_2_sunset.png";
-        m_timeofday = "ANCIENT ROME (NIGHT)";
+        m_timeofday = "ANCIENT ROME (SUNSET)";
     } else if (levelName == "ancient_rome_level_3_night.txt") {
         m_backgroundPath = "src/images/Background/ancient_rome_level_3_night.png";
-        m_timeofday = "ANCIENT ROME (SUNSET)";
+        m_timeofday = "ANCIENT ROME (NIGHT)";
     } else if (levelName == "ancient_rome_level_4_emperor_room.txt") {
         m_backgroundPath = "src/images/Background/ancient_rome_level_4_emperor_room.png";
         m_timeofday = "EMPEROR ROOM";
@@ -191,11 +191,11 @@ void Scene_Play::sAnimation(float deltaTime)
 //Collision Handliong
 //
 void Scene_Play::sCollision() {
-    CollisionSystem collisionSystem(m_entityManager, m_game, &m_spawner);
+    CollisionSystem collisionSystem(m_entityManager, m_game, &m_spawner, m_score);
     collisionSystem.updateCollisions();
 }
 
-// Action Processing (Input Handling)
+// Action Processing (Input Handling)                  
 //
 void Scene_Play::sDoAction(const Action& action)
 {

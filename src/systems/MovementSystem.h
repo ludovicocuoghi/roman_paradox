@@ -33,4 +33,5 @@ private:
     EntityManager& m_entityManager;
     sf::View& m_cameraView;
     float& m_lastDirection;
+    float m_currentZoom = 1.0f;
 };

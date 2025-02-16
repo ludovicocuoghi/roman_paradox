@@ -16,7 +16,8 @@ public:
                  EntityManager& entityManager,
                  sf::Sprite& backgroundSprite,
                  sf::Texture& backgroundTexture,
-                 sf::View& cameraView);
+                 sf::View& cameraView,
+                 int& score);
 
     // Setter per le variabili di configurazione
     void setShowGrid(bool show);

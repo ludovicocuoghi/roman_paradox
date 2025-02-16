@@ -2,7 +2,7 @@ Texture TexStandAnim /player_alien/a_stand100Anim.png
 Texture TexRun /player_alien/a_run1004.png
 Texture TexAir /player_alien/a_air1002.png
 Texture TexHit /player_alien/a_hit100nosword.png
-Texture TexSword /sword/sword.png
+Texture TexSword /sword/a_sword.png
 Texture TexEnemySword /sword/sword.png
 
 Texture TexGrapeSmall /Collectables/smallgrape.png

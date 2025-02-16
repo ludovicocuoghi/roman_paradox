@@ -20,6 +20,7 @@ private:
     sf::Clock m_clock;
     std::queue<Action> m_actionQueue;
     sf::View m_cameraView;
+    int m_score = 0;
 
 public:
     GameEngine(const std::string& assetsPath);

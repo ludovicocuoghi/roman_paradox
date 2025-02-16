@@ -8,7 +8,8 @@ PlayRenderer::PlayRenderer(GameEngine& game,
                            EntityManager& entityManager,
                            sf::Sprite& backgroundSprite,
                            sf::Texture& backgroundTexture,
-                           sf::View& cameraView)
+                           sf::View& cameraView,
+                           int& score)
     : m_game(game),
       m_entityManager(entityManager),
       m_backgroundSprite(backgroundSprite),
@@ -16,7 +17,7 @@ PlayRenderer::PlayRenderer(GameEngine& game,
       m_cameraView(cameraView),
       m_showGrid(false),
       m_showBoundingBoxes(false),
-      m_score(0),
+      m_score(score),         // assign reference
       m_timeofday("Day")
 {
 }
@@ -108,7 +109,7 @@ void PlayRenderer::render() {
         }
     }
 
-    // Render items
+    // Render items (collectables)
     for (auto& item : m_entityManager.getEntities()) {
         if (item->tag() != "collectable") continue;
         auto& transform = item->get<CTransform>();
@@ -226,26 +227,54 @@ void PlayRenderer::render() {
         }
     }
 
-    // Optional debug lines between enemies and player are commented out
-
-    // Render UI
+    // --- HUD: Black Bar with Score, Time-of-Day, and Health ---
     m_game.window().setView(defaultView);
+    {
+        // Create a black rectangle at the bottom (height = 50)
+        sf::RectangleShape hudBar(sf::Vector2f(static_cast<float>(windowSize.x), 50.f));
+        hudBar.setFillColor(sf::Color::Black);
+        hudBar.setPosition(0, windowSize.y - 50.f);
+        m_game.window().draw(hudBar);
 
-    sf::Text scoreText;
-    scoreText.setFont(m_game.assets().getFont("Menu"));
-    scoreText.setCharacterSize(60);
-    scoreText.setFillColor(sf::Color::White);
-    scoreText.setString("Score: " + std::to_string(m_score));
-    scoreText.setPosition(20, 20);
-    m_game.window().draw(scoreText);
+        // Score text (left-aligned)
+        sf::Text scoreText;
+        scoreText.setFont(m_game.assets().getFont("Menu"));
+        scoreText.setCharacterSize(20);
+        scoreText.setFillColor(sf::Color::White);
+        scoreText.setString("Score: " + std::to_string(m_score));
+        scoreText.setPosition(10.f, windowSize.y - 40.f);
 
-    sf::Text timeTextDisplay;
-    timeTextDisplay.setFont(m_game.assets().getFont("Menu"));
-    timeTextDisplay.setCharacterSize(60);
-    timeTextDisplay.setFillColor(sf::Color::White);
-    timeTextDisplay.setString(m_timeofday);
-    timeTextDisplay.setPosition(defaultView.getSize().x - timeTextDisplay.getGlobalBounds().width - 20, 20);
-    m_game.window().draw(timeTextDisplay);
+        // Time-of-day text (centered)
+        sf::Text timeText;
+        timeText.setFont(m_game.assets().getFont("Menu"));
+        timeText.setCharacterSize(20);
+        timeText.setFillColor(sf::Color::White);
+        timeText.setString(m_timeofday);
+        sf::FloatRect timeRect = timeText.getLocalBounds();
+        timeText.setPosition(windowSize.x / 2.f - timeRect.width / 2.f, windowSize.y - 40.f);
+
+        // Health text (right-aligned)
+        int currentHealth = 100;
+        int maxHealth = 100;
+        auto players = m_entityManager.getEntities("player");
+        if (!players.empty() && players[0]->has<CHealth>()) {
+            auto& healthComp = players[0]->get<CHealth>();
+            currentHealth = healthComp.currentHealth;
+            maxHealth = healthComp.maxHealth;
+        }
+        sf::Text healthText;
+        healthText.setFont(m_game.assets().getFont("Menu"));
+        healthText.setCharacterSize(20);
+        healthText.setFillColor(sf::Color::White);
+        healthText.setString("HP: " + std::to_string(currentHealth) + " / " + std::to_string(maxHealth));
+        sf::FloatRect healthRect = healthText.getLocalBounds();
+        healthText.setPosition(windowSize.x - healthRect.width - 10.f, windowSize.y - 40.f);
+
+        // Draw HUD texts
+        m_game.window().draw(scoreText);
+        m_game.window().draw(timeText);
+        m_game.window().draw(healthText);
+    }
 
     m_game.window().setView(m_cameraView);
     m_game.window().display();

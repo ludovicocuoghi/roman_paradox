@@ -9,7 +9,7 @@
 class CollisionSystem {
 public:
     // Constructor declaration only (no inline definition here)
-    CollisionSystem(EntityManager& entityManager, GameEngine& game, Spawner* spawner);
+    CollisionSystem(EntityManager& entityManager, GameEngine& game, Spawner* spawner, int& score);
 
     static constexpr float PLAYER_RUN_VELOCITY_THRESHOLD = 1.f;
     static constexpr float COLLISION_SEPARATION_FACTOR = 0.5f;
@@ -29,23 +29,27 @@ public:
 
     // Enemy Sword vs Player
     static constexpr float ENEMY_SWORD_KNOCKBACK_STRENGTH = 3000.0f;
-    static constexpr float PLAYER_HIT_INVULNERABILITY_TIME = 0.5f;
+    static constexpr float PLAYER_HIT_INVULNERABILITY_TIME = 1.f;
     static constexpr float PLAYER_KNOCKBACK_TIMER = 0.5f;
 
     // Collectibles
     static constexpr int COLLECTIBLE_SMALL_GRAPE_POINTS = 5;
     static constexpr int COLLECTIBLE_BIG_GRAPE_HEAL = 10;
+    static constexpr int COLLECTIBLE_GOLD_COIN_POINTS = 15;
+    static constexpr int COLLECTIBLE_SILVER_COIN_POINTS = 10;
+    static constexpr int COLLECTIBLE_BRONZE_COIN_POINTS = 5;
 
     void updateCollisions();
-
-private:
-    EntityManager& m_entityManager;
-    GameEngine& m_game;
-    Spawner* m_spawner;
-
     void handlePlayerTileCollisions();
     void handleEnemyTileCollisions();
     void handlePlayerEnemyCollisions();
     void handleSwordCollisions();
     void handlePlayerCollectibleCollisions();
+    void handleEnemyEnemyCollisions();
+
+private:
+    EntityManager& m_entityManager;
+    GameEngine& m_game;
+    Spawner* m_spawner;
+    int& m_score;
 };

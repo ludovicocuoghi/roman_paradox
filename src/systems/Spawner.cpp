@@ -76,6 +76,12 @@ std::shared_ptr<Entity> Spawner::spawnEnemySword(std::shared_ptr<Entity> enemy) 
     } else {
         std::cerr << "[ERROR] Missing enemy sword animation!\n";
     }
+    
+    // Attach a CEnemyAI component to the sword and copy the damage from the enemy.
+    if (enemy->has<CEnemyAI>()) {
+        sword->add<CEnemyAI>(enemy->get<CEnemyAI>());
+    }
+
     return sword;
 }
 

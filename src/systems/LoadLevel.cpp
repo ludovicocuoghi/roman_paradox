@@ -65,15 +65,15 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
             // Apply pipe-specific offsets
             if (assetType == "PipeTall") {
                 realY += LoadLevel::GRID_SIZE * LoadLevel::PIPETALL_REALY_OFFSET_MULTIPLIER;
-                realX += LoadLevel::GRID_SIZE * LoadLevel::PIPE_REALX_OFFSET_MULTIPLIER;
+                //realX += LoadLevel::GRID_SIZE * LoadLevel::PIPE_REALX_OFFSET_MULTIPLIER;
             }
             else if (assetType == "PipeBroken") {
                 realY += LoadLevel::GRID_SIZE * LoadLevel::PIPEBROKEN_REALY_OFFSET_MULTIPLIER;
-                realX += LoadLevel::GRID_SIZE * LoadLevel::PIPE_REALX_OFFSET_MULTIPLIER;
+                //realX += LoadLevel::GRID_SIZE * LoadLevel::PIPE_REALX_OFFSET_MULTIPLIER;
             }
             else if (assetType == "Pipe") {
                 realY += LoadLevel::GRID_SIZE * LoadLevel::PIPE_REALY_OFFSET_MULTIPLIER;
-                realX += LoadLevel::GRID_SIZE * LoadLevel::PIPE_REALX_OFFSET_MULTIPLIER;
+                //realX += LoadLevel::GRID_SIZE * LoadLevel::PIPE_REALX_OFFSET_MULTIPLIER;
             }
 
             auto tile = entityManager.addEntity("tile");
@@ -187,9 +187,12 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
 
             // Conversione del tipo enemy e impostazione dei parametri in base al tipo
             EnemyType enemyType;
+            
             float speedMultiplier = 1.0f;
             int enemyHealth = 10;
             int enemyDamage = 3; // valore di default
+
+
             if (enemyTypeStr == "EnemyFast") {
                 enemyType = EnemyType::Fast;
                 speedMultiplier = LoadLevel::ENEMY_FAST_SPEED_MULTIPLIER;
@@ -216,7 +219,7 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
             std::string standAnimName = enemyTypeStr + "_Stand";
 
             std::cout << "[DEBUG] Enemy Type: " << enemyTypeStr 
-                      << " | Using Animations: " << standAnimName << " / " << runAnimName << std::endl;
+                      << " | Using Animations: " << standAnimName << " / " << runAnimName << " " << "Health: " << enemyHealth << " " << "Damage: " << enemyDamage << std::endl;
 
             if (m_game.assets().hasAnimation(runAnimName)) {
                 const Animation& anim = m_game.assets().getAnimation(runAnimName);
@@ -240,6 +243,7 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
             // Aggiunta del parametro danno nel componente CEnemyAI
             enemy->add<CEnemyAI>(enemyType, (enemyType == EnemyType::Elite) ? EnemyBehavior::FollowTwo : EnemyBehavior::FollowOne);
             enemy->get<CEnemyAI>().damage = enemyDamage;
+            std::cout << "[DEBUG] Enemy Damage: " << enemyDamage << std::endl;
             enemy->get<CEnemyAI>().speedMultiplier = speedMultiplier;
 
             // Conversione dei punti di pattugliamento

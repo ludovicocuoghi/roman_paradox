@@ -20,7 +20,7 @@ public:
     static constexpr float PIPEBROKEN_REALY_OFFSET_MULTIPLIER= 1.f;    
 
     // Parametri per il player
-    static constexpr float PLAYER_HEALTH = 15.f;
+    static constexpr float PLAYER_HEALTH = 40.f;
     static constexpr float PLAYER_BB_SIZE = 80.f;
     static constexpr float GRAVITY_VAL = 1000.f;
 
@@ -28,22 +28,22 @@ public:
     // EnemyFast
     static constexpr float ENEMY_FAST_SPEED_MULTIPLIER = 1.5f;
     static constexpr int   ENEMY_FAST_HEALTH = 5;
-    static constexpr int   ENEMY_FAST_DAMAGE = 1;
+    static constexpr int   ENEMY_FAST_DAMAGE = 5;
 
     // EnemyStrong
     static constexpr float ENEMY_STRONG_SPEED_MULTIPLIER = 0.7f;
     static constexpr int   ENEMY_STRONG_HEALTH = 10;
-    static constexpr int   ENEMY_STRONG_DAMAGE = 3;
+    static constexpr int   ENEMY_STRONG_DAMAGE = 10;
 
     // EnemyElite
     static constexpr float ENEMY_ELITE_SPEED_MULTIPLIER = 1.5f;
     static constexpr int   ENEMY_ELITE_HEALTH = 15;
-    static constexpr int   ENEMY_ELITE_DAMAGE = 4;
+    static constexpr int   ENEMY_ELITE_DAMAGE = 15;
 
     // EnemyNormal
     static constexpr float ENEMY_NORMAL_SPEED_MULTIPLIER = 1.0f;
     static constexpr int   ENEMY_NORMAL_HEALTH = 8;
-    static constexpr int   ENEMY_NORMAL_DAMAGE = 2;
+    static constexpr int   ENEMY_NORMAL_DAMAGE = 8;
 
     LoadLevel(GameEngine& game);
 
