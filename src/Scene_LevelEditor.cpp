@@ -492,11 +492,11 @@ void Scene_LevelEditor::loadLevel(const std::string& filePath) {
     std::cout << "[DEBUG] Level loaded from " << filePath << "\n";
 }
 void Scene_LevelEditor::loadTileOptions() {
-    m_tileOptions = { "Ground", "Brick", "Box1", "Box2", "PipeTall", "Pipe", "PipeBroken", "TreasureBoxAnim" };
+    m_tileOptions = { "Ground", "Brick", "Box1", "Box2", "PipeTall", "Pipe", "PipeBroken", "TreasureBoxAnim", "GoldGround" };
     if (!m_tileOptions.empty()) {
         m_selectedTile = m_tileOptions[0];
     }
-    m_decOptions = { "BushSmall", "BushTall", "CloudSmall", "CloudBig" };
+    m_decOptions = { "BushSmall", "BushTall", "CloudSmall", "CloudBig","GoldPipeTall","GoldPipeTall" };
     if (!m_decOptions.empty()) {
         m_selectedDec = m_decOptions[0];
     }

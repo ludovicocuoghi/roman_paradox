@@ -16,9 +16,12 @@ Texture TexBrick /Tile/brick.png
 Texture TexBox1 /Tile/box.png
 Texture TexBox2 /Tile/box2.png
 Texture TexGround /Tile/ground.png
+Texture TexGoldGround /Tile/ground_gold.png
 
 Texture TexBushSmall /Dec/smallbush.png
 Texture TexBushTall /Dec/tallbush.png
+
+Texture TexGoldPipeTall /Dec/gold_pipe_sprite.png
 
 Texture TexPipeTall /Tile/pipetall-3.png
 Texture TexPipe /Tile/pipeshort-3.png
@@ -70,12 +73,16 @@ Animation TreasureBoxHit TexTreasureBoxHit 96 96 1 0
 Animation TreasureBoxAnim TexTreasureBoxAnim 96 96 4 3
 
 Animation Ground TexGround 96 96 1 0
+Animation GoldGround TexGoldGround 96 96 4 4
+
 Animation Box1 TexBox1 96 96 1 0
 Animation Box2 TexBox2 96 96 1 0
 Animation Brick TexBrick 96 96 1 0
 
 Animation BushSmall TexBushSmall 192 96 1 0
 Animation BushTall TexBushTall 96 384 1 0
+
+Animation GoldPipeTall TexGoldPipeTall 96 384 13 11
 
 Animation PipeTall TexPipeTall 96 384 1 0
 Animation PipeBroken TexPipeBroken 96 288 1 0

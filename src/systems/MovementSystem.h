@@ -15,11 +15,7 @@ public:
     static constexpr float X_SPEED = 350.f;                       // Velocità orizzontale del giocatore
 
     // Costanti per il movimento della telecamera
-    static constexpr float CAMERA_THRESHOLD_X_FACTOR = 0.25f;     // Fattore per la soglia orizzontale
-    static constexpr float CAMERA_THRESHOLD_Y_FACTOR = 0.15f;     // Fattore per la soglia verticale
-    static constexpr float CAMERA_Y_OFFSET = -80.f;                // Offset verticale della telecamera
-    static constexpr float CAMERA_SMOOTHING_FACTOR = 0.1f;        // Fattore di smoothing per la telecamera
-
+    void updateCamera();
     // Costanti per il posizionamento della spada (che segue il giocatore)
     static constexpr float SWORD_OFFSET_X_LEFT = -80.f;
     static constexpr float SWORD_OFFSET_X_RIGHT = 30.f;

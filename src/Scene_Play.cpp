@@ -14,75 +14,92 @@
 #include <cmath>
 #include "systems/CollisionSystem.h"
 #include "systems/SpriteUtils.h"
-Scene_Play::Scene_Play(GameEngine& game, const std::string& levelPath)
-    : Scene(game),  // Inizializza la base class Scene (che non ha costruttore di default)
-    m_levelPath(levelPath),                                   // (1)
-    m_entityManager(),                                        // (2)
-    m_lastDirection(1.f),                                     // (3)
-    m_animationSystem(game, m_entityManager, m_lastDirection),  // (4)
-    m_playRenderer(game, m_entityManager, m_backgroundSprite, m_backgroundTexture, m_cameraView), // (5)
-    m_backgroundTexture(),                                    // (6)
-    m_backgroundSprite(),                                     // (7)
-    m_game(game),                                             // (8)
-    m_gameOver(false),                                        // (9)
-    m_levelLoader(game),                                      // (10)
-    m_showBoundingBoxes(false),                               // (11)
-    m_showGrid(false),                                        // (12)
-    m_backgroundPath(""),                                     // (13) – oppure un valore di default
-    m_timeofday(""),                                          // (14) – oppure "Day" se preferisci
-    m_cameraView(game.window().getDefaultView()),             // (15)
-    m_score(0),
-    m_movementSystem(game, m_entityManager, m_cameraView, m_lastDirection),
-    m_spawner(game, m_entityManager),
-    m_enemyAISystem(m_entityManager, m_spawner, m_game)
+
+void Scene_Play::initializeCamera()
 {
-    // Aggiorna la vista con quella predefinita della finestra
+    // 1) Start with the window's default view
     m_cameraView = m_game.window().getDefaultView();
 
-    // Seleziona uno sfondo casuale
-    selectRandomBackground();
+    // 2) Get window size
+    sf::Vector2u windowSize = m_game.window().getSize();
 
-    // Carica la texture dello sfondo
+    // 3) Get the background texture size (assuming m_backgroundTexture is loaded)
+    sf::Vector2u bgSize = m_backgroundTexture.getSize();
+    if (bgSize.x == 0 || bgSize.y == 0) {
+        // Safety check: if the texture didn't load properly, just return
+        return;
+    }
+
+    // 4) Center the camera on the middle of the background
+    float centerX = static_cast<float>(bgSize.x) / 2.f;
+    float centerY = static_cast<float>(bgSize.y) / 2.f;
+    m_cameraView.setCenter(centerX, centerY);
+
+    m_cameraView.zoom(1.5f);
+
+    // 6) Apply the view to the window
+    m_game.window().setView(m_cameraView);
+}
+// Then call it from the constructor:
+Scene_Play::Scene_Play(GameEngine& game, const std::string& levelPath)
+    : Scene(game),
+      m_levelPath(levelPath),
+      m_entityManager(),
+      m_lastDirection(1.f),
+      m_animationSystem(game, m_entityManager, m_lastDirection),
+      m_playRenderer(game, m_entityManager, m_backgroundSprite, m_backgroundTexture, m_cameraView),
+      m_backgroundTexture(),
+      m_backgroundSprite(),
+      m_game(game),
+      m_gameOver(false),
+      m_levelLoader(game),
+      m_showBoundingBoxes(false),
+      m_showGrid(false),
+      m_backgroundPath(""),
+      m_timeofday(""),
+      m_cameraView(game.window().getDefaultView()),
+      m_score(0),
+      m_movementSystem(game, m_entityManager, m_cameraView, m_lastDirection),
+      m_spawner(game, m_entityManager),
+      m_enemyAISystem(m_entityManager, m_spawner, m_game)
+{
+    selectBackgroundFromLevel(m_levelPath);
+
     if (!m_backgroundTexture.loadFromFile(m_backgroundPath)) {
         std::cerr << "Error: Could not load background image: " << m_backgroundPath << std::endl;
+    } else {
+        m_backgroundTexture.setRepeated(true);
+        m_backgroundSprite.setTexture(m_backgroundTexture);
     }
-    std::cout << "[DEBUG] Loaded background image: " << m_backgroundPath << std::endl;
 
-    // Abilita il tiling dello sfondo
-    m_backgroundTexture.setRepeated(true);
-
-    // Imposta la texture sullo sprite dello sfondo
-    m_backgroundSprite.setTexture(m_backgroundTexture);
-
-    // Centra la camera
-    sf::Vector2u windowSize = m_game.window().getSize();
-    m_cameraView.setCenter(sf::Vector2f(windowSize.x / 2, windowSize.y / 2));
-    m_cameraView.zoom(1.5f);
-    m_game.window().setView(m_cameraView);
+    // Initialize camera after loading background
+    initializeCamera();
 
     init();
 }
-void Scene_Play::selectRandomBackground() {
-    static std::random_device rd;
-    static std::mt19937 gen(rd());
-    static std::uniform_int_distribution<int> dist(0, 2);
 
-    int selection = dist(gen);
-
-    // Randomly select one of the three backgrounds
-    switch (selection) {
-        case 0:
-            m_backgroundPath = "src/images/Background/day1.png";
-            m_timeofday = "Day";
-            break;
-        case 1:
-            m_backgroundPath = "src/images/Background/night1.png";
-            m_timeofday = "Night";
-            break;
-        case 2:
-            m_backgroundPath = "src/images/Background/sunset1.png";
-            m_timeofday = "Sunset";
-            break;
+void Scene_Play::selectBackgroundFromLevel(const std::string& levelPath) {
+    // Extract level name from path
+    std::string levelName = levelPath.substr(levelPath.find_last_of("/\\") + 1);
+    
+    // Mapping of levels to backgrounds
+    if (levelName == "ancient_rome_level_1_day.txt") {
+        m_backgroundPath = "src/images/Background/ancient_rome_level_1_day.png";
+        m_timeofday = "ANCIENT ROME (DAY)";
+    } else if (levelName == "ancient_rome_level_2_sunset.txt") {
+        m_backgroundPath = "src/images/Background/ancient_rome_level_2_sunset.png";
+        m_timeofday = "ANCIENT ROME (NIGHT)";
+    } else if (levelName == "ancient_rome_level_3_night.txt") {
+        m_backgroundPath = "src/images/Background/ancient_rome_level_3_night.png";
+        m_timeofday = "ANCIENT ROME (SUNSET)";
+    } else if (levelName == "ancient_rome_level_4_emperor_room.txt") {
+        m_backgroundPath = "src/images/Background/ancient_rome_level_4_emperor_room.png";
+        m_timeofday = "EMPEROR ROOM";
+    }  
+    else {
+        // Default background if level is not mapped
+        m_backgroundPath = "src/images/Background/default.png";
+        m_timeofday = "Unknown";
     }
 }
 

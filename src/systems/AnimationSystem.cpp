@@ -81,6 +81,14 @@ void AnimationSystem::update(float deltaTime) {
         anim.animation.update(deltaTime);
     }
 
+    // --- Dec Animation ---
+    for (auto& entity : m_entityManager.getEntities("decoration")) {
+        if (!entity->has<CAnimation>()) continue;
+
+        auto& anim = entity->get<CAnimation>();
+        anim.animation.update(deltaTime);
+    }
+
     // --- Enemy Animation ---
     for (auto& enemy : m_entityManager.getEntities("enemy")) {
         if (!enemy->has<CAnimation>() || !enemy->has<CEnemyAI>()) continue;

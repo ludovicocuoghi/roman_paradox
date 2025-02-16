@@ -20,6 +20,7 @@ public:
     Scene_Play(GameEngine& game, const std::string& levelPath);
 
     // Scene lifecycle and initialization functions
+    void initializeCamera();
     void init();
     void loadLevel(const std::string& levelPath);
     void selectRandomTimeOfDay();
@@ -50,6 +51,7 @@ public:
     void goToMenu();
     void sLifespan(float deltaTime);
     void sEnemyAI(float deltaTime);
+    void selectBackgroundFromLevel(const std::string& levelPath);
 
     // sRender() now delegates all drawing to PlayRenderer
     void sRender() override;

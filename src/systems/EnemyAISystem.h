@@ -17,10 +17,10 @@ public:
     static constexpr float ATTACK_TIMER_DEFAULT = 0.3f;
     static constexpr float SWORD_SPAWN_THRESHOLD = 0.7f;
     static constexpr float ATTACK_COOLDOWN = 0.4f;
-    static constexpr float FOLLOW_MOVE_SPEED = 100.f;
+    static constexpr float FOLLOW_MOVE_SPEED = 150.f;
     static constexpr float RECOGNITION_MOVE_SPEED = 80.f;
     static constexpr float RECOGNITION_DISTANCE_THRESHOLD = 15.f;
-    static constexpr float PATROL_SPEED = 70.f;
+    static constexpr float PATROL_SPEED = 100.f;
     static constexpr float PATROL_DISTANCE_THRESHOLD = 10.f;
     static constexpr float PATROL_WAIT_DURATION = 2.0f;
     

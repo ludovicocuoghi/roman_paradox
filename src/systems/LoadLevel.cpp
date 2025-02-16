@@ -45,7 +45,9 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
         {"TreasureBoxAnim", "TreasureBoxAnim"},
         {"TreasureBoxHit", "TreasureBoxHit"},
         {"Grape", "Grape"},
-        {"Coin", "Coin"}
+        {"Coin", "Coin"},
+        {"GoldGround", "GoldGround"},
+        {"GoldPipeTall","GoldPipeTall"}
     };
 
     while (file >> type)
@@ -107,6 +109,12 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
             float realX = x * LoadLevel::GRID_SIZE + LoadLevel::HALF_GRID;
             float realY = windowHeight - (y * LoadLevel::GRID_SIZE) - LoadLevel::HALF_GRID;
             auto decor = entityManager.addEntity("decoration");
+
+            // Apply pipe-specific offsets
+            if (assetType == "GoldPipeTall") {
+                realY += LoadLevel::GRID_SIZE * LoadLevel::PIPETALL_REALY_OFFSET_MULTIPLIER;
+                //realX += LoadLevel::GRID_SIZE * LoadLevel::PIPE_REALX_OFFSET_MULTIPLIER;
+            }
 
             if (m_game.assets().hasAnimation(assetType)) {
                 const Animation& anim = m_game.assets().getAnimation(assetType);

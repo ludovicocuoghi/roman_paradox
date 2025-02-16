@@ -7,13 +7,14 @@ Tile Ground 5 0
 Tile Ground 6 0
 Tile Ground 3 3
 Tile Ground 4 3
-Tile Ground 5 3
-Tile Ground 6 3
+Tile GoldGround 5 3
 Tile Ground 5 6
 Tile Ground 6 6
 Tile Ground 7 0
 Tile Ground 8 0
 Tile Ground 9 0
-Player 2 1
-
+Dec GoldPipeTall 0 4
+Dec GoldPipeTall 1 4
+Dec GoldPipeTall 2 4
+Player 2 2
 Enemy EnemyFast 5 1 5 1 7 1
