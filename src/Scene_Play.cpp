@@ -63,19 +63,30 @@ Scene_Play::Scene_Play(GameEngine& game, const std::string& levelPath)
       m_spawner(game, m_entityManager),
       m_enemyAISystem(m_entityManager, m_spawner, m_game)
 {
+    std::cout << "[DEBUG] Scene_Play constructor: levelPath = " << levelPath << std::endl;
+
+    if (m_levelPath.empty()) {
+        std::cerr << "[ERROR] Scene_Play received an empty level path!" << std::endl;
+        return;
+    }
+
     selectBackgroundFromLevel(m_levelPath);
+    std::cout << "[DEBUG] Selected background: " << m_backgroundPath << std::endl;
 
     if (!m_backgroundTexture.loadFromFile(m_backgroundPath)) {
-        std::cerr << "Error: Could not load background image: " << m_backgroundPath << std::endl;
+        std::cerr << "[ERROR] Could not load background image: " << m_backgroundPath << std::endl;
     } else {
         m_backgroundTexture.setRepeated(true);
         m_backgroundSprite.setTexture(m_backgroundTexture);
     }
 
-    // Initialize camera after loading background
+    std::cout << "[DEBUG] Initializing Camera...\n";
     initializeCamera();
 
+    std::cout << "[DEBUG] Calling init()...\n";
     init();
+
+    std::cout << "[DEBUG] Scene_Play initialized successfully!\n";
 }
 
 void Scene_Play::selectBackgroundFromLevel(const std::string& levelPath) {
@@ -105,6 +116,8 @@ void Scene_Play::selectBackgroundFromLevel(const std::string& levelPath) {
 
 void Scene_Play::init()
 {
+    std::cout << "[DEBUG] Scene_Play::init() - Start\n";
+
     registerCommonActions();
     registerAction(sf::Keyboard::T, "TOGGLE_TEXTURE");
     registerAction(sf::Keyboard::A, "MOVE_LEFT");
@@ -115,10 +128,25 @@ void Scene_Play::init()
     registerAction(sf::Keyboard::G, "TOGGLE_GRID");
     registerAction(sf::Keyboard::B, "TOGGLE_BB");
 
-    // Utilizza il membro m_levelLoader già inizializzato:
-    m_levelLoader.load(m_levelPath, m_entityManager);
-}
+    std::cout << "[DEBUG] Scene_Play::init() - Loading level: " << m_levelPath << std::endl;
 
+    if (m_levelPath.empty()) {
+        std::cerr << "[ERROR] Cannot load level: Level path is empty!\n";
+        return;
+    }
+
+    if (!std::filesystem::exists(m_levelPath)) {
+        std::cerr << "[ERROR] Level file does not exist: " << m_levelPath << std::endl;
+        return;
+    }
+
+    // ✅ Ensure entity manager is clean before loading
+    m_entityManager = EntityManager();
+
+    std::cout << "[DEBUG] Scene_Play::init() - Calling m_levelLoader.load()\n";
+    m_levelLoader.load(m_levelPath, m_entityManager);
+    std::cout << "[DEBUG] Scene_Play::init() - Level loaded successfully!\n";
+}
 //
 // Main Update Function
 //

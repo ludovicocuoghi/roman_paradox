@@ -8,7 +8,7 @@
 #include "Assets.hpp"  
 #include "Action.hpp"  
 
-class Scene; 
+class Scene;  // Forward declaration (DO NOT include Scene_Play.h here!)
 
 class GameEngine {
 private:
@@ -21,6 +21,9 @@ private:
     std::queue<Action> m_actionQueue;
     sf::View m_cameraView;
     int m_score = 0;
+    std::unordered_map<std::string, std::string> m_levelConnections;
+    std::string m_currentLevel;
+    std::string m_pendingLevelChange = "";
 
 public:
     GameEngine(const std::string& assetsPath);
@@ -30,7 +33,7 @@ public:
     void sUserInput();
     
     void changeScene(const std::string& sceneName, std::shared_ptr<Scene> scene);
-    void stop();  // ✅ New: Properly stops the game
+    void stop();
 
     sf::RenderWindow& window();
     bool isRunning() const;
@@ -40,4 +43,13 @@ public:
     void clearActions();
     bool hasActions() const;
     Action popAction();
+
+    std::shared_ptr<Scene> getCurrentScene();
+    
+    void setCameraView(const sf::View& view);
+    sf::View& getCameraView();
+    
+    void loadLevel(const std::string& levelPath);
+    std::string getNextLevelPath();
+    void scheduleLevelChange(const std::string& levelPath);
 };

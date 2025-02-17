@@ -18,6 +18,7 @@ public:
     static constexpr float PIPETALL_REALY_OFFSET_MULTIPLIER = 1.5f;   // GRID_SIZE * 1.5
     static constexpr float PIPE_REALY_OFFSET_MULTIPLIER = 0.5f;        // GRID_SIZE * 1.0
     static constexpr float PIPEBROKEN_REALY_OFFSET_MULTIPLIER= 1.f;    
+    static constexpr float LEVELDOOR_REALY_OFFSET_MULTIPLIER = 2.f;
 
     // Parametri per il player
     static constexpr float PLAYER_HEALTH = 40.f;

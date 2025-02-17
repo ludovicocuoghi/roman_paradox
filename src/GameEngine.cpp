@@ -1,21 +1,69 @@
 #include "GameEngine.h"
 #include "Scene_Menu.h"
+#include "Scene_Play.h"
 #include <iostream>
 #include "imgui.h"
 #include "imgui-SFML.h"
+#include <filesystem> 
 
-
-// Constructor
 // Constructor
 GameEngine::GameEngine(const std::string& path) {
     m_window.create(sf::VideoMode(1280, 980), "Game Window");
     m_window.setFramerateLimit(100);
 
-    // Carica gli asset globalmente (questo deve essere fatto una volta)
+    // Load assets globally
     m_assets.loadFromFile(path);
 
-    // Cambia scena (ad esempio, menu iniziale)
+    // ✅ Set the default camera view
+    m_cameraView = m_window.getDefaultView();
+
+    // ✅ Define level transitions
+    m_levelConnections = {
+        {"ancient_rome_level_1_day.txt", "ancient_rome_level_2_sunset.txt"},
+        {"ancient_rome_level_2_sunset.txt", "ancient_rome_level_3_night.txt"},
+        {"ancient_rome_level_3_night.txt", "ancient_rome_level_4_emperor_room.txt"},
+        {"ancient_rome_level_4_emperor_room.txt", "ancient_rome_level_1_day.txt"} // Loop back
+    };
+
+    // Start in menu
     changeScene("MENU", std::make_shared<Scene_Menu>(*this));
+}
+
+// ✅ Retrieve the current scene
+std::shared_ptr<Scene> GameEngine::getCurrentScene() {
+    return m_currentScene;
+}
+
+// ✅ Get the next level path
+std::string GameEngine::getNextLevelPath() {
+    if (m_currentLevel.empty()) {
+        std::cerr << "[ERROR] m_currentLevel is empty when requesting next level!\n";
+        return "./bin/levels/ancient_rome_level_1_day.txt"; // Default fallback
+    }
+
+    std::string levelFile = m_currentLevel.substr(m_currentLevel.find_last_of("/\\") + 1);
+
+    if (m_levelConnections.find(levelFile) != m_levelConnections.end()) {
+        std::string nextLevel = m_levelConnections[levelFile];
+        std::cout << "[DEBUG] Next level found: " << nextLevel << std::endl;
+        return "./bin/levels/" + nextLevel;
+    }
+
+    std::cerr << "[ERROR] No next level mapping for: " << levelFile << std::endl;
+    return "./bin/levels/ancient_rome_level_1_day.txt"; // Default if unknown
+}
+
+// ✅ Load a new level and update the current level
+void GameEngine::loadLevel(const std::string& levelPath) {
+    if (levelPath.empty()) {
+        std::cerr << "[ERROR] Attempted to load an empty level path!\n";
+        return;
+    }
+
+    m_currentLevel = levelPath;  // ✅ Ensure current level is stored
+    std::cout << "[DEBUG] Loading Level: " << m_currentLevel << std::endl;
+
+    changeScene("PLAY", std::make_shared<Scene_Play>(*this, m_currentLevel));
 }
 
 // Check if the game is running
@@ -37,7 +85,6 @@ void GameEngine::update() {
     if (m_currentScene) {
         float deltaTime = getDeltaTime();
 
-        // ✅ Process all queued actions before updating the scene
         while (hasActions()) {
             Action action = popAction();
             m_currentScene->sDoAction(action);
@@ -45,6 +92,13 @@ void GameEngine::update() {
 
         m_currentScene->update(deltaTime);
         m_currentScene->sRender();
+
+        // ✅ Process pending level change AFTER update cycle
+        if (!m_pendingLevelChange.empty()) {
+            std::string nextLevel = m_pendingLevelChange;
+            m_pendingLevelChange = "";
+            loadLevel(nextLevel);
+        }
     }
 }
 
@@ -52,30 +106,23 @@ void GameEngine::update() {
 void GameEngine::sUserInput() {
     sf::Event event;
     while (m_window.pollEvent(event)) {
-        // Se la scena corrente usa ImGui, inoltra l'evento a ImGui
+        // Forward ImGui events
         if (m_currentScene && m_currentScene->usesImGui())
             ImGui::SFML::ProcessEvent(event);
         
         if (event.type == sf::Event::Closed) {
             stop();
         }
+
         m_window.setKeyRepeatEnabled(false);
-        if (event.type == sf::Event::KeyPressed) {
+
+        if (event.type == sf::Event::KeyPressed || event.type == sf::Event::KeyReleased) {
             if (m_currentScene) {
                 for (const auto& [key, actionName] : m_currentScene->getActionMap()) {
                     if (event.key.code == key) {
-                        m_actionQueue.push(Action(actionName, "START"));
-                        std::cout << "[DEBUG] Action queued: " << actionName << " | Type: START\n";
-                    }
-                }
-            }
-        }
-        if (event.type == sf::Event::KeyReleased) {
-            if (m_currentScene) {
-                for (const auto& [key, actionName] : m_currentScene->getActionMap()) {
-                    if (event.key.code == key) {
-                        m_actionQueue.push(Action(actionName, "END"));
-                        std::cout << "[DEBUG] Action queued: " << actionName << " | Type: END\n";
+                        std::string actionType = (event.type == sf::Event::KeyPressed) ? "START" : "END";
+                        m_actionQueue.push(Action(actionName, actionType));
+                        std::cout << "[DEBUG] Action queued: " << actionName << " | Type: " << actionType << "\n";
                     }
                 }
             }
@@ -83,15 +130,28 @@ void GameEngine::sUserInput() {
     }
 }
 
-
-// Change the active scene
+// ✅ Change the active scene properly
 void GameEngine::changeScene(const std::string& sceneName, std::shared_ptr<Scene> scene) {
+    if (!scene) {
+        std::cerr << "[ERROR] Tried to switch to NULL scene: " << sceneName << std::endl;
+        return;
+    }
+
     std::cout << "[DEBUG] Switching Scene to: " << sceneName << std::endl;
-    m_actionQueue = {};  // ✅ Clear actions from previous scene
+
+    clearActions();
+    
+    // ✅ Remove previous scene to avoid memory issues
+    m_scenes.erase(sceneName);
+
+    // ✅ Store the new scene properly
     m_scenes[sceneName] = scene;
     m_currentScene = scene;
-}
 
+    if (!m_currentScene) {
+        std::cerr << "[ERROR] m_currentScene is NULL after switching to: " << sceneName << std::endl;
+    }
+}
 
 // Stops the game engine properly
 void GameEngine::stop() {
@@ -135,4 +195,18 @@ float GameEngine::getDeltaTime() {
 // Access assets
 Assets& GameEngine::assets() {
     return m_assets;
+}
+
+// ✅ NEW: Set the camera view
+void GameEngine::setCameraView(const sf::View& view) {
+    m_cameraView = view;
+    m_window.setView(m_cameraView);
+}
+
+// ✅ NEW: Get the camera view
+sf::View& GameEngine::getCameraView() {
+    return m_cameraView;
+}
+void GameEngine::scheduleLevelChange(const std::string& levelPath) {
+    m_pendingLevelChange = levelPath;
 }

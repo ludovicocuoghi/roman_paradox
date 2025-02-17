@@ -101,7 +101,7 @@ void Scene_Menu::sDoAction(const Action& action) {
                 m_game.changeScene("EDITOR", std::make_shared<Scene_LevelEditor>(m_game));
             } else {
                 std::string selectedLevel = "./bin/levels/" + selectedOption + ".txt";
-                m_game.changeScene("PLAY", std::make_shared<Scene_Play>(m_game, selectedLevel));
+                m_game.loadLevel(selectedLevel);
             }
         } else if (action.name() == "BACK") {
             m_game.window().close();

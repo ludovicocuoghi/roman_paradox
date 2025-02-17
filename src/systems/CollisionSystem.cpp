@@ -51,6 +51,28 @@ void CollisionSystem::handlePlayerTileCollisions() {
             if (!pRect.intersects(tRect))
                 continue;
 
+            std::string nextLevelPath = "";  // ✅ Store next level path instead of switching immediately
+
+            // ✅ NEW: Check if this tile is a LevelDoor
+            if (tile->has<CAnimation>() && tile->get<CAnimation>().animation.getName() == "LevelDoor") {
+                std::cout << "[DEBUG] Player entered LevelDoor. Scheduling level change...\n";
+                m_game.scheduleLevelChange(m_game.getNextLevelPath());
+                return;
+            }
+            
+            // ✅ Move level transition **outside the loop** to avoid modifying entities while iterating
+            if (!nextLevelPath.empty()) {
+                std::cout << "[DEBUG] Transitioning to next level: " << nextLevelPath << std::endl;
+            
+                if (nextLevelPath == "./bin/levels/") {
+                    std::cerr << "[ERROR] Invalid next level path (empty string)!\n";
+                    return;
+                }
+            
+                m_game.loadLevel(nextLevelPath);
+                return;
+            }
+            
             // Calculate overlap on X and Y
             float overlapX = std::min(pRect.left + pRect.width, tRect.left + tRect.width)
                            - std::max(pRect.left, tRect.left);
@@ -517,8 +539,6 @@ void CollisionSystem::handlePlayerCollectibleCollisions() {
         auto& pTrans = player->get<CTransform>();
         auto& pBB    = player->get<CBoundingBox>();
         sf::FloatRect pRect = pBB.getRect(pTrans.pos);
-        std::cout << "Score: " << m_score << std::endl;
-
         for (auto& item : m_entityManager.getEntities("collectable")) {
             if (!item->has<CTransform>() || !item->has<CBoundingBox>() || !item->has<CState>())
                 continue;

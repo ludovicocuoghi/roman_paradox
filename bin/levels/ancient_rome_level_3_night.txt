@@ -23,8 +23,6 @@ Tile Ground 10 1
 Tile Ground 10 0
 Tile Ground 11 1
 Tile TreasureBoxAnim 7 3
-Tile Brick 12 3
-Tile Brick 13 3
 Tile Brick 14 3
 Tile Brick 15 3
 Tile Brick 16 3
@@ -396,6 +394,7 @@ Tile Ground 122 1
 Tile Ground 122 0
 Tile Ground 123 1
 Tile Ground 123 0
+Tile LevelDoor 10 6
 Dec PipeTall 102 5
 Dec PipeTall 106 5
 Dec PipeTall 107 5

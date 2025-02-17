@@ -33,6 +33,8 @@ Texture TexCloudBig /Dec/bigcloud.png
 Texture TexTreasureBoxAnim /Tile/treasurebox_anim.png
 Texture TexTreasureBoxHit /Tile/treasurebox_hit.png
 
+Texture TexLevelDoor /Tile/level_door.png
+
 Texture TexStandAnimEnemyFast /ancient_roman/silver/stand1002_silver.png
 Texture TexRunEnemyFast /ancient_roman/silver/run1004_silver.png
 Texture TexAirEnemyFast /ancient_roman/silver/air1002_silver.png
@@ -90,6 +92,9 @@ Animation Pipe TexPipe 96 192 1 0
 
 Animation CloudSmall TexCloudSmall 260 96 1 0
 Animation CloudBig TexCloudBig 520 192 1 0
+
+Animation LevelDoor TexLevelDoor 348 480 1 0
+
 
 Animation EnemyFast_Stand TexStandAnimEnemyFast 100 100 1 0
 Animation EnemyFast_Run TexRunEnemyFast 100 100 4 6

@@ -265,7 +265,7 @@ Tile Ground 0 3
 Tile PipeTall 50 5
 Tile PipeTall 61 5
 Tile Ground 59 2
-Dec BushSmall 6 2
+Tile LevelDoor 5 6
 Dec BushSmall 15 2
 Dec CloudBig 1 10
 Dec CloudSmall 10 9

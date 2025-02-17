@@ -128,6 +128,7 @@ public:
     bool onGround;
     float attackTime;
     float attackCooldown;
+    bool blockedHorizontally;
 
     CState(const std::string& s = "idle")
         : state(s),
@@ -138,7 +139,8 @@ public:
           knockbackTimer(0.f),
           onGround(false),
           attackTime(0.f),
-          attackCooldown(0.f)
+          attackCooldown(0.f),
+          blockedHorizontally(false)
     {}
 
     void update(float deltaTime) {
@@ -209,65 +211,73 @@ enum class EnemyState {
 // Reordered fields: declare 'patrolPoints' before 'enemyState' 
 // so that 'enemyState' can safely check patrolPoints in its own initialization.
 class CEnemyAI : public Component {
-public:
-    // Basic properties
-    EnemyType enemyType;
-    EnemyBehavior enemyBehavior;
-
-    // Patrol Behavior
-    std::vector<Vec2<float>> patrolPoints;
-    EnemyState enemyState;  // Now declared after 'patrolPoints'
-
-    // Movement & Combat Stats
-    float speedMultiplier;
-    int damage;
-
-    // Vision & Attack Parameters
-    float lineOfSightRange;
-    float attackRadius;
-
-    int currentPatrolIndex;
-    float patrolWaitTime;
-
-    // Jumping & Movement
-    float facingDirection;
-    float jumpCooldown;
-
-    // Attack Handling
-    bool swordSpawned;
-    float attackCooldown;
-    float attackTimer;
-
-    // Knockback Handling
-    float knockbackTimer;
-
-    // Recognition Handling
-    float recognitionTimer;
-    float maxRecognitionTime;
-    bool inRecognitionArea;
-    Vec2<float> lastSeenPlayerPos;
-
-    // Constructor
-    CEnemyAI(EnemyType type = EnemyType::Normal, EnemyBehavior behavior = EnemyBehavior::FollowOne)
-        : enemyType(type),
-          enemyBehavior(behavior),
-          patrolPoints(),
-          enemyState(patrolPoints.empty() ? EnemyState::Idle : EnemyState::Patrol),
-          speedMultiplier(1.0f),
-          damage(1),
-          lineOfSightRange(200.f),
-          attackRadius(100.f),
-          currentPatrolIndex(0),
-          patrolWaitTime(0.f),
-          facingDirection(1.f),
-          jumpCooldown(0.5f),
-          swordSpawned(false),
-          attackCooldown(0.f),
-          attackTimer(0.f),
-          knockbackTimer(0.f),
-          recognitionTimer(0.f),
-          maxRecognitionTime(5.0f),
-          inRecognitionArea(false),
-          lastSeenPlayerPos(Vec2<float>(0.f, 0.f))
-    {}
-};
+    public:
+        // Basic properties
+        EnemyType enemyType;
+        EnemyBehavior enemyBehavior;
+    
+        // Patrol Behavior
+        std::vector<Vec2<float>> patrolPoints;
+        EnemyState enemyState;  // Declared after 'patrolPoints'
+    
+        // Movement & Combat Stats
+        float speedMultiplier;
+        int damage;
+    
+        // Vision & Attack Parameters
+        float lineOfSightRange;
+        float attackRadius;
+    
+        int currentPatrolIndex;
+        float patrolWaitTime;
+    
+        // Jumping & Movement
+        float facingDirection;
+        float jumpCooldown;
+    
+        // Attack Handling
+        bool swordSpawned;
+        float attackCooldown;
+        float attackTimer;
+    
+        // Knockback Handling
+        float knockbackTimer;
+    
+        // Recognition Handling
+        float recognitionTimer;
+        float maxRecognitionTime;
+        bool inRecognitionArea;
+        Vec2<float> lastSeenPlayerPos;
+    
+        // NEW FIELDS for "blocked jump" logic:
+        float blockedHorizontallyTime; // Tracks how long the enemy is stuck horizontally
+        bool  isJumping;               // Whether the enemy is currently jumping
+        float jumpTimer;               // Remaining time for the current jump
+    
+        // Constructor
+        CEnemyAI(EnemyType type = EnemyType::Normal, EnemyBehavior behavior = EnemyBehavior::FollowOne)
+            : enemyType(type),
+              enemyBehavior(behavior),
+              patrolPoints(),
+              enemyState(patrolPoints.empty() ? EnemyState::Idle : EnemyState::Patrol),
+              speedMultiplier(1.0f),
+              damage(1),
+              lineOfSightRange(200.f),
+              attackRadius(100.f),
+              currentPatrolIndex(0),
+              patrolWaitTime(0.f),
+              facingDirection(1.f),
+              jumpCooldown(0.5f),
+              swordSpawned(false),
+              attackCooldown(0.f),
+              attackTimer(0.f),
+              knockbackTimer(0.f),
+              recognitionTimer(0.f),
+              maxRecognitionTime(5.0f),
+              inRecognitionArea(false),
+              lastSeenPlayerPos(Vec2<float>(0.f, 0.f)),
+              blockedHorizontallyTime(0.f), // Initialize new fields
+              isJumping(false),
+              jumpTimer(0.f)
+        {}
+    };

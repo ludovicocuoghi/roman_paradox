@@ -25,7 +25,6 @@ public:
     static constexpr float PATROL_SPEED = 100.f;
     static constexpr float PATROL_DISTANCE_THRESHOLD = 10.f;
     static constexpr float PATROL_WAIT_DURATION = 2.0f;
-    
     void update(float deltaTime);
 
 private:
