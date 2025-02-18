@@ -175,6 +175,11 @@ void CollisionSystem::handleEnemyTileCollisions() {
             if (!eRect.intersects(tRect))
                 continue;
 
+            if (tile->has<CAnimation>() && tile->get<CAnimation>().animation.getName() == "LevelDoor") {
+                continue;
+            }
+            
+            
             float overlapX = std::min(eRect.left + eRect.width, tRect.left + tRect.width)
                            - std::max(eRect.left, tRect.left);
             float overlapY = std::min(eRect.top + eRect.height, tRect.top + tRect.height)

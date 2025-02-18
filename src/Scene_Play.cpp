@@ -220,7 +220,7 @@ void Scene_Play::sAnimation(float deltaTime)
 //
 void Scene_Play::sCollision() {
     CollisionSystem collisionSystem(m_entityManager, m_game, &m_spawner, m_score);
-    collisionSystem.updateCollisions();
+    collisionSystem.updateCollisions(); // ✅ pass dt
 }
 
 // Action Processing (Input Handling)                  
