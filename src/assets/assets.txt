@@ -4,6 +4,7 @@ Texture TexAir /player_alien/a_air1002.png
 Texture TexHit /player_alien/a_hit100nosword.png
 Texture TexSword /sword/a_sword.png
 Texture TexEnemySword /sword/sword.png
+Texture EmperorSword /sword/gold_sword.png
 
 Texture TexGrapeSmall /Collectables/smallgrape.png
 Texture TexGrapeBig /Collectables/biggrape.png
@@ -55,6 +56,8 @@ Texture TexRunEnemyNormal /ancient_roman/gold/run1004_gold.png
 Texture TexAirEnemyNormal /ancient_roman/gold/air1002_gold.png
 Texture TexHitEnemyNormal /ancient_roman/gold/hit100nosword_gold.png
 
+Texture TexStandOldRomeEmperor /ancient_roman/emperor/emperor.png
+
 Animation PlayerStand TexStandAnim 100 100 6 8
 Animation PlayerRun TexRun 100 100 4 6
 Animation PlayerAir TexAir 100 130 1 0
@@ -62,6 +65,7 @@ Animation PlayerAttack TexHit 100 100 1 0
 
 Animation Sword TexSword 48 13 1 0
 Animation EnemySword TexEnemySword 48 13 1 0
+Animation EmperorSword TexEmperorSword 48 13 1 0
 
 Animation GrapeBig TexGrapeBig 100 80 1 0
 Animation GrapeSmall TexGrapeSmall 64 64 1 0
@@ -111,6 +115,10 @@ Animation EnemyElite_Attack TexHitEnemyElite 100 100 1 0
 Animation EnemyNormal_Stand TexStandAnimEnemyNormal 100 100 1 0
 Animation EnemyNormal_Run TexRunEnemyNormal 100 100 4 6
 Animation EnemyNormal_Attack TexHitEnemyNormal 100 100 1 0
+
+Animation Emperor_Stand TexStandOldRomeEmperor 160 250 1 0
+Animation Emperor_Run TexStandOldRomeEmperor 160 250 1 0
+Animation Emperor_Attack TexStandOldRomeEmperor 160 250 1 0
 
 Font Tech fonts/font.ttf
 Font Menu fonts/font.ttf

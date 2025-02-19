@@ -101,6 +101,7 @@ void AnimationSystem::update(float deltaTime) {
             case EnemyType::Fast:   baseAnimName = "EnemyFast"; break;
             case EnemyType::Strong: baseAnimName = "EnemyStrong"; break;
             case EnemyType::Elite:  baseAnimName = "EnemyElite"; break;
+            case EnemyType::Emperor:  baseAnimName = "Emperor"; break;
             default:                baseAnimName = "EnemyNormal"; break;
         }
 

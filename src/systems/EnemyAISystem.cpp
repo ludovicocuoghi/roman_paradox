@@ -170,7 +170,14 @@ void EnemyAISystem::update(float deltaTime)
         }
 
         // Logica d'attacco
-        if (shouldFollow && distance < ATTACK_RANGE 
+        // Prima di controllare l'attacco
+        float currentAttackRange = ATTACK_RANGE;
+        if (enemyAI.enemyType == EnemyType::Emperor) {
+            currentAttackRange = EMPEROR_ATTACK_RANGE; // Valore più grande
+        }
+
+        // Logica d'attacco
+        if (shouldFollow && distance < currentAttackRange 
             && enemyAI.attackCooldown <= 0.f 
             && enemyAI.enemyState != EnemyState::Attack)
         {
@@ -179,8 +186,8 @@ void EnemyAISystem::update(float deltaTime)
             enemyAI.swordSpawned = false;
 
             std::cout << "[DEBUG] Enemy " << enemy->id() 
-                      << " entering Attack state. (cooldown=" 
-                      << enemyAI.attackCooldown << ")\n";
+                    << " entering Attack state. (cooldown=" 
+                    << enemyAI.attackCooldown << ")\n";
         }
         else if (shouldFollow && enemyAI.enemyState != EnemyState::Attack) {
             enemyAI.enemyState = EnemyState::Follow;
@@ -244,6 +251,7 @@ void EnemyAISystem::update(float deltaTime)
                 case EnemyType::Strong: runAnimName = "EnemyStrong_Run"; break;
                 case EnemyType::Elite:  runAnimName = "EnemyElite_Run";  break;
                 case EnemyType::Normal: runAnimName = "EnemyNormal_Run"; break;
+                case EnemyType::Emperor: runAnimName = "Emperor_Run"; break;
             }
             if (anim.animation.getName() != runAnimName) {
                 const Animation& runAnim = m_game.assets().getAnimation(runAnimName);

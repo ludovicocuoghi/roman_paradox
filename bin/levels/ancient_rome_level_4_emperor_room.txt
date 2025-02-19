@@ -107,3 +107,4 @@ Dec GoldPipeTall 13 5
 Dec GoldPipeTall 14 5
 Dec GoldPipeTall 15 5
 Player 2 2
+Enemy Emperor 20 6 20 6 22 6

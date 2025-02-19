@@ -14,6 +14,8 @@ static EnemyType getEnemyType(const std::string &typeStr) {
         return EnemyType::Strong;
     else if (typeStr == "EnemyElite")
         return EnemyType::Elite;
+    else if (typeStr == "Emperor")
+        return EnemyType::Emperor;
     else
         return EnemyType::Normal;
 }
@@ -108,7 +110,7 @@ void Scene_LevelEditor::update(float deltaTime) {
         mousePressed = false;
     }
 
-    printEntities();
+    //printEntities();
 }
 
 void Scene_LevelEditor::sRender() {
@@ -409,6 +411,7 @@ void Scene_LevelEditor::saveLevel(const std::string& filePath) {
         std::string enemyType = enemy->get<CEnemyAI>().enemyType == EnemyType::Fast ? "EnemyFast" :
                                 enemy->get<CEnemyAI>().enemyType == EnemyType::Strong ? "EnemyStrong" :
                                 enemy->get<CEnemyAI>().enemyType == EnemyType::Elite ? "EnemyElite" :
+                                enemy->get<CEnemyAI>().enemyType == EnemyType::Emperor ? "Emperor" :
                                 "EnemyNormal";
         
         // Add patrol points (original X +2)
@@ -505,7 +508,7 @@ void Scene_LevelEditor::loadTileOptions() {
 }
 
 void Scene_LevelEditor::loadEnemyOptions() {
-    m_enemyOptions = { "EnemyFast", "EnemyStrong", "EnemyElite", "EnemyNormal" };
+    m_enemyOptions = { "EnemyFast", "EnemyStrong", "EnemyElite", "EnemyNormal", "Emperor" };
     if (!m_enemyOptions.empty()) {
         m_selectedEnemy = m_enemyOptions[0];
     }

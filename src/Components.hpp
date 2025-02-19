@@ -191,7 +191,8 @@ enum class EnemyType {
     Fast,
     Normal,
     Strong,
-    Elite
+    Elite,
+    Emperor
 };
 
 enum class EnemyBehavior {

@@ -182,10 +182,6 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
                 std::cerr << "[WARNING] Incomplete Enemy entry. Skipping.\n";
                 continue;
             }
-
-            float realX = enemyX * LoadLevel::GRID_SIZE + LoadLevel::HALF_GRID;
-            float realY = windowHeight - (enemyY * LoadLevel::GRID_SIZE) - LoadLevel::HALF_GRID;
-
             auto enemy = entityManager.addEntity("enemy");
 
             EnemyType enemyType;
@@ -209,11 +205,14 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
                 speedMultiplier = LoadLevel::ENEMY_ELITE_SPEED_MULTIPLIER;
                 enemyHealth = LoadLevel::ENEMY_ELITE_HEALTH;
                 enemyDamage = LoadLevel::ENEMY_ELITE_DAMAGE;
+            } else if  (enemyTypeStr == "Emperor") {
+                enemyType = EnemyType::Emperor;
+                speedMultiplier = LoadLevel::ENEMY_EMPEROR_SPEED_MULTIPLIER;
+                enemyHealth = LoadLevel::ENEMY_EMPEROR_HEALTH;
+                enemyDamage = LoadLevel::ENEMY_EMPEROR_DAMAGE;
             } else {
-                enemyType = EnemyType::Normal;
-                speedMultiplier = LoadLevel::ENEMY_NORMAL_SPEED_MULTIPLIER;
-                enemyHealth = LoadLevel::ENEMY_NORMAL_HEALTH;
-                enemyDamage = LoadLevel::ENEMY_NORMAL_DAMAGE;
+                std::cerr << "[WARNING] Unknown enemy type: " << enemyTypeStr << std::endl;
+                continue;
             }
 
             std::string runAnimName   = enemyTypeStr + "_Run";
@@ -237,10 +236,28 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
                 std::cerr << "[ERROR] Missing animations for " << enemyTypeStr << " enemy!" << std::endl;
             }
 
-            enemy->add<CTransform>(Vec2<float>(realX, realY));
+            
+            float realX = enemyX * LoadLevel::GRID_SIZE + LoadLevel::HALF_GRID;
+            float realY = windowHeight - (enemyY * LoadLevel::GRID_SIZE) - LoadLevel::HALF_GRID;
 
-            Vec2<float> enemyBBSize(LoadLevel::PLAYER_BB_SIZE, LoadLevel::PLAYER_BB_SIZE);
-            enemy->add<CBoundingBox>(enemyBBSize, enemyBBSize * 0.5f);
+
+            if (enemyType == EnemyType::Emperor) {
+                realY -= LoadLevel::GRID_SIZE * LoadLevel::EMPEROR_REALY_OFFSET_MULTIPLIER;
+            }
+            
+            // Aggiungi il componente Transform
+            enemy->add<CTransform>(Vec2<float>(realX, realY));
+            
+            // Se Emperor, usa un bounding box più grande
+            if (enemyType == EnemyType::Emperor) {
+                Vec2<float> emperorBBSize(LoadLevel::EMPEROR_BB_WIDTH, LoadLevel::EMPEROR_BB_HEIGHT);
+                enemy->add<CBoundingBox>(emperorBBSize, emperorBBSize * 0.5f);
+            } else {
+                // bounding box di default per gli altri
+                Vec2<float> enemyBBSize(LoadLevel::PLAYER_BB_SIZE, LoadLevel::PLAYER_BB_SIZE);
+                enemy->add<CBoundingBox>(enemyBBSize, enemyBBSize * 0.5f);
+            }
+            
             enemy->add<CGravity>(LoadLevel::GRAVITY_VAL);
             enemy->add<CHealth>(enemyHealth);
 
