@@ -35,7 +35,7 @@ void Scene_Play::initializeCamera()
     float centerY = static_cast<float>(bgSize.y) / 2.f;
     m_cameraView.setCenter(centerX, centerY);
 
-    m_cameraView.zoom(1.5f);
+    m_cameraView.zoom(1.3f);
 
     // 6) Apply the view to the window
     m_game.window().setView(m_cameraView);
@@ -331,17 +331,39 @@ void Scene_Play::lifeCheckPlayerDeath() {
 void Scene_Play::lifeCheckEnemyDeath() {
     auto enemies = m_entityManager.getEntities("enemy");
     for (auto& enemy : enemies) {
-        // Se l'enemy non ha il componente CHealth, salta (oppure gestisci in altro modo)
+        // Se l'enemy non ha il componente CHealth, salta
         if (!enemy->has<CHealth>()) continue;
-
         const auto& transform = enemy->get<CTransform>();
         const auto& health = enemy->get<CHealth>();
 
-        // Imposta una soglia: ad esempio, se l'enemy cade oltre y > 1000 o sale troppo in alto (y < -100)
-        bool isOutOfBounds = (transform.pos.y > 1000) || (transform.pos.y < -100);
+        bool isOutOfBounds = (transform.pos.y > 10000);
         bool isDead = (health.currentHealth <= 0);
 
         if (isOutOfBounds || isDead) {
+            // Prima di distruggere il nemico, controlliamo se ha un CUniqueID
+            if (enemy->has<CUniqueID>()) {
+                auto& uniqueID = enemy->get<CUniqueID>();
+
+                // Se questo è il nemico "EnemyStrong_2"
+                if (uniqueID.id == "EnemyStrong_7") {
+                    std::cout << "[DEBUG] EnemyStrong_2 sconfitto, rimuovo la tile con ID secretDoor_1...\n";
+
+                    // Cerchiamo la tile con ID "secretDoor_1" e la distruggiamo
+                    auto tiles = m_entityManager.getEntities("tile");
+                    for (auto& tile : tiles) {
+                        if (tile->has<CUniqueID>()) {
+                            auto& tileID = tile->get<CUniqueID>();
+                            if (tileID.id == "PipeTall_371") {
+                                tile->destroy();
+                                std::cout << "[DEBUG] Tile PipeTall_371 distrutta!\n";
+                                break; // Esci dal loop dopo averla trovata
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Ora distruggiamo il nemico
             enemy->destroy();
             std::cout << "[DEBUG] Enemy destroyed: ID = " << enemy->id() << "\n";
         }

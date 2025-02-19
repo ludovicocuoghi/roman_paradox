@@ -58,16 +58,6 @@ Tile Ground 26 1
 Tile Ground 28 1
 Tile Ground 27 1
 Tile Ground 29 1
-Tile Ground 12 5
-Tile Ground 17 7
-Tile Ground 18 7
-Tile Box1 17 8
-Tile Box2 17 9
-Tile Box2 18 8
-Tile Box1 18 9
-Tile Ground 14 6
-Tile Ground 15 6
-Tile Ground 11 5
 Tile Ground 31 4
 Tile Ground 32 4
 Tile Ground 33 4
@@ -183,9 +173,7 @@ Tile Ground 75 0
 Tile Ground 75 1
 Tile Ground 76 0
 Tile Ground 76 1
-Tile Box1 67 2
 Tile Box2 68 2
-Tile Box2 67 3
 Tile Box1 68 3
 Tile TreasureBoxAnim 74 5
 Tile TreasureBoxAnim 73 5
@@ -207,10 +195,6 @@ Tile Ground 96 1
 Tile Ground 96 0
 Tile Ground 97 1
 Tile Ground 97 0
-Tile PipeTall 89 5
-Tile PipeTall 90 5
-Tile PipeTall 101 5
-Tile PipeTall 102 5
 Tile Ground 98 1
 Tile Ground 98 0
 Tile Ground 99 1
@@ -247,33 +231,50 @@ Tile Ground 114 0
 Tile Ground 114 1
 Tile Ground 115 1
 Tile Ground 115 0
-Tile Ground 9 4
 Tile Ground 30 4
 Tile Ground 38 4
-Tile Ground 37 8
-Tile Box1 9 7
-Tile Box1 12 7
-Tile Box1 13 8
-Tile Box1 16 8
-Tile Box2 10 7
-Tile Box2 11 7
-Tile Box2 14 8
-Tile Box2 15 8
-Tile Box2 31 14
 Tile Ground 0 2
 Tile Ground 0 3
 Tile PipeTall 50 5
-Tile PipeTall 61 5
-Tile Ground 59 2
-Tile LevelDoor 5 6
-Dec BushSmall 15 2
+Tile Box1 12 2
+Tile Box1 13 2
+Tile Box2 19 4
+Tile Box2 20 4
+Tile PipeTall 66 5
+Tile Ground 116 2
+Tile Ground 116 1
+Tile Ground 116 0
+Tile Ground 117 0
+Tile Ground 117 1
+Tile Ground 117 2
+Tile Ground 118 2
+Tile Ground 118 1
+Tile Ground 118 0
+Tile LevelDoor 112 6
+Tile Brick 90 6
+Tile Brick 92 6
+Tile Brick 91 6
+Tile Box1 91 8
+Tile Pipe 88 8
+Tile Brick 89 6
+Tile Brick 88 6
+Tile Brick 87 5
+Tile Brick 94 5
+Tile Brick 93 6
+Tile Pipe 93 8
+Tile Box2 90 8
+Tile Box2 90 7
+Tile Box1 91 7
+Tile Pipe 48 3
+Tile Pipe 63 3
+Tile Ground 85 2
+Tile Ground 86 2
+Tile Ground 67 2
+Tile Ground 67 3
+Tile Ground 73 23
 Dec CloudBig 1 10
 Dec CloudSmall 10 9
 Dec CloudBig 22 11
-Dec BushTall 48 5
-Dec BushTall 60 5
-Dec BushTall 62 5
-Dec BushTall 46 5
 Dec CloudBig 46 13
 Dec CloudBig 61 11
 Dec CloudBig 34 14
@@ -281,8 +282,6 @@ Dec CloudBig 12 15
 Dec CloudBig 74 14
 Dec BushSmall 77 2
 Dec BushSmall 87 2
-Dec GoldPipeTall 113 5
-Dec GoldPipeTall 115 5
 Dec BushTall 109 5
 Dec BushTall 110 5
 Dec BushTall 111 5
@@ -292,13 +291,12 @@ Dec CloudBig 91 12
 Dec CloudBig 80 9
 Dec BushTall 1 5
 Dec BushTall 3 5
+Dec BushSmall 22 2
+Dec BushTall 49 5
+Dec BushTall 51 5
+Dec BushTall 65 5
+Dec BushTall 64 5
 Player 2 2
 Enemy EnemyNormal 54 2 54 2 56 2
-Enemy EnemyNormal 81 2 81 2 83 2
-Enemy EnemyNormal 73 2 73 2 75 2
-Enemy EnemyFast 95 2 95 2 97 2
-Enemy EnemyFast 12 2 12 2 14 2
-Enemy EnemyFast 19 2 19 2 21 2
-Enemy EnemyNormal 24 2 24 2 26 2
-Enemy EnemyNormal 34 5 34 5 36 5
-Enemy EnemyElite 30 5 30 5 32 5
+Enemy EnemyNormal 96 2 96 2 98 2
+Enemy EnemyNormal 99 2 99 2 101 2

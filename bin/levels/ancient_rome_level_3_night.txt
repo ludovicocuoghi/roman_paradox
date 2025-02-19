@@ -275,16 +275,12 @@ Tile Ground 40 11
 Tile Ground 40 12
 Tile Ground 40 13
 Tile Ground 39 11
-Tile Ground 51 11
-Tile Ground 42 11
 Tile PipeTall 52 19
 Tile PipeTall 52 23
-Tile Ground 49 14
 Tile Ground 51 17
 Tile Ground 49 21
 Tile Ground 50 17
 Tile Ground 49 18
-Tile Ground 47 17
 Tile Ground 76 1
 Tile Ground 76 0
 Tile Ground 77 1
@@ -394,7 +390,28 @@ Tile Ground 122 1
 Tile Ground 122 0
 Tile Ground 123 1
 Tile Ground 123 0
-Tile LevelDoor 10 6
+Tile LevelDoor 119 6
+Tile Brick 97 7
+Tile Brick 98 7
+Tile Brick 99 7
+Tile Brick 100 7
+Tile Brick 102 7
+Tile Brick 103 7
+Tile Brick 101 7
+Tile Brick 104 7
+Tile Brick 106 7
+Tile Brick 107 7
+Tile Brick 105 7
+Tile Brick 108 7
+Tile Brick 100 12
+Tile Brick 101 12
+Tile Brick 102 12
+Tile Brick 103 12
+Tile Brick 105 12
+Tile Brick 104 12
+Tile Brick 51 10
+Tile Brick 49 13
+Tile Brick 47 16
 Dec PipeTall 102 5
 Dec PipeTall 106 5
 Dec PipeTall 107 5
@@ -489,10 +506,36 @@ Dec BushTall 116 5
 Dec BushTall 117 5
 Dec BushTall 113 5
 Player 2 2
-Enemy EnemyElite 3 2 3 2 5 2
-Enemy EnemyFast 32 2 32 2 34 2
-Enemy EnemyStrong 46 8 46 8 48 8
-Enemy EnemyFast 49 8 49 8 51 8
-Enemy EnemyFast 51 18 51 18 53 18
 Enemy EnemyElite 60 2 60 2 62 2
 Enemy EnemyElite 71 2 71 2 73 2
+Enemy EnemyElite 32 2 32 2 34 2
+Enemy EnemyElite 7 2 7 2 9 2
+Enemy EnemyElite 93 2 93 2 95 2
+Enemy EnemyElite 94 2 94 2 96 2
+Enemy EnemyElite 95 2 95 2 97 2
+Enemy EnemyElite 97 2 97 2 99 2
+Enemy EnemyElite 96 2 96 2 98 2
+Enemy EnemyElite 98 2 98 2 100 2
+Enemy EnemyElite 99 2 99 2 101 2
+Enemy EnemyElite 100 2 100 2 102 2
+Enemy EnemyElite 102 2 102 2 104 2
+Enemy EnemyElite 101 2 101 2 103 2
+Enemy EnemyElite 103 2 103 2 105 2
+Enemy EnemyElite 104 2 104 2 106 2
+Enemy EnemyElite 105 2 105 2 107 2
+Enemy EnemyElite 106 2 106 2 108 2
+Enemy EnemyElite 107 2 107 2 109 2
+Enemy EnemyElite 108 2 108 2 110 2
+Enemy EnemyElite 109 2 109 2 111 2
+Enemy EnemyElite 110 2 110 2 112 2
+Enemy EnemyElite 111 2 111 2 113 2
+Enemy EnemyElite 102 13 102 13 104 13
+Enemy EnemyElite 103 13 103 13 105 13
+Enemy EnemyElite 100 8 100 8 102 8
+Enemy EnemyElite 101 8 101 8 103 8
+Enemy EnemyElite 103 8 103 8 105 8
+Enemy EnemyElite 105 8 105 8 107 8
+Enemy EnemyElite 102 8 102 8 104 8
+Enemy EnemyElite 104 8 104 8 106 8
+Enemy EnemyElite 46 8 46 8 48 8
+Enemy EnemyElite 51 18 51 18 53 18

@@ -302,6 +302,8 @@ void Scene_LevelEditor::renderImGui() {
     ImGui::RadioButton("Decoration", &m_mode, 1);
     ImGui::SameLine();
     ImGui::RadioButton("Enemy", &m_mode, 2);
+    ImGui::SameLine();
+    ImGui::RadioButton("Player", &m_mode, 3);
 
     if (m_mode == 0) {
         ImGui::Text("Seleziona una tile:");
@@ -396,9 +398,6 @@ void Scene_LevelEditor::saveLevel(const std::string& filePath) {
         int savedGridY = worldHeight - 1 - gridY;
         out << "Dec " << dec->get<CAnimation>().animation.getName() << " " << gridX << " " << savedGridY << "\n";
     }
-    
-    //Save Player
-    out << "Player 2 2\n";
 
     // Save enemies with patrol points (adding +2 to X positions)
     for (auto& enemy : m_entityManager.getEntities("enemy")) {

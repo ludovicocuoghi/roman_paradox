@@ -22,6 +22,11 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
     const int windowHeight = m_game.window().getSize().y;
     bool playerSpawned = false;
 
+    // Contatori per assegnare ID univoci a tile, decorazioni e nemici
+    int tileIndex = 0;
+    int decIndex  = 0;
+    int enemyIndex = 0;
+
     std::string type, assetType;
     int x, y;
 
@@ -37,64 +42,61 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
                 std::cerr << "[WARNING] Incomplete Tile entry. Skipping.\n";
                 continue;
             }
-        
+
+            // Incrementa il contatore tile e crea un ID unico, ad es. "Ground_1", "Brick_2", ecc.
+            tileIndex++;
+            std::string tileID = assetType + "_" + std::to_string(tileIndex);
+
             float realX = x * LoadLevel::GRID_SIZE + LoadLevel::HALF_GRID;
             float realY = windowHeight - (y * LoadLevel::GRID_SIZE) - LoadLevel::HALF_GRID;
-        
-            // Pipe offsets (unchanged)
+
+            // Eventuali offset speciali per le pipe
             if (assetType == "PipeTall") {
                 realY += LoadLevel::GRID_SIZE * LoadLevel::PIPETALL_REALY_OFFSET_MULTIPLIER;
-            }
-            else if (assetType == "PipeBroken") {
+            } else if (assetType == "PipeBroken") {
                 realY += LoadLevel::GRID_SIZE * LoadLevel::PIPEBROKEN_REALY_OFFSET_MULTIPLIER;
-            }
-            else if (assetType == "Pipe") {
+            } else if (assetType == "Pipe") {
                 realY += LoadLevel::GRID_SIZE * LoadLevel::PIPE_REALY_OFFSET_MULTIPLIER;
             }
-        
+
             auto tile = entityManager.addEntity("tile");
-        
-            // Directly check if we have an animation named assetType
+
+            // Assegna l'ID univoco
+            tile->add<CUniqueID>(tileID);
+
+            // Caricamento animazione
             if (m_game.assets().hasAnimation(assetType)) {
                 const Animation& anim = m_game.assets().getAnimation(assetType);
                 tile->add<CAnimation>(anim, true);
-        
-                std::cout << "[DEBUG] Loaded Tile: " << assetType
-                          << " at (" << x << ", " << y << ")" << std::endl;
-        
-                // ------------------------------
-                // Special case for "LevelDoor"
-                // ------------------------------
-                if (assetType == "LevelDoor") {
-                    //Specify y offset for tile location
 
+                std::cout << "[DEBUG] Loaded Tile: " << assetType
+                          << " at (" << x << ", " << y << ")"
+                          << " with ID: " << tileID << std::endl;
+
+                // Caso speciale: LevelDoor
+                if (assetType == "LevelDoor") {
                     realY += LoadLevel::GRID_SIZE * LoadLevel::LEVELDOOR_REALY_OFFSET_MULTIPLIER;
-                    // Force a custom bounding box (96×192), centered with y offset
                     Vec2<float> bboxSize(96.f, 192.f);
                     Vec2<float> bboxOffset = bboxSize * 0.5f;
-                    if (assetType == "LevelDoor") {
-                        bboxOffset.y -= 96.f; // Move bounding box down by 96 pixels
-                    }
+                    bboxOffset.y -= 96.f; // sposta il BB verso il basso
                     tile->add<CBoundingBox>(bboxSize, bboxOffset);
                 } else {
-                    // Default bounding box = animation size
+                    // Bounding box di default = dimensioni dell'animazione
                     Vec2<float> bboxSize(
                         static_cast<float>(anim.getSize().x),
                         static_cast<float>(anim.getSize().y)
                     );
                     tile->add<CBoundingBox>(bboxSize, bboxSize * 0.5f);
-        
-                    // If it's a TreasureBox, add "inactive" state
+
+                    // Esempio: se è una TreasureBox
                     if (assetType == "TreasureBoxAnim") {
                         tile->add<CState>("inactive");
                     }
-                    // else if (assetType == "Box1" || assetType == "Box2") { ... }
                 }
-            }
-            else {
+            } else {
                 std::cerr << "[WARNING] Missing animation for tile: " << assetType << std::endl;
             }
-        
+
             tile->add<CTransform>(Vec2<float>(realX, realY));
         }
         // ------------------------------------------------------
@@ -106,18 +108,24 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
                 continue;
             }
 
+            decIndex++;
+            std::string decID = assetType + "_" + std::to_string(decIndex);
+
             float realX = x * LoadLevel::GRID_SIZE + LoadLevel::HALF_GRID;
             float realY = windowHeight - (y * LoadLevel::GRID_SIZE) - LoadLevel::HALF_GRID;
-            auto decor = entityManager.addEntity("decoration");
 
-            // Pipe offset if it's "GoldPipeTall", etc.
+            auto decor = entityManager.addEntity("decoration");
+            decor->add<CUniqueID>(decID);
+
+            // Offset speciale per "GoldPipeTall", ecc.
             if (assetType == "GoldPipeTall") {
                 realY += LoadLevel::GRID_SIZE * LoadLevel::PIPETALL_REALY_OFFSET_MULTIPLIER;
             }
 
             if (m_game.assets().hasAnimation(assetType)) {
                 const Animation& anim = m_game.assets().getAnimation(assetType);
-                // Example offset for "BushTall"
+
+                // Esempio offset per "BushTall"
                 if (assetType == "BushTall") {
                     realY += LoadLevel::GRID_SIZE * 1.5f;
                 }
@@ -126,7 +134,8 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
                 decor->add<CTransform>(Vec2<float>(realX, realY));
 
                 std::cout << "[DEBUG] Loaded Decoration: " << assetType
-                          << " at (" << x << ", " << y << ")" << std::endl;
+                          << " at (" << x << ", " << y << ")"
+                          << " with ID: " << decID << std::endl;
             } else {
                 std::cerr << "[WARNING] Missing animation for decoration: " << assetType << std::endl;
             }
@@ -176,20 +185,24 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
         else if (type == "Enemy") {
             std::string enemyTypeStr;
             int enemyX, enemyY, px1, py1, px2, py2;
-            std::vector<Vec2<float>> patrolPoints;
 
             if (!(file >> enemyTypeStr >> enemyX >> enemyY >> px1 >> py1 >> px2 >> py2)) {
                 std::cerr << "[WARNING] Incomplete Enemy entry. Skipping.\n";
                 continue;
             }
+
+            enemyIndex++;
+            std::string enemyID = enemyTypeStr + "_" + std::to_string(enemyIndex);
+
             auto enemy = entityManager.addEntity("enemy");
+            enemy->add<CUniqueID>(enemyID);
 
             EnemyType enemyType;
             float speedMultiplier = 1.0f;
             int enemyHealth = 10;
             int enemyDamage = 3; // default
 
-            // Decide type
+            // Decide type (puoi sostituire con la tua getEnemyType se preferisci)
             if (enemyTypeStr == "EnemyFast") {
                 enemyType = EnemyType::Fast;
                 speedMultiplier = LoadLevel::ENEMY_FAST_SPEED_MULTIPLIER;
@@ -205,11 +218,16 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
                 speedMultiplier = LoadLevel::ENEMY_ELITE_SPEED_MULTIPLIER;
                 enemyHealth = LoadLevel::ENEMY_ELITE_HEALTH;
                 enemyDamage = LoadLevel::ENEMY_ELITE_DAMAGE;
-            } else if  (enemyTypeStr == "Emperor") {
+            } else if (enemyTypeStr == "Emperor") {
                 enemyType = EnemyType::Emperor;
-                speedMultiplier = LoadLevel::ENEMY_EMPEROR_SPEED_MULTIPLIER;
-                enemyHealth = LoadLevel::ENEMY_EMPEROR_HEALTH;
-                enemyDamage = LoadLevel::ENEMY_EMPEROR_DAMAGE;
+                speedMultiplier = LoadLevel::ENEMY_EMPEROR_SPEED_MULTIPLIER; // da definire
+                enemyHealth = LoadLevel::ENEMY_EMPEROR_HEALTH;               // da definire
+                enemyDamage = LoadLevel::ENEMY_EMPEROR_DAMAGE;               // da definire
+            } else if (enemyTypeStr == "EnemyNormal") {
+                enemyType = EnemyType::Normal;
+                speedMultiplier = LoadLevel::ENEMY_NORMAL_SPEED_MULTIPLIER;
+                enemyHealth = LoadLevel::ENEMY_NORMAL_HEALTH;
+                enemyDamage = LoadLevel::ENEMY_NORMAL_DAMAGE;
             } else {
                 std::cerr << "[WARNING] Unknown enemy type: " << enemyTypeStr << std::endl;
                 continue;
@@ -221,9 +239,10 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
             std::cout << "[DEBUG] Enemy Type: " << enemyTypeStr
                       << " | Using Animations: " << standAnimName << " / " << runAnimName
                       << " Health: " << enemyHealth
-                      << " Damage: " << enemyDamage << std::endl;
+                      << " Damage: " << enemyDamage
+                      << " ID: " << enemyID << std::endl;
 
-            // Try run anim, fallback to stand anim
+            // Caricamento animazioni
             if (m_game.assets().hasAnimation(runAnimName)) {
                 const Animation& anim = m_game.assets().getAnimation(runAnimName);
                 enemy->add<CAnimation>(anim, true);
@@ -236,37 +255,42 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
                 std::cerr << "[ERROR] Missing animations for " << enemyTypeStr << " enemy!" << std::endl;
             }
 
-            
             float realX = enemyX * LoadLevel::GRID_SIZE + LoadLevel::HALF_GRID;
             float realY = windowHeight - (enemyY * LoadLevel::GRID_SIZE) - LoadLevel::HALF_GRID;
 
-
+            // Se Emperor, offset addizionale
             if (enemyType == EnemyType::Emperor) {
                 realY -= LoadLevel::GRID_SIZE * LoadLevel::EMPEROR_REALY_OFFSET_MULTIPLIER;
             }
-            
-            // Aggiungi il componente Transform
+
+            // Trasform
             enemy->add<CTransform>(Vec2<float>(realX, realY));
-            
-            // Se Emperor, usa un bounding box più grande
+
+            // Bounding box personalizzato per Emperor
             if (enemyType == EnemyType::Emperor) {
                 Vec2<float> emperorBBSize(LoadLevel::EMPEROR_BB_WIDTH, LoadLevel::EMPEROR_BB_HEIGHT);
                 enemy->add<CBoundingBox>(emperorBBSize, emperorBBSize * 0.5f);
             } else {
-                // bounding box di default per gli altri
                 Vec2<float> enemyBBSize(LoadLevel::PLAYER_BB_SIZE, LoadLevel::PLAYER_BB_SIZE);
                 enemy->add<CBoundingBox>(enemyBBSize, enemyBBSize * 0.5f);
             }
-            
+
             enemy->add<CGravity>(LoadLevel::GRAVITY_VAL);
             enemy->add<CHealth>(enemyHealth);
 
-            enemy->add<CEnemyAI>(enemyType, (enemyType == EnemyType::Elite) ? EnemyBehavior::FollowTwo : EnemyBehavior::FollowOne);
+            // Assegna l'AI
+            // Se vuoi Emperor con FollowTwo, aggiungi "|| enemyType == EnemyType::Emperor"
+            EnemyBehavior behavior = (enemyType == EnemyType::Elite)
+                                     ? EnemyBehavior::FollowTwo
+                                     : EnemyBehavior::FollowOne;
+            enemy->add<CEnemyAI>(enemyType, behavior);
+
             enemy->get<CEnemyAI>().damage = enemyDamage;
             enemy->get<CEnemyAI>().speedMultiplier = speedMultiplier;
             std::cout << "[DEBUG] Enemy Damage: " << enemyDamage << std::endl;
 
-            // Patrol points
+            // Gestione dei punti di pattuglia
+            std::vector<Vec2<float>> patrolPoints;
             patrolPoints.push_back(Vec2<float>(
                 px1 * LoadLevel::GRID_SIZE + LoadLevel::HALF_GRID,
                 windowHeight - (py1 * LoadLevel::GRID_SIZE) - LoadLevel::HALF_GRID
@@ -281,7 +305,8 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
 
             std::cout << "[DEBUG] Spawned " << enemyTypeStr << " Enemy at ("
                       << enemyX << ", " << enemyY << ") with patrol ("
-                      << px1 << "," << py1 << ") <-> (" << px2 << "," << py2 << ")" << std::endl;
+                      << px1 << "," << py1 << ") <-> (" << px2 << "," << py2 << ")"
+                      << " ID: " << enemyID << std::endl;
         }
         else {
             std::cerr << "[WARNING] Unknown entity type: " << type << std::endl;

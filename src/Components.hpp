@@ -187,6 +187,19 @@ public:
     CRotation(float a, float s) : angle(a), speed(s) {}
 };
 
+class CUniqueID : public Component {
+    public:
+        std::string id;
+    
+        // Costruttore di default richiesto dal tuple
+        CUniqueID() = default;
+    
+        // Costruttore che inizializza con una stringa
+        CUniqueID(const std::string& idString)
+            : id(idString)
+        {}
+    };
+
 enum class EnemyType {
     Fast,
     Normal,

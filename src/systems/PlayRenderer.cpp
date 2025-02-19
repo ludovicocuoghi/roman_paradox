@@ -203,9 +203,9 @@ void PlayRenderer::render() {
     for (auto& esword : m_entityManager.getEntities("enemySword")) {
         if (!esword->has<CTransform>()) continue;
         auto& esTrans = esword->get<CTransform>();
-        std::cout << "Rendering enemy sword at " << esTrans.pos.x << "," << esTrans.pos.y << "\n";
+        //std::cout << "Rendering enemy sword at " << esTrans.pos.x << "," << esTrans.pos.y << "\n";
         if (esword->has<CAnimation>()) {
-            std::cout << "Rendering enemy sword\n";
+            //std::cout << "Rendering enemy sword\n";
             auto& anim = esword->get<CAnimation>();
             sf::Sprite sprite = anim.animation.getSprite();
             sprite.setPosition(esTrans.pos.x, esTrans.pos.y);
@@ -214,7 +214,7 @@ void PlayRenderer::render() {
             m_game.window().draw(sprite);
         }
         if (m_showBoundingBoxes && esword->has<CBoundingBox>()) {
-            std::cout << "Rendering enemy sword bounding box\n";
+            //std::cout << "Rendering enemy sword bounding box\n";
             auto& bbox = esword->get<CBoundingBox>();
             debugBox.setSize(sf::Vector2f(bbox.size.x, bbox.size.y));
             float dir = (esTrans.pos.x < 0) ? -1.f : 1.f;

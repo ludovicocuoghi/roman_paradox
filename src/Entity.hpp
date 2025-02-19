@@ -18,7 +18,8 @@ using ComponentTuple = std::tuple<
     CRotation,
     CHealth,
     CShape,
-    CEnemyAI
+    CEnemyAI,
+    CUniqueID
 >;
 
 class Entity {

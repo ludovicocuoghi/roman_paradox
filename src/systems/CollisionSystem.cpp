@@ -10,6 +10,13 @@ CollisionSystem::CollisionSystem(EntityManager& entityManager, GameEngine& game,
     : m_entityManager(entityManager), m_game(game), m_spawner(spawner), m_score(score) {}
 
 void CollisionSystem::updateCollisions() {
+    if (m_score >=100) {
+        for (auto& player : m_entityManager.getEntities("player")) {
+            auto& health = player->get<CHealth>();
+            health.heal(100);
+        m_score -=100;
+        }
+    }
     handlePlayerTileCollisions();
     handleEnemyTileCollisions();
     handlePlayerEnemyCollisions();
@@ -351,26 +358,26 @@ void CollisionSystem::handlePlayerEnemyCollisions() {
                         if (playerOnGround) {
                             // Player is fixed on the ground; push enemy upward only.
                             enemyTrans.pos.y -= separation;
-                            enemyTrans.velocity.y = -std::max(std::abs(enemyTrans.velocity.y), bounceSpeed);
+                            enemyTrans.velocity.y = -bounceSpeed;
                         } else {
                             // Normal resolution: enemy upward, player downward.
                             enemyTrans.pos.y -= separation;
                             pTrans.pos.y     += separation;
-                            enemyTrans.velocity.y = -std::max(std::abs(enemyTrans.velocity.y), bounceSpeed);
-                            pTrans.velocity.y     = std::max(std::abs(pTrans.velocity.y), bounceSpeed);
+                            enemyTrans.velocity.y = -bounceSpeed;
+                            pTrans.velocity.y     = bounceSpeed;
                         }
                     } else {
                         // Enemy is below player:
                         if (enemyOnGround) {
                             // Enemy is on ground; push player upward only.
                             pTrans.pos.y -= separation;
-                            pTrans.velocity.y = -std::max(std::abs(pTrans.velocity.y), bounceSpeed);
+                            pTrans.velocity.y = -bounceSpeed;
                         } else {
                             // Normal resolution: enemy downward, player upward.
                             enemyTrans.pos.y += separation;
                             pTrans.pos.y     -= separation;
-                            enemyTrans.velocity.y = std::max(std::abs(enemyTrans.velocity.y), bounceSpeed);
-                            pTrans.velocity.y     = -std::max(std::abs(pTrans.velocity.y), bounceSpeed);
+                            enemyTrans.velocity.y =  bounceSpeed;
+                            pTrans.velocity.y     = -bounceSpeed;
                         }
                     }
                 }
@@ -432,7 +439,6 @@ void CollisionSystem::handleSwordCollisions() {
                     }
                 }
 
-                // Lancia la "moneta" (roll da 1 a 50 e trigger se uguale a 1)
                 static std::random_device rd;
                 static std::mt19937 gen(rd());
                 std::uniform_int_distribution<int> dist(PLAYER_SWORD_KNOCKBACK_ROLL_MIN, PLAYER_SWORD_KNOCKBACK_ROLL_MAX);

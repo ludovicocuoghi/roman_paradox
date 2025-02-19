@@ -24,29 +24,29 @@ public:
     static constexpr float EMPEROR_BB_WIDTH = 160.f;
     static constexpr float EMPEROR_BB_HEIGHT = 250.f;
     // Parametri per il player
-    static constexpr float PLAYER_HEALTH = 40.f;
+    static constexpr float PLAYER_HEALTH = 50.f;
     static constexpr float PLAYER_BB_SIZE = 80.f;
     static constexpr float GRAVITY_VAL = 1000.f;
 
     // Parametri per i nemici in base al tipo:
     // EnemyFast
-    static constexpr float ENEMY_FAST_SPEED_MULTIPLIER = 1.5f;
-    static constexpr int   ENEMY_FAST_HEALTH = 5;
+    static constexpr float ENEMY_FAST_SPEED_MULTIPLIER = 1.8f;
+    static constexpr int   ENEMY_FAST_HEALTH = 20;
     static constexpr int   ENEMY_FAST_DAMAGE = 5;
 
     // EnemyStrong
-    static constexpr float ENEMY_STRONG_SPEED_MULTIPLIER = 0.7f;
-    static constexpr int   ENEMY_STRONG_HEALTH = 10;
-    static constexpr int   ENEMY_STRONG_DAMAGE = 10;
+    static constexpr float ENEMY_STRONG_SPEED_MULTIPLIER = 1.3f;
+    static constexpr int   ENEMY_STRONG_HEALTH = 30;
+    static constexpr int   ENEMY_STRONG_DAMAGE = 15;
 
     // EnemyElite
-    static constexpr float ENEMY_ELITE_SPEED_MULTIPLIER = 1.5f;
-    static constexpr int   ENEMY_ELITE_HEALTH = 15;
+    static constexpr float ENEMY_ELITE_SPEED_MULTIPLIER = 1.8f;
+    static constexpr int   ENEMY_ELITE_HEALTH = 40;
     static constexpr int   ENEMY_ELITE_DAMAGE = 15;
 
     // EnemyNormal
     static constexpr float ENEMY_NORMAL_SPEED_MULTIPLIER = 1.0f;
-    static constexpr int   ENEMY_NORMAL_HEALTH = 8;
+    static constexpr int   ENEMY_NORMAL_HEALTH = 20;
     static constexpr int   ENEMY_NORMAL_DAMAGE = 8;
 
     // EnemyEmperor
