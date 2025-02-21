@@ -4,7 +4,7 @@ Texture TexAir /player_alien/a_air1002.png
 Texture TexHit /player_alien/a_hit100nosword.png
 Texture TexSword /sword/a_sword.png
 Texture TexEnemySword /sword/sword.png
-Texture EmperorSword /sword/gold_sword.png
+Texture TexEmperorSword /sword/gold_sword.png
 
 Texture TexGrapeSmall /Collectables/smallgrape.png
 Texture TexGrapeBig /Collectables/biggrape.png
@@ -35,6 +35,7 @@ Texture TexTreasureBoxAnim /Tile/treasurebox_anim.png
 Texture TexTreasureBoxHit /Tile/treasurebox_hit.png
 
 Texture TexLevelDoor /Tile/level_door.png
+Texture TexLevelDoorGold /Tile/level_door_gold.png
 
 Texture TexStandAnimEnemyFast /ancient_roman/silver/stand1002_silver.png
 Texture TexRunEnemyFast /ancient_roman/silver/run1004_silver.png
@@ -98,7 +99,7 @@ Animation CloudSmall TexCloudSmall 260 96 1 0
 Animation CloudBig TexCloudBig 520 192 1 0
 
 Animation LevelDoor TexLevelDoor 348 480 1 0
-
+Animation LevelDoorGold TexLevelDoorGold 348 480 1 0
 
 Animation EnemyFast_Stand TexStandAnimEnemyFast 100 100 1 0
 Animation EnemyFast_Run TexRunEnemyFast 100 100 4 6

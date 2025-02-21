@@ -328,42 +328,72 @@ void Scene_Play::lifeCheckPlayerDeath() {
         m_game.changeScene("GAMEOVER", std::make_shared<Scene_GameOver>(m_game));
     }
 }
+
+std::string Scene_Play::extractLevelName(const std::string& path) {
+    auto pos = path.find_last_of("/\\");
+    if (pos == std::string::npos) return path; // nessuna slash
+    return path.substr(pos + 1);
+}
+
+void Scene_Play::removeTileByID(const std::string& tileID) {
+    auto tiles = m_entityManager.getEntities("tile");
+    for (auto& t : tiles) {
+        if (t->has<CUniqueID>()) {
+            auto& uid = t->get<CUniqueID>();
+            if (uid.id == tileID) {
+                t->destroy();
+                std::cout << "[DEBUG] Tile " << tileID << " distrutta!\n";
+                break; // esci dopo averla trovata
+            }
+        }
+    }
+}
+
 void Scene_Play::lifeCheckEnemyDeath() {
     auto enemies = m_entityManager.getEntities("enemy");
     for (auto& enemy : enemies) {
-        // Se l'enemy non ha il componente CHealth, salta
         if (!enemy->has<CHealth>()) continue;
+
         const auto& transform = enemy->get<CTransform>();
-        const auto& health = enemy->get<CHealth>();
+        const auto& health    = enemy->get<CHealth>();
 
         bool isOutOfBounds = (transform.pos.y > 10000);
-        bool isDead = (health.currentHealth <= 0);
+        bool isDead        = (health.currentHealth <= 0);
+
 
         if (isOutOfBounds || isDead) {
-            // Prima di distruggere il nemico, controlliamo se ha un CUniqueID
+            // Se l'enemy ha un CUniqueID, controlliamo "chi" è
             if (enemy->has<CUniqueID>()) {
                 auto& uniqueID = enemy->get<CUniqueID>();
 
-                // Se questo è il nemico "EnemyStrong_2"
-                if (uniqueID.id == "EnemyStrong_7") {
-                    std::cout << "[DEBUG] EnemyStrong_2 sconfitto, rimuovo la tile con ID secretDoor_1...\n";
+                std::cout << "[DEBUG] Enemy ID "<< enemy->id() << "unique ID: " << uniqueID.id << " is dead!\n";
 
-                    // Cerchiamo la tile con ID "secretDoor_1" e la distruggiamo
-                    auto tiles = m_entityManager.getEntities("tile");
-                    for (auto& tile : tiles) {
-                        if (tile->has<CUniqueID>()) {
-                            auto& tileID = tile->get<CUniqueID>();
-                            if (tileID.id == "PipeTall_371") {
-                                tile->destroy();
-                                std::cout << "[DEBUG] Tile PipeTall_371 distrutta!\n";
-                                break; // Esci dal loop dopo averla trovata
-                            }
-                        }
+                // Ottieni il nome del livello
+                std::string levelName = extractLevelName(m_levelPath);
+
+                std::cout << "[DEBUG] Level name: " << levelName << "\n";
+                
+                // Esegui un controllo sul nome del livello
+                if (levelName == "ancient_rome_level_1_day.txt") {
+                    // Se siamo nel level 1 day
+                    if (uniqueID.id == "EnemyFast_5") {
+                        std::cout << "[DEBUG] (Level1) EnemyFast_5 sconfitto.\n";
+                        // Rimuovi la tile con ID "PipeTall_275"
+                        removeTileByID("PipeTall_275");
+                    }
+                    // Altri if/else se servono
+                }
+                else if (levelName == "ancient_rome_level_2_sunset.txt") {
+                    // Se siamo nel level 2 sunset
+                    if (uniqueID.id == "EnemyStrong_12") {
+                        std::cout << "[DEBUG] (Level2) EnemyElite_2 sconfitto.\n";
+                        removeTileByID("PipeTall_900");
                     }
                 }
+                // e così via per ogni levelName
             }
 
-            // Ora distruggiamo il nemico
+            // Distruggiamo comunque il nemico
             enemy->destroy();
             std::cout << "[DEBUG] Enemy destroyed: ID = " << enemy->id() << "\n";
         }

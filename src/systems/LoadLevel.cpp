@@ -74,7 +74,7 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
                           << " with ID: " << tileID << std::endl;
 
                 // Caso speciale: LevelDoor
-                if (assetType == "LevelDoor") {
+                if (assetType == "LevelDoor" || assetType == "LevelDoorGold") {
                     realY += LoadLevel::GRID_SIZE * LoadLevel::LEVELDOOR_REALY_OFFSET_MULTIPLIER;
                     Vec2<float> bboxSize(96.f, 192.f);
                     Vec2<float> bboxOffset = bboxSize * 0.5f;
@@ -240,8 +240,8 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
                       << " | Using Animations: " << standAnimName << " / " << runAnimName
                       << " Health: " << enemyHealth
                       << " Damage: " << enemyDamage
-                      << " ID: " << enemyID << std::endl;
-
+                      << " ID: " << enemyID
+                      <<  "general ID : " << enemy->id()  << std::endl;
             // Caricamento animazioni
             if (m_game.assets().hasAnimation(runAnimName)) {
                 const Animation& anim = m_game.assets().getAnimation(runAnimName);

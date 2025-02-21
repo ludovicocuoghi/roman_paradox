@@ -20,7 +20,7 @@ public:
     static constexpr int PLAYER_SWORD_KNOCKBACK_ROLL_MIN = 1;
     static constexpr int PLAYER_SWORD_KNOCKBACK_ROLL_MAX = 5;
     static constexpr int PLAYER_SWORD_KNOCKBACK_ROLL_TRIGGER = 1;
-    static constexpr float PLAYER_SWORD_KNOCKBACK_STRENGTH = 100.0f;
+    static constexpr float PLAYER_SWORD_KNOCKBACK_STRENGTH = 850.0f;
     static constexpr float PLAYER_SWORD_KNOCKBACK_Y_DIRECTION = -0.5f;
 
     // Timer per il knockback del nemico

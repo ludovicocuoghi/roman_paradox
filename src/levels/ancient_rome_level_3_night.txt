@@ -22,7 +22,6 @@ Tile Ground 11 0
 Tile Ground 10 1
 Tile Ground 10 0
 Tile Ground 11 1
-Tile TreasureBoxAnim 7 3
 Tile Brick 14 3
 Tile Brick 15 3
 Tile Brick 16 3
@@ -36,7 +35,6 @@ Tile Ground 23 0
 Tile Ground 24 0
 Tile Ground 27 0
 Tile Ground 28 0
-Tile Brick 21 9
 Tile Brick 16 11
 Tile Brick 15 11
 Tile Brick 17 11
@@ -175,7 +173,6 @@ Tile Brick 29 30
 Tile Brick 31 33
 Tile Brick 32 36
 Tile Box2 32 37
-Tile PipeTall 41 11
 Tile Brick 37 9
 Tile Brick 50 7
 Tile Brick 50 6
@@ -244,11 +241,7 @@ Tile Ground 81 1
 Tile Ground 81 0
 Tile Ground 25 1
 Tile Ground 29 1
-Tile Pipe 23 3
-Tile Pipe 22 3
-Tile Pipe 21 3
 Tile Ground 24 1
-Tile PipeTall 41 15
 Tile PipeTall 52 11
 Tile PipeTall 52 15
 Tile Ground 51 7
@@ -300,8 +293,6 @@ Tile Box2 70 3
 Tile Box2 71 3
 Tile Box2 71 2
 Tile PipeBroken 63 4
-Tile PipeBroken 76 4
-Tile PipeBroken 79 4
 Tile Ground 82 1
 Tile Ground 82 0
 Tile Ground 83 1
@@ -390,7 +381,7 @@ Tile Ground 122 1
 Tile Ground 122 0
 Tile Ground 123 1
 Tile Ground 123 0
-Tile LevelDoor 119 6
+Tile LevelDoorGold 119 6
 Tile Brick 97 7
 Tile Brick 98 7
 Tile Brick 99 7
@@ -412,13 +403,25 @@ Tile Brick 104 12
 Tile Brick 51 10
 Tile Brick 49 13
 Tile Brick 47 16
-Dec PipeTall 102 5
-Dec PipeTall 106 5
-Dec PipeTall 107 5
-Dec PipeTall 99 5
-Dec PipeTall 97 5
-Dec PipeTall 103 5
-Dec PipeTall 108 5
+Tile TreasureBoxAnim 7 4
+Tile PipeBroken 21 4
+Tile PipeBroken 22 4
+Tile PipeBroken 41 10
+Tile Ground 96 7
+Tile Ground 96 8
+Tile Ground 96 9
+Tile Ground 109 7
+Tile Ground 109 8
+Tile Ground 109 9
+Tile Ground 105 13
+Tile Ground 100 13
+Tile Ground 97 12
+Tile Ground 108 12
+Tile PipeBroken 79 4
+Tile PipeBroken 90 4
+Tile Ground 19 10
+Tile Ground 20 8
+Tile Ground 46 16
 Dec BushTall 0 5
 Dec BushTall 2 5
 Dec BushSmall 27 2
@@ -484,8 +487,6 @@ Dec BushTall 106 5
 Dec BushTall 107 5
 Dec BushTall 108 5
 Dec BushTall 109 5
-Dec BushTall 90 5
-Dec BushTall 91 5
 Dec BushTall 93 5
 Dec BushTall 95 5
 Dec BushTall 96 5
@@ -495,8 +496,6 @@ Dec BushTall 101 5
 Dec BushTall 100 5
 Dec BushTall 97 5
 Dec BushTall 94 5
-Dec BushTall 92 5
-Dec BushTall 89 5
 Dec BushTall 110 5
 Dec BushTall 111 5
 Dec BushTall 112 5
@@ -505,37 +504,24 @@ Dec BushTall 115 5
 Dec BushTall 116 5
 Dec BushTall 117 5
 Dec BushTall 113 5
-Player 2 2
 Enemy EnemyElite 60 2 60 2 62 2
 Enemy EnemyElite 71 2 71 2 73 2
 Enemy EnemyElite 32 2 32 2 34 2
 Enemy EnemyElite 7 2 7 2 9 2
-Enemy EnemyElite 93 2 93 2 95 2
-Enemy EnemyElite 94 2 94 2 96 2
-Enemy EnemyElite 95 2 95 2 97 2
 Enemy EnemyElite 97 2 97 2 99 2
-Enemy EnemyElite 96 2 96 2 98 2
-Enemy EnemyElite 98 2 98 2 100 2
 Enemy EnemyElite 99 2 99 2 101 2
-Enemy EnemyElite 100 2 100 2 102 2
-Enemy EnemyElite 102 2 102 2 104 2
 Enemy EnemyElite 101 2 101 2 103 2
 Enemy EnemyElite 103 2 103 2 105 2
-Enemy EnemyElite 104 2 104 2 106 2
 Enemy EnemyElite 105 2 105 2 107 2
-Enemy EnemyElite 106 2 106 2 108 2
 Enemy EnemyElite 107 2 107 2 109 2
-Enemy EnemyElite 108 2 108 2 110 2
 Enemy EnemyElite 109 2 109 2 111 2
-Enemy EnemyElite 110 2 110 2 112 2
 Enemy EnemyElite 111 2 111 2 113 2
 Enemy EnemyElite 102 13 102 13 104 13
 Enemy EnemyElite 103 13 103 13 105 13
 Enemy EnemyElite 100 8 100 8 102 8
-Enemy EnemyElite 101 8 101 8 103 8
 Enemy EnemyElite 103 8 103 8 105 8
 Enemy EnemyElite 105 8 105 8 107 8
 Enemy EnemyElite 102 8 102 8 104 8
-Enemy EnemyElite 104 8 104 8 106 8
 Enemy EnemyElite 46 8 46 8 48 8
 Enemy EnemyElite 51 18 51 18 53 18
+Player 2 2

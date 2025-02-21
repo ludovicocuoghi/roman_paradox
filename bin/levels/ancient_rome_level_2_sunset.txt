@@ -704,7 +704,6 @@ Tile Ground 34 2
 Tile Ground 34 1
 Tile Ground 35 1
 Tile Ground 30 1
-Tile Ground 47 19
 Tile TreasureBoxAnim 32 7
 Tile TreasureBoxAnim 33 7
 Tile Ground 95 13
@@ -844,7 +843,6 @@ Tile Ground 112 14
 Tile Ground 112 13
 Tile Ground 94 18
 Tile PipeTall 96 25
-Tile Ground 98 22
 Tile Box1 134 4
 Tile Box1 142 4
 Tile Box1 149 4
@@ -899,16 +897,16 @@ Tile Box2 84 33
 Tile Box2 85 33
 Tile Brick 93 24
 Tile Brick 94 24
-Tile Brick 59 52
-Tile Brick 61 52
-Tile Brick 63 53
-Tile PipeTall 108 25
-Tile PipeTall 79 52
-Tile PipeTall 38 51
-Tile PipeTall 82 53
+Tile PipeTall 109 25
+Tile Ground 97 22
+Tile Ground 9 15
+Tile Ground 14 15
+Tile Ground 16 16
+Tile Ground 20 18
+Tile Ground 23 19
+Tile Ground 24 19
 Dec BushTall 0 19
 Dec BushTall 2 19
-Dec BushTall 43 30
 Dec CloudBig 21 36
 Dec CloudBig 26 35
 Dec CloudBig 25 35
@@ -985,8 +983,6 @@ Dec CloudBig 104 19
 Dec CloudBig 99 21
 Dec CloudBig 93 20
 Dec CloudBig 96 17
-Dec BushTall 107 25
-Dec BushTall 97 25
 Dec CloudBig 100 17
 Dec CloudBig 97 17
 Dec CloudBig 93 22
@@ -1010,20 +1006,18 @@ Dec CloudBig 111 20
 Dec CloudBig 113 15
 Dec CloudBig 114 14
 Dec CloudBig 123 22
+Dec BushTall 108 25
+Dec BushTall 98 25
 Enemy EnemyFast 22 1 22 1 24 1
 Enemy EnemyFast 26 1 26 1 28 1
 Enemy EnemyNormal 10 1 10 1 12 1
 Enemy EnemyNormal 62 1 62 1 64 1
 Enemy EnemyNormal 41 1 41 1 43 1
 Enemy EnemyNormal 28 1 28 1 30 1
-Enemy EnemyStrong 104 22 104 22 106 22
 Enemy EnemyStrong 138 2 138 2 140 2
 Enemy EnemyStrong 144 2 144 2 146 2
 Enemy EnemyStrong 143 2 143 2 145 2
 Enemy EnemyStrong 152 2 152 2 154 2
 Enemy EnemyStrong 148 2 148 2 150 2
-Enemy EnemyStrong 102 22 102 22 104 22
-Enemy EnemyStrong 67 10 67 10 69 10
-Enemy EnemyStrong 60 48 60 48 62 48
-Enemy EnemyStrong 85 53 85 53 87 53
-Player 1 16
+Enemy EnemyStrong 106 22 106 22 108 22
+Player 105 29

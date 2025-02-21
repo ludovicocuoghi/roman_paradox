@@ -283,8 +283,8 @@ void PlayRenderer::render() {
 void PlayRenderer::drawGrid() {
     int windowHeight = m_game.window().getSize().y;
     const int gridSize = 96;
-    const int worldWidth = 50;
-    const int worldHeight = 20;
+    const int worldWidth = 120;
+    const int worldHeight = 40;
     sf::Color gridColor(255, 255, 255, 100);
 
     for (int x = 0; x <= worldWidth; ++x) {

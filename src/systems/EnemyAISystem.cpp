@@ -206,20 +206,50 @@ void EnemyAISystem::update(float deltaTime)
             }
         }
 
+
         // Aggiornamento durante l'attacco
         if (enemyAI.enemyState == EnemyState::Attack) {
-            std::cout << "[DEBUG] Enemy " << enemy->id() 
-                      << " AttackTimer: " << enemyAI.attackTimer << "\n";
             enemyTrans.velocity.x = 0.f;
             enemyAI.attackTimer -= deltaTime;
 
-            // Spawn della spada nemica
+            // Solo quando arriva il momento di spawnare la spada
             if (!enemyAI.swordSpawned && enemyAI.attackTimer <= SWORD_SPAWN_THRESHOLD) {
-                m_spawner->spawnEnemySword(enemy);
+                if (enemyAI.enemyType == EnemyType::Emperor) {
+                    // Esempio: controlla se il player è sopra di almeno 100 px
+                    float dy = playerTrans.pos.y - enemyTrans.pos.y;
+
+                    if (dy <= -100.f) {
+                        // Player è >= 100 px sopra l'Emperor => spade radiali
+                        std::cout << "[DEBUG] Emperor spawns radial swords!\n";
+                        m_spawner->spawnEmperorSwordsRadial(enemy, /* swordCount= */ 8, /* radius= */ 50.f);
+                    }
+                    else {
+                        float distance = std::sqrt((playerTrans.pos.x - enemyTrans.pos.x) * 
+                                                (playerTrans.pos.x - enemyTrans.pos.x) +
+                                                (playerTrans.pos.y - enemyTrans.pos.y) * 
+                                                (playerTrans.pos.y - enemyTrans.pos.y));
+                        if (distance < 200.f) {
+                            // Se il player è troppo vicino => spada a offset casuale “static”
+                            std::cout << "[DEBUG] Emperor spawns single sword (close range).\n";
+                            m_spawner->spawnEmperorSwordOffset(enemy);
+                        } else {
+                            // Player è lontano => spada offset casuale “shoot”
+                            std::cout << "[DEBUG] Emperor spawns single sword (long range)!\n";
+                            m_spawner->spawnEmperorSwordOffset(enemy);
+                            // Se vuoi differenziare "shoot" e "static", puoi aggiungere un 
+                            // componente di “velocity” o “projectile” alla spada
+                        }
+                    }
+                }
+                else {
+                    // Nemico normale => spada classica
+                    m_spawner->spawnEnemySword(enemy);
+                }
+
                 enemyAI.swordSpawned = true;
                 std::cout << "[DEBUG] Enemy " << enemy->id() 
-                          << " spawning sword at AttackTimer: " 
-                          << enemyAI.attackTimer << "\n";
+                        << " spawning sword at AttackTimer: " 
+                        << enemyAI.attackTimer << "\n";
             }
 
             if (enemyAI.attackTimer <= 0.f) {
@@ -228,8 +258,8 @@ void EnemyAISystem::update(float deltaTime)
                 enemyAI.attackTimer    = 0.f;
 
                 std::cout << "[DEBUG] Enemy " << enemy->id() 
-                          << " Attack finished. Setting cooldown=" 
-                          << enemyAI.attackCooldown << "\n";
+                        << " Attack finished. Setting cooldown=" 
+                        << enemyAI.attackCooldown << "\n";
             }
         }
 

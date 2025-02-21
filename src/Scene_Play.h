@@ -56,6 +56,9 @@ public:
     // sRender() now delegates all drawing to PlayRenderer
     void sRender() override;
 
+    std::string extractLevelName(const std::string& path);
+    void removeTileByID(const std::string& tileID);
+
     // --- Configuration Constants
     const float gravityVal = 1000.f;
     const float xSpeed     = 350.f;

@@ -19,7 +19,7 @@ public:
     static constexpr float SWORD_SPAWN_THRESHOLD = 0.7f;
 
     static constexpr float ATTACK_COOLDOWN = 0.4f;
-    static constexpr float FOLLOW_MOVE_SPEED = 250.f;
+    static constexpr float FOLLOW_MOVE_SPEED = 290.f;
     static constexpr float RECOGNITION_MOVE_SPEED = 80.f;
     static constexpr float RECOGNITION_DISTANCE_THRESHOLD = 15.f;
 

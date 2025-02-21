@@ -61,7 +61,7 @@ void CollisionSystem::handlePlayerTileCollisions() {
             std::string nextLevelPath = "";  // ✅ Store next level path instead of switching immediately
 
             // ✅ NEW: Check if this tile is a LevelDoor
-            if (tile->has<CAnimation>() && tile->get<CAnimation>().animation.getName() == "LevelDoor") {
+            if (tile->has<CAnimation>() && (tile->get<CAnimation>().animation.getName() == "LevelDoor" || tile->get<CAnimation>().animation.getName() == "LevelDoorGold") ) {
                 std::cout << "[DEBUG] Player entered LevelDoor. Scheduling level change...\n";
                 m_game.scheduleLevelChange(m_game.getNextLevelPath());
                 return;
@@ -449,8 +449,10 @@ void CollisionSystem::handleSwordCollisions() {
                     float attackDirection = (swTrans.pos.x < enemyTrans.pos.x) ? 1.f : -1.f;
                     Vec2<float> hitDirection = { attackDirection, PLAYER_SWORD_KNOCKBACK_Y_DIRECTION };
 
+                    float finalKnockback = PLAYER_SWORD_KNOCKBACK_STRENGTH + (roll * 5.f);
+
                     // Applica il knockback
-                    Physics::Forces::ApplyKnockback(enemy, hitDirection, PLAYER_SWORD_KNOCKBACK_STRENGTH);
+                    Physics::Forces::ApplyKnockback(enemy, hitDirection, finalKnockback);
 
                     // Aggiorna lo stato dell'AI, se presente
                     if (enemy->has<CEnemyAI>()) {

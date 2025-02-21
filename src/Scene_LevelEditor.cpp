@@ -22,9 +22,9 @@ static EnemyType getEnemyType(const std::string &typeStr) {
 
 // Dimensione della cella/griglia
 constexpr int tileSize = 96;
-constexpr int worldWidth = 200;
-constexpr int worldHeight = 40;
-constexpr float CAMERA_SPEED = 800.f; // Adjust camera speed as needed
+constexpr int worldWidth = 500;
+constexpr int worldHeight = 60;
+constexpr float CAMERA_SPEED = 1200.f; // Adjust camera speed as needed
 
 Scene_LevelEditor::Scene_LevelEditor(GameEngine& game)
     : Scene(game), m_mode(0), m_zoom(1.0f)
@@ -460,7 +460,7 @@ void Scene_LevelEditor::loadLevel(const std::string& filePath) {
             } else {
                 std::cerr << "[ERROR] Missing animation for " << assetType << "\n";
             }
-            std::cout << "[DEBUG] Loaded Decoration: " << assetType << " at (" << gridX << ", " << gridY << ")\n";
+            //std::cout << "[DEBUG] Loaded Decoration: " << assetType << " at (" << gridX << ", " << gridY << ")\n";
         }
         else if (token == "Enemy") {
             std::string enemyType;

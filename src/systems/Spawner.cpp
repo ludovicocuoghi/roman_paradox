@@ -85,6 +85,114 @@ std::shared_ptr<Entity> Spawner::spawnEnemySword(std::shared_ptr<Entity> enemy) 
     return sword;
 }
 
+// Esempio: spada con offset Y casuale (singola spada)
+std::shared_ptr<Entity> Spawner::spawnEmperorSwordOffset(std::shared_ptr<Entity> enemy) {
+    auto sword = m_entityManager.addEntity("enemySword");
+
+    auto& eTrans = enemy->get<CTransform>();
+    auto& eAI    = enemy->get<CEnemyAI>();
+
+    float dir = eAI.facingDirection;
+    
+    // Offset X fisso (a destra o sinistra del nemico)
+    float offsetX = (dir < 0) ? -EMPEROR_SWORD_OFFSET_X : EMPEROR_SWORD_OFFSET_X;
+
+    // Offset Y casuale tra 10 e 40
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
+    std::uniform_real_distribution<float> distY(0.f, 80.f);
+    float offsetY = distY(gen);
+
+    Vec2<float> swordPos = eTrans.pos + Vec2<float>(offsetX, offsetY);
+    sword->add<CTransform>(swordPos);
+    sword->add<CLifeSpan>(ENEMY_SWORD_DURATION);
+    sword->add<CState>(std::to_string(enemy->id()));
+
+    // Carica l’animazione (uguale a spawnEnemySword)
+    if (m_game.assets().hasAnimation("EmperorSword")) {
+        auto& swordAnim = m_game.assets().getAnimation("EmperorSword");
+        sword->add<CAnimation>(swordAnim, false);
+        sf::Vector2i animSize = swordAnim.getSize();
+        Vec2<float> boxSize(animSize.x, animSize.y);
+        Vec2<float> halfSize(boxSize.x * 0.5f, boxSize.y * 0.5f);
+        sword->add<CBoundingBox>(boxSize, halfSize);
+        if (dir < 0) flipSpriteLeft(sword->get<CAnimation>().animation.getMutableSprite());
+        else         flipSpriteRight(sword->get<CAnimation>().animation.getMutableSprite());
+    } else {
+        std::cerr << "[ERROR] Missing enemy sword animation!\n";
+    }
+
+    // Copia i dati di AI/danno dal nemico
+    if (enemy->has<CEnemyAI>()) {
+        sword->add<CEnemyAI>(enemy->get<CEnemyAI>());
+    }
+
+    std::cout << "[DEBUG] Spawned Emperor sword with random Y offset at (" 
+              << swordPos.x << ", " << swordPos.y << ")\n";
+
+    return sword;
+}
+
+// Esempio: spade “radiali” (più spade attorno all’Emperor)
+void Spawner::spawnEmperorSwordsRadial(std::shared_ptr<Entity> enemy, int swordCount, float radius) {
+    auto& eTrans = enemy->get<CTransform>();
+    auto& eAI    = enemy->get<CEnemyAI>();
+
+    float centerX = eTrans.pos.x;
+    float centerY = eTrans.pos.y;
+
+    for (int i = 0; i < swordCount; i++) {
+        float angleDeg = (360.f / swordCount) * i;
+        float angleRad = angleDeg * 3.1415926535f / 180.f;
+
+        // Calcolo la posizione radiale
+        float offsetX = std::cos(angleRad) * radius;
+        float offsetY = std::sin(angleRad) * radius;
+        Vec2<float> spawnPos(centerX + offsetX, centerY + offsetY);
+
+        auto sword = m_entityManager.addEntity("enemySword");
+        sword->add<CTransform>(spawnPos);
+        sword->add<CLifeSpan>(ENEMY_SWORD_DURATION);
+        sword->add<CState>(std::to_string(enemy->id()));
+
+        // Carichiamo l'animazione
+        if (m_game.assets().hasAnimation("EmperorSword")) {
+            auto& swordAnim = m_game.assets().getAnimation("EmperorSword");
+            sword->add<CAnimation>(swordAnim, false);
+
+            sf::Vector2i animSize = swordAnim.getSize();
+            Vec2<float> boxSize(animSize.x, animSize.y);
+            Vec2<float> halfSize(boxSize.x * 0.5f, boxSize.y * 0.5f);
+            sword->add<CBoundingBox>(boxSize, halfSize);
+
+            // Ruotiamo lo sprite in base all'angolo (per farla puntare verso l'esterno)
+            auto& sprite = sword->get<CAnimation>().animation.getMutableSprite();
+            sprite.setRotation(angleDeg); 
+        } else {
+            std::cerr << "[ERROR] Missing EmperorSword animation!\n";
+        }
+
+        // Copia i dati di AI/danno dal nemico, se serve
+        if (enemy->has<CEnemyAI>()) {
+            sword->add<CEnemyAI>(enemy->get<CEnemyAI>());
+        }
+
+        // Assegniamo una VELOCITÀ al CTransform, così la spada si muove
+        float swordSpeed = 200.f; // decidi tu la velocità
+        float vx = std::cos(angleRad) * swordSpeed;
+        float vy = std::sin(angleRad) * swordSpeed;
+
+        // Se CTransform accetta un costruttore con velocity, potresti farlo lì;
+        // altrimenti, dopo averlo aggiunto, setti la velocity:
+        sword->get<CTransform>().velocity = Vec2<float>(vx, vy);
+
+        std::cout << "[DEBUG] Spawned Emperor radial sword " << i 
+                  << " angle=" << angleDeg 
+                  << " deg pos(" << spawnPos.x << "," << spawnPos.y 
+                  << ") velocity(" << vx << "," << vy << ")\n";
+    }
+}
+
 // Spawn degli item
 std::shared_ptr<Entity> Spawner::spawnItem(const Vec2<float>& position, const std::string& tileType) {
     static std::random_device rd;
