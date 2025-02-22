@@ -75,48 +75,16 @@ Tile GoldGround 35 0
 Tile GoldGround 36 0
 Tile GoldGround 37 0
 Tile GoldGround 35 4
-Tile GoldGround 35 3
-Tile GoldGround 35 2
 Tile GoldGround 33 7
-Tile GoldGround 32 7
-Tile GoldGround 31 7
 Tile GoldGround 23 8
-Tile GoldGround 24 8
 Tile GoldGround 25 8
-Tile GoldGround 26 8
-Tile GoldGround 27 8
 Tile GoldGround 29 8
-Tile GoldGround 30 8
-Tile GoldGround 28 8
-Tile GoldGround 6 8
-Tile GoldGround 7 8
-Tile GoldGround 8 8
-Tile GoldGround 9 8
-Tile GoldGround 10 8
-Tile GoldGround 11 8
-Tile GoldGround 13 8
-Tile GoldGround 14 8
-Tile GoldGround 12 8
-Tile GoldGround 18 9
 Tile GoldGround 19 9
 Tile GoldGround 6 13
-Tile GoldGround 8 13
 Tile GoldGround 9 13
-Tile GoldGround 7 13
-Tile GoldGround 10 13
-Tile GoldGround 12 13
-Tile GoldGround 13 13
-Tile GoldGround 11 13
 Tile GoldGround 14 13
 Tile GoldGround 15 11
-Tile GoldGround 22 11
 Tile GoldGround 23 13
-Tile GoldGround 24 13
-Tile GoldGround 25 13
-Tile GoldGround 26 13
-Tile GoldGround 28 13
-Tile GoldGround 29 13
-Tile GoldGround 27 13
 Tile GoldGround 30 13
 Tile TreasureBoxAnim 6 16
 Tile TreasureBoxAnim 14 16
@@ -126,11 +94,16 @@ Tile TreasureBoxAnim 30 16
 Tile TreasureBoxAnim 28 16
 Tile TreasureBoxAnim 8 16
 Tile TreasureBoxAnim 12 16
-Tile TreasureBoxAnim 10 10
-Tile TreasureBoxAnim 27 10
-Tile TreasureBoxAnim 9 10
-Tile TreasureBoxAnim 26 10
 Tile GoldGround 34 6
+Tile GoldGround 7 10
+Tile GoldGround 12 10
+Tile GoldGround 24 11
+Tile GoldGround 11 13
+Tile GoldGround 26 13
+Tile GoldGround 27 13
+Tile GoldGround 3 4
+Tile GoldGround 4 7
+Tile GoldGround 6 8
 Dec GoldPipeTall 0 5
 Dec GoldPipeTall 1 5
 Dec GoldPipeTall 2 5
@@ -162,5 +135,5 @@ Dec GoldPipeTall 12 5
 Dec GoldPipeTall 13 5
 Dec GoldPipeTall 14 5
 Dec GoldPipeTall 15 5
-Enemy Emperor 20 6 20 6 22 6
-Player 2 2
+Enemy Emperor 20 4 20 4 22 4
+Player 2 2 

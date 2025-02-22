@@ -543,6 +543,103 @@ void CollisionSystem::handleSwordCollisions() {
             }
         }
     }
+
+    for (auto& empSword : m_entityManager.getEntities("EmperorSword")) {
+        // Verifichiamo che abbia CTransform e CBoundingBox
+        if (!empSword->has<CTransform>() || !empSword->has<CBoundingBox>())
+            continue;
+
+        auto& swTrans = empSword->get<CTransform>();
+        auto& swBB    = empSword->get<CBoundingBox>();
+        
+        // Se ha un CLifeSpan, puoi leggerlo o stamparlo (opzionale)
+        if (empSword->has<CLifeSpan>()) {
+            auto& swLS = empSword->get<CLifeSpan>();
+            //std::cout << "[DEBUG] Emperor sword lifespan: " << swLS.remainingTime << "\n";
+        }
+
+        sf::FloatRect swordRect = swBB.getRect(swTrans.pos);
+
+        // 3a) EmperorSword vs Player
+        for (auto& player : m_entityManager.getEntities("player")) {
+            if (!player->has<CTransform>() || !player->has<CBoundingBox>())
+                continue;
+
+            auto& pTrans = player->get<CTransform>();
+            auto& pBB    = player->get<CBoundingBox>();
+            sf::FloatRect playerRect = pBB.getRect(pTrans.pos);
+
+            if (!swordRect.intersects(playerRect))
+                continue; // niente collisione
+
+            // Se il player è già in knockback, salta
+            if (player->has<CState>()) {
+                auto& playerState = player->get<CState>();
+                if (playerState.state == "knockback")
+                    continue;
+            }
+
+            // Esempio di knockback orizzontale
+            float attackDirection = (swTrans.pos.x < pTrans.pos.x) ? 1.f : -1.f;
+            Vec2<float> hitDirection = { attackDirection, 0.f };
+
+            // Applica il knockback
+            Physics::Forces::ApplyKnockback(player, hitDirection, EMPEROR_SWORD_KNOCKBACK_STRENGTH);
+
+            // Danno al player
+            if (player->has<CHealth>()) {
+                auto& health = player->get<CHealth>();
+
+                // Se la spada ha un CEnemyAI, usiamo "damage"
+                int empSwordDamage = 10; // default
+                if (empSword->has<CEnemyAI>()) {
+                    empSwordDamage = empSword->get<CEnemyAI>().damage;
+                }
+
+                health.takeDamage(empSwordDamage);
+                health.invulnerabilityTimer = PLAYER_HIT_INVULNERABILITY_TIME;
+
+                std::cout << "[DEBUG] Player hit by emperor sword! Damage: " 
+                          << empSwordDamage 
+                          << " Health: " << health.currentHealth << "\n";
+            }
+
+            // Settiamo lo stato a knockback
+            if (player->has<CState>()) {
+                auto& pState = player->get<CState>();
+                pState.state = "knockback";
+                pState.knockbackTimer = PLAYER_KNOCKBACK_TIMER;
+            }
+
+            // Se vuoi distruggere la spada all'impatto, scommenta:
+            empSword->destroy();
+
+            break; // Esci dal loop player
+        }
+
+        // 3b) EmperorSword vs tile
+        for (auto& tile : m_entityManager.getEntities("tile")) {
+            if (!tile->has<CTransform>() || !tile->has<CBoundingBox>())
+                continue;
+
+            auto& tileTransform = tile->get<CTransform>();
+            auto& tileBB        = tile->get<CBoundingBox>();
+            sf::FloatRect tileRect = tileBB.getRect(tileTransform.pos);
+
+            if (!swordRect.intersects(tileRect))
+                continue;
+
+            // Se vuoi distruggere la spada quando tocca un tile, fai:
+            empSword->destroy();
+
+            // Oppure, se vuoi distruggere un tile "fragile" e la spada, fai:
+            // tile->destroy();
+            // empSword->destroy();
+
+            //std::cout << "[DEBUG] Emperor sword destroyed on tile collision!\n";
+            break; // Esci dal loop tile
+        }
+    }
 }
 
 void CollisionSystem::handlePlayerCollectibleCollisions() {

@@ -160,6 +160,24 @@ void MovementSystem::update(float deltaTime)
             }
         }
     }
+    auto enemySwords = m_entityManager.getEntities("EmperorSword");
+    for (auto& eSword : enemySwords) {
+        if (!eSword->has<CTransform>()) continue;
+        auto& swTrans = eSword->get<CTransform>();
+
+        // Se la spada ha velocity, la aggiorniamo
+        swTrans.pos += swTrans.velocity * deltaTime;
+
+        // Se vuoi gestire un flip dello sprite in base alla velocity:
+        if (eSword->has<CAnimation>()) {
+            auto& swordAnim = eSword->get<CAnimation>();
+            if (swTrans.velocity.x < 0.f) {
+                flipSpriteLeft(swordAnim.animation.getMutableSprite());
+            } else {
+                flipSpriteRight(swordAnim.animation.getMutableSprite());
+            }
+        }
+    }
 
     m_game.window().setView(m_cameraView);
 }

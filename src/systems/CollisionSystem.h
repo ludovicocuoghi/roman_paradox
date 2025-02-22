@@ -20,15 +20,16 @@ public:
     static constexpr int PLAYER_SWORD_KNOCKBACK_ROLL_MIN = 1;
     static constexpr int PLAYER_SWORD_KNOCKBACK_ROLL_MAX = 5;
     static constexpr int PLAYER_SWORD_KNOCKBACK_ROLL_TRIGGER = 1;
-    static constexpr float PLAYER_SWORD_KNOCKBACK_STRENGTH = 850.0f;
-    static constexpr float PLAYER_SWORD_KNOCKBACK_Y_DIRECTION = -0.5f;
+    static constexpr float PLAYER_SWORD_KNOCKBACK_STRENGTH = 300.0f;
+    static constexpr float PLAYER_SWORD_KNOCKBACK_Y_DIRECTION = -50.f;
 
     // Timer per il knockback del nemico
     static constexpr float ENEMY_KNOCKBACK_AI_TIMER = 0.4f;
     static constexpr float ENEMY_KNOCKBACK_STATE_TIMER = 1.0f;
 
     // Enemy Sword vs Player
-    static constexpr float ENEMY_SWORD_KNOCKBACK_STRENGTH = 2000.0f;
+    static constexpr float ENEMY_SWORD_KNOCKBACK_STRENGTH = 1000.0f;
+    static constexpr float EMPEROR_SWORD_KNOCKBACK_STRENGTH = 2000.0f;
     static constexpr float PLAYER_HIT_INVULNERABILITY_TIME = 1.f;
     static constexpr float PLAYER_KNOCKBACK_TIMER = 0.5f;
 

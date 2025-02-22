@@ -20,6 +20,7 @@ public:
 
     static constexpr float EMPEROR_SWORD_OFFSET_X = 80.f;
     static constexpr float EMPEROR_SWORD_OFFSET_Y = 10.f;
+    static constexpr float EMPEROR_ROTATING_SWORD_DURATION = 7.f;
 
     // Costanti per lo spawn degli item da box
     static constexpr int BOX_ITEM_DIST_MIN = 0;
@@ -55,7 +56,7 @@ public:
     std::shared_ptr<Entity> spawnEnemySword(std::shared_ptr<Entity> enemy);
     std::shared_ptr<Entity> spawnItem(const Vec2<float>& position, const std::string& tileType);
     std::shared_ptr<Entity> spawnEmperorSwordOffset(std::shared_ptr<Entity> enemy);
-    void spawnEmperorSwordsRadial(std::shared_ptr<Entity> enemy, int swordCount, float radius);
+    void spawnEmperorSwordsRadial(std::shared_ptr<Entity> enemy, int swordCount, float radius, float swordSpeed);
 
     void updateFragments(float deltaTime);
     void createBlockFragments(const Vec2<float>& position, const std::string & blockType);

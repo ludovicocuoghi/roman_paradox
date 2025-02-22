@@ -79,13 +79,136 @@ void EnemyAISystem::update(float deltaTime)
         auto& enemyAI    = enemy->get<CEnemyAI>();
         auto& anim       = enemy->get<CAnimation>();
 
+        // ----------------------------------------------------
+        // 1) Logica Emperor: radiali ogni 5s (distance>500),
+        //    orizzontali ogni 3s (100 < distance <= 500)
+        // ----------------------------------------------------
+        // Emperor Attack Logic
+        if (enemyAI.enemyType == EnemyType::Emperor) 
+        {
+            float dx = playerTrans.pos.x - enemyTrans.pos.x;
+            float dy = playerTrans.pos.y - enemyTrans.pos.y;
+            float distance = std::sqrt(dx * dx + dy * dy);
+
+            // Fetch Emperor's health correctly
+            float healthPercentage = 1.0f;
+            if (enemy->has<CHealth>()) {
+                auto& health = enemy->get<CHealth>();
+                healthPercentage = static_cast<float>(health.currentHealth) / static_cast<float>(health.maxHealth);
+            }
+            auto& health = enemy->get<CHealth>();
+
+            std::cout << "[DEBUG] Emperor Health: " << healthPercentage << "\n";
+            // **FINAL PHASE: MASSIVE ATTACK at ≤ 10% HP**
+            // **FINAL BURST: Emperor at ≤ 10% HP**
+            if (healthPercentage <= 0.20f) {
+                if (!enemyAI.burstCooldownActive) {
+                    enemyAI.radialAttackTimer += deltaTime;
+
+                    // Fire every 0.2s for 5 seconds (50 bursts)
+                    if (enemyAI.radialAttackTimer >= 0.2f) {
+                        enemyAI.radialAttackTimer = 0.f;
+                        std::cout << "[DEBUG] Emperor FINAL ATTACK: 8x Radial Swords!\n";
+
+                        // Spawn 8x radial swords
+                        m_spawner->spawnEmperorSwordsRadial(enemy, EMPEROR_RADIAL_SWORDS_COUNT * 3,
+                                                            EMPEROR_RADIAL_SWORDS_RADIUS, EMPEROR_RADIAL_SWORDS_SPEED);
+
+                        // Track the number of bursts
+                        enemyAI.burstCount++;
+                        std::cout << "[DEBUG] Emperor FINAL ATTACK: Burst #" << enemyAI.burstCount << "\n";
+
+                        // **Stop after 50 bursts (~10s of attacks)**
+                        if (enemyAI.burstCount >= 50) {
+                            enemyAI.burstCooldownActive = true;  // Permanently stop attacks
+                            enemyAI.burstCount = 0;
+                            auto enemySwords = m_entityManager.getEntities("EmperorSword");
+                            for (auto& sword : enemySwords) {
+                                sword->destroy();
+                            }
+                            enemyTrans.velocity.x = 0.f;  // Stop moving
+                            std::cout << "[DEBUG] Emperor FINAL ATTACK FINISHED! No more attacks.\n";
+                        }
+                    }
+                }
+                
+                return;  // **Ensures no other attacks happen after the final phase**
+            }
+
+            // **Normal Radial Attack (Above 50% HP)**
+            if (healthPercentage > 0.7f) {
+                enemyAI.radialAttackTimer += deltaTime;
+                if (enemyAI.radialAttackTimer >= 4.f) {
+                    enemyAI.radialAttackTimer = 0.f;
+                    std::cout << "[DEBUG] Emperor Super Attack: Radial Swords (Normal)\n";
+                    m_spawner->spawnEmperorSwordsRadial(enemy, EMPEROR_RADIAL_SWORDS_COUNT, EMPEROR_RADIAL_SWORDS_RADIUS, EMPEROR_RADIAL_SWORDS_SPEED);
+                }
+            }
+
+            // **Enhanced Radial Attack (50% > HP > 20%)**
+            if (healthPercentage <= 0.7f && healthPercentage > 0.5f) {
+                enemyAI.radialAttackTimer += deltaTime;
+                if (enemyAI.radialAttackTimer >= 3.f) {
+                    enemyAI.radialAttackTimer = 0.f;
+                    std::cout << "[DEBUG] Emperor Super Attack: DOUBLE Radial Swords (Enhanced)\n";
+                    m_spawner->spawnEmperorSwordsRadial(enemy, EMPEROR_RADIAL_SWORDS_COUNT * 2, EMPEROR_RADIAL_SWORDS_RADIUS, EMPEROR_RADIAL_SWORDS_SPEED);
+                }
+            }
+
+            // **Final Burst Phase (Below 40% HP, Above 10%)**
+            if (healthPercentage <= 0.5f && healthPercentage > 0.2f) {
+                if (!enemyAI.burstCooldownActive) {
+                    enemyAI.radialAttackTimer += deltaTime;
+                    if (enemyAI.radialAttackTimer >= 0.2f) { 
+                        enemyAI.radialAttackTimer = 0.f;
+                        std::cout << "[DEBUG] Emperor Super Attack: QUADRUPLE Radial Swords (Final Phase)\n";
+                        m_spawner->spawnEmperorSwordsRadial(enemy, EMPEROR_RADIAL_SWORDS_COUNT, EMPEROR_RADIAL_SWORDS_RADIUS, EMPEROR_RADIAL_SWORDS_SPEED);
+
+                        // After 5 bursts, enter cooldown
+                        enemyAI.burstCount++;
+                        if (enemyAI.burstCount >= 20) {
+                            enemyAI.burstCooldownActive = true;
+                            enemyAI.burstCooldownTimer = 0.f;
+                            enemyAI.burstCount = 0;
+                            auto enemySwords = m_entityManager.getEntities("EmperorSword");
+                            for (auto& sword : enemySwords) {
+                                sword->destroy();
+                            }
+                            std::cout << "[DEBUG] Emperor Super Attack: COOLDOWN STARTED (5 sec)\n";
+                        }
+                    }
+                }
+                else {
+                    enemyAI.burstCooldownTimer += deltaTime;
+                    if (enemyAI.burstCooldownTimer >= 5.f) {
+                        enemyAI.burstCooldownActive = false;
+                        std::cout << "[DEBUG] Emperor Super Attack: COOLDOWN ENDED\n";
+                    }
+                }
+            }
+
+            // **Close-range attack (distance < 100)**: Static swords, no shooting
+            if (distance < 100.f) {
+                if (!enemyAI.swordSpawned) {
+                    std::cout << "[DEBUG] Emperor spawns static swords (Close-range attack)\n";
+                    for (int i = 0; i < 3; ++i) {  // Spawns 3 swords at slight offsets
+                        m_spawner->spawnEmperorSwordOffset(enemy);
+                    }
+                    enemyAI.swordSpawned = true;
+                }
+            }
+        }
+
+        //----------------------------------------------------
         // Gestione del knockback
+        //----------------------------------------------------
         if (enemyAI.enemyState == EnemyState::Knockback) {
             std::cout << "[DEBUG] Knockback: vel.x=" << enemyTrans.velocity.x
                       << " pos.x=" << enemyTrans.pos.x
+
                       << " timer=" << enemyAI.knockbackTimer << "\n";
 
-            // Aggiunto: distruggi subito le spade nemiche associate all'enemy
+            // Distruggi subito le spade nemiche associate all'enemy
             auto enemySwords = m_entityManager.getEntities("enemySword");
             for (auto& sword : enemySwords) {
                 if (sword->has<CState>()) {
@@ -103,11 +226,13 @@ void EnemyAISystem::update(float deltaTime)
                 continue;
             } else {
                 enemyAI.knockbackTimer = 0.f;
-                enemyAI.enemyState = EnemyState::Follow; // oppure "idle"
+                enemyAI.enemyState = EnemyState::Follow; // oppure "Idle"
             }
         }
 
+        //----------------------------------------------------
         // Gravità / Controllo a terra
+        //----------------------------------------------------
         bool isOnGround = false;
         if (enemy->has<CBoundingBox>()) {
             auto& bb = enemy->get<CBoundingBox>();
@@ -131,16 +256,18 @@ void EnemyAISystem::update(float deltaTime)
             enemyTrans.velocity.y = 0.f;
         }
 
-        // Calcolo della distanza / Line of Sight
+        //----------------------------------------------------
+        // Calcolo dx, dy, distance
+        //----------------------------------------------------
         float dx = playerTrans.pos.x - enemyTrans.pos.x;
         float dy = playerTrans.pos.y - enemyTrans.pos.y;
         float distance = std::sqrt(dx * dx + dy * dy);
 
-        // Controllo: se il giocatore è praticamente sulla stessa X e sopra il nemico, passa a Idle.
+        // Se il giocatore è praticamente sulla stessa X ma più in alto, Idle
         if (std::fabs(dx) < 1.0f && playerTrans.pos.y < enemyTrans.pos.y) {
             enemyAI.enemyState = EnemyState::Idle;
             enemyTrans.velocity.x = 0.f;
-            continue; // Salta l'update per questo nemico
+            continue;
         }
 
         bool canSeePlayer  = checkLineOfSight(enemyTrans.pos, playerTrans.pos, m_entityManager);
@@ -169,14 +296,13 @@ void EnemyAISystem::update(float deltaTime)
             }
         }
 
-        // Logica d'attacco
-        // Prima di controllare l'attacco
-        float currentAttackRange = ATTACK_RANGE;
-        if (enemyAI.enemyType == EnemyType::Emperor) {
-            currentAttackRange = EMPEROR_ATTACK_RANGE; // Valore più grande
-        }
+        //----------------------------------------------------
+        // Imposta stato Attack se in range
+        //----------------------------------------------------
+        float currentAttackRange = (enemyAI.enemyType == EnemyType::Emperor)
+                                   ? EMPEROR_ATTACK_RANGE
+                                   : ATTACK_RANGE;
 
-        // Logica d'attacco
         if (shouldFollow && distance < currentAttackRange 
             && enemyAI.attackCooldown <= 0.f 
             && enemyAI.enemyState != EnemyState::Attack)
@@ -186,8 +312,8 @@ void EnemyAISystem::update(float deltaTime)
             enemyAI.swordSpawned = false;
 
             std::cout << "[DEBUG] Enemy " << enemy->id() 
-                    << " entering Attack state. (cooldown=" 
-                    << enemyAI.attackCooldown << ")\n";
+                      << " entering Attack state. (cooldown=" 
+                      << enemyAI.attackCooldown << ")\n";
         }
         else if (shouldFollow && enemyAI.enemyState != EnemyState::Attack) {
             enemyAI.enemyState = EnemyState::Follow;
@@ -206,38 +332,31 @@ void EnemyAISystem::update(float deltaTime)
             }
         }
 
-
-        // Aggiornamento durante l'attacco
+        //----------------------------------------------------
+        // Aggiornamento durante lo stato Attack
+        //----------------------------------------------------
         if (enemyAI.enemyState == EnemyState::Attack) {
             enemyTrans.velocity.x = 0.f;
             enemyAI.attackTimer -= deltaTime;
 
-            // Solo quando arriva il momento di spawnare la spada
+            // Momento di spawnare la spada
             if (!enemyAI.swordSpawned && enemyAI.attackTimer <= SWORD_SPAWN_THRESHOLD) {
                 if (enemyAI.enemyType == EnemyType::Emperor) {
-                    // Esempio: controlla se il player è sopra di almeno 100 px
-                    float dy = playerTrans.pos.y - enemyTrans.pos.y;
-
-                    if (dy <= -100.f) {
-                        // Player è >= 100 px sopra l'Emperor => spade radiali
-                        std::cout << "[DEBUG] Emperor spawns radial swords!\n";
-                        m_spawner->spawnEmperorSwordsRadial(enemy, /* swordCount= */ 8, /* radius= */ 50.f);
-                    }
+                    // Distinzione: se distance < 100 => spada statica
+                    // Altrimenti => spada offset orizzontale
+                    if (distance < 100.f) {
+                        std::cout << "[DEBUG] Emperor spawns static sword (close)!\n";
+                        m_spawner->spawnEmperorSwordOffset(enemy);
+                        // (Nessuna velocity => resta lì)
+                    } 
                     else {
-                        float distance = std::sqrt((playerTrans.pos.x - enemyTrans.pos.x) * 
-                                                (playerTrans.pos.x - enemyTrans.pos.x) +
-                                                (playerTrans.pos.y - enemyTrans.pos.y) * 
-                                                (playerTrans.pos.y - enemyTrans.pos.y));
-                        if (distance < 200.f) {
-                            // Se il player è troppo vicino => spada a offset casuale “static”
-                            std::cout << "[DEBUG] Emperor spawns single sword (close range).\n";
-                            m_spawner->spawnEmperorSwordOffset(enemy);
-                        } else {
-                            // Player è lontano => spada offset casuale “shoot”
-                            std::cout << "[DEBUG] Emperor spawns single sword (long range)!\n";
-                            m_spawner->spawnEmperorSwordOffset(enemy);
-                            // Se vuoi differenziare "shoot" e "static", puoi aggiungere un 
-                            // componente di “velocity” o “projectile” alla spada
+                        std::cout << "[DEBUG] Emperor spawns horizontal sword!\n";
+                        auto sword = m_spawner->spawnEmperorSwordOffset(enemy);
+                        // Aggiungi velocity orizzontale per farla “volare”
+                        if (sword->has<CTransform>()) {
+                            auto& swTrans = sword->get<CTransform>();
+                            float dirX = (dx > 0.f) ? 1.f : -1.f;
+                            swTrans.velocity = Vec2<float>(200.f * dirX, 0.f);
                         }
                     }
                 }
@@ -248,22 +367,25 @@ void EnemyAISystem::update(float deltaTime)
 
                 enemyAI.swordSpawned = true;
                 std::cout << "[DEBUG] Enemy " << enemy->id() 
-                        << " spawning sword at AttackTimer: " 
-                        << enemyAI.attackTimer << "\n";
+                          << " spawning sword at AttackTimer: " 
+                          << enemyAI.attackTimer << "\n";
             }
 
+            // Fine Attack => reset
             if (enemyAI.attackTimer <= 0.f) {
                 enemyAI.attackCooldown = ATTACK_COOLDOWN;
                 enemyAI.enemyState     = EnemyState::Follow;
                 enemyAI.attackTimer    = 0.f;
 
                 std::cout << "[DEBUG] Enemy " << enemy->id() 
-                        << " Attack finished. Setting cooldown=" 
-                        << enemyAI.attackCooldown << "\n";
+                          << " Attack finished. Setting cooldown=" 
+                          << enemyAI.attackCooldown << "\n";
             }
         }
 
+        //----------------------------------------------------
         // Stato Follow
+        //----------------------------------------------------
         if (enemyAI.enemyState == EnemyState::Follow) {
             if (dx > 0.f) {
                 enemyTrans.velocity.x = FOLLOW_MOVE_SPEED;
@@ -281,7 +403,7 @@ void EnemyAISystem::update(float deltaTime)
                 case EnemyType::Strong: runAnimName = "EnemyStrong_Run"; break;
                 case EnemyType::Elite:  runAnimName = "EnemyElite_Run";  break;
                 case EnemyType::Normal: runAnimName = "EnemyNormal_Run"; break;
-                case EnemyType::Emperor: runAnimName = "Emperor_Run"; break;
+                case EnemyType::Emperor: runAnimName = "Emperor_Run";     break;
             }
             if (anim.animation.getName() != runAnimName) {
                 const Animation& runAnim = m_game.assets().getAnimation(runAnimName);
@@ -290,7 +412,9 @@ void EnemyAISystem::update(float deltaTime)
             }
         }
 
+        //----------------------------------------------------
         // Stato Recognition
+        //----------------------------------------------------
         if (enemyAI.enemyState == EnemyState::Recognition) {
             float recognitionMoveSpeed = RECOGNITION_MOVE_SPEED;
             float distanceToLastSeen = std::sqrt(
@@ -342,7 +466,9 @@ void EnemyAISystem::update(float deltaTime)
             }
         }
 
+        //----------------------------------------------------
         // Stato Patrol
+        //----------------------------------------------------
         if (enemyAI.enemyState == EnemyState::Patrol) {
             if (enemyAI.patrolPoints.empty()) {
                 enemyAI.enemyState = EnemyState::Idle;
@@ -379,13 +505,17 @@ void EnemyAISystem::update(float deltaTime)
             }
         }
 
+        //----------------------------------------------------
         // Stato Idle
+        //----------------------------------------------------
         if (enemyAI.enemyState == EnemyState::Idle) {
             enemyTrans.velocity.x = 0.f;
             anim.animation.reset();
         }
 
-        // Aggiornamento della posizione
+        //----------------------------------------------------
+        // Aggiornamento finale della posizione
+        //----------------------------------------------------
         enemyTrans.pos.x += enemyTrans.velocity.x * deltaTime;
         enemyTrans.pos.y += enemyTrans.velocity.y * deltaTime;
 

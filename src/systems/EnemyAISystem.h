@@ -15,6 +15,12 @@ public:
     static constexpr float PLAYER_VISIBLE_DISTANCE = 500.f;
     static constexpr float ATTACK_RANGE = 100.f;
     static constexpr float EMPEROR_ATTACK_RANGE = 200.f;
+
+
+    static constexpr float EMPEROR_RADIAL_SWORDS_COUNT = 200.f;   
+    static constexpr float EMPEROR_RADIAL_SWORDS_RADIUS = 120.f;  
+    static constexpr float EMPEROR_RADIAL_SWORDS_SPEED = 800.f;  
+    
     static constexpr float ATTACK_TIMER_DEFAULT = 0.3f;
     static constexpr float SWORD_SPAWN_THRESHOLD = 0.7f;
 

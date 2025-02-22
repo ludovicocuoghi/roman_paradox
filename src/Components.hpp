@@ -232,7 +232,7 @@ class CEnemyAI : public Component {
     
         // Patrol Behavior
         std::vector<Vec2<float>> patrolPoints;
-        EnemyState enemyState;  // Declared after 'patrolPoints'
+        EnemyState enemyState;
     
         // Movement & Combat Stats
         float speedMultiplier;
@@ -253,7 +253,7 @@ class CEnemyAI : public Component {
         bool swordSpawned;
         float attackCooldown;
         float attackTimer;
-    
+        
         // Knockback Handling
         float knockbackTimer;
     
@@ -263,11 +263,24 @@ class CEnemyAI : public Component {
         bool inRecognitionArea;
         Vec2<float> lastSeenPlayerPos;
     
-        // NEW FIELDS for "blocked jump" logic:
-        float blockedHorizontallyTime; // Tracks how long the enemy is stuck horizontally
-        bool  isJumping;               // Whether the enemy is currently jumping
-        float jumpTimer;               // Remaining time for the current jump
-    
+        // Blocked movement handling
+        float blockedHorizontallyTime; 
+        bool  isJumping;
+        float jumpTimer;
+
+        // Attack Timers
+        float radialAttackTimer;
+        float horizontalShootTimer;
+
+        // **New Fields for Emperor Attack Scaling**
+        float radialAttackMultiplier; // Multiplier for sword count in radial attacks
+        float radialAttackCooldown;   // Cooldown time for radial attack
+        float radialAttackTimerSuper; // Timer for Emperor's super attack
+        int burstCount;               // Tracks bursts fired in final phase
+        bool burstCooldownActive;     // Whether burst mode is in cooldown
+        float burstCooldownTimer;     // Timer for cooldown phase
+        bool isInBurstMode;           // Whether the enemy is in final burst mode
+
         // Constructor
         CEnemyAI(EnemyType type = EnemyType::Normal, EnemyBehavior behavior = EnemyBehavior::FollowOne)
             : enemyType(type),
@@ -290,8 +303,17 @@ class CEnemyAI : public Component {
               maxRecognitionTime(5.0f),
               inRecognitionArea(false),
               lastSeenPlayerPos(Vec2<float>(0.f, 0.f)),
-              blockedHorizontallyTime(0.f), // Initialize new fields
+              blockedHorizontallyTime(0.f),
               isJumping(false),
-              jumpTimer(0.f)
+              jumpTimer(0.f),
+              radialAttackTimer(0.f),
+              horizontalShootTimer(0.f),
+              radialAttackMultiplier(1.0f), // Default to normal attack power
+              radialAttackCooldown(5.0f),   // Default cooldown for normal attack
+              radialAttackTimerSuper(5.0f),   // Default cooldown for normal attack
+              burstCount(0),
+              burstCooldownActive(false),
+              burstCooldownTimer(0.f),
+              isInBurstMode(false)          // Default: not in burst mode
         {}
     };

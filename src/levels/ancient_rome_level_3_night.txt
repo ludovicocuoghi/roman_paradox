@@ -284,7 +284,6 @@ Tile Box1 74 2
 Tile Box1 74 3
 Tile Box1 74 4
 Tile Ground 73 8
-Tile Box2 59 2
 Tile Box2 60 2
 Tile Box2 60 3
 Tile Box2 59 3
@@ -415,13 +414,14 @@ Tile Ground 109 8
 Tile Ground 109 9
 Tile Ground 105 13
 Tile Ground 100 13
-Tile Ground 97 12
 Tile Ground 108 12
 Tile PipeBroken 79 4
 Tile PipeBroken 90 4
 Tile Ground 19 10
 Tile Ground 20 8
 Tile Ground 46 16
+Tile Box1 59 2
+Tile Ground 97 12
 Dec BushTall 0 5
 Dec BushTall 2 5
 Dec BushSmall 27 2
@@ -504,15 +504,11 @@ Dec BushTall 115 5
 Dec BushTall 116 5
 Dec BushTall 117 5
 Dec BushTall 113 5
-Enemy EnemyElite 60 2 60 2 62 2
-Enemy EnemyElite 71 2 71 2 73 2
 Enemy EnemyElite 32 2 32 2 34 2
 Enemy EnemyElite 7 2 7 2 9 2
 Enemy EnemyElite 97 2 97 2 99 2
 Enemy EnemyElite 99 2 99 2 101 2
 Enemy EnemyElite 101 2 101 2 103 2
-Enemy EnemyElite 103 2 103 2 105 2
-Enemy EnemyElite 105 2 105 2 107 2
 Enemy EnemyElite 107 2 107 2 109 2
 Enemy EnemyElite 109 2 109 2 111 2
 Enemy EnemyElite 111 2 111 2 113 2
@@ -524,4 +520,4 @@ Enemy EnemyElite 105 8 105 8 107 8
 Enemy EnemyElite 102 8 102 8 104 8
 Enemy EnemyElite 46 8 46 8 48 8
 Enemy EnemyElite 51 18 51 18 53 18
-Player 2 2
+Player 2 2 

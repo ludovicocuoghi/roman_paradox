@@ -227,6 +227,34 @@ void PlayRenderer::render() {
         }
     }
 
+        // Render enemy swords
+        for (auto& esword : m_entityManager.getEntities("EmperorSword")) {
+            if (!esword->has<CTransform>()) continue;
+            auto& esTrans = esword->get<CTransform>();
+            //std::cout << "Rendering enemy sword at " << esTrans.pos.x << "," << esTrans.pos.y << "\n";
+            if (esword->has<CAnimation>()) {
+                //std::cout << "Rendering enemy sword\n";
+                auto& anim = esword->get<CAnimation>();
+                sf::Sprite sprite = anim.animation.getSprite();
+                sprite.setPosition(esTrans.pos.x, esTrans.pos.y);
+                sprite.setOrigin(anim.animation.getSize().x / 2.f,
+                                 anim.animation.getSize().y / 2.f);
+                m_game.window().draw(sprite);
+            }
+            if (m_showBoundingBoxes && esword->has<CBoundingBox>()) {
+                //std::cout << "Rendering enemy sword bounding box\n";
+                auto& bbox = esword->get<CBoundingBox>();
+                debugBox.setSize(sf::Vector2f(bbox.size.x, bbox.size.y));
+                float dir = (esTrans.pos.x < 0) ? -1.f : 1.f;
+                debugBox.setOrigin((dir < 0) ? bbox.size.x : bbox.halfSize.x, bbox.halfSize.y);
+                debugBox.setPosition(esTrans.pos.x, esTrans.pos.y);
+                debugBox.setFillColor(sf::Color::Transparent);
+                debugBox.setOutlineColor(sf::Color::Yellow);
+                debugBox.setOutlineThickness(2.f);
+                m_game.window().draw(debugBox);
+            }
+        }
+
     // --- HUD: Black Bar with Score, Time-of-Day, and Health ---
     m_game.window().setView(defaultView);
     {
