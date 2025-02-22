@@ -12,6 +12,15 @@ Texture TexCoinGold /Collectables/coinAnimgold.png
 Texture TexCoinSilver /Collectables/coinAnimsilver.png
 Texture TexCoinBronze /Collectables/coinAnimbronze.png
 
+Texture TexBlackHoleRed /Tile/blackhole_reds.png
+Texture TexBlackHoleBlue /Tile/blackhole_blues.png
+
+Texture TexBlackHoleRedBig /Tile/blackhole_reds_big.png
+Texture TexBlackHoleBlueBig /Tile/blackhole_blues_big.png
+
+Texture TexEnemyGrave /Tile/grave_enemy.png
+Texture TexEmperorGrave /Tile/grave_emperor.png
+
 Texture TexBrick /Tile/brick.png
 
 Texture TexBox1 /Tile/box.png
@@ -68,6 +77,12 @@ Animation Sword TexSword 48 13 1 0
 Animation EnemySword TexEnemySword 48 13 1 0
 Animation EmperorSword TexEmperorSword 48 13 1 0
 
+Animation BlackHoleRed TexBlackHoleRed 176 175 11 11
+Animation BlackHoleBlue TexBlackHoleBlue 176 175 11 11
+
+Animation BlackHoleRedBig TexBlackHoleRedBig 1050 1050 10 14
+Animation BlackHoleBlueBig TexBlackHoleBlueBig 1050 1050 10 14
+
 Animation GrapeBig TexGrapeBig 100 80 1 0
 Animation GrapeSmall TexGrapeSmall 64 64 1 0
 Animation CoinGold TexCoinGold 96 95 5 5
@@ -100,6 +115,9 @@ Animation CloudBig TexCloudBig 520 192 1 0
 
 Animation LevelDoor TexLevelDoor 348 480 1 0
 Animation LevelDoorGold TexLevelDoorGold 348 480 1 0
+
+Animation EnemyGrave TexEnemyGrave 66 75 1 0
+Animation EmperorGrave TexEmperorGrave 73 93 1 0
 
 Animation EnemyFast_Stand TexStandAnimEnemyFast 100 100 1 0
 Animation EnemyFast_Run TexRunEnemyFast 100 100 4 6

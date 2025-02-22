@@ -167,6 +167,7 @@ void Scene_Play::update(float deltaTime) {
         sCollision();  // Calls updateCollisions() which now includes sword collisions.
         sAnimation(deltaTime);
         UpdateFragments(deltaTime);
+        m_spawner.updateGraves(deltaTime);  // ✅ Update falling graves
         
         // Update CLifeSpan for ephemeral entities AFTER collision processing.
         for (auto& entity : m_entityManager.getEntities()) {
@@ -176,6 +177,7 @@ void Scene_Play::update(float deltaTime) {
                 lifespan.remainingTime -= deltaTime;
                 if (lifespan.remainingTime <= 0.f)
                     entity->destroy();
+                    
             }
         }
         
@@ -320,7 +322,7 @@ void Scene_Play::lifeCheckPlayerDeath() {
     const auto& transform = player->get<CTransform>();
     const auto& health = player->get<CHealth>();
 
-    bool isOutOfBounds = transform.pos.y > 1000;
+    bool isOutOfBounds = transform.pos.y > 3000;
     bool isDead = (health.currentHealth <= 0);
 
     if (isOutOfBounds || isDead) {
@@ -360,45 +362,49 @@ void Scene_Play::lifeCheckEnemyDeath() {
         bool isOutOfBounds = (transform.pos.y > 10000);
         bool isDead        = (health.currentHealth <= 0);
 
-
         if (isOutOfBounds || isDead) {
-            // Se l'enemy ha un CUniqueID, controlliamo "chi" è
+            bool isEmperor = (enemy->has<CEnemyAI>() && enemy->get<CEnemyAI>().enemyType == EnemyType::Emperor);
+
+            std::cout << "[DEBUG] Enemy ID " << enemy->id() << " is dead! Spawning " 
+                      << (isEmperor ? "Emperor" : "normal") << " grave...\n";
+
+            // ✅ Spawn the correct grave type
+            m_spawner.spawnEnemyGrave(transform.pos, isEmperor);
+
+            // Handle unique enemy ID logic (e.g., tile removal)
             if (enemy->has<CUniqueID>()) {
                 auto& uniqueID = enemy->get<CUniqueID>();
-
-                std::cout << "[DEBUG] Enemy ID "<< enemy->id() << "unique ID: " << uniqueID.id << " is dead!\n";
-
-                // Ottieni il nome del livello
                 std::string levelName = extractLevelName(m_levelPath);
 
-                std::cout << "[DEBUG] Level name: " << levelName << "\n";
+                std::cout << "[DEBUG] Checking tile removal for enemy ID: " << uniqueID.id << "\n";
                 
-                // Esegui un controllo sul nome del livello
                 if (levelName == "ancient_rome_level_1_day.txt") {
-                    // Se siamo nel level 1 day
-                    if (uniqueID.id == "EnemyFast_5") {
-                        std::cout << "[DEBUG] (Level1) EnemyFast_5 sconfitto.\n";
-                        // Rimuovi la tile con ID "PipeTall_275"
+                    if (uniqueID.id == "EnemyFast_4") {
+                        std::cout << "[DEBUG] Removing tile PipeTall_275\n";
                         removeTileByID("PipeTall_275");
                     }
-                    // Altri if/else se servono
                 }
                 else if (levelName == "ancient_rome_level_2_sunset.txt") {
-                    // Se siamo nel level 2 sunset
                     if (uniqueID.id == "EnemyStrong_12") {
-                        std::cout << "[DEBUG] (Level2) EnemyElite_2 sconfitto.\n";
+                        std::cout << "[DEBUG] Removing tile PipeTall_900\n";
                         removeTileByID("PipeTall_900");
                     }
                 }
-                // e così via per ogni levelName
+                else if (levelName == "ancient_rome_level_4_emperor_room.txt") {
+                    if (uniqueID.id == "Emperor_1") {
+                        std::cout << "[DEBUG] (Level2) Emperor defeated...\n";
+                        removeTileByID("PipeTall_209");
+                    }
+                }
             }
 
-            // Distruggiamo comunque il nemico
+            // Destroy the enemy
             enemy->destroy();
             std::cout << "[DEBUG] Enemy destroyed: ID = " << enemy->id() << "\n";
         }
     }
 }
+
 std::shared_ptr<Entity> Scene_Play::spawnSword(std::shared_ptr<Entity> player) {
     return m_spawner.spawnSword(player);
 }

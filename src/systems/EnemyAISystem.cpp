@@ -80,10 +80,8 @@ void EnemyAISystem::update(float deltaTime)
         auto& anim       = enemy->get<CAnimation>();
 
         // ----------------------------------------------------
-        // 1) Logica Emperor: radiali ogni 5s (distance>500),
-        //    orizzontali ogni 3s (100 < distance <= 500)
-        // ----------------------------------------------------
         // Emperor Attack Logic
+        // ----------------------------------------------------
         if (enemyAI.enemyType == EnemyType::Emperor) 
         {
             float dx = playerTrans.pos.x - enemyTrans.pos.x;
@@ -96,102 +94,107 @@ void EnemyAISystem::update(float deltaTime)
                 auto& health = enemy->get<CHealth>();
                 healthPercentage = static_cast<float>(health.currentHealth) / static_cast<float>(health.maxHealth);
             }
-            auto& health = enemy->get<CHealth>();
 
             std::cout << "[DEBUG] Emperor Health: " << healthPercentage << "\n";
-            // **FINAL PHASE: MASSIVE ATTACK at ≤ 10% HP**
-            // **FINAL BURST: Emperor at ≤ 10% HP**
-            if (healthPercentage <= 0.20f) {
-                if (!enemyAI.burstCooldownActive) {
-                    enemyAI.radialAttackTimer += deltaTime;
 
-                    // Fire every 0.2s for 5 seconds (50 bursts)
-                    if (enemyAI.radialAttackTimer >= 0.2f) {
-                        enemyAI.radialAttackTimer = 0.f;
-                        std::cout << "[DEBUG] Emperor FINAL ATTACK: 8x Radial Swords!\n";
+            // ============================
+            // 🔥 FINAL BURST (10% HP) 🔥
+            // ============================
+            if (healthPercentage <= 0.1f) {
+                if (enemyAI.enemyState != EnemyState::FinalAttack) {
+                    std::cout << "[DEBUG] Emperor entering FINAL ATTACK mode!\n";
+                    enemyAI.enemyState = EnemyState::FinalAttack;
+                    enemyAI.finalBurstTimer = 0.f;
+                    enemyAI.burstCount = 0;
+                }
 
-                        // Spawn 8x radial swords
-                        m_spawner->spawnEmperorSwordsRadial(enemy, EMPEROR_RADIAL_SWORDS_COUNT * 3,
-                                                            EMPEROR_RADIAL_SWORDS_RADIUS, EMPEROR_RADIAL_SWORDS_SPEED);
+                // Stop all movement
+                enemyTrans.velocity.x = 0.f;
+                enemyTrans.velocity.y = 0.f;
 
-                        // Track the number of bursts
-                        enemyAI.burstCount++;
-                        std::cout << "[DEBUG] Emperor FINAL ATTACK: Burst #" << enemyAI.burstCount << "\n";
+                // Execute Final Burst
+                enemyAI.finalBurstTimer += deltaTime;
+                if (enemyAI.finalBurstTimer >= 0.2f) {
+                    enemyAI.finalBurstTimer = 0.f;
+                    std::cout << "[DEBUG] Emperor FINAL ATTACK: 8x Radial Swords!\n";
+                    m_spawner->spawnEmperorSwordsRadial(enemy, EMPEROR_RADIAL_SWORDS_COUNT * 2,
+                                                        EMPEROR_RADIAL_SWORDS_RADIUS, EMPEROR_RADIAL_SWORDS_SPEED);
 
-                        // **Stop after 50 bursts (~10s of attacks)**
-                        if (enemyAI.burstCount >= 50) {
-                            enemyAI.burstCooldownActive = true;  // Permanently stop attacks
-                            enemyAI.burstCount = 0;
-                            auto enemySwords = m_entityManager.getEntities("EmperorSword");
-                            for (auto& sword : enemySwords) {
-                                sword->destroy();
-                            }
-                            enemyTrans.velocity.x = 0.f;  // Stop moving
-                            std::cout << "[DEBUG] Emperor FINAL ATTACK FINISHED! No more attacks.\n";
+                    enemyAI.burstCount++;
+                    std::cout << "[DEBUG] Emperor FINAL ATTACK: Burst #" << enemyAI.burstCount << "\n";
+
+                    if (enemyAI.burstCount >= 25) {  
+                        std::cout << "[DEBUG] Emperor FINAL ATTACK FINISHED! No more attacks.\n";
+                        auto enemySwords = m_entityManager.getEntities("EmperorSword");
+                        for (auto& sword : enemySwords) {
+                            sword->destroy();
                         }
+                        return;
                     }
                 }
-                
-                return;  // **Ensures no other attacks happen after the final phase**
+                return; // 🔹 Ensure no other attacks happen in Final Attack mode
             }
 
-            // **Normal Radial Attack (Above 50% HP)**
-            if (healthPercentage > 0.7f) {
-                enemyAI.radialAttackTimer += deltaTime;
-                if (enemyAI.radialAttackTimer >= 4.f) {
-                    enemyAI.radialAttackTimer = 0.f;
-                    std::cout << "[DEBUG] Emperor Super Attack: Radial Swords (Normal)\n";
-                    m_spawner->spawnEmperorSwordsRadial(enemy, EMPEROR_RADIAL_SWORDS_COUNT, EMPEROR_RADIAL_SWORDS_RADIUS, EMPEROR_RADIAL_SWORDS_SPEED);
-                }
-            }
+            // ============================
+            // 🌀 Normal Attack Phases 🌀
+            // ============================
+            if (enemyAI.enemyState != EnemyState::FinalAttack) {
 
-            // **Enhanced Radial Attack (50% > HP > 20%)**
-            if (healthPercentage <= 0.7f && healthPercentage > 0.5f) {
-                enemyAI.radialAttackTimer += deltaTime;
-                if (enemyAI.radialAttackTimer >= 3.f) {
-                    enemyAI.radialAttackTimer = 0.f;
-                    std::cout << "[DEBUG] Emperor Super Attack: DOUBLE Radial Swords (Enhanced)\n";
-                    m_spawner->spawnEmperorSwordsRadial(enemy, EMPEROR_RADIAL_SWORDS_COUNT * 2, EMPEROR_RADIAL_SWORDS_RADIUS, EMPEROR_RADIAL_SWORDS_SPEED);
-                }
-            }
-
-            // **Final Burst Phase (Below 40% HP, Above 10%)**
-            if (healthPercentage <= 0.5f && healthPercentage > 0.2f) {
-                if (!enemyAI.burstCooldownActive) {
+                // **Radial Attack (Above 50% HP)**
+                if (healthPercentage > 0.7f) {
                     enemyAI.radialAttackTimer += deltaTime;
-                    if (enemyAI.radialAttackTimer >= 0.2f) { 
+                    if (enemyAI.radialAttackTimer >= 4.f) {
                         enemyAI.radialAttackTimer = 0.f;
-                        std::cout << "[DEBUG] Emperor Super Attack: QUADRUPLE Radial Swords (Final Phase)\n";
+                        std::cout << "[DEBUG] Emperor Super Attack: Radial Swords (Normal)\n";
                         m_spawner->spawnEmperorSwordsRadial(enemy, EMPEROR_RADIAL_SWORDS_COUNT, EMPEROR_RADIAL_SWORDS_RADIUS, EMPEROR_RADIAL_SWORDS_SPEED);
+                    }
+                }
 
-                        // After 5 bursts, enter cooldown
-                        enemyAI.burstCount++;
-                        if (enemyAI.burstCount >= 20) {
-                            enemyAI.burstCooldownActive = true;
-                            enemyAI.burstCooldownTimer = 0.f;
-                            enemyAI.burstCount = 0;
-                            auto enemySwords = m_entityManager.getEntities("EmperorSword");
-                            for (auto& sword : enemySwords) {
-                                sword->destroy();
+                // **Enhanced Radial Attack (50% > HP > 20%)**
+                else if (healthPercentage <= 0.7f && healthPercentage > 0.5f) {
+                    enemyAI.radialAttackTimer += deltaTime;
+                    if (enemyAI.radialAttackTimer >= 3.f) {
+                        enemyAI.radialAttackTimer = 0.f;
+                        std::cout << "[DEBUG] Emperor Super Attack: DOUBLE Radial Swords (Enhanced)\n";
+                        m_spawner->spawnEmperorSwordsRadial(enemy, EMPEROR_RADIAL_SWORDS_COUNT * 2, EMPEROR_RADIAL_SWORDS_RADIUS, EMPEROR_RADIAL_SWORDS_SPEED);
+                    }
+                }
+
+                // **Final Burst Phase (Below 40% HP, Above 10%)**
+                else if (healthPercentage <= 0.5f && healthPercentage > 0.1f) {
+                    if (!enemyAI.burstCooldownActive) {
+                        enemyAI.radialAttackTimer += deltaTime;
+                        if (enemyAI.radialAttackTimer >= 0.2f) { 
+                            enemyAI.radialAttackTimer = 0.f;
+                            std::cout << "[DEBUG] Emperor Super Attack: QUADRUPLE Radial Swords (Final Phase)\n";
+                            m_spawner->spawnEmperorSwordsRadial(enemy, EMPEROR_RADIAL_SWORDS_COUNT, EMPEROR_RADIAL_SWORDS_RADIUS, EMPEROR_RADIAL_SWORDS_SPEED);
+
+                            enemyAI.burstCount++;
+                            if (enemyAI.burstCount >= 20) {
+                                enemyAI.burstCooldownActive = true;
+                                enemyAI.burstCooldownTimer = 0.f;
+                                enemyAI.burstCount = 0;
+                                auto enemySwords = m_entityManager.getEntities("EmperorSword");
+                                for (auto& sword : enemySwords) {
+                                    sword->destroy();
+                                }
+                                std::cout << "[DEBUG] Emperor Super Attack: COOLDOWN STARTED (5 sec)\n";
                             }
-                            std::cout << "[DEBUG] Emperor Super Attack: COOLDOWN STARTED (5 sec)\n";
+                        }
+                    }
+                    else {
+                        enemyAI.burstCooldownTimer += deltaTime;
+                        if (enemyAI.burstCooldownTimer >= 5.f) {
+                            enemyAI.burstCooldownActive = false;
+                            std::cout << "[DEBUG] Emperor Super Attack: COOLDOWN ENDED\n";
                         }
                     }
                 }
-                else {
-                    enemyAI.burstCooldownTimer += deltaTime;
-                    if (enemyAI.burstCooldownTimer >= 5.f) {
-                        enemyAI.burstCooldownActive = false;
-                        std::cout << "[DEBUG] Emperor Super Attack: COOLDOWN ENDED\n";
-                    }
-                }
-            }
 
-            // **Close-range attack (distance < 100)**: Static swords, no shooting
-            if (distance < 100.f) {
-                if (!enemyAI.swordSpawned) {
+                // **Close-range attack (distance < 100)**
+                if (distance < 100.f && !enemyAI.swordSpawned) {
                     std::cout << "[DEBUG] Emperor spawns static swords (Close-range attack)\n";
-                    for (int i = 0; i < 3; ++i) {  // Spawns 3 swords at slight offsets
+                    for (int i = 0; i < 3; ++i) {
                         m_spawner->spawnEmperorSwordOffset(enemy);
                     }
                     enemyAI.swordSpawned = true;

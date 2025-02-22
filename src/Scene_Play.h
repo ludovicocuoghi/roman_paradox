@@ -58,6 +58,7 @@ public:
 
     std::string extractLevelName(const std::string& path);
     void removeTileByID(const std::string& tileID);
+    void createTile(const std::string& tileType, int gridX, int gridY);
 
     // --- Configuration Constants
     const float gravityVal = 1000.f;

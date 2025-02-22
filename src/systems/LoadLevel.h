@@ -19,12 +19,13 @@ public:
     static constexpr float PIPE_REALY_OFFSET_MULTIPLIER = 0.5f;        // GRID_SIZE * 1.0
     static constexpr float PIPEBROKEN_REALY_OFFSET_MULTIPLIER= 1.f;    
     static constexpr float LEVELDOOR_REALY_OFFSET_MULTIPLIER = 2.f;
+    static constexpr float BLACKHOLE_OFFSET_MULTIPLIER = 2.f;
     static constexpr float EMPEROR_REALY_OFFSET_MULTIPLIER = 1.f;
 
     static constexpr float EMPEROR_BB_WIDTH = 160.f;
     static constexpr float EMPEROR_BB_HEIGHT = 250.f;
     // Parametri per il player
-    static constexpr float PLAYER_HEALTH = 50.f;
+    static constexpr float PLAYER_HEALTH = 99999.f;
     static constexpr float PLAYER_BB_SIZE = 80.f;
     static constexpr float GRAVITY_VAL = 1000.f;
 

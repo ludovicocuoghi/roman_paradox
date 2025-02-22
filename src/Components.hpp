@@ -219,7 +219,8 @@ enum class EnemyState {
     Patrol,
     Follow,     // The enemy is following the player
     Attack,     // The enemy is attacking
-    Knockback   // The enemy is being pushed back
+    Knockback,   // The enemy is being pushed back,
+    FinalAttack // The enemy is in final burst mode
 };
 
 // Reordered fields: declare 'patrolPoints' before 'enemyState' 
@@ -276,6 +277,7 @@ class CEnemyAI : public Component {
         float radialAttackMultiplier; // Multiplier for sword count in radial attacks
         float radialAttackCooldown;   // Cooldown time for radial attack
         float radialAttackTimerSuper; // Timer for Emperor's super attack
+        float finalBurstTimer;
         int burstCount;               // Tracks bursts fired in final phase
         bool burstCooldownActive;     // Whether burst mode is in cooldown
         float burstCooldownTimer;     // Timer for cooldown phase
@@ -311,6 +313,7 @@ class CEnemyAI : public Component {
               radialAttackMultiplier(1.0f), // Default to normal attack power
               radialAttackCooldown(5.0f),   // Default cooldown for normal attack
               radialAttackTimerSuper(5.0f),   // Default cooldown for normal attack
+              finalBurstTimer(0.f),
               burstCount(0),
               burstCooldownActive(false),
               burstCooldownTimer(0.f),

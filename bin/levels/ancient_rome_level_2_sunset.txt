@@ -1020,4 +1020,4 @@ Enemy EnemyStrong 143 2 143 2 145 2
 Enemy EnemyStrong 152 2 152 2 154 2
 Enemy EnemyStrong 148 2 148 2 150 2
 Enemy EnemyStrong 106 22 106 22 108 22
-Player 105 29
+Player 1 18

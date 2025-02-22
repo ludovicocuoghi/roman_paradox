@@ -61,10 +61,10 @@ void MovementSystem::updateCamera()
     // Set the camera center
     m_cameraView.setCenter(desiredCenter);
     // Example: One-time zoom to 1.1f
-    if (m_currentZoom != 1.f) {
-        float zoomFactor = 1.f / m_currentZoom;
+    if (m_currentZoom != ZOOM_STRENGTH) {
+        float zoomFactor = ZOOM_STRENGTH / m_currentZoom;
         m_cameraView.zoom(zoomFactor);
-        m_currentZoom = 1.f;
+        m_currentZoom = ZOOM_STRENGTH;
 
         // Debug prints:
         std::cout << "Current zoom factor: " << m_currentZoom << "\n";

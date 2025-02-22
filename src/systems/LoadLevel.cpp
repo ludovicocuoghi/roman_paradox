@@ -80,7 +80,14 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
                     Vec2<float> bboxOffset = bboxSize * 0.5f;
                     bboxOffset.y -= 96.f; // sposta il BB verso il basso
                     tile->add<CBoundingBox>(bboxSize, bboxOffset);
-                } else {
+                } else if (assetType == "BlackHoleRedBig") {
+                    realY += LoadLevel::GRID_SIZE * LoadLevel::BLACKHOLE_OFFSET_MULTIPLIER;
+                    Vec2<float> bboxSize(900.f, 10.f);
+                    Vec2<float> bboxOffset = bboxSize * 0.5f;
+                    //bboxOffset.y-= 300.f; // sposta il BB verso il basso
+                    tile->add<CBoundingBox>(bboxSize, bboxOffset);
+                }
+                else {
                     // Bounding box di default = dimensioni dell'animazione
                     Vec2<float> bboxSize(
                         static_cast<float>(anim.getSize().x),
@@ -220,9 +227,9 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
                 enemyDamage = LoadLevel::ENEMY_ELITE_DAMAGE;
             } else if (enemyTypeStr == "Emperor") {
                 enemyType = EnemyType::Emperor;
-                speedMultiplier = LoadLevel::ENEMY_EMPEROR_SPEED_MULTIPLIER; // da definire
-                enemyHealth = LoadLevel::ENEMY_EMPEROR_HEALTH;               // da definire
-                enemyDamage = LoadLevel::ENEMY_EMPEROR_DAMAGE;               // da definire
+                speedMultiplier = LoadLevel::ENEMY_EMPEROR_SPEED_MULTIPLIER; 
+                enemyHealth = LoadLevel::ENEMY_EMPEROR_HEALTH;               
+                enemyDamage = LoadLevel::ENEMY_EMPEROR_DAMAGE;               
             } else if (enemyTypeStr == "EnemyNormal") {
                 enemyType = EnemyType::Normal;
                 speedMultiplier = LoadLevel::ENEMY_NORMAL_SPEED_MULTIPLIER;

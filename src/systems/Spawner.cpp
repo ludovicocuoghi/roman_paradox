@@ -199,6 +199,32 @@ void Spawner::spawnEmperorSwordsRadial(std::shared_ptr<Entity> enemy, int swordC
     }
 }
 
+void Spawner::spawnEnemyGrave(const Vec2<float>& position, bool isEmperor) {
+    auto grave = m_entityManager.addEntity("enemyGrave");
+
+    // Offset to spawn at the top of the enemy
+    float spawnHeightOffset = 96;
+    Vec2<float> spawnPos(position.x, position.y - spawnHeightOffset);
+
+    grave->add<CTransform>(spawnPos, Vec2<float>(0.f, 0.f)); // Start with zero velocity
+    grave->add<CLifeSpan>(3.0f); // Grave disappears after 3 seconds
+    grave->add<CGravity>(1000.f); // Apply gravity
+
+    std::string graveAnimName = isEmperor ? "EmperorGrave" : "EnemyGrave";
+
+    if (m_game.assets().hasAnimation(graveAnimName)) {
+        auto& graveAnim = m_game.assets().getAnimation(graveAnimName);
+        grave->add<CAnimation>(graveAnim, true); // Loop the animation
+        Vec2<float> size(static_cast<float>(graveAnim.getSize().x), static_cast<float>(graveAnim.getSize().y));
+        grave->add<CBoundingBox>(size, size * 0.5f);
+    } else {
+        std::cerr << "[ERROR] Missing animation: " << graveAnimName << "!\n";
+    }
+
+    std::cout << "[DEBUG] Spawned " << (isEmperor ? "Emperor" : "Enemy") 
+              << " grave at (" << spawnPos.x << ", " << spawnPos.y << "), affected by gravity.\n";
+}
+
 // Spawn degli item
 std::shared_ptr<Entity> Spawner::spawnItem(const Vec2<float>& position, const std::string& tileType) {
     static std::random_device rd;
@@ -263,6 +289,41 @@ void Spawner::updateFragments(float deltaTime) {
         lifespan.remainingTime -= deltaTime;
         if (lifespan.remainingTime <= 0.0f) {
             fragment->destroy();
+        }
+    }
+}
+
+void Spawner::updateGraves(float deltaTime) {
+    for (auto& grave : m_entityManager.getEntities("enemyGrave")) {
+        auto& transform = grave->get<CTransform>();
+        auto& velocity  = transform.velocity;
+        float gravity   = grave->has<CGravity>() ? grave->get<CGravity>().gravity : 1000.f;
+
+        // Apply gravity
+        velocity.y += gravity * deltaTime;
+        velocity.y = std::min(velocity.y, 800.f); // Clamp to avoid high speed
+
+        // Check collision with ground
+        bool onGround = false;
+        for (auto& tile : m_entityManager.getEntities("tile")) {
+            if (!tile->has<CTransform>() || !tile->has<CBoundingBox>()) continue;
+
+            auto& tileTrans = tile->get<CTransform>();
+            auto& tileBB    = tile->get<CBoundingBox>();
+            sf::FloatRect tileRect = tileBB.getRect(tileTrans.pos);
+            sf::FloatRect graveRect = grave->get<CBoundingBox>().getRect(transform.pos + velocity * deltaTime);
+
+            if (tileRect.intersects(graveRect)) {
+                onGround = true;
+                transform.velocity.y = 0.f;
+                break;
+            }
+        }
+
+        if (!onGround) {
+            transform.pos += velocity * deltaTime;
+        } else {
+            velocity.y = 0.f;
         }
     }
 }

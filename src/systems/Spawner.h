@@ -57,6 +57,8 @@ public:
     std::shared_ptr<Entity> spawnItem(const Vec2<float>& position, const std::string& tileType);
     std::shared_ptr<Entity> spawnEmperorSwordOffset(std::shared_ptr<Entity> enemy);
     void spawnEmperorSwordsRadial(std::shared_ptr<Entity> enemy, int swordCount, float radius, float swordSpeed);
+    void spawnEnemyGrave(const Vec2<float>& position, bool isEmperor);
+    void updateGraves(float deltaTime);
 
     void updateFragments(float deltaTime);
     void createBlockFragments(const Vec2<float>& position, const std::string & blockType);

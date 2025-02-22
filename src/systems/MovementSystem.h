@@ -20,6 +20,7 @@ public:
     static constexpr float SWORD_OFFSET_X_LEFT = -80.f;
     static constexpr float SWORD_OFFSET_X_RIGHT = 30.f;
     static constexpr float SWORD_OFFSET_Y = 10.f;
+    static constexpr float ZOOM_STRENGTH = 1.0f;
 
     MovementSystem(GameEngine& game,
                    EntityManager& entityManager,
