@@ -57,8 +57,10 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
                 realY += LoadLevel::GRID_SIZE * LoadLevel::PIPEBROKEN_REALY_OFFSET_MULTIPLIER;
             } else if (assetType == "Pipe") {
                 realY += LoadLevel::GRID_SIZE * LoadLevel::PIPE_REALY_OFFSET_MULTIPLIER;
+            } else if (assetType == "BlackHoleRedBig") {
+                realX += LoadLevel::GRID_SIZE * LoadLevel::BLACKHOLE_OFFSET_MULTIPLIER;
+                realY += LoadLevel::GRID_SIZE * LoadLevel::BLACKHOLE_OFFSET_MULTIPLIER;
             }
-
             auto tile = entityManager.addEntity("tile");
 
             // Assegna l'ID univoco
@@ -82,7 +84,7 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
                     tile->add<CBoundingBox>(bboxSize, bboxOffset);
                 } else if (assetType == "BlackHoleRedBig") {
                     realY += LoadLevel::GRID_SIZE * LoadLevel::BLACKHOLE_OFFSET_MULTIPLIER;
-                    Vec2<float> bboxSize(900.f, 10.f);
+                    Vec2<float> bboxSize(450.f, 450.f);
                     Vec2<float> bboxOffset = bboxSize * 0.5f;
                     //bboxOffset.y-= 300.f; // sposta il BB verso il basso
                     tile->add<CBoundingBox>(bboxSize, bboxOffset);

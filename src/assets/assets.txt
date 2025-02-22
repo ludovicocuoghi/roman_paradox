@@ -80,7 +80,7 @@ Animation EmperorSword TexEmperorSword 48 13 1 0
 Animation BlackHoleRed TexBlackHoleRed 176 175 11 11
 Animation BlackHoleBlue TexBlackHoleBlue 176 175 11 11
 
-Animation BlackHoleRedBig TexBlackHoleRedBig 1050 1050 10 14
+Animation BlackHoleRedBig TexBlackHoleRedBig 500 500 10 14
 Animation BlackHoleBlueBig TexBlackHoleBlueBig 1050 1050 10 14
 
 Animation GrapeBig TexGrapeBig 100 80 1 0

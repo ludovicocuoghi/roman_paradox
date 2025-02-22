@@ -201,7 +201,7 @@ Tile GoldGround 84 0
 Tile GoldGround 85 0
 Tile GoldGround 85 1
 Tile Ground 91 -26
-Tile BlackHoleRedBig 89 -2
+Tile BlackHoleRedBig 86 5
 Dec GoldPipeTall 0 5
 Dec GoldPipeTall 1 5
 Dec GoldPipeTall 2 5
@@ -263,4 +263,4 @@ Dec BushTall 65 5
 Dec BushTall 67 5
 Dec BushTall 69 5
 Enemy Emperor 20 4 20 4 22 4
-Player 2 2 
+Player 68 2
