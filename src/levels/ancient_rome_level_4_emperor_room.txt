@@ -263,4 +263,4 @@ Dec BushTall 65 5
 Dec BushTall 67 5
 Dec BushTall 69 5
 Enemy Emperor 20 4 20 4 22 4
-Player 68 2
+Player 3 3

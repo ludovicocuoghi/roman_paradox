@@ -24,29 +24,27 @@ static EnemyType getEnemyType(const std::string &typeStr) {
 constexpr int tileSize = 96;
 constexpr int worldWidth = 500;
 constexpr int worldHeight = 60;
-constexpr float CAMERA_SPEED = 1200.f; // Adjust camera speed as needed
+constexpr float CAMERA_SPEED = 1200.f; // velocità della camera
 
 Scene_LevelEditor::Scene_LevelEditor(GameEngine& game)
     : Scene(game), m_mode(0), m_zoom(1.0f)
 {
-    // Inizializza l'EntityManager per questa scena (solo una volta)
     m_entityManager = EntityManager();
 
-    // Inizializza ImGui per questa scena (una sola volta)
     bool imguiInitOK = ImGui::SFML::Init(m_game.window());
     if (!imguiInitOK) {
         std::cerr << "[ERROR] ImGui::SFML::Init() failed!\n";
     }
 
-    // Imposta la vista della camera con il default
     m_cameraView = m_game.window().getDefaultView();
     m_game.window().setView(m_cameraView);
 
-    // Registra azioni (ad es. Escape per tornare)
     registerAction(sf::Keyboard::Escape, "BACK");
 
+    // Carica le opzioni per tile, decorazioni ed enemy
     loadTileOptions();
-    loadEnemyOptions(); // Nuova funzione per caricare le opzioni degli enemy
+    loadDecOptions();
+    loadEnemyOptions();
 }
 
 Scene_LevelEditor::~Scene_LevelEditor() {
@@ -55,62 +53,66 @@ Scene_LevelEditor::~Scene_LevelEditor() {
 
 void Scene_LevelEditor::update(float deltaTime) {
     ImGui::SFML::Update(m_game.window(), sf::seconds(deltaTime));
-    
-    // --- CAMERA MOVEMENT VIA ARROW KEYS ---
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-        m_cameraView.move(-CAMERA_SPEED * deltaTime, 0.f);
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-        m_cameraView.move(CAMERA_SPEED * deltaTime, 0.f);
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
-        m_cameraView.move(0.f, -CAMERA_SPEED * deltaTime);
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
-        m_cameraView.move(0.f, CAMERA_SPEED * deltaTime);
 
-    sf::Vector2f newSize = m_game.window().getDefaultView().getSize() * m_zoom;
-    m_cameraView.setSize(newSize);
-    m_game.window().setView(m_cameraView);
+    ImGuiIO& io = ImGui::GetIO();
+    bool imguiHovered = ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow);
+    if (io.WantCaptureMouse || imguiHovered) {
+        std::cout << "[DEBUG] Il mouse è sopra ImGui." << std::endl;
+        // Non processare input di gioco quando il mouse è sopra ImGui
+    } else {
+        //std::cout << "[DEBUG] ImGui NON sta catturando il mouse." << std::endl;
+        // Processa input di gioco
 
-    m_entityManager.update();
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+            m_cameraView.move(-CAMERA_SPEED * deltaTime, 0.f);
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+            m_cameraView.move(CAMERA_SPEED * deltaTime, 0.f);
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+            m_cameraView.move(0.f, -CAMERA_SPEED * deltaTime);
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+            m_cameraView.move(0.f, CAMERA_SPEED * deltaTime);
 
-    // Gestione click sinistro: in base alla modalità (0=Tile, 1=Decorazione, 2=Enemy)
-    if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
-        if (!mousePressed) {
-            sf::Vector2i mousePosScreen = sf::Mouse::getPosition(m_game.window());
-            sf::Vector2f mousePosWorld = m_game.window().mapPixelToCoords(mousePosScreen, m_cameraView);
+        sf::Vector2f newSize = m_game.window().getDefaultView().getSize() * m_zoom;
+        m_cameraView.setSize(newSize);
+        m_game.window().setView(m_cameraView);
 
-            bool overImGui = ImGui::IsAnyItemHovered() || ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow);
-            if (!overImGui) {
+        m_entityManager.update();
+
+        // Gestione click sinistro
+        if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+            if (!mousePressed) {
+                sf::Vector2i mousePosScreen = sf::Mouse::getPosition(m_game.window());
+                sf::Vector2f mousePosWorld = m_game.window().mapPixelToCoords(mousePosScreen, m_cameraView);
                 int cellX = static_cast<int>(mousePosWorld.x / tileSize);
                 int cellY = static_cast<int>(mousePosWorld.y / tileSize);
+                std::cout << "[DEBUG] Click sinistro in (" << cellX << ", " << cellY << ")" << std::endl;
                 if (m_mode == 0)
                     placeTile(cellX, cellY);
                 else if (m_mode == 1)
                     placeDec(cellX, cellY);
                 else if (m_mode == 2)
                     placeEnemy(cellX, cellY);
+                mousePressed = true;
             }
-            mousePressed = true;
+        } else if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
+            if (!mousePressed) {
+                sf::Vector2i mousePosScreen = sf::Mouse::getPosition(m_game.window());
+                sf::Vector2f mousePosWorld = m_game.window().mapPixelToCoords(mousePosScreen, m_cameraView);
+                int cellX = static_cast<int>(mousePosWorld.x / tileSize);
+                int cellY = static_cast<int>(mousePosWorld.y / tileSize);
+                std::cout << "[DEBUG] Click destro in (" << cellX << ", " << cellY << ")" << std::endl;
+                if (m_mode == 0)
+                    removeTile(cellX, cellY);
+                else if (m_mode == 1)
+                    removeDec(cellX, cellY);
+                else if (m_mode == 2)
+                    removeEnemy(cellX, cellY);
+                mousePressed = true;
+            }
+        } else {
+            mousePressed = false;
         }
-    } else if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
-        if (!mousePressed) {
-            sf::Vector2i mousePosScreen = sf::Mouse::getPosition(m_game.window());
-            sf::Vector2f mousePosWorld = m_game.window().mapPixelToCoords(mousePosScreen, m_cameraView);
-            int cellX = static_cast<int>(mousePosWorld.x / tileSize);
-            int cellY = static_cast<int>(mousePosWorld.y / tileSize);
-            if (m_mode == 0)
-                removeTile(cellX, cellY);
-            else if (m_mode == 1)
-                removeDec(cellX, cellY);
-            // Per gli enemy, potresti voler rimuovere l'enemy in quella cella
-            else if (m_mode == 2)
-                removeEnemy(cellX, cellY);
-            mousePressed = true;
-        }
-    } else {
-        mousePressed = false;
     }
-
-    //printEntities();
 }
 
 void Scene_LevelEditor::sRender() {
@@ -118,23 +120,24 @@ void Scene_LevelEditor::sRender() {
     m_game.window().setView(m_cameraView);
     drawGrid();
 
-    // Disegna tile, decorazioni e, eventualmente, enemy (puoi gestirlo separatamente se hai un sistema di rendering per gli enemy)
+    // Disegna le entità di gioco
     for (auto& entity : m_entityManager.getEntities()) {
         if (!entity->has<CTransform>())
             continue;
         auto& transform = entity->get<CTransform>();
         sf::Sprite sprite;
-        if (entity->has<CAnimation>()) {
+        if (entity->has<CAnimation>())
             sprite = entity->get<CAnimation>().animation.getSprite();
-        } else {
+        else
             sprite = sf::Sprite();
-        }
         sprite.setOrigin(0.f, 0.f);
         sprite.setScale(1.f, 1.f);
         sprite.setPosition(transform.pos.x, transform.pos.y);
         m_game.window().draw(sprite);
     }
 
+    // Ripristina la vista predefinita prima di renderizzare ImGui
+    m_game.window().setView(m_game.window().getDefaultView());
     renderImGui();
     ImGui::SFML::Render(m_game.window());
     m_game.window().display();
@@ -151,7 +154,7 @@ void Scene_LevelEditor::placeTile(int gridX, int gridY) {
     float realX = gridX * tileSize;
     float realY = gridY * tileSize;
     
-    // Controlla se esiste già una tile in quella cella
+    // Verifica se esiste già una tile in quella cella
     for (auto& tile : m_entityManager.getEntities("tile")) {
         auto& transform = tile->get<CTransform>();
         if (std::abs(transform.pos.x - realX) < 0.1f &&
@@ -174,7 +177,7 @@ void Scene_LevelEditor::placeDec(int gridX, int gridY) {
     float realX = gridX * tileSize;
     float realY = gridY * tileSize;
     
-    // Controlla se esiste già una decorazione in quella cella
+    // Verifica se esiste già una decorazione in quella cella
     for (auto& dec : m_entityManager.getEntities("decoration")) {
         auto& transform = dec->get<CTransform>();
         if (std::abs(transform.pos.x - realX) < 0.1f &&
@@ -197,7 +200,7 @@ void Scene_LevelEditor::placeEnemy(int gridX, int gridY) {
     float realX = gridX * tileSize;
     float realY = gridY * tileSize;
     
-    // Controlla se esiste già un enemy in quella cella (opzionale)
+    // Verifica se esiste già un enemy in quella cella (opzionale)
     for (auto& enemy : m_entityManager.getEntities("enemy")) {
         auto& transform = enemy->get<CTransform>();
         if (std::abs(transform.pos.x - realX) < 0.1f &&
@@ -208,15 +211,11 @@ void Scene_LevelEditor::placeEnemy(int gridX, int gridY) {
     }
     auto enemy = m_entityManager.addEntity("enemy");
     enemy->add<CTransform>(Vec2<float>(realX, realY));
-    // Imposta l'AI dell'enemy in base al tipo selezionato.
-    // Il tipo selezionato è memorizzato in m_selectedEnemy (ad es. "EnemyFast", "EnemyStrong", "EnemyElite", "EnemyNormal")
     if (m_game.assets().hasAnimation(m_selectedEnemy + "_Stand")) {
         enemy->add<CAnimation>(m_game.assets().getAnimation(m_selectedEnemy + "_Stand"), true);
     } else {
         std::cerr << "[ERROR] Animazione mancante per: " << m_selectedEnemy << "\n";
     }
-    // Aggiungi il componente AI, impostando il tipo corrispondente
-    // Nota: la conversione da stringa a EnemyType va implementata; qui ipotizziamo una funzione helper getEnemyType(m_selectedEnemy)
     enemy->add<CEnemyAI>(getEnemyType(m_selectedEnemy));
     std::cout << "[DEBUG] Enemy posizionato: " << m_selectedEnemy << " in (" << gridX << ", " << gridY << ")\n";
 }
@@ -275,7 +274,6 @@ void Scene_LevelEditor::removeEnemy(int gridX, int gridY) {
 void Scene_LevelEditor::drawGrid() {
     sf::Color gridColor(255, 255, 255, 100);
     
-    // Disegna linee della griglia
     for (int x = 0; x <= worldWidth; ++x) {
         sf::Vertex line[] = {
             sf::Vertex(sf::Vector2f(x * tileSize, 0), gridColor),
@@ -295,7 +293,6 @@ void Scene_LevelEditor::drawGrid() {
 void Scene_LevelEditor::renderImGui() {
     ImGui::Begin("Level Editor");
 
-    // Modalità: 0 = Tile, 1 = Decoration, 2 = Enemy
     ImGui::Text("Modalità:");
     ImGui::RadioButton("Tile", &m_mode, 0);
     ImGui::SameLine();
@@ -307,36 +304,101 @@ void Scene_LevelEditor::renderImGui() {
 
     if (m_mode == 0) {
         ImGui::Text("Seleziona una tile:");
-        static int selectedTileIndex = 0;
-        std::vector<const char*> tileNames;
-        tileNames.reserve(m_tileOptions.size());
-        for (auto& t : m_tileOptions)
-            tileNames.push_back(t.c_str());
-        if (ImGui::Combo("##tileSelect", &selectedTileIndex, tileNames.data(), static_cast<int>(tileNames.size()))) {
-            m_selectedTile = m_tileOptions[selectedTileIndex];
-            std::cout << "[DEBUG] Tile selezionata: " << m_selectedTile << "\n";
+        if (ImGui::TreeNode("Ancient Rome Tiles")) {
+            for (const auto &tile : m_ancientRomanTileOptions) {
+                bool isSelected = (m_selectedTile == tile);
+                if (ImGui::Selectable(tile.c_str(), isSelected)) {
+                    m_selectedTile = tile;
+                    std::cout << "[DEBUG] Tile selezionata: " << m_selectedTile << "\n";
+                }
+            }
+            ImGui::TreePop();
         }
-    } else if (m_mode == 1) {
+        if (ImGui::TreeNode("Alien Rome Tiles")) {
+            for (const auto &tile : m_alienTileOptions) {
+                bool isSelected = (m_selectedTile == tile);
+                if (ImGui::Selectable(tile.c_str(), isSelected)) {
+                    m_selectedTile = tile;
+                    std::cout << "[DEBUG] Tile selezionata: " << m_selectedTile << "\n";
+                }
+            }
+            ImGui::TreePop();
+        }
+        if (ImGui::TreeNode("Quantum Rome Tiles")) {
+            for (const auto &tile : m_quantumTileOptions) {
+                bool isSelected = (m_selectedTile == tile);
+                if (ImGui::Selectable(tile.c_str(), isSelected)) {
+                    m_selectedTile = tile;
+                    std::cout << "[DEBUG] Tile selezionata: " << m_selectedTile << "\n";
+                }
+            }
+            ImGui::TreePop();
+        }
+    }
+    else if (m_mode == 1) {
         ImGui::Text("Seleziona una decorazione:");
-        static int selectedDecIndex = 0;
-        std::vector<const char*> decNames;
-        decNames.reserve(m_decOptions.size());
-        for (auto& d : m_decOptions)
-            decNames.push_back(d.c_str());
-        if (ImGui::Combo("##decSelect", &selectedDecIndex, decNames.data(), static_cast<int>(decNames.size()))) {
-            m_selectedDec = m_decOptions[selectedDecIndex];
-            std::cout << "[DEBUG] Decoration selezionata: " << m_selectedDec << "\n";
+        if (ImGui::TreeNode("Ancient Rome Decs")) {
+            for (const auto &dec : m_ancientRomanDecOptions) {
+                bool isSelected = (m_selectedDec == dec);
+                if (ImGui::Selectable(dec.c_str(), isSelected)) {
+                    m_selectedDec = dec;
+                    std::cout << "[DEBUG] Decorazione selezionata: " << m_selectedDec << "\n";
+                }
+            }
+            ImGui::TreePop();
         }
-    } else if (m_mode == 2) {
+        if (ImGui::TreeNode("Alien Rome Decs")) {
+            for (const auto &dec : m_alienDecOptions) {
+                bool isSelected = (m_selectedDec == dec);
+                if (ImGui::Selectable(dec.c_str(), isSelected)) {
+                    m_selectedDec = dec;
+                    std::cout << "[DEBUG] Decorazione selezionata: " << m_selectedDec << "\n";
+                }
+            }
+            ImGui::TreePop();
+        }
+        if (ImGui::TreeNode("Quantum Rome Decs")) {
+            for (const auto &dec : m_quantumDecOptions) {
+                bool isSelected = (m_selectedDec == dec);
+                if (ImGui::Selectable(dec.c_str(), isSelected)) {
+                    m_selectedDec = dec;
+                    std::cout << "[DEBUG] Decorazione selezionata: " << m_selectedDec << "\n";
+                }
+            }
+            ImGui::TreePop();
+        }
+    }
+    else if (m_mode == 2) {
         ImGui::Text("Seleziona il tipo di enemy:");
-        static int selectedEnemyIndex = 0;
-        std::vector<const char*> enemyNames;
-        enemyNames.reserve(m_enemyOptions.size());
-        for (auto& e : m_enemyOptions)
-            enemyNames.push_back(e.c_str());
-        if (ImGui::Combo("##enemySelect", &selectedEnemyIndex, enemyNames.data(), static_cast<int>(enemyNames.size()))) {
-            m_selectedEnemy = m_enemyOptions[selectedEnemyIndex];
-            std::cout << "[DEBUG] Enemy selezionato: " << m_selectedEnemy << "\n";
+        if (ImGui::TreeNode("Ancient Rome Enemies")) {
+            for (const auto &enemy : m_ancientRomanEnemyOptions) {
+                bool isSelected = (m_selectedEnemy == enemy);
+                if (ImGui::Selectable(enemy.c_str(), isSelected)) {
+                    m_selectedEnemy = enemy;
+                    std::cout << "[DEBUG] Enemy selezionato: " << m_selectedEnemy << "\n";
+                }
+            }
+            ImGui::TreePop();
+        }
+        if (ImGui::TreeNode("Alien Rome Enemies")) {
+            for (const auto &enemy : m_alienEnemyOptions) {
+                bool isSelected = (m_selectedEnemy == enemy);
+                if (ImGui::Selectable(enemy.c_str(), isSelected)) {
+                    m_selectedEnemy = enemy;
+                    std::cout << "[DEBUG] Enemy selezionato: " << m_selectedEnemy << "\n";
+                }
+            }
+            ImGui::TreePop();
+        }
+        if (ImGui::TreeNode("Quantum Rome Enemies")) {
+            for (const auto &enemy : m_quantumEnemyOptions) {
+                bool isSelected = (m_selectedEnemy == enemy);
+                if (ImGui::Selectable(enemy.c_str(), isSelected)) {
+                    m_selectedEnemy = enemy;
+                    std::cout << "[DEBUG] Enemy selezionato: " << m_selectedEnemy << "\n";
+                }
+            }
+            ImGui::TreePop();
         }
     }
     
@@ -373,6 +435,7 @@ void Scene_LevelEditor::renderImGui() {
     
     ImGui::End();
 }
+
 void Scene_LevelEditor::saveLevel(const std::string& filePath) {
     m_entityManager.update();
     std::ofstream out(filePath);
@@ -381,7 +444,7 @@ void Scene_LevelEditor::saveLevel(const std::string& filePath) {
         return;
     }
     
-    // Save tiles
+    // Salva le tile
     for (auto& tile : m_entityManager.getEntities("tile")) {
         auto& transform = tile->get<CTransform>();
         int gridX = static_cast<int>(transform.pos.x / tileSize);
@@ -390,7 +453,7 @@ void Scene_LevelEditor::saveLevel(const std::string& filePath) {
         out << "Tile " << tile->get<CAnimation>().animation.getName() << " " << gridX << " " << savedGridY << "\n";
     }
     
-    // Save decorations
+    // Salva le decorazioni
     for (auto& dec : m_entityManager.getEntities("decoration")) {
         auto& transform = dec->get<CTransform>();
         int gridX = static_cast<int>(transform.pos.x / tileSize);
@@ -399,27 +462,26 @@ void Scene_LevelEditor::saveLevel(const std::string& filePath) {
         out << "Dec " << dec->get<CAnimation>().animation.getName() << " " << gridX << " " << savedGridY << "\n";
     }
 
-    // Save enemies with patrol points (adding +2 to X positions)
+    // Salva gli enemy (con patrol points: X originale e X+2)
     for (auto& enemy : m_entityManager.getEntities("enemy")) {
         auto& transform = enemy->get<CTransform>();
         int gridX = static_cast<int>(transform.pos.x / tileSize);
         int gridY = static_cast<int>(transform.pos.y / tileSize);
         int savedGridY = worldHeight - 1 - gridY;
         
-        // Determine enemy type
         std::string enemyType = enemy->get<CEnemyAI>().enemyType == EnemyType::Fast ? "EnemyFast" :
                                 enemy->get<CEnemyAI>().enemyType == EnemyType::Strong ? "EnemyStrong" :
                                 enemy->get<CEnemyAI>().enemyType == EnemyType::Elite ? "EnemyElite" :
                                 enemy->get<CEnemyAI>().enemyType == EnemyType::Emperor ? "Emperor" :
                                 "EnemyNormal";
         
-        // Add patrol points (original X +2)
-        out << "Enemy " << enemyType << " " << gridX << " " << savedGridY <<  " " << gridX << " " << savedGridY 
-            << " " << (gridX + 2) << " " << savedGridY << "\n";
+        out << "Enemy " << enemyType << " " << gridX << " " << savedGridY << " " 
+            << gridX << " " << savedGridY << " " << (gridX + 2) << " " << savedGridY << "\n";
     }
     out.close();
     std::cout << "[DEBUG] Level saved to " << filePath << "\n";
 }
+
 void Scene_LevelEditor::loadLevel(const std::string& filePath) {
     m_entityManager.clear();
     
@@ -435,7 +497,6 @@ void Scene_LevelEditor::loadLevel(const std::string& filePath) {
             std::string assetType;
             int fileGridX, fileGridY;
             file >> assetType >> fileGridX >> fileGridY;
-            // Converti da coordinate in basso a sinistra (file) a quelle del gioco
             int gridX = fileGridX;
             int gridY = worldHeight - 1 - fileGridY;
             auto entity = m_entityManager.addEntity("tile");
@@ -460,7 +521,6 @@ void Scene_LevelEditor::loadLevel(const std::string& filePath) {
             } else {
                 std::cerr << "[ERROR] Missing animation for " << assetType << "\n";
             }
-            //std::cout << "[DEBUG] Loaded Decoration: " << assetType << " at (" << gridX << ", " << gridY << ")\n";
         }
         else if (token == "Enemy") {
             std::string enemyType;
@@ -470,9 +530,7 @@ void Scene_LevelEditor::loadLevel(const std::string& filePath) {
             int gridY = worldHeight - 1 - fileGridY;
             auto entity = m_entityManager.addEntity("enemy");
             entity->add<CTransform>(Vec2<float>(gridX * tileSize, gridY * tileSize));
-            // Usa la funzione helper per convertire la stringa in EnemyType
             entity->add<CEnemyAI>(getEnemyType(enemyType));
-            // Aggiungi l'animazione di stand corrispondente
             std::string standAnim = enemyType + "_Stand";
             if (m_game.assets().hasAnimation(standAnim)) {
                 entity->add<CAnimation>(m_game.assets().getAnimation(standAnim), true);
@@ -493,24 +551,35 @@ void Scene_LevelEditor::loadLevel(const std::string& filePath) {
     m_currentLevelPath = filePath;
     std::cout << "[DEBUG] Level loaded from " << filePath << "\n";
 }
+
 void Scene_LevelEditor::loadTileOptions() {
-    m_tileOptions = { "Ground", "Brick", "Box1", "Box2", "PipeTall", "Pipe", "PipeBroken", "TreasureBoxAnim", "GoldGround", "LevelDoor", "BlackHoleRed", "BlackHoleBlue", "BlackHoleRedBig", "BlackHoleBlueBig" };
-    if (!m_tileOptions.empty()) {
-        m_selectedTile = m_tileOptions[0];
-    }
-    m_decOptions = { "BushSmall", "BushTall", "CloudSmall", "CloudBig","GoldPipeTall" };
-    if (!m_decOptions.empty()) {
-        m_selectedDec = m_decOptions[0];
-    }
-    // Carica anche le opzioni degli enemy
-    loadEnemyOptions();
+    // Definizione delle tile per le tre categorie
+    m_ancientRomanTileOptions = { "Ground", "Brick", "Box1", "Box2", "PipeTall", "Pipe", "PipeBroken", "TreasureBoxAnim", "GoldGround", "LevelDoor", "BlackHoleRed", "BlackHoleBlue", "BlackHoleRedBig", "BlackHoleBlueBig" };
+    m_alienTileOptions       = { "AlienTile1", "AlienTile2", "AlienTile3" };
+    m_quantumTileOptions     = { "QuantumTile1", "QuantumTile2", "QuantumTile3" };
+
+    if (!m_ancientRomanTileOptions.empty())
+        m_selectedTile = m_ancientRomanTileOptions[0];
+}
+
+void Scene_LevelEditor::loadDecOptions() {
+    // Definizione delle decorazioni per le tre categorie
+    m_ancientRomanDecOptions = { "BushSmall", "BushTall", "CloudSmall", "CloudBig", "GoldPipeTall" };
+    m_alienDecOptions        = { "AlienDec1", "AlienDec2" };
+    m_quantumDecOptions      = { "QuantumDec1", "QuantumDec2" };
+
+    if (!m_ancientRomanDecOptions.empty())
+        m_selectedDec = m_ancientRomanDecOptions[0];
 }
 
 void Scene_LevelEditor::loadEnemyOptions() {
-    m_enemyOptions = { "EnemyFast", "EnemyStrong", "EnemyElite", "EnemyNormal", "Emperor" };
-    if (!m_enemyOptions.empty()) {
-        m_selectedEnemy = m_enemyOptions[0];
-    }
+    // Definizione degli enemy per le tre categorie
+    m_ancientRomanEnemyOptions = { "EnemyFast", "EnemyStrong", "EnemyElite", "EnemyNormal", "Emperor" };
+    m_alienEnemyOptions        = { "AlienEnemy1", "AlienEnemy2" };
+    m_quantumEnemyOptions      = { "QuantumEnemy1", "QuantumEnemy2" };
+
+    if (!m_ancientRomanEnemyOptions.empty())
+        m_selectedEnemy = m_ancientRomanEnemyOptions[0];
 }
 
 void Scene_LevelEditor::printEntities() {

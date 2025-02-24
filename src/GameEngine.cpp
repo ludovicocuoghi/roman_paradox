@@ -106,16 +106,16 @@ void GameEngine::update() {
 void GameEngine::sUserInput() {
     sf::Event event;
     while (m_window.pollEvent(event)) {
-        // Forward ImGui events
-        if (m_currentScene && m_currentScene->usesImGui())
+        // Inoltra gli eventi a ImGui solo se esiste un contesto (cioè se la scena corrente usa ImGui)
+        if (m_currentScene && m_currentScene->usesImGui() && ImGui::GetCurrentContext() != nullptr)
             ImGui::SFML::ProcessEvent(event);
         
         if (event.type == sf::Event::Closed) {
             stop();
         }
-
+    
         m_window.setKeyRepeatEnabled(false);
-
+    
         if (event.type == sf::Event::KeyPressed || event.type == sf::Event::KeyReleased) {
             if (m_currentScene) {
                 for (const auto& [key, actionName] : m_currentScene->getActionMap()) {

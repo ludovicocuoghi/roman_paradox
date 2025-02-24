@@ -94,7 +94,13 @@ void Scene_Play::selectBackgroundFromLevel(const std::string& levelPath) {
     std::string levelName = levelPath.substr(levelPath.find_last_of("/\\") + 1);
     
     // Mapping of levels to backgrounds
-    if (levelName == "ancient_rome_level_1_day.txt") {
+    if (levelName == "alien_rome_level_1.txt") {
+        m_backgroundPath = "src/images/Background/alien_rome_phase_1.png";
+        m_timeofday = "ALIEN EMPIRE";
+    } else if (levelName == "alien_rome_level_2.txt") {
+        m_backgroundPath = "src/images/Background/alien_rome_phase_2.png";
+        m_timeofday = "ALIEN EMPIRE";
+    } else if (levelName == "ancient_rome_level_1_day.txt") {
         m_backgroundPath = "src/images/Background/ancient_rome_level_1_day.png";
         m_timeofday = "ANCIENT ROME (DAY)";
     } else if (levelName == "ancient_rome_level_2_sunset.txt") {
