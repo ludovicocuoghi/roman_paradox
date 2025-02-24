@@ -95,22 +95,22 @@ void Scene_Play::selectBackgroundFromLevel(const std::string& levelPath) {
     
     // Mapping of levels to backgrounds
     if (levelName == "alien_rome_level_1.txt") {
-        m_backgroundPath = "src/images/Background/alien_rome_phase_1.png";
+        m_backgroundPath = "src/images/Background/alien_rome/alien_rome_phase_1.png";
         m_timeofday = "ALIEN EMPIRE";
     } else if (levelName == "alien_rome_level_2.txt") {
-        m_backgroundPath = "src/images/Background/alien_rome_phase_2.png";
+        m_backgroundPath = "src/images/Background/alien_rome/alien_rome_phase_2.png";
         m_timeofday = "ALIEN EMPIRE";
     } else if (levelName == "ancient_rome_level_1_day.txt") {
-        m_backgroundPath = "src/images/Background/ancient_rome_level_1_day.png";
+        m_backgroundPath = "src/images/Background/ancient_rome/ancient_rome_level_1_day.png";
         m_timeofday = "ANCIENT ROME (DAY)";
     } else if (levelName == "ancient_rome_level_2_sunset.txt") {
-        m_backgroundPath = "src/images/Background/ancient_rome_level_2_sunset.png";
+        m_backgroundPath = "src/images/Background/ancient_rome/ancient_rome_level_2_sunset.png";
         m_timeofday = "ANCIENT ROME (SUNSET)";
     } else if (levelName == "ancient_rome_level_3_night.txt") {
-        m_backgroundPath = "src/images/Background/ancient_rome_level_3_night.png";
+        m_backgroundPath = "src/images/Background/ancient_rome/ancient_rome_level_3_night.png";
         m_timeofday = "ANCIENT ROME (NIGHT)";
     } else if (levelName == "ancient_rome_level_4_emperor_room.txt") {
-        m_backgroundPath = "src/images/Background/ancient_rome_level_4_emperor_room.png";
+        m_backgroundPath = "src/images/Background/ancient_rome/ancient_rome_level_4_emperor_room.png";
         m_timeofday = "EMPEROR ROOM";
     }  
     else {
@@ -328,7 +328,7 @@ void Scene_Play::lifeCheckPlayerDeath() {
     const auto& transform = player->get<CTransform>();
     const auto& health = player->get<CHealth>();
 
-    bool isOutOfBounds = transform.pos.y > 3000;
+    bool isOutOfBounds = transform.pos.y > 2500;
     bool isDead = (health.currentHealth <= 0);
 
     if (isOutOfBounds || isDead) {

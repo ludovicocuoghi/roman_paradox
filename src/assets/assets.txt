@@ -1,72 +1,72 @@
-Texture TexStandAnim /player_alien/a_stand100Anim.png
-Texture TexRun /player_alien/a_run1004.png
-Texture TexAir /player_alien/a_air1002.png
-Texture TexHit /player_alien/a_hit100nosword.png
+Texture TexStandAnim Player/a_stand100Anim.png
+Texture TexRun Player/a_run1004.png
+Texture TexAir Player/a_air1002.png
+Texture TexHit Player/a_hit100nosword.png
 Texture TexSword /sword/a_sword.png
 Texture TexEnemySword /sword/sword.png
 Texture TexEmperorSword /sword/gold_sword.png
 
-Texture TexGrapeSmall /Collectables/smallgrape.png
-Texture TexGrapeBig /Collectables/biggrape.png
-Texture TexCoinGold /Collectables/coinAnimgold.png
-Texture TexCoinSilver /Collectables/coinAnimsilver.png
-Texture TexCoinBronze /Collectables/coinAnimbronze.png
+Texture TexGrapeSmall Collectables/ancient_rome/smallgrape.png
+Texture TexGrapeBig Collectables/ancient_rome/biggrape.png
+Texture TexCoinGold Collectables/ancient_rome/coinAnimgold.png
+Texture TexCoinSilver Collectables/ancient_rome/coinAnimsilver.png
+Texture TexCoinBronze Collectables/ancient_rome/coinAnimbronze.png
 
-Texture TexBlackHoleRed /Tile/blackhole_reds.png
-Texture TexBlackHoleBlue /Tile/blackhole_blues.png
+Texture TexBlackHoleRed Tile/ancient_rome/blackhole_reds.png
+Texture TexBlackHoleBlue Tile/ancient_rome/blackhole_blues.png
 
-Texture TexBlackHoleRedBig /Tile/blackhole_reds_big.png
-Texture TexBlackHoleBlueBig /Tile/blackhole_blues_big.png
+Texture TexBlackHoleRedBig Tile/ancient_rome/blackhole_reds_big.png
+Texture TexBlackHoleBlueBig Tile/ancient_rome/blackhole_blues_big.png
 
-Texture TexEnemyGrave /Tile/grave_enemy.png
-Texture TexEmperorGrave /Tile/grave_emperor.png
+Texture TexEnemyGrave Tile/ancient_rome/grave_enemy.png
+Texture TexEmperorGrave Tile/ancient_rome/grave_emperor.png
 
-Texture TexBrick /Tile/brick.png
+Texture TexBrick Tile/ancient_rome/brick.png
 
-Texture TexBox1 /Tile/box.png
-Texture TexBox2 /Tile/box2.png
-Texture TexGround /Tile/ground.png
-Texture TexGoldGround /Tile/ground_gold.png
+Texture TexBox1 Tile/ancient_rome/box.png
+Texture TexBox2 Tile/ancient_rome/box2.png
+Texture TexGround Tile/ancient_rome/ground.png
+Texture TexGoldGround Tile/ancient_rome/ground_gold.png
 
-Texture TexBushSmall /Dec/smallbush.png
-Texture TexBushTall /Dec/tallbush.png
+Texture TexBushSmall Dec/ancient_rome/smallbush.png
+Texture TexBushTall Dec/ancient_rome/tallbush.png
 
-Texture TexGoldPipeTall /Dec/gold_pipe_sprite.png
+Texture TexGoldPipeTall Dec/ancient_rome/gold_pipe_sprite.png
 
-Texture TexPipeTall /Tile/pipetall-3.png
-Texture TexPipe /Tile/pipeshort-3.png
-Texture TexPipeBroken /Tile/pipebroken.png
+Texture TexPipeTall Tile/ancient_rome/pipetall-3.png
+Texture TexPipe Tile/ancient_rome/pipeshort-3.png
+Texture TexPipeBroken Tile/ancient_rome/pipebroken.png
 
-Texture TexCloudSmall /Dec/smallcloud.png
-Texture TexCloudBig /Dec/bigcloud.png
+Texture TexCloudSmall Dec/ancient_rome/smallcloud.png
+Texture TexCloudBig Dec/ancient_rome/bigcloud.png
 
-Texture TexTreasureBoxAnim /Tile/treasurebox_anim.png
-Texture TexTreasureBoxHit /Tile/treasurebox_hit.png
+Texture TexTreasureBoxAnim Tile/ancient_rome/treasurebox_anim.png
+Texture TexTreasureBoxHit Tile/ancient_rome/treasurebox_hit.png
 
-Texture TexLevelDoor /Tile/level_door.png
-Texture TexLevelDoorGold /Tile/level_door_gold.png
+Texture TexLevelDoor Tile/ancient_rome/level_door.png
+Texture TexLevelDoorGold Tile/ancient_rome/level_door_gold.png
 
-Texture TexStandAnimEnemyFast /ancient_roman/silver/stand1002_silver.png
-Texture TexRunEnemyFast /ancient_roman/silver/run1004_silver.png
-Texture TexAirEnemyFast /ancient_roman/silver/air1002_silver.png
-Texture TexHitEnemyFast /ancient_roman/silver/hit100nosword_silver.png
+Texture TexStandAnimEnemyFast Enemy/ancient_rome/silver/stand1002_silver.png
+Texture TexRunEnemyFast Enemy/ancient_rome/silver/run1004_silver.png
+Texture TexAirEnemyFast Enemy/ancient_rome/silver/air1002_silver.png
+Texture TexHitEnemyFast Enemy/ancient_rome/silver/hit100nosword_silver.png
 
-Texture TexStandAnimEnemyStrong /ancient_roman/bronze/stand1002_bronze.png
-Texture TexRunEnemyStrong /ancient_roman/bronze/run1004_bronze.png
-Texture TexAirEnemyStrong /ancient_roman/bronze/air1002_bronze.png
-Texture TexHitEnemyStrong /ancient_roman/bronze/hit100nosword_bronze.png
+Texture TexStandAnimEnemyStrong Enemy/ancient_rome/bronze/stand1002_bronze.png
+Texture TexRunEnemyStrong Enemy/ancient_rome/bronze/run1004_bronze.png
+Texture TexAirEnemyStrong Enemy/ancient_rome/bronze/air1002_bronze.png
+Texture TexHitEnemyStrong Enemy/ancient_rome/bronze/hit100nosword_bronze.png
 
-Texture TexStandAnimEnemyElite /ancient_roman/black/stand1002_black.png
-Texture TexRunEnemyElite /ancient_roman/black/run1004_black.png
-Texture TexAirEnemyElite /ancient_roman/black/air1002_black.png
-Texture TexHitEnemyElite /ancient_roman/black/hit100nosword_black.png
+Texture TexStandAnimEnemyElite Enemy/ancient_rome/black/stand1002_black.png
+Texture TexRunEnemyElite Enemy/ancient_rome/black/run1004_black.png
+Texture TexAirEnemyElite Enemy/ancient_rome/black/air1002_black.png
+Texture TexHitEnemyElite Enemy/ancient_rome/black/hit100nosword_black.png
 
-Texture TexStandAnimEnemyNormal /ancient_roman/gold/stand1002_gold.png
-Texture TexRunEnemyNormal /ancient_roman/gold/run1004_gold.png
-Texture TexAirEnemyNormal /ancient_roman/gold/air1002_gold.png
-Texture TexHitEnemyNormal /ancient_roman/gold/hit100nosword_gold.png
+Texture TexStandAnimEnemyNormal Enemy/ancient_rome/gold/stand1002_gold.png
+Texture TexRunEnemyNormal Enemy/ancient_rome/gold/run1004_gold.png
+Texture TexAirEnemyNormal Enemy/ancient_rome/gold/air1002_gold.png
+Texture TexHitEnemyNormal Enemy/ancient_rome/gold/hit100nosword_gold.png
 
-Texture TexStandOldRomeEmperor /ancient_roman/emperor/emperor.png
+Texture TexStandOldRomeEmperor Enemy/ancient_rome/emperor/emperor.png
 
 Animation PlayerStand TexStandAnim 100 100 6 8
 Animation PlayerRun TexRun 100 100 4 6
