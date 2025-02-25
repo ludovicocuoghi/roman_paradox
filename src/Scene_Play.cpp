@@ -373,6 +373,7 @@ void Scene_Play::lifeCheckEnemyDeath() {
 
             std::cout << "[DEBUG] Enemy ID " << enemy->id() << " is dead! Spawning " 
                       << (isEmperor ? "Emperor" : "normal") << " grave...\n";
+            
 
             // ✅ Spawn the correct grave type
             m_spawner.spawnEnemyGrave(transform.pos, isEmperor);
