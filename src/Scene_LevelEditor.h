@@ -46,6 +46,7 @@ public:
     void loadTileOptions();
     void loadDecOptions();
     void loadEnemyOptions();
+    std::string worldcategory;
 
 private:
     // Gestione degli entity e della camera

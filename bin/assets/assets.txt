@@ -6,67 +6,82 @@ Texture TexSword /sword/a_sword.png
 Texture TexEnemySword /sword/sword.png
 Texture TexEmperorSword /sword/gold_sword.png
 
-Texture TexGrapeSmall Collectables/ancient_rome/smallgrape.png
-Texture TexGrapeBig Collectables/ancient_rome/biggrape.png
-Texture TexCoinGold Collectables/ancient_rome/coinAnimgold.png
-Texture TexCoinSilver Collectables/ancient_rome/coinAnimsilver.png
-Texture TexCoinBronze Collectables/ancient_rome/coinAnimbronze.png
+Texture TexAncientGrapeSmall Collectables/ancient_rome/smallgrape.png
+Texture TexAncientGrapeBig Collectables/ancient_rome/biggrape.png
+Texture TexAncientCoinGold Collectables/ancient_rome/coinAnimgold.png
+Texture TexAncientCoinSilver Collectables/ancient_rome/coinAnimsilver.png
+Texture TexAncientCoinBronze Collectables/ancient_rome/coinAnimbronze.png
 
-Texture TexBlackHoleRed Tile/ancient_rome/blackhole_reds.png
-Texture TexBlackHoleBlue Tile/ancient_rome/blackhole_blues.png
+Texture TexAncientBlackHoleRed Tile/ancient_rome/blackhole_reds.png
+Texture TexAncientBlackHoleBlue Tile/ancient_rome/blackhole_blues.png
+Texture TexAncientBlackHoleRedBig Tile/ancient_rome/blackhole_reds_big.png
+Texture TexAncientBlackHoleBlueBig Tile/ancient_rome/blackhole_blues_big.png
 
-Texture TexBlackHoleRedBig Tile/ancient_rome/blackhole_reds_big.png
-Texture TexBlackHoleBlueBig Tile/ancient_rome/blackhole_blues_big.png
+Texture TexAncientEnemyGrave Tile/ancient_rome/grave_enemy.png
+Texture TexAncientEmperorGrave Tile/ancient_rome/grave_emperor.png
 
-Texture TexEnemyGrave Tile/ancient_rome/grave_enemy.png
-Texture TexEmperorGrave Tile/ancient_rome/grave_emperor.png
+Texture TexAncientBrick Tile/ancient_rome/brick.png
+Texture TexAncientBox1 Tile/ancient_rome/box.png
+Texture TexAncientBox2 Tile/ancient_rome/box2.png
+Texture TexAncientGround Tile/ancient_rome/ground.png
+Texture TexAncientGoldGround Tile/ancient_rome/ground_gold.png
 
-Texture TexBrick Tile/ancient_rome/brick.png
+Texture TexAncientBushSmall Dec/ancient_rome/smallbush.png
+Texture TexAncientBushTall Dec/ancient_rome/tallbush.png
+Texture TexAncientGoldPipeTall Dec/ancient_rome/gold_pipe_sprite.png
 
-Texture TexBox1 Tile/ancient_rome/box.png
-Texture TexBox2 Tile/ancient_rome/box2.png
-Texture TexGround Tile/ancient_rome/ground.png
-Texture TexGoldGround Tile/ancient_rome/ground_gold.png
+Texture TexAncientPipeTall Tile/ancient_rome/pipetall-3.png
+Texture TexAncientPipe Tile/ancient_rome/pipeshort-3.png
+Texture TexAncientPipeBroken Tile/ancient_rome/pipebroken.png
 
-Texture TexBushSmall Dec/ancient_rome/smallbush.png
-Texture TexBushTall Dec/ancient_rome/tallbush.png
+Texture TexAncientCloudSmall Dec/ancient_rome/smallcloud.png
+Texture TexAncientCloudBig Dec/ancient_rome/bigcloud.png
 
-Texture TexGoldPipeTall Dec/ancient_rome/gold_pipe_sprite.png
+Texture TexAncientTreasureBoxAnim Tile/ancient_rome/treasurebox_anim.png
+Texture TexAncientTreasureBoxHit Tile/ancient_rome/treasurebox_hit.png
 
-Texture TexPipeTall Tile/ancient_rome/pipetall-3.png
-Texture TexPipe Tile/ancient_rome/pipeshort-3.png
-Texture TexPipeBroken Tile/ancient_rome/pipebroken.png
+Texture TexAncientLevelDoor Tile/ancient_rome/level_door.png
+Texture TexAncientLevelDoorGold Tile/ancient_rome/level_door_gold.png
 
-Texture TexCloudSmall Dec/ancient_rome/smallcloud.png
-Texture TexCloudBig Dec/ancient_rome/bigcloud.png
+Texture TexAncientStandAnimEnemyFast Enemy/ancient_rome/silver/stand1002_silver.png
+Texture TexAncientRunEnemyFast Enemy/ancient_rome/silver/run1004_silver.png
+Texture TexAncientAirEnemyFast Enemy/ancient_rome/silver/air1002_silver.png
+Texture TexAncientHitEnemyFast Enemy/ancient_rome/silver/hit100nosword_silver.png
 
-Texture TexTreasureBoxAnim Tile/ancient_rome/treasurebox_anim.png
-Texture TexTreasureBoxHit Tile/ancient_rome/treasurebox_hit.png
+Texture TexAncientStandAnimEnemyStrong Enemy/ancient_rome/bronze/stand1002_bronze.png
+Texture TexAncientRunEnemyStrong Enemy/ancient_rome/bronze/run1004_bronze.png
+Texture TexAncientAirEnemyStrong Enemy/ancient_rome/bronze/air1002_bronze.png
+Texture TexAncientHitEnemyStrong Enemy/ancient_rome/bronze/hit100nosword_bronze.png
 
-Texture TexLevelDoor Tile/ancient_rome/level_door.png
-Texture TexLevelDoorGold Tile/ancient_rome/level_door_gold.png
+Texture TexAncientStandAnimEnemyElite Enemy/ancient_rome/black/stand1002_black.png
+Texture TexAncientRunEnemyElite Enemy/ancient_rome/black/run1004_black.png
+Texture TexAncientAirEnemyElite Enemy/ancient_rome/black/air1002_black.png
+Texture TexAncientHitEnemyElite Enemy/ancient_rome/black/hit100nosword_black.png
 
-Texture TexStandAnimEnemyFast Enemy/ancient_rome/silver/stand1002_silver.png
-Texture TexRunEnemyFast Enemy/ancient_rome/silver/run1004_silver.png
-Texture TexAirEnemyFast Enemy/ancient_rome/silver/air1002_silver.png
-Texture TexHitEnemyFast Enemy/ancient_rome/silver/hit100nosword_silver.png
+Texture TexAncientStandAnimEnemyNormal Enemy/ancient_rome/gold/stand1002_gold.png
+Texture TexAncientRunEnemyNormal Enemy/ancient_rome/gold/run1004_gold.png
+Texture TexAncientAirEnemyNormal Enemy/ancient_rome/gold/air1002_gold.png
+Texture TexAncientHitEnemyNormal Enemy/ancient_rome/gold/hit100nosword_gold.png
 
-Texture TexStandAnimEnemyStrong Enemy/ancient_rome/bronze/stand1002_bronze.png
-Texture TexRunEnemyStrong Enemy/ancient_rome/bronze/run1004_bronze.png
-Texture TexAirEnemyStrong Enemy/ancient_rome/bronze/air1002_bronze.png
-Texture TexHitEnemyStrong Enemy/ancient_rome/bronze/hit100nosword_bronze.png
+Texture TexAncientStandOldRomeEmperor Enemy/ancient_rome/emperor/emperor.png
 
-Texture TexStandAnimEnemyElite Enemy/ancient_rome/black/stand1002_black.png
-Texture TexRunEnemyElite Enemy/ancient_rome/black/run1004_black.png
-Texture TexAirEnemyElite Enemy/ancient_rome/black/air1002_black.png
-Texture TexHitEnemyElite Enemy/ancient_rome/black/hit100nosword_black.png
 
-Texture TexStandAnimEnemyNormal Enemy/ancient_rome/gold/stand1002_gold.png
-Texture TexRunEnemyNormal Enemy/ancient_rome/gold/run1004_gold.png
-Texture TexAirEnemyNormal Enemy/ancient_rome/gold/air1002_gold.png
-Texture TexHitEnemyNormal Enemy/ancient_rome/gold/hit100nosword_gold.png
+Texture TexAlienGround Tile/alien_rome/ground.png
+Texture TexAlienBrick Tile/alien_rome/brick.png
+Texture TexAlienPipeTall Tile/alien_rome/pipetall.png
+Texture TexAlienTreasureBoxAnim Tile/alien_rome/treasurebox.png
+Texture TexAlienTreasureBoxHit Tile/alien_rome/treasurebox_hit.png
 
-Texture TexStandOldRomeEmperor Enemy/ancient_rome/emperor/emperor.png
+
+
+Animation AlienGround TexAlienGround 96 96 1 0
+Animation AlienBrick TexAlienBrick 96 96 1 0
+Animation AlienPipeTall TexAlienPipeTall 96 384 1 0
+Animation AlienTreasureBoxAnim TexAlienTreasureBoxAnim 96 96 1 0
+Animation AlienTreasureBoxHit TexAlienTreasureBoxHit 96 96 1 0
+
+
+
 
 Animation PlayerStand TexStandAnim 100 100 6 8
 Animation PlayerRun TexRun 100 100 4 6
@@ -77,67 +92,69 @@ Animation Sword TexSword 48 13 1 0
 Animation EnemySword TexEnemySword 48 13 1 0
 Animation EmperorSword TexEmperorSword 48 13 1 0
 
-Animation BlackHoleRed TexBlackHoleRed 176 175 11 11
-Animation BlackHoleBlue TexBlackHoleBlue 176 175 11 11
+Animation AncientGrapeSmall TexAncientGrapeSmall 64 64 1 0
+Animation AncientGrapeBig TexAncientGrapeBig 100 80 1 0
+Animation AncientCoinGold TexAncientCoinGold 96 95 5 5
+Animation AncientCoinSilver TexAncientCoinSilver 96 95 5 5
+Animation AncientCoinBronze TexAncientCoinBronze 96 95 5 5
 
-Animation BlackHoleRedBig TexBlackHoleRedBig 500 500 10 14
-Animation BlackHoleBlueBig TexBlackHoleBlueBig 1050 1050 10 14
+Animation AncientBlackHoleRed TexAncientBlackHoleRed 176 175 11 11
+Animation AncientBlackHoleBlue TexAncientBlackHoleBlue 176 175 11 11
+Animation AncientBlackHoleRedBig TexAncientBlackHoleRedBig 500 500 10 14
+Animation AncientBlackHoleBlueBig TexAncientBlackHoleBlueBig 1050 1050 10 14
 
-Animation GrapeBig TexGrapeBig 100 80 1 0
-Animation GrapeSmall TexGrapeSmall 64 64 1 0
-Animation CoinGold TexCoinGold 96 95 5 5
-Animation CoinSilver TexCoinSilver 96 95 5 5
-Animation CoinBronze TexCoinBronze 96 95 5 5
+Animation AncientTreasureBoxAnim TexAncientTreasureBoxAnim 96 96 4 3
+Animation AncientTreasureBoxHit TexAncientTreasureBoxHit 96 96 1 0
 
-Animation Background TexBackrgound 1792 1024 1 0
+Animation AncientGround TexAncientGround 96 96 1 0
+Animation AncientGoldGround TexAncientGoldGround 96 96 4 4
+Animation AncientBox1 TexAncientBox1 96 96 1 0
+Animation AncientBox2 TexAncientBox2 96 96 1 0
+Animation AncientBrick TexAncientBrick 96 96 1 0
 
-Animation TreasureBoxHit TexTreasureBoxHit 96 96 1 0
-Animation TreasureBoxAnim TexTreasureBoxAnim 96 96 4 3
+Animation AncientBushSmall TexAncientBushSmall 192 96 1 0
+Animation AncientBushTall TexAncientBushTall 96 384 1 0
 
-Animation Ground TexGround 96 96 1 0
-Animation GoldGround TexGoldGround 96 96 4 4
+Animation AncientGoldPipeTall TexAncientGoldPipeTall 96 384 13 11
 
-Animation Box1 TexBox1 96 96 1 0
-Animation Box2 TexBox2 96 96 1 0
-Animation Brick TexBrick 96 96 1 0
+Animation AncientPipeTall TexAncientPipeTall 96 384 1 0
+Animation AncientPipeBroken TexAncientPipeBroken 96 288 1 0
+Animation AncientPipe TexAncientPipe 96 192 1 0
 
-Animation BushSmall TexBushSmall 192 96 1 0
-Animation BushTall TexBushTall 96 384 1 0
+Animation AncientCloudSmall TexAncientCloudSmall 260 96 1 0
+Animation AncientCloudBig TexAncientCloudBig 520 192 1 0
 
-Animation GoldPipeTall TexGoldPipeTall 96 384 13 11
+Animation AncientLevelDoor TexAncientLevelDoor 348 480 1 0
+Animation AncientLevelDoorGold TexAncientLevelDoorGold 348 480 1 0
 
-Animation PipeTall TexPipeTall 96 384 1 0
-Animation PipeBroken TexPipeBroken 96 288 1 0
-Animation Pipe TexPipe 96 192 1 0
+Animation AncientStandAnimEnemyFast TexAncientStandAnimEnemyFast 100 100 1 0
+Animation AncientRunEnemyFast TexAncientRunEnemyFast 100 100 4 6
+Animation AncientHitEnemyFast TexAncientHitEnemyFast 100 100 1 0
 
-Animation CloudSmall TexCloudSmall 260 96 1 0
-Animation CloudBig TexCloudBig 520 192 1 0
+Animation AncientStandAnimEnemyStrong TexAncientStandAnimEnemyStrong 100 100 1 0
+Animation AncientRunEnemyStrong TexAncientRunEnemyStrong 100 100 4 6
+Animation AncientHitEnemyStrong TexAncientHitEnemyStrong 100 100 1 0
 
-Animation LevelDoor TexLevelDoor 348 480 1 0
-Animation LevelDoorGold TexLevelDoorGold 348 480 1 0
+Animation AncientStandAnimEnemyElite TexAncientStandAnimEnemyElite 100 100 1 0
+Animation AncientRunEnemyElite TexAncientRunEnemyElite 100 100 4 6
+Animation AncientHitEnemyElite TexAncientHitEnemyElite 100 100 1 0
 
-Animation EnemyGrave TexEnemyGrave 66 75 1 0
-Animation EmperorGrave TexEmperorGrave 73 93 1 0
+Animation AncientStandAnimEnemyNormal TexAncientStandAnimEnemyNormal 100 100 1 0
+Animation AncientRunEnemyNormal TexAncientRunEnemyNormal 100 100 4 6
+Animation AncientHitEnemyNormal TexAncientHitEnemyNormal 100 100 1 0
 
-Animation EnemyFast_Stand TexStandAnimEnemyFast 100 100 1 0
-Animation EnemyFast_Run TexRunEnemyFast 100 100 4 6
-Animation EnemyFast_Attack TexHitEnemyFast 100 100 1 0
+Animation AncientStandOldRomeEmperor TexAncientStandOldRomeEmperor 160 250 1 0
+Animation AncientRunOldRomeEmperor TexAncientStandOldRomeEmperor 160 250 1 0
+Animation AncientAttackOldRomeEmperor TexAncientStandOldRomeEmperor 160 250 1 0
 
-Animation EnemyStrong_Stand TexStandAnimEnemyStrong 100 100 1 0
-Animation EnemyStrong_Run TexRunEnemyStrong 100 100 4 6
-Animation EnemyStrong_Attack TexHitEnemyStrong 100 100 1 0
+Animation PlayerStand TexStandAnim 100 100 6 8
+Animation PlayerRun TexRun 100 100 4 6
+Animation PlayerAir TexAir 100 130 1 0
+Animation PlayerAttack TexHit 100 100 1 0
 
-Animation EnemyElite_Stand TexStandAnimEnemyElite 100 100 1 0
-Animation EnemyElite_Run TexRunEnemyElite 100 100 4 6
-Animation EnemyElite_Attack TexHitEnemyElite 100 100 1 0
-
-Animation EnemyNormal_Stand TexStandAnimEnemyNormal 100 100 1 0
-Animation EnemyNormal_Run TexRunEnemyNormal 100 100 4 6
-Animation EnemyNormal_Attack TexHitEnemyNormal 100 100 1 0
-
-Animation Emperor_Stand TexStandOldRomeEmperor 160 250 1 0
-Animation Emperor_Run TexStandOldRomeEmperor 160 250 1 0
-Animation Emperor_Attack TexStandOldRomeEmperor 160 250 1 0
+Animation Sword TexSword 48 13 1 0
+Animation EnemySword TexEnemySword 48 13 1 0
+Animation EmperorSword TexEmperorSword 48 13 1 0
 
 Font Tech fonts/font.ttf
 Font Menu fonts/font.ttf

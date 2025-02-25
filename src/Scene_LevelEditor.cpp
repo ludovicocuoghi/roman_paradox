@@ -57,7 +57,7 @@ void Scene_LevelEditor::update(float deltaTime) {
     ImGuiIO& io = ImGui::GetIO();
     bool imguiHovered = ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow);
     if (io.WantCaptureMouse || imguiHovered) {
-        std::cout << "[DEBUG] Il mouse è sopra ImGui." << std::endl;
+        //std::cout << "[DEBUG] Il mouse è sopra ImGui." << std::endl;
         // Non processare input di gioco quando il mouse è sopra ImGui
     } else {
         //std::cout << "[DEBUG] ImGui NON sta catturando il mouse." << std::endl;
@@ -150,11 +150,10 @@ void Scene_LevelEditor::sDoAction(const Action& action) {
     }
 }
 
+
 void Scene_LevelEditor::placeTile(int gridX, int gridY) {
     float realX = gridX * tileSize;
     float realY = gridY * tileSize;
-    
-    // Verifica se esiste già una tile in quella cella
     for (auto& tile : m_entityManager.getEntities("tile")) {
         auto& transform = tile->get<CTransform>();
         if (std::abs(transform.pos.x - realX) < 0.1f &&
@@ -165,19 +164,18 @@ void Scene_LevelEditor::placeTile(int gridX, int gridY) {
     }
     auto tile = m_entityManager.addEntity("tile");
     tile->add<CTransform>(Vec2<float>(realX, realY));
-    if (m_game.assets().hasAnimation(m_selectedTile)) {
-        tile->add<CAnimation>(m_game.assets().getAnimation(m_selectedTile), true);
-        std::cout << "[DEBUG] Tile posizionata: " << m_selectedTile << " in (" << gridX << ", " << gridY << ")\n";
-    } else {
-        std::cerr << "[ERROR] Animazione mancante per: " << m_selectedTile << "\n";
+    std::string fullName = worldcategory + m_selectedTile;
+    if (m_game.assets().hasAnimation(fullName)) {
+        tile->add<CAnimation>(m_game.assets().getAnimation(fullName), true);
+        std::cout << "[DEBUG] Tile posizionata: " << fullName << " in (" << gridX << ", " << gridY << ")\n";
     }
+    else
+        std::cerr << "[ERROR] Animazione mancante per: " << fullName << "\n";
 }
 
 void Scene_LevelEditor::placeDec(int gridX, int gridY) {
     float realX = gridX * tileSize;
     float realY = gridY * tileSize;
-    
-    // Verifica se esiste già una decorazione in quella cella
     for (auto& dec : m_entityManager.getEntities("decoration")) {
         auto& transform = dec->get<CTransform>();
         if (std::abs(transform.pos.x - realX) < 0.1f &&
@@ -188,19 +186,18 @@ void Scene_LevelEditor::placeDec(int gridX, int gridY) {
     }
     auto dec = m_entityManager.addEntity("decoration");
     dec->add<CTransform>(Vec2<float>(realX, realY));
-    if (m_game.assets().hasAnimation(m_selectedDec)) {
-        dec->add<CAnimation>(m_game.assets().getAnimation(m_selectedDec), true);
-        std::cout << "[DEBUG] Decorazione posizionata: " << m_selectedDec << " in (" << gridX << ", " << gridY << ")\n";
-    } else {
-        std::cerr << "[ERROR] Animazione mancante per: " << m_selectedDec << "\n";
+    std::string fullName = worldcategory + m_selectedDec;
+    if (m_game.assets().hasAnimation(fullName)) {
+        dec->add<CAnimation>(m_game.assets().getAnimation(fullName), true);
+        std::cout << "[DEBUG] Decorazione posizionata: " << fullName << " in (" << gridX << ", " << gridY << ")\n";
     }
+    else
+        std::cerr << "[ERROR] Animazione mancante per: " << fullName << "\n";
 }
 
 void Scene_LevelEditor::placeEnemy(int gridX, int gridY) {
     float realX = gridX * tileSize;
     float realY = gridY * tileSize;
-    
-    // Verifica se esiste già un enemy in quella cella (opzionale)
     for (auto& enemy : m_entityManager.getEntities("enemy")) {
         auto& transform = enemy->get<CTransform>();
         if (std::abs(transform.pos.x - realX) < 0.1f &&
@@ -211,14 +208,15 @@ void Scene_LevelEditor::placeEnemy(int gridX, int gridY) {
     }
     auto enemy = m_entityManager.addEntity("enemy");
     enemy->add<CTransform>(Vec2<float>(realX, realY));
-    if (m_game.assets().hasAnimation(m_selectedEnemy + "_Stand")) {
-        enemy->add<CAnimation>(m_game.assets().getAnimation(m_selectedEnemy + "_Stand"), true);
-    } else {
-        std::cerr << "[ERROR] Animazione mancante per: " << m_selectedEnemy << "\n";
-    }
+    std::string fullName = worldcategory + m_selectedEnemy + "_Stand";
+    if (m_game.assets().hasAnimation(fullName))
+        enemy->add<CAnimation>(m_game.assets().getAnimation(fullName), true);
+    else
+        std::cerr << "[ERROR] Animazione mancante per: " << fullName << "\n";
     enemy->add<CEnemyAI>(getEnemyType(m_selectedEnemy));
     std::cout << "[DEBUG] Enemy posizionato: " << m_selectedEnemy << " in (" << gridX << ", " << gridY << ")\n";
 }
+
 
 void Scene_LevelEditor::removeTile(int gridX, int gridY) {
     float realX = gridX * tileSize;
@@ -482,15 +480,24 @@ void Scene_LevelEditor::saveLevel(const std::string& filePath) {
     std::cout << "[DEBUG] Level saved to " << filePath << "\n";
 }
 
+
 void Scene_LevelEditor::loadLevel(const std::string& filePath) {
-    m_entityManager.clear();
+    // Compute world category from file path.
+    if (filePath.find("ancient") != std::string::npos)
+    worldcategory = "Ancient";
+    else if (filePath.find("alien") != std::string::npos)
+    worldcategory = "Alien";
+    else if (filePath.find("future") != std::string::npos)
+    worldcategory = "Future";
+    else
+    worldcategory = "";
     
+    m_entityManager.clear();
     std::ifstream file(filePath);
     if (!file.is_open()) {
         std::cerr << "[ERROR] Failed to open level file: " << filePath << "\n";
         return;
     }
-    
     std::string token;
     while (file >> token) {
         if (token == "Tile") {
@@ -501,12 +508,12 @@ void Scene_LevelEditor::loadLevel(const std::string& filePath) {
             int gridY = worldHeight - 1 - fileGridY;
             auto entity = m_entityManager.addEntity("tile");
             entity->add<CTransform>(Vec2<float>(gridX * tileSize, gridY * tileSize));
-            if (m_game.assets().hasAnimation(assetType)) {
-                entity->add<CAnimation>(m_game.assets().getAnimation(assetType), true);
-            } else {
-                std::cerr << "[ERROR] Missing animation for " << assetType << "\n";
-            }
-            std::cout << "[DEBUG] Loaded Tile: " << assetType << " at (" << gridX << ", " << gridY << ")\n";
+            std::string fullAsset = worldcategory + assetType;
+            if (m_game.assets().hasAnimation(fullAsset))
+                entity->add<CAnimation>(m_game.assets().getAnimation(fullAsset), true);
+            else
+                std::cerr << "[ERROR] Missing animation for " << fullAsset << "\n";
+            std::cout << "[DEBUG] Loaded Tile: " << fullAsset << " at (" << gridX << ", " << gridY << ")\n";
         }
         else if (token == "Dec") {
             std::string assetType;
@@ -516,11 +523,12 @@ void Scene_LevelEditor::loadLevel(const std::string& filePath) {
             int gridY = worldHeight - 1 - fileGridY;
             auto entity = m_entityManager.addEntity("decoration");
             entity->add<CTransform>(Vec2<float>(gridX * tileSize, gridY * tileSize));
-            if (m_game.assets().hasAnimation(assetType)) {
-                entity->add<CAnimation>(m_game.assets().getAnimation(assetType), true);
-            } else {
-                std::cerr << "[ERROR] Missing animation for " << assetType << "\n";
-            }
+            std::string fullAsset = worldcategory + assetType;
+            if (m_game.assets().hasAnimation(fullAsset))
+                entity->add<CAnimation>(m_game.assets().getAnimation(fullAsset), true);
+            else
+                std::cerr << "[ERROR] Missing animation for " << fullAsset << "\n";
+            std::cout << "[DEBUG] Loaded Dec: " << fullAsset << " at (" << gridX << ", " << gridY << ")\n";
         }
         else if (token == "Enemy") {
             std::string enemyType;
@@ -531,13 +539,13 @@ void Scene_LevelEditor::loadLevel(const std::string& filePath) {
             auto entity = m_entityManager.addEntity("enemy");
             entity->add<CTransform>(Vec2<float>(gridX * tileSize, gridY * tileSize));
             entity->add<CEnemyAI>(getEnemyType(enemyType));
-            std::string standAnim = enemyType + "_Stand";
-            if (m_game.assets().hasAnimation(standAnim)) {
+            std::string fullEnemyType = worldcategory + enemyType;
+            std::string standAnim = fullEnemyType + "_Stand";
+            if (m_game.assets().hasAnimation(standAnim))
                 entity->add<CAnimation>(m_game.assets().getAnimation(standAnim), true);
-            } else {
-                std::cerr << "[ERROR] Missing animation for enemy type: " << enemyType << "\n";
-            }
-            std::cout << "[DEBUG] Loaded Enemy: " << enemyType << " at (" << gridX << ", " << gridY << ")\n";
+            else
+                std::cerr << "[ERROR] Missing animation for enemy type: " << standAnim << "\n";
+            std::cout << "[DEBUG] Loaded Enemy: " << fullEnemyType << " at (" << gridX << ", " << gridY << ")\n";
         }
         else if (token == "Player") {
             std::string rest;
@@ -547,15 +555,15 @@ void Scene_LevelEditor::loadLevel(const std::string& filePath) {
     }
     file.close();
     m_entityManager.update();
-    
     m_currentLevelPath = filePath;
     std::cout << "[DEBUG] Level loaded from " << filePath << "\n";
 }
 
+
 void Scene_LevelEditor::loadTileOptions() {
     // Definizione delle tile per le tre categorie
     m_ancientRomanTileOptions = { "Ground", "Brick", "Box1", "Box2", "PipeTall", "Pipe", "PipeBroken", "TreasureBoxAnim", "GoldGround", "LevelDoor", "BlackHoleRed", "BlackHoleBlue", "BlackHoleRedBig", "BlackHoleBlueBig" };
-    m_alienTileOptions       = { "AlienTile1", "AlienTile2", "AlienTile3" };
+    m_alienTileOptions       = { "Ground", "Brick", "PipeTall" };
     m_quantumTileOptions     = { "QuantumTile1", "QuantumTile2", "QuantumTile3" };
 
     if (!m_ancientRomanTileOptions.empty())
