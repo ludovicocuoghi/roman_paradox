@@ -302,4 +302,4 @@ Dec BushTall 5 5
 Enemy EnemyNormal 54 2 54 2 56 2
 Enemy EnemyNormal 96 2 96 2 98 2
 Enemy EnemyNormal 99 2 99 2 101 2
-Player 2 2
+Player 6 4 

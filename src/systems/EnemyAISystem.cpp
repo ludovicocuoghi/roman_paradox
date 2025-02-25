@@ -402,11 +402,21 @@ void EnemyAISystem::update(float deltaTime)
 
             std::string runAnimName;
             switch (enemyAI.enemyType) {
-                case EnemyType::Fast:   runAnimName = "EnemyFast_Run";   break;
-                case EnemyType::Strong: runAnimName = "EnemyStrong_Run"; break;
-                case EnemyType::Elite:  runAnimName = "EnemyElite_Run";  break;
-                case EnemyType::Normal: runAnimName = "EnemyNormal_Run"; break;
-                case EnemyType::Emperor: runAnimName = "Emperor_Run";     break;
+                case EnemyType::Fast:   
+                    runAnimName = m_game.worldType + "RunEnemyFast";   
+                    break;
+                case EnemyType::Strong: 
+                    runAnimName = m_game.worldType + "RunEnemyStrong"; 
+                    break;
+                case EnemyType::Elite:  
+                    runAnimName = m_game.worldType + "RunEnemyElite";  
+                    break;
+                case EnemyType::Normal: 
+                    runAnimName = m_game.worldType + "RunEnemyNormal"; 
+                    break;
+                case EnemyType::Emperor: 
+                    runAnimName = m_game.worldType + "RunEmperor";
+                    break;
             }
             if (anim.animation.getName() != runAnimName) {
                 const Animation& runAnim = m_game.assets().getAnimation(runAnimName);

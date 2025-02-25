@@ -24,5 +24,7 @@ Tile Ground 16 0
 Tile Ground 17 0
 Tile Ground 18 0
 Tile Ground 19 0
-Tile TreasureBoxAnim 2 5
-Player 2 3 
+Tile Treasure 12 6
+Tile Treasure 13 6
+Tile Treasure 14 6
+Player 2 2

@@ -67,8 +67,8 @@ Tile Box1 7 18
 Tile Brick 5 19
 Tile Brick 4 19
 Tile Brick 4 20
-Tile TreasureBoxAnim 4 23
-Tile TreasureBoxAnim 4 29
+Tile Treasure 4 23
+Tile Treasure 4 29
 Tile Ground 31 0
 Tile Ground 32 0
 Tile Ground 33 0
@@ -132,7 +132,7 @@ Tile Ground 37 2
 Tile Box2 32 4
 Tile Box2 34 4
 Tile Box1 33 4
-Tile TreasureBoxAnim 33 7
+Tile Treasure 33 7
 Tile Brick 42 6
 Tile Brick 43 6
 Tile Brick 44 6
@@ -332,10 +332,10 @@ Tile Ground 100 1
 Tile Ground 100 0
 Tile Ground 101 1
 Tile Ground 101 0
-Tile TreasureBoxAnim 83 5
-Tile TreasureBoxAnim 84 5
-Tile TreasureBoxAnim 85 5
-Tile TreasureBoxAnim 86 5
+Tile Treasure 83 5
+Tile Treasure 84 5
+Tile Treasure 85 5
+Tile Treasure 86 5
 Tile Ground 102 1
 Tile Ground 103 1
 Tile Ground 102 0
@@ -402,7 +402,7 @@ Tile Brick 104 12
 Tile Brick 51 10
 Tile Brick 49 13
 Tile Brick 47 16
-Tile TreasureBoxAnim 7 4
+Tile Treasure 7 4
 Tile PipeBroken 21 4
 Tile PipeBroken 22 4
 Tile PipeBroken 41 10

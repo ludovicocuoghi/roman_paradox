@@ -26,13 +26,12 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
     int x, y;
     std::cout << "[DEBUG] Loading level from: " << levelPath << std::endl;
 
-    std::string prefix = "";
     if (levelPath.find("ancient") != std::string::npos)
-        prefix = "Ancient";
+        m_game.worldType = "Ancient";
     else if (levelPath.find("alien") != std::string::npos)
-        prefix = "Alien";
+        m_game.worldType = "Alien";
     else if (levelPath.find("future") != std::string::npos)
-        prefix = "Future";
+        m_game.worldType = "Future";
 
     while (file >> type)
     {
@@ -60,7 +59,7 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
             }
             auto tile = entityManager.addEntity("tile");
             tile->add<CUniqueID>(tileID);
-            std::string fullAssetName = prefix + assetType;
+            std::string fullAssetName =  m_game.worldType + assetType;
             std::cout << "[DEBUG] Loaded Tile: " << assetType
                       << " at (" << x << ", " << y << ")"
                       << " with ID: " << tileID << std::endl;
@@ -112,7 +111,7 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
             decor->add<CUniqueID>(decID);
             if (assetType == "GoldPipeTall")
                 realY += LoadLevel::GRID_SIZE * LoadLevel::PIPETALL_REALY_OFFSET_MULTIPLIER;
-            std::string fullAssetName = prefix + assetType;
+            std::string fullAssetName =  m_game.worldType + assetType;
             if (m_game.assets().hasAnimation(fullAssetName))
             {
                 const Animation& anim = m_game.assets().getAnimation(fullAssetName);
@@ -226,13 +225,13 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
             std::string runAnimName, standAnimName;
             if (enemyTypeStr == "Emperor")
             {
-                standAnimName = prefix + "StandOldRomeEmperor";
-                runAnimName = prefix + "RunOldRomeEmperor";
+                standAnimName =  m_game.worldType + "StandOldRomeEmperor";
+                runAnimName =  m_game.worldType + "RunOldRomeEmperor";
             }
             else
             {
-                standAnimName = prefix + "StandAnim" + enemyTypeStr;
-                runAnimName = prefix + "Run" + enemyTypeStr;
+                standAnimName =  m_game.worldType + "StandAnim" + enemyTypeStr;
+                runAnimName =  m_game.worldType + "Run" + enemyTypeStr;
             }
             std::cout << "[DEBUG] Enemy Type: " << enemyTypeStr
                       << " | Using Animations: " << standAnimName << " / " << runAnimName

@@ -31,6 +31,7 @@ public:
     void run();
     void update();
     void sUserInput();
+    std::string worldType;
     
     void changeScene(const std::string& sceneName, std::shared_ptr<Scene> scene);
     void stop();

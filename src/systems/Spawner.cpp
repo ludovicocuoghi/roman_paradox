@@ -210,7 +210,9 @@ void Spawner::spawnEnemyGrave(const Vec2<float>& position, bool isEmperor) {
     grave->add<CLifeSpan>(3.0f); // Grave disappears after 3 seconds
     grave->add<CGravity>(1000.f); // Apply gravity
 
-    std::string graveAnimName = isEmperor ? "EmperorGrave" : "EnemyGrave";
+    //std::string graveAnimName = m_game.worldType + (isEmperor ? "EmperorGrave" : "EnemyGrave");
+    std::string graveAnimName = m_game.worldType + "EmperorGrave";
+    std::cout << graveAnimName << std::endl;
 
     if (m_game.assets().hasAnimation(graveAnimName)) {
         auto& graveAnim = m_game.assets().getAnimation(graveAnimName);
@@ -232,20 +234,23 @@ std::shared_ptr<Entity> Spawner::spawnItem(const Vec2<float>& position, const st
     std::string itemName;
     Vec2<float> spawnPos = position;
 
-    if (tileType == "Box1" || tileType == "Box2") {
+    if (tileType == m_game.worldType + "Box1" || tileType == m_game.worldType + "Box2" ) {  
         std::uniform_int_distribution<> dist(BOX_ITEM_DIST_MIN, BOX_ITEM_DIST_MAX);
         int roll = dist(gen);
         if (roll < BOX_ITEM_THRESHOLD_COINBRONZE)
-            itemName = "CoinBronze";
+            itemName = m_game.worldType + "CoinBronze";
         else if (roll < BOX_ITEM_THRESHOLD_GRAPESMALL)
-            itemName = "GrapeSmall";
+            itemName = m_game.worldType + "GrapeSmall";
         else
-            itemName = "CoinSilver";
-    } else if (tileType == "TreasureBoxAnim") {
+            itemName = m_game.worldType + "CoinSilver";
+    } 
+    else if (tileType == m_game.worldType + "TreasureHit") {  // Match world-specific TreasureBox
+        std::cout << "Hit treasure box ¥n";
         std::uniform_int_distribution<> dist(TREASURE_BOX_DIST_MIN, TREASURE_BOX_DIST_MAX);
-        itemName = (dist(gen) == 0) ? "CoinGold" : "GrapeBig";
+        itemName = (dist(gen) == 0) ? m_game.worldType + "CoinGold" : m_game.worldType + "GrapeBig";
         spawnPos.y -= TREASURE_BOX_TILE_SIZE;
-    } else {
+    } 
+    else {
         std::cerr << "[ERROR] Unknown tile type in spawnItem: " << tileType << std::endl;
         return nullptr;
     }

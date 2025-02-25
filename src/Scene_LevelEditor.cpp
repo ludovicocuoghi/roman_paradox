@@ -230,7 +230,7 @@ void Scene_LevelEditor::placeEnemy(int gridX, int gridY) {
     }
     auto enemy = m_entityManager.addEntity("enemy");
     enemy->add<CTransform>(Vec2<float>(realX, realY));
-    std::string fullName = worldcategory + m_selectedEnemy + "_Stand";
+    std::string fullName = worldcategory + "Stand" + m_selectedEnemy;
     if (m_game.assets().hasAnimation(fullName))
         enemy->add<CAnimation>(m_game.assets().getAnimation(fullName), true);
     else
@@ -378,7 +378,7 @@ void Scene_LevelEditor::renderImGui() {
 }
 
 void Scene_LevelEditor::loadTileOptions() {
-    m_tileOptions = { "Ground", "Brick", "Box1", "Box2", "PipeTall", "Pipe", "PipeBroken", "TreasureBoxAnim" };
+    m_tileOptions = { "Ground", "Brick", "Box1", "Box2", "PipeTall", "Pipe", "PipeBroken", "Treasure" };
     if (!m_tileOptions.empty()) {
         m_selectedTile = m_tileOptions[0];
     }
@@ -405,8 +405,7 @@ void Scene_LevelEditor::saveLevel(const std::string& filePath) {
         std::cerr << "[ERROR] Cannot open file for saving: " << filePath << "\n";
         return;
     }
-    
-    // Helper lambda to strip world category prefix if present.
+
     auto stripWorldCategory = [this](const std::string& fullName) -> std::string {
         if (!worldcategory.empty() && fullName.find(worldcategory) == 0)
             return fullName.substr(worldcategory.size());
@@ -419,8 +418,23 @@ void Scene_LevelEditor::saveLevel(const std::string& filePath) {
         int gridX = static_cast<int>(transform.pos.x / tileSize);
         int gridY = static_cast<int>(transform.pos.y / tileSize);
         int savedGridY = worldHeight - 1 - gridY;
+
+        // Check if tile has animation
+        if (!tile->has<CAnimation>()) {
+            std::cerr << "[ERROR] Tile at (" << gridX << ", " << savedGridY << ") is missing an animation!\n";
+            continue;
+        }
+
         std::string animName = tile->get<CAnimation>().animation.getName();
         animName = stripWorldCategory(animName);
+
+        // **Check if animName is empty**
+        if (animName.empty()) {
+            std::cerr << "[ERROR] Empty tile name at (" << gridX << ", " << savedGridY << ")!\n";
+            continue;
+        }
+
+        std::cout << "[DEBUG] Saving Tile: " << animName << " at (" << gridX << ", " << savedGridY << ")\n";
         out << "Tile " << animName << " " << gridX << " " << savedGridY << "\n";
     }
     
@@ -491,12 +505,19 @@ void Scene_LevelEditor::loadLevel(const std::string& filePath) {
             int gridY = worldHeight - 1 - fileGridY;
             auto entity = m_entityManager.addEntity("tile");
             entity->add<CTransform>(Vec2<float>(gridX * tileSize, gridY * tileSize));
+
             std::string fullAsset = worldcategory + assetType;
-            if (m_game.assets().hasAnimation(fullAsset))
+            
+            // **Ensure Treasure is properly prefixed**
+            if (assetType == "Treasure") {
+                std::cout << "[DEBUG] Treasure detected in file! Loading as: " << fullAsset << "\n";
+            }
+
+            if (m_game.assets().hasAnimation(fullAsset)) {
                 entity->add<CAnimation>(m_game.assets().getAnimation(fullAsset), true);
-            else
+            } else {
                 std::cerr << "[ERROR] Missing animation for " << fullAsset << "\n";
-            std::cout << "[DEBUG] Loaded Tile: " << fullAsset << " at (" << gridX << ", " << gridY << ")\n";
+            }
         }
         else if (token == "Dec") {
             std::string assetType;
@@ -523,7 +544,7 @@ void Scene_LevelEditor::loadLevel(const std::string& filePath) {
             entity->add<CTransform>(Vec2<float>(gridX * tileSize, gridY * tileSize));
             entity->add<CEnemyAI>(getEnemyType(enemyType));
             // Build the stand animation name as "WorldCategory" + "StandAnim" + enemyType.
-            std::string standAnim = worldcategory + "StandAnim" + enemyType;
+            std::string standAnim = worldcategory + "Stand" + enemyType;
             if (m_game.assets().hasAnimation(standAnim))
                 entity->add<CAnimation>(m_game.assets().getAnimation(standAnim), true);
             else

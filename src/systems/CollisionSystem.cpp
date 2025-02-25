@@ -61,10 +61,16 @@ void CollisionSystem::handlePlayerTileCollisions() {
             std::string nextLevelPath = "";  // ✅ Store next level path instead of switching immediately
 
             // ✅ NEW: Check if this tile is a LevelDoor
-            if (tile->has<CAnimation>() && (tile->get<CAnimation>().animation.getName() == "LevelDoor" || tile->get<CAnimation>().animation.getName() == "LevelDoorGold") ) {
-                std::cout << "[DEBUG] Player entered LevelDoor. Scheduling level change...\n";
-                m_game.scheduleLevelChange(m_game.getNextLevelPath());
-                return;
+            if (tile->has<CAnimation>()) {
+                std::string animName = tile->get<CAnimation>().animation.getName();
+                std::string worldLevelDoor = m_game.worldType + "LevelDoor";  
+                std::string worldLevelDoorGold = m_game.worldType + "LevelDoorGold";
+            
+                if (animName == worldLevelDoor || animName == worldLevelDoorGold) {
+                    std::cout << "[DEBUG] Player entered " << animName << ". Scheduling level change...\n";
+                    m_game.scheduleLevelChange(m_game.getNextLevelPath());
+                    return;
+                }
             }
             
             // ✅ Move level transition **outside the loop** to avoid modifying entities while iterating
@@ -110,25 +116,31 @@ void CollisionSystem::handlePlayerTileCollisions() {
                     if (velocity.y < 0) {
                         transform.pos.y += overlapY;
                         velocity.y = 0.f;
-
+                
                         // Example: breakable or special tiles
                         std::string animName = tileAnim.getName();
-                        if (animName.find("Box") != std::string::npos) {  // Match any tile with "Box"
+                        std::string expectedBox1 = m_game.worldType + "Box1";
+                        std::string expectedBox2 = m_game.worldType + "Box2";  
+                        std::string expectedTreasure = m_game.worldType + "Treasure";
+                
+                        if (animName == expectedBox1 || animName == expectedBox2) {  
                             m_spawner->createBlockFragments(tileTransform.pos, animName);
                             m_spawner->spawnItem(tileTransform.pos, animName);
                             tile->destroy();
                             std::cout << "[DEBUG] " << animName << " broken from below!\n";
                         } 
-                        else if (animName.find("Treasure") != std::string::npos || animName.find("Question") != std::string::npos) {
+                        else if (animName == expectedTreasure) {
                             auto& tileState = tile->get<CState>();
                             if (tileState.state == "inactive") {
                                 tileState.state = "activated";
-                                if (m_game.assets().hasAnimation("TreasureBoxHit")) {
-                                    tile->get<CAnimation>().animation = m_game.assets().getAnimation("TreasureBoxHit");
+                                std::string treasureHitAnim = m_game.worldType + "TreasureHit";
+                
+                                if (m_game.assets().hasAnimation(treasureHitAnim)) {
+                                    tile->get<CAnimation>().animation = m_game.assets().getAnimation(treasureHitAnim);
                                     tile->get<CAnimation>().repeat = false;
-                                    std::cout << "[DEBUG] Treasure/Question box hit from below.\n";
+                                    std::cout << "[DEBUG] " << animName << " hit from below.\n";
                                 }
-                                m_spawner->spawnItem(tileTransform.pos, "TreasureBoxAnim");
+                                m_spawner->spawnItem(tileTransform.pos, treasureHitAnim);
                             }
                         }
                     }
@@ -183,8 +195,13 @@ void CollisionSystem::handleEnemyTileCollisions() {
             if (!eRect.intersects(tRect))
                 continue;
 
-            if (tile->has<CAnimation>() && tile->get<CAnimation>().animation.getName() == "LevelDoor") {
-                continue;
+            if (tile->has<CAnimation>()) {
+                std::string animName = tile->get<CAnimation>().animation.getName();
+                std::string worldLevelDoor = m_game.worldType + "LevelDoor";  
+            
+                if (animName == worldLevelDoor) {
+                    continue;
+                }
             }
             
             
@@ -536,7 +553,9 @@ void CollisionSystem::handleSwordCollisions() {
 
             if (swordRect.intersects(tileRect)) {
                 std::string animName = tileAnim.getName();
-                if (animName.find("Box") != std::string::npos) {
+                std::string worldBox = m_game.worldType + "Box";  // Construct world-specific "Box" name
+            
+                if (animName == worldBox) {
                     m_spawner->createBlockFragments(tileTransform.pos, animName);
                     m_spawner->spawnItem(tileTransform.pos, animName);
                     tile->destroy();
