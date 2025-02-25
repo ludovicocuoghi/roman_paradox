@@ -37,8 +37,8 @@ Texture TexAncientPipeBroken Tile/ancient_rome/pipebroken.png
 Texture TexAncientCloudSmall Dec/ancient_rome/smallcloud.png
 Texture TexAncientCloudBig Dec/ancient_rome/bigcloud.png
 
-Texture TexAncientTreasureBoxAnim Tile/ancient_rome/treasurebox_anim.png
-Texture TexAncientTreasureBoxHit Tile/ancient_rome/treasurebox_hit.png
+Texture TexAncientTreasure Tile/ancient_rome/treasurebox_anim.png
+Texture TexAncientTreasureHit Tile/ancient_rome/treasurebox_hit.png
 
 Texture TexAncientLevelDoor Tile/ancient_rome/level_door.png
 Texture TexAncientLevelDoorGold Tile/ancient_rome/level_door_gold.png
@@ -69,18 +69,16 @@ Texture TexAncientStandOldRomeEmperor Enemy/ancient_rome/emperor/emperor.png
 Texture TexAlienGround Tile/alien_rome/ground.png
 Texture TexAlienBrick Tile/alien_rome/brick.png
 Texture TexAlienPipeTall Tile/alien_rome/pipetall.png
-Texture TexAlienTreasureBoxAnim Tile/alien_rome/treasurebox.png
-Texture TexAlienTreasureBoxHit Tile/alien_rome/treasurebox_hit.png
+Texture TexAlienTreasure Tile/alien_rome/treasurebox.png
+Texture TexAlienTreasureHit Tile/alien_rome/treasurebox_hit.png
 
 
 
-Animation AlienGround TexAlienGround 96 96 1 0
-Animation AlienBrick TexAlienBrick 96 96 1 0
-Animation AlienPipeTall TexAlienPipeTall 96 384 1 0
-Animation AlienTreasureBoxAnim TexAlienTreasureBoxAnim 96 96 1 0
-Animation AlienTreasureBoxHit TexAlienTreasureBoxHit 96 96 1 0
-
-
+Animation AlienGround TexAlienGround 96 96 5 8
+Animation AlienBrick TexAlienBrick 96 96 5 5
+Animation AlienPipeTall TexAlienPipeTall 96 384 7 6
+Animation AlienTreasure TexAlienTreasure 96 96 1 0
+Animation AlienTreasureHit TexAlienTreasureHit 96 96 1 0
 
 
 Animation PlayerStand TexStandAnim 100 100 6 8
@@ -103,8 +101,8 @@ Animation AncientBlackHoleBlue TexAncientBlackHoleBlue 176 175 11 11
 Animation AncientBlackHoleRedBig TexAncientBlackHoleRedBig 500 500 10 14
 Animation AncientBlackHoleBlueBig TexAncientBlackHoleBlueBig 1050 1050 10 14
 
-Animation AncientTreasureBoxAnim TexAncientTreasureBoxAnim 96 96 4 3
-Animation AncientTreasureBoxHit TexAncientTreasureBoxHit 96 96 1 0
+Animation AncientTreasure TexAncientTreasure 96 96 4 3
+Animation AncientTreasureHit TexAncientTreasureHit 96 96 1 0
 
 Animation AncientGround TexAncientGround 96 96 1 0
 Animation AncientGoldGround TexAncientGoldGround 96 96 4 4
@@ -144,6 +142,7 @@ Animation AncientRunEnemyNormal TexAncientRunEnemyNormal 100 100 4 6
 Animation AncientHitEnemyNormal TexAncientHitEnemyNormal 100 100 1 0
 
 Animation AncientStandOldRomeEmperor TexAncientStandOldRomeEmperor 160 250 1 0
+Animation AncientRunOldRomeEmperor TexAncientStandOldRomeEmperor 160 250 1 0
 Animation AncientRunOldRomeEmperor TexAncientStandOldRomeEmperor 160 250 1 0
 Animation AncientAttackOldRomeEmperor TexAncientStandOldRomeEmperor 160 250 1 0
 

@@ -32,51 +32,52 @@ public:
     void removeDec(int gridX, int gridY);
     void removeEnemy(int gridX, int gridY);
 
-    float MIN_ZOOM = 0.1f;
-    float MAX_ZOOM = 2.0f;
-
     // Disegna la griglia e il menu ImGui
     void drawGrid();
     void renderImGui();
-
-    // Stampa le entità per il debug
-    void printEntities();
-
-    // Funzioni per caricare le opzioni
+    
+    // Caricamento delle opzioni disponibili
     void loadTileOptions();
     void loadDecOptions();
     void loadEnemyOptions();
-    std::string worldcategory;
+    void loadLevelFiles();
+
+    // Debug
+    void printEntities();
+
+    // Zoom settings
+    static constexpr float MIN_ZOOM = 0.5f;
+    static constexpr float MAX_ZOOM = 10.0f;
 
 private:
     // Gestione degli entity e della camera
     EntityManager m_entityManager;
     sf::View m_cameraView;
-    int m_mode;         // 0=Tile, 1=Decoration, 2=Enemy, 3=Player
-    float m_zoom;
-    bool mousePressed;
-    bool usesImGui() const override { return true; }
-
+    
+    int m_mode = 0;         // 0=Tile, 1=Decoration, 2=Enemy
+    float m_zoom = 1.0f;
+    bool mousePressed = false;
+    
     // Percorso del file del livello corrente
     std::string m_currentLevelPath;
 
-    // Opzioni per le tile
-    std::vector<std::string> m_ancientRomanTileOptions;
-    std::vector<std::string> m_alienTileOptions;
-    std::vector<std::string> m_quantumTileOptions;
-
-    // Opzioni per le decorazioni
-    std::vector<std::string> m_ancientRomanDecOptions;
-    std::vector<std::string> m_alienDecOptions;
-    std::vector<std::string> m_quantumDecOptions;
-
-    // Opzioni per i nemici
-    std::vector<std::string> m_ancientRomanEnemyOptions;
-    std::vector<std::string> m_alienEnemyOptions;
-    std::vector<std::string> m_quantumEnemyOptions;
+    // Opzioni per le tile, decorazioni e nemici
+    std::vector<std::string> m_tileOptions;
+    std::vector<std::string> m_decOptions;
+    std::vector<std::string> m_enemyOptions;
 
     // Asset attualmente selezionati
     std::string m_selectedTile;
     std::string m_selectedDec;
     std::string m_selectedEnemy;
+
+    // Livello corrente e categoria del mondo
+    std::string worldcategory;
+    
+    // Lista dei file livelli disponibili
+    std::vector<std::string> levelFiles;
+    std::vector<const char*> levelFileNames;
+    int selectedLevelIndex = 0;
+
+    bool usesImGui() const override { return true; }
 };

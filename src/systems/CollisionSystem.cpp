@@ -113,12 +113,13 @@ void CollisionSystem::handlePlayerTileCollisions() {
 
                         // Example: breakable or special tiles
                         std::string animName = tileAnim.getName();
-                        if (animName == "Box1" || animName == "Box2") {
+                        if (animName.find("Box") != std::string::npos) {  // Match any tile with "Box"
                             m_spawner->createBlockFragments(tileTransform.pos, animName);
                             m_spawner->spawnItem(tileTransform.pos, animName);
                             tile->destroy();
                             std::cout << "[DEBUG] " << animName << " broken from below!\n";
-                        } else if (animName == "TreasureBoxAnim" || animName == "QuestionAnim") {
+                        } 
+                        else if (animName.find("Treasure") != std::string::npos || animName.find("Question") != std::string::npos) {
                             auto& tileState = tile->get<CState>();
                             if (tileState.state == "inactive") {
                                 tileState.state = "activated";
@@ -408,8 +409,9 @@ void CollisionSystem::handleSwordCollisions() {
             sf::FloatRect tileRect = tileBB.getRect(tileTransform.pos);
 
             if (swordRect.intersects(tileRect)) {
+                std::cout << "[DEBUG] Player sword hit tile!\n";
                 std::string animName = tileAnim.getName();
-                if (animName == "Box1" || animName == "Box2") {
+                if (animName.find("Box") != std::string::npos) {
                     m_spawner->createBlockFragments(tileTransform.pos, animName);
                     m_spawner->spawnItem(tileTransform.pos, animName);
                     tile->destroy();
@@ -534,7 +536,7 @@ void CollisionSystem::handleSwordCollisions() {
 
             if (swordRect.intersects(tileRect)) {
                 std::string animName = tileAnim.getName();
-                if (animName == "Box1" || animName == "Box2") {
+                if (animName.find("Box") != std::string::npos) {
                     m_spawner->createBlockFragments(tileTransform.pos, animName);
                     m_spawner->spawnItem(tileTransform.pos, animName);
                     tile->destroy();
@@ -660,19 +662,24 @@ void CollisionSystem::handlePlayerCollectibleCollisions() {
 
             if (pRect.intersects(iRect)) {
                 std::string itemType = item->get<CState>().state;
-                if (itemType == "GrapeSmall") {
-                    health.heal(COLLECTIBLE_SMALL_GRAPE_POINTS);
-                } else if (itemType == "GrapeBig") {
-                    if (player->has<CHealth>()) {
+            
+                if (itemType.find("Grape") != std::string::npos) {
+                    if (itemType.find("Small") != std::string::npos) {
+                        health.heal(COLLECTIBLE_SMALL_GRAPE_POINTS);
+                    } else if (itemType.find("Big") != std::string::npos && player->has<CHealth>()) {
                         health.heal(COLLECTIBLE_BIG_GRAPE_HEAL);
                     }
-                } else if (itemType == "CoinGold") {
-                    m_score += COLLECTIBLE_GOLD_COIN_POINTS;
-                } else if (itemType == "CoinSilver") {
-                    m_score += COLLECTIBLE_SILVER_COIN_POINTS;
-                } else if (itemType == "CoinBronze") {
-                    m_score += COLLECTIBLE_BRONZE_COIN_POINTS;
+                } 
+                else if (itemType.find("Coin") != std::string::npos) {
+                    if (itemType.find("Gold") != std::string::npos) {
+                        m_score += COLLECTIBLE_GOLD_COIN_POINTS;
+                    } else if (itemType.find("Silver") != std::string::npos) {
+                        m_score += COLLECTIBLE_SILVER_COIN_POINTS;
+                    } else if (itemType.find("Bronze") != std::string::npos) {
+                        m_score += COLLECTIBLE_BRONZE_COIN_POINTS;
+                    }
                 }
+            
                 item->destroy();
             }
         }

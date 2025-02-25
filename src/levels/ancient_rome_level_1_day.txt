@@ -82,7 +82,7 @@ Tile Pipe 28 3
 Tile Pipe 39 3
 Tile Ground 36 4
 Tile Ground 37 4
-Tile TreasureBoxAnim 34 10
+Tile Treasure 34 10
 Tile Box1 34 7
 Tile Box1 33 7
 Tile Box1 35 7
@@ -175,8 +175,8 @@ Tile Ground 76 0
 Tile Ground 76 1
 Tile Box2 68 2
 Tile Box1 68 3
-Tile TreasureBoxAnim 74 5
-Tile TreasureBoxAnim 73 5
+Tile Treasure 74 5
+Tile Treasure 73 5
 Tile Ground 89 1
 Tile Ground 90 0
 Tile Ground 90 1

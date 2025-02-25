@@ -61,6 +61,9 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
             auto tile = entityManager.addEntity("tile");
             tile->add<CUniqueID>(tileID);
             std::string fullAssetName = prefix + assetType;
+            std::cout << "[DEBUG] Loaded Tile: " << assetType
+                      << " at (" << x << ", " << y << ")"
+                      << " with ID: " << tileID << std::endl;
             if (m_game.assets().hasAnimation(fullAssetName))
             {
                 const Animation& anim = m_game.assets().getAnimation(fullAssetName);
@@ -84,7 +87,7 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
                 {
                     Vec2<float> bboxSize(static_cast<float>(anim.getSize().x), static_cast<float>(anim.getSize().y));
                     tile->add<CBoundingBox>(bboxSize, bboxSize * 0.5f);
-                    if (assetType == "TreasureBoxAnim")
+                    if (assetType == "Treasure")
                         tile->add<CState>("inactive");
                 }
             }
