@@ -80,9 +80,8 @@ Animation AlienPipeTall TexAlienPipeTall 96 384 7 6
 Animation AlienTreasure TexAlienTreasure 96 96 1 0
 Animation AlienTreasureHit TexAlienTreasureHit 96 96 1 0
 
-
-Animation AncientEnemyGrave TexAncientEnemyGrave 66 75 1 0
 Animation AncientEmperorGrave TexAncientEmperorGrave 73 93 1 0
+Animation AncientEnemyGrave TexAncientEnemyGrave 66 75 1 0
 
 Animation PlayerStand TexStand 100 100 6 8
 Animation PlayerRun TexRun 100 100 4 6

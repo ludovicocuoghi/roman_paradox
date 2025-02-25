@@ -52,7 +52,7 @@ public:
 
     // EnemyEmperor
     static constexpr float ENEMY_EMPEROR_SPEED_MULTIPLIER = 1.0f;
-    static constexpr int   ENEMY_EMPEROR_HEALTH = 100;
+    static constexpr int   ENEMY_EMPEROR_HEALTH = 10;
     static constexpr int   ENEMY_EMPEROR_DAMAGE = 10;
 
     LoadLevel(GameEngine& game);
