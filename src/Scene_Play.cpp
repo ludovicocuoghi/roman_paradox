@@ -328,7 +328,7 @@ void Scene_Play::lifeCheckPlayerDeath() {
     const auto& transform = player->get<CTransform>();
     const auto& health = player->get<CHealth>();
 
-    bool isOutOfBounds = transform.pos.y > 2500;
+    bool isOutOfBounds = transform.pos.y > 2000;
     bool isDead = (health.currentHealth <= 0);
 
     if (isOutOfBounds || isDead) {
@@ -365,7 +365,7 @@ void Scene_Play::lifeCheckEnemyDeath() {
         const auto& transform = enemy->get<CTransform>();
         const auto& health    = enemy->get<CHealth>();
 
-        bool isOutOfBounds = (transform.pos.y > 10000);
+        bool isOutOfBounds = (transform.pos.y > 2000);
         bool isDead        = (health.currentHealth <= 0);
 
         if (isOutOfBounds || isDead) {

@@ -207,7 +207,6 @@ void Spawner::spawnEnemyGrave(const Vec2<float>& position, bool isEmperor) {
     Vec2<float> spawnPos(position.x, position.y - spawnHeightOffset);
 
     grave->add<CTransform>(spawnPos, Vec2<float>(0.f, 0.f)); // Start with zero velocity
-    grave->add<CLifeSpan>(3.0f); // Grave disappears after 3 seconds
     grave->add<CGravity>(1000.f); // Apply gravity
 
     //std::string graveAnimName = m_game.worldType + (isEmperor ? "EmperorGrave" : "EnemyGrave");
