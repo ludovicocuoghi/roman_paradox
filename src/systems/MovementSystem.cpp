@@ -33,8 +33,8 @@ void MovementSystem::updateCamera()
     sf::Vector2f cameraCenter = m_cameraView.getCenter();
 
     // Trap zone dimensions
-    float halfTrapZoneWidth  = 150.f;
-    float halfTrapZoneHeight = 200.f;
+    float halfTrapZoneWidth  = 250.f;
+    float halfTrapZoneHeight = 250.f;
 
     // Calculate how far 'targetPos' is from the camera center
     float dx = targetPos.x - cameraCenter.x;

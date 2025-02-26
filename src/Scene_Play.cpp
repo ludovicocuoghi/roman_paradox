@@ -32,10 +32,10 @@ void Scene_Play::initializeCamera()
 
     // 4) Center the camera on the middle of the background
     float centerX = static_cast<float>(bgSize.x) / 2.f;
-    float centerY = static_cast<float>(bgSize.y) / 2.f;
+    float centerY = static_cast<float>(bgSize.y) / 2.f - 1000;
     m_cameraView.setCenter(centerX, centerY);
 
-    m_cameraView.zoom(1.3f);
+    m_cameraView.zoom(1.4f);
 
     // 6) Apply the view to the window
     m_game.window().setView(m_cameraView);
@@ -328,7 +328,7 @@ void Scene_Play::lifeCheckPlayerDeath() {
     const auto& transform = player->get<CTransform>();
     const auto& health = player->get<CHealth>();
 
-    bool isOutOfBounds = transform.pos.y > 2000;
+    bool isOutOfBounds = transform.pos.y > 1800;
     bool isDead = (health.currentHealth <= 0);
 
     if (isOutOfBounds || isDead) {
@@ -365,7 +365,7 @@ void Scene_Play::lifeCheckEnemyDeath() {
         const auto& transform = enemy->get<CTransform>();
         const auto& health    = enemy->get<CHealth>();
 
-        bool isOutOfBounds = (transform.pos.y > 2000);
+        bool isOutOfBounds = (transform.pos.y > 1800);
         bool isDead        = (health.currentHealth <= 0);
 
         if (isOutOfBounds || isDead) {

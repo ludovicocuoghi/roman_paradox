@@ -209,8 +209,7 @@ void Spawner::spawnEnemyGrave(const Vec2<float>& position, bool isEmperor) {
     grave->add<CTransform>(spawnPos, Vec2<float>(0.f, 0.f)); // Start with zero velocity
     grave->add<CGravity>(1000.f); // Apply gravity
 
-    //std::string graveAnimName = m_game.worldType + (isEmperor ? "EmperorGrave" : "EnemyGrave");
-    std::string graveAnimName = m_game.worldType + "EmperorGrave";
+    std::string graveAnimName = m_game.worldType + (isEmperor ? "EmperorGrave" : "EnemyGrave");
     std::cout << graveAnimName << std::endl;
 
     if (m_game.assets().hasAnimation(graveAnimName)) {
