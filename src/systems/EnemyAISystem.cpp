@@ -342,44 +342,55 @@ void EnemyAISystem::update(float deltaTime)
             enemyTrans.velocity.x = 0.f;
             enemyAI.attackTimer -= deltaTime;
 
-            // Momento di spawnare la spada
+            std::string baseAnimName;
+            switch (enemyAI.enemyType) {
+                case EnemyType::Fast:   baseAnimName = "EnemyFast"; break;
+                case EnemyType::Strong: baseAnimName = "EnemyStrong"; break;
+                case EnemyType::Elite:  baseAnimName = "EnemyElite"; break;
+                case EnemyType::Super:  baseAnimName = "EnemySuper"; break;
+                case EnemyType::Emperor: baseAnimName = "Emperor"; break;
+            }
+        
+            // Ensure the attack animation plays
+            std::string attackAnimName = m_game.worldType + "Hit" + baseAnimName;
+            if (anim.animation.getName() != attackAnimName) {
+                std::cout << "[DEBUG] Enemy " << enemy->id() 
+                          << " entering Attack animation: " << attackAnimName << "\n";
+                anim.animation = m_game.assets().getAnimation(attackAnimName);
+                anim.animation.reset();
+                anim.repeat = false; // Attack animations should not loop
+            }
+        
+            // Spawn the sword at the correct attack moment
             if (!enemyAI.swordSpawned && enemyAI.attackTimer <= SWORD_SPAWN_THRESHOLD) {
                 if (enemyAI.enemyType == EnemyType::Emperor) {
-                    // Distinzione: se distance < 100 => spada statica
-                    // Altrimenti => spada offset orizzontale
                     if (distance < 100.f) {
                         std::cout << "[DEBUG] Emperor spawns static sword (close)!\n";
                         m_spawner->spawnEmperorSwordOffset(enemy);
-                        // (Nessuna velocity => resta lì)
-                    } 
-                    else {
+                    } else {
                         std::cout << "[DEBUG] Emperor spawns horizontal sword!\n";
                         auto sword = m_spawner->spawnEmperorSwordOffset(enemy);
-                        // Aggiungi velocity orizzontale per farla “volare”
                         if (sword->has<CTransform>()) {
                             auto& swTrans = sword->get<CTransform>();
                             float dirX = (dx > 0.f) ? 1.f : -1.f;
                             swTrans.velocity = Vec2<float>(200.f * dirX, 0.f);
                         }
                     }
-                }
-                else {
-                    // Nemico normale => spada classica
+                } else {
                     m_spawner->spawnEnemySword(enemy);
                 }
-
+        
                 enemyAI.swordSpawned = true;
                 std::cout << "[DEBUG] Enemy " << enemy->id() 
                           << " spawning sword at AttackTimer: " 
                           << enemyAI.attackTimer << "\n";
             }
-
-            // Fine Attack => reset
+        
+            // Attack state finished, return to follow
             if (enemyAI.attackTimer <= 0.f) {
                 enemyAI.attackCooldown = ATTACK_COOLDOWN;
                 enemyAI.enemyState     = EnemyState::Follow;
                 enemyAI.attackTimer    = 0.f;
-
                 std::cout << "[DEBUG] Enemy " << enemy->id() 
                           << " Attack finished. Setting cooldown=" 
                           << enemyAI.attackCooldown << "\n";
@@ -413,6 +424,9 @@ void EnemyAISystem::update(float deltaTime)
                     break;
                 case EnemyType::Normal: 
                     runAnimName = m_game.worldType + "RunEnemyNormal"; 
+                    break;
+                case EnemyType::Super: 
+                    runAnimName = m_game.worldType + "RunEnemySuper";
                     break;
                 case EnemyType::Emperor: 
                     runAnimName = m_game.worldType + "RunEmperor";

@@ -5,6 +5,7 @@ Texture TexHit Player/a_hit100nosword.png
 Texture TexSword /sword/a_sword.png
 Texture TexEnemySword /sword/sword.png
 Texture TexEmperorSword /sword/gold_sword.png
+Texture TexSuperEnemySword /sword/super_sword.png
 
 Texture TexAncientGrapeSmall Collectables/ancient_rome/smallgrape.png
 Texture TexAncientGrapeBig Collectables/ancient_rome/biggrape.png
@@ -65,6 +66,9 @@ Texture TexAncientHitEnemyNormal Enemy/ancient_rome/gold/hit100nosword_gold.png
 
 Texture TexAncientStandEmperor Enemy/ancient_rome/emperor/emperor.png
 
+Texture TexFutureStandEnemySuper Enemy/alien_rome/super/stand.png
+Texture TexFutureRunEnemySuper Enemy/alien_rome/super/run.png
+Texture TexFutureHitEnemySuper Enemy/alien_rome/super/attack.png
 
 Texture TexAlienGround Tile/alien_rome/ground.png
 Texture TexAlienBrick Tile/alien_rome/brick.png
@@ -72,13 +76,15 @@ Texture TexAlienPipeTall Tile/alien_rome/pipetall.png
 Texture TexAlienTreasure Tile/alien_rome/treasure.png
 Texture TexAlienTreasureHit Tile/alien_rome/treasure_hit.png
 
-
-
 Animation AlienGround TexAlienGround 96 96 5 8
 Animation AlienBrick TexAlienBrick 96 96 5 5
 Animation AlienPipeTall TexAlienPipeTall 96 384 7 6
 Animation AlienTreasure TexAlienTreasure 96 96 1 0
 Animation AlienTreasureHit TexAlienTreasureHit 96 96 1 0
+
+Animation AlienStandEnemySuper TexFutureStandEnemySuper 100 100 1 0
+Animation AlienRunEnemySuper TexFutureRunEnemySuper 100 100 4 6
+Animation AlienHitEnemySuper TexFutureHitEnemySuper 100 100 1 0
 
 Animation AncientEmperorGrave TexAncientEmperorGrave 73 93 1 0
 Animation AncientEnemyGrave TexAncientEnemyGrave 66 75 1 0
@@ -91,6 +97,7 @@ Animation PlayerAttack TexHit 100 100 1 0
 Animation Sword TexSword 48 13 1 0
 Animation EnemySword TexEnemySword 48 13 1 0
 Animation EmperorSword TexEmperorSword 48 13 1 0
+Animation SuperSword TexSuperSword 48 13 1 0
 
 Animation AncientGrapeSmall TexAncientGrapeSmall 64 64 1 0
 Animation AncientGrapeBig TexAncientGrapeBig 100 80 1 0
@@ -155,6 +162,8 @@ Animation PlayerAttack TexHit 100 100 1 0
 Animation Sword TexSword 48 13 1 0
 Animation EnemySword TexEnemySword 48 13 1 0
 Animation EmperorSword TexEmperorSword 48 13 1 0
+Animation SuperSword TexSuperEnemySword 67 14 1 0
+
 
 Font Tech fonts/font.ttf
 Font Menu fonts/font.ttf

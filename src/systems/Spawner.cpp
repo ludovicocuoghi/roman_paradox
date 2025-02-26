@@ -48,9 +48,16 @@ std::shared_ptr<Entity> Spawner::spawnEnemySword(std::shared_ptr<Entity> enemy) 
 
     std::cout << "[DEBUG] Spawned enemy sword at (" << swordPos.x << ", " << swordPos.y << ")\n";
 
-    if (m_game.assets().hasAnimation("EnemySword")) {
-        std::cout << "[DEBUG] Using EnemySword animation for enemy sword.\n";
-        auto& swordAnim = m_game.assets().getAnimation("EnemySword");
+    // Check if enemy is EnemySuper and the world type is Alien
+    bool isSuperSword = (enemyAI.enemyType == EnemyType::Super && m_game.worldType == "Alien");
+
+    // Select animation based on condition
+    std::string animationName = isSuperSword ? "SuperSword" : "EnemySword";
+    std::cout << "[DEBUG] Using " << animationName << " animation for enemy sword.\n";
+
+    if (m_game.assets().hasAnimation(animationName)) {
+        std::cout << "[DEBUG] Using " << animationName << " animation for enemy sword.\n";
+        auto& swordAnim = m_game.assets().getAnimation(animationName);
         sword->add<CAnimation>(swordAnim, false);
         sf::Vector2i animSize = swordAnim.getSize();
         float w = static_cast<float>(animSize.x);
@@ -58,6 +65,7 @@ std::shared_ptr<Entity> Spawner::spawnEnemySword(std::shared_ptr<Entity> enemy) 
         Vec2<float> boxSize(w, h);
         Vec2<float> halfSize(w * 0.5f, h * 0.5f);
         sword->add<CBoundingBox>(boxSize, halfSize);
+
         if (dir < 0)
             flipSpriteLeft(sword->get<CAnimation>().animation.getMutableSprite());
         else
@@ -364,3 +372,4 @@ void Spawner::createBlockFragments(const Vec2<float>& position, const std::strin
         fragment->add<CLifeSpan>(FRAGMENT_DURATION);
     }
 }
+

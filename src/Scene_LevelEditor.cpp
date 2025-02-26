@@ -392,7 +392,7 @@ void Scene_LevelEditor::loadDecOptions() {
 }
 
 void Scene_LevelEditor::loadEnemyOptions() {
-    m_enemyOptions = { "EnemyFast", "EnemyStrong", "EnemyElite", "EnemyNormal", "Emperor" };
+    m_enemyOptions = { "EnemyFast", "EnemyStrong", "EnemyElite", "EnemyNormal", "EnemySuper", "Emperor" };
     if (!m_enemyOptions.empty()) {
         m_selectedEnemy = m_enemyOptions[0];
     }
@@ -464,10 +464,10 @@ void Scene_LevelEditor::saveLevel(const std::string& filePath) {
             enemyType = "EnemyStrong";
         else if (enemy->get<CEnemyAI>().enemyType == EnemyType::Elite)
             enemyType = "EnemyElite";
+        else if (enemy->get<CEnemyAI>().enemyType == EnemyType::Super)
+            enemyType = "EnemySuper";
         else if (enemy->get<CEnemyAI>().enemyType == EnemyType::Emperor)
             enemyType = "Emperor";
-        else
-            enemyType = "EnemyNormal";
         
         // Save enemy type without worldcategory prefix.
         out << "Enemy " << enemyType << " " << gridX << " " << savedGridY << " "
@@ -509,9 +509,6 @@ void Scene_LevelEditor::loadLevel(const std::string& filePath) {
             std::string fullAsset = worldcategory + assetType;
             
             // **Ensure Treasure is properly prefixed**
-            if (assetType == "Treasure") {
-                std::cout << "[DEBUG] Treasure detected in file! Loading as: " << fullAsset << "\n";
-            }
 
             if (m_game.assets().hasAnimation(fullAsset)) {
                 entity->add<CAnimation>(m_game.assets().getAnimation(fullAsset), true);

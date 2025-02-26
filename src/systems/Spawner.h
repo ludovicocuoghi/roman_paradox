@@ -16,7 +16,7 @@ public:
     // Costanti per lo spawn della spada del nemico
     static constexpr float ENEMY_SWORD_OFFSET_X = 50.f;
     static constexpr float ENEMY_SWORD_OFFSET_Y = 10.f;
-    static constexpr float ENEMY_SWORD_DURATION = 0.2f;
+    static constexpr float ENEMY_SWORD_DURATION = 0.3f;
 
     static constexpr float EMPEROR_SWORD_OFFSET_X = 80.f;
     static constexpr float EMPEROR_SWORD_OFFSET_Y = 10.f;

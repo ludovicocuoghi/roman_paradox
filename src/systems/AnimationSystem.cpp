@@ -101,16 +101,17 @@ void AnimationSystem::update(float deltaTime) {
             case EnemyType::Fast:   baseAnimName = "EnemyFast"; break;
             case EnemyType::Strong: baseAnimName = "EnemyStrong"; break;
             case EnemyType::Elite:  baseAnimName = "EnemyElite"; break;
+            case EnemyType::Super:  baseAnimName = "EnemySuper"; break;
             case EnemyType::Emperor:  baseAnimName = "Emperor"; break;
             default:                baseAnimName = "EnemyNormal"; break;
         }
 
         std::string desiredAnim;
         switch (ai.enemyState) {
-            case EnemyState::Follow: desiredAnim = baseAnimName + "_Run"; break;  // Fix: Renamed from Chase
-            case EnemyState::Attack: desiredAnim = baseAnimName + "_Attack"; break;
-            case EnemyState::Knockback: desiredAnim = baseAnimName + "_Hit"; break;
-            default: desiredAnim = baseAnimName + "_Idle"; break;
+            case EnemyState::Follow: desiredAnim = m_game.worldType + "Run" + baseAnimName; break;  // Fix: Renamed from Chase
+            case EnemyState::Attack: desiredAnim = m_game.worldType + "Attack" + baseAnimName; break;
+            case EnemyState::Knockback: desiredAnim = m_game.worldType + "Attack" + baseAnimName; break;
+            default: desiredAnim = m_game.worldType + "Stand"+ baseAnimName; break;
         }
 
         if (m_game.assets().hasAnimation(desiredAnim) &&

@@ -217,6 +217,13 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
                 enemyHealth = LoadLevel::ENEMY_NORMAL_HEALTH;
                 enemyDamage = LoadLevel::ENEMY_NORMAL_DAMAGE;
             }
+            else if (enemyTypeStr == "EnemySuper")
+            {
+                enemyType = EnemyType::Super;
+                speedMultiplier = LoadLevel::ENEMY_NORMAL_SPEED_MULTIPLIER;
+                enemyHealth = LoadLevel::ENEMY_NORMAL_HEALTH;
+                enemyDamage = LoadLevel::ENEMY_NORMAL_DAMAGE;
+            }
             else
             {
                 std::cerr << "[WARNING] Unknown enemy type: " << enemyTypeStr << std::endl;
