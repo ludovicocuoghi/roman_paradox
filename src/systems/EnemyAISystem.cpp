@@ -277,17 +277,16 @@ void EnemyAISystem::update(float deltaTime)
         bool playerVisible = (distance < PLAYER_VISIBLE_DISTANCE) || canSeePlayer;
 
         bool shouldFollow = false;
+
         switch (enemyAI.enemyBehavior) {
             case EnemyBehavior::FollowOne:
+                // 🔹 FollowOne: Follows only if the player is visible or close
                 if (playerVisible) shouldFollow = true;
                 break;
+
             case EnemyBehavior::FollowTwo:
-                if (playerVisible && enemyAI.enemyState != EnemyState::Attack) {
-                    enemyAI.enemyState = EnemyState::Follow;
-                    shouldFollow = true;
-                } else if (enemyAI.enemyState == EnemyState::Follow) {
-                    shouldFollow = true;
-                }
+                // 🔥 FollowTwo: Always follows, ignoring distance and visibility
+                shouldFollow = true;
                 break;
         }
 
@@ -322,6 +321,7 @@ void EnemyAISystem::update(float deltaTime)
             enemyAI.enemyState = EnemyState::Follow;
         }
         else {
+            // If player not visible, switch to Recognition/Idle
             if (!playerVisible) {
                 if (enemyAI.enemyState == EnemyState::Follow 
                     || enemyAI.enemyState == EnemyState::Attack)

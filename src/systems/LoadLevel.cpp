@@ -78,7 +78,7 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
                 else if (assetType == "BlackHoleRedBig")
                 {
                     realY += LoadLevel::GRID_SIZE * LoadLevel::BLACKHOLE_OFFSET_MULTIPLIER;
-                    Vec2<float> bboxSize(450.f, 450.f);
+                    Vec2<float> bboxSize(150.f, 150.f);
                     Vec2<float> bboxOffset = bboxSize * 0.5f;
                     tile->add<CBoundingBox>(bboxSize, bboxOffset);
                 }

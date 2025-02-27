@@ -19,6 +19,8 @@ GameEngine::GameEngine(const std::string& path) {
 
     // ✅ Define level transitions
     m_levelConnections = {
+        {"alien_rome_level_1.txt", "alien_rome_level_2.txt"},
+        {"alien_rome_level_2.txt", "ancient_rome_level_1_day.txt"},
         {"ancient_rome_level_1_day.txt", "ancient_rome_level_2_sunset.txt"},
         {"ancient_rome_level_2_sunset.txt", "ancient_rome_level_3_night.txt"},
         {"ancient_rome_level_3_night.txt", "ancient_rome_level_4_emperor_room.txt"},

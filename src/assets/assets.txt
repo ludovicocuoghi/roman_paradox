@@ -14,6 +14,9 @@ Texture TexAncientCoinSilver Collectables/ancient_rome/coinAnimsilver.png
 Texture TexAncientCoinBronze Collectables/ancient_rome/coinAnimbronze.png
 
 Texture TexAncientBlackHoleRed Tile/ancient_rome/blackhole_reds.png
+Texture TexAlienBlackHoleRedBig Tile/alien_rome/blackhole_reds_big.png
+
+
 Texture TexAncientBlackHoleBlue Tile/ancient_rome/blackhole_blues.png
 Texture TexAncientBlackHoleRedBig Tile/ancient_rome/blackhole_reds_big.png
 Texture TexAncientBlackHoleBlueBig Tile/ancient_rome/blackhole_blues_big.png
@@ -80,6 +83,8 @@ Texture TexAlienBushSmall Dec/alien_rome/smallbush.png
 Texture TexAlienBushTall1 Dec/alien_rome/tallbush-1.png
 Texture TexAlienBushTall2 Dec/alien_rome/tallbush-2.png
 
+Texture TexAlienLevelDoor Tile/alien_rome/level_door.png
+
 Animation AlienGround TexAlienGround 96 96 5 8
 Animation AlienBrick TexAlienBrick 96 96 5 5
 Animation AlienPipeTall TexAlienPipeTall 96 384 7 6
@@ -93,6 +98,8 @@ Animation AlienHitEnemySuper TexFutureHitEnemySuper 100 100 1 0
 Animation AlienBushSmall TexAlienBushSmall 192 96 1 0
 Animation AlienBushTall1 TexAlienBushTall1 96 384 1 0
 Animation AlienBushTall2 TexAlienBushTall2 96 384 1 0
+
+Animation AlienLevelDoor TexAlienLevelDoor 348 480 1 0
 
 Animation AncientEmperorGrave TexAncientEmperorGrave 73 93 1 0
 Animation AncientEnemyGrave TexAncientEnemyGrave 66 75 1 0
@@ -114,8 +121,12 @@ Animation AncientCoinSilver TexAncientCoinSilver 96 95 5 5
 Animation AncientCoinBronze TexAncientCoinBronze 96 95 5 5
 
 Animation AncientBlackHoleRed TexAncientBlackHoleRed 176 175 11 11
+
 Animation AncientBlackHoleBlue TexAncientBlackHoleBlue 176 175 11 11
 Animation AncientBlackHoleRedBig TexAncientBlackHoleRedBig 500 500 10 14
+Animation AlienBlackHoleRedBig TexAlienBlackHoleRedBig 500 500 10 14
+
+
 Animation AncientBlackHoleBlueBig TexAncientBlackHoleBlueBig 1050 1050 10 14
 
 Animation AncientTreasure TexAncientTreasure 96 96 4 3

@@ -65,8 +65,9 @@ void CollisionSystem::handlePlayerTileCollisions() {
                 std::string animName = tile->get<CAnimation>().animation.getName();
                 std::string worldLevelDoor = m_game.worldType + "LevelDoor";  
                 std::string worldLevelDoorGold = m_game.worldType + "LevelDoorGold";
+                std::string worldLevelBlackHole = m_game.worldType + "BlackHoleRedBig";
             
-                if (animName == worldLevelDoor || animName == worldLevelDoorGold) {
+                if (animName == worldLevelDoor || animName == worldLevelDoorGold || animName == worldLevelBlackHole) {
                     std::cout << "[DEBUG] Player entered " << animName << ". Scheduling level change...\n";
                     m_game.scheduleLevelChange(m_game.getNextLevelPath());
                     return;
