@@ -542,26 +542,36 @@ void CollisionSystem::handleSwordCollisions() {
             break;
         }
 
-        // (Optional) Enemy sword vs tile
+        // Enemy sword vs tile
         for (auto& tile : m_entityManager.getEntities("tile")) {
-            if (!tile->has<CTransform>() || !tile->has<CBoundingBox>() || !tile->has<CAnimation>())
+            if (!tile->has<CTransform>() || !tile->has<CBoundingBox>())
                 continue;
+
             auto& tileTransform = tile->get<CTransform>();
             auto& tileBB        = tile->get<CBoundingBox>();
             auto& tileAnim      = tile->get<CAnimation>().animation;
             sf::FloatRect tileRect = tileBB.getRect(tileTransform.pos);
-
-            if (swordRect.intersects(tileRect)) {
-                std::string animName = tileAnim.getName();
-                std::string worldBox = m_game.worldType + "Box";  // Construct world-specific "Box" name
-            
-                if (animName == worldBox) {
-                    m_spawner->createBlockFragments(tileTransform.pos, animName);
-                    m_spawner->spawnItem(tileTransform.pos, animName);
-                    tile->destroy();
-                    std::cout << "[DEBUG] " << animName << " broken by enemy sword!\n";
+        
+            if (!swordRect.intersects(tileRect))
+                continue;
+        
+            // ✅ Check if the sword belongs to an enemy of type "Super"
+            if (enemySword->has<CEnemyAI>()) {
+                auto& swordAI = enemySword->get<CEnemyAI>();
+        
+                if (swordAI.enemyType == EnemyType::Super) {
+                    std::cout << "[DEBUG] Super enemy sword destroyed a tile!\n";
+        
+                    // ✅ Create block fragments & spawn item
+                    m_spawner->createBlockFragments(tileTransform.pos, tileAnim.getName());
+                    m_spawner->spawnItem(tileTransform.pos, tileAnim.getName());
+        
+                    tile->destroy();  // ✅ Destroy tile
                 }
             }
+
+            enemySword->destroy(); // ✅ Destroy the sword on impact
+            break; // Exit loop after handling collision
         }
     }
 

@@ -14,6 +14,8 @@ static EnemyType getEnemyType(const std::string &typeStr) {
         return EnemyType::Strong;
     else if (typeStr == "EnemyElite")
         return EnemyType::Elite;
+    else if (typeStr == "EnemySuper")
+        return EnemyType::Super;
     else if (typeStr == "Emperor")
         return EnemyType::Emperor;
     else

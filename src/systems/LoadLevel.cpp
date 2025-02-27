@@ -277,7 +277,7 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
             }
             enemy->add<CGravity>(LoadLevel::GRAVITY_VAL);
             enemy->add<CHealth>(enemyHealth);
-            EnemyBehavior behavior = (enemyType == EnemyType::Elite) ? EnemyBehavior::FollowTwo : EnemyBehavior::FollowOne;
+            EnemyBehavior behavior = (enemyType == EnemyType::Elite || enemyType == EnemyType::Super ) ? EnemyBehavior::FollowTwo : EnemyBehavior::FollowOne;
             enemy->add<CEnemyAI>(enemyType, behavior);
             enemy->get<CEnemyAI>().damage = enemyDamage;
             enemy->get<CEnemyAI>().speedMultiplier = speedMultiplier;
