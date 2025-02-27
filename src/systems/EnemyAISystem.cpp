@@ -426,12 +426,13 @@ void EnemyAISystem::update(float deltaTime)
                     tileRect.left < enemyRect.left)))
                 {
                     tileInFront = true;
+                    std::cout << "[DEBUG] tileinfront true!!!\n";
                     break;
                 }
             }
 
             // 🔥 If touching a tile horizontally, go to Attack state immediately
-            if (tileInFront || enemyAI.enemyType == EnemyType::Super) {
+            if (tileInFront && enemyAI.enemyType == EnemyType::Super) {
                 std::cout << "[DEBUG] Enemy touching a tile! Switching to ATTACK.\n";
                 enemyAI.enemyState = EnemyState::Attack;
                 enemyAI.attackTimer = ATTACK_TIMER_DEFAULT;

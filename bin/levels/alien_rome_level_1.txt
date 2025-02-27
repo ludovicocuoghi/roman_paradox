@@ -23,9 +23,6 @@ Tile Ground 20 0
 Tile Brick 2 5
 Tile Brick 3 5
 Tile Brick 4 5
-Tile PipeTall 16 4
-Tile Treasure 2 3
-Tile Treasure 11 3
 Tile Ground 4 1
 Tile Ground 5 1
 Tile Ground 6 1
@@ -34,9 +31,9 @@ Tile Ground 8 1
 Tile Ground 6 2
 Tile Ground 7 2
 Tile Ground 9 2
-Tile Treasure 10 1
-Tile Treasure 11 1
-Tile PipeTall 12 4
-Tile PipeTall 13 4
+Dec BushSmall 13 1
+Dec BushTall1 16 4
+Dec BushTall2 17 4
 Enemy EnemySuper 1 1 1 1 3 1
-Player 2 2
+Enemy EnemySuper 4 2 4 2 6 2
+Player 2  2

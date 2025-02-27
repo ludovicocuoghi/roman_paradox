@@ -67,6 +67,7 @@ public:
     const float playerBBsize = 80.f;
     const int gridSize     = 96;
     const float ATTACK_DURATION = 0.1f;
+    const float CAMERA_Y_OFFSET = 1300;
 
     bool m_firstCameraUpdate = true;
     void selectRandomBackground();

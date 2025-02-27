@@ -115,7 +115,7 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
             if (m_game.assets().hasAnimation(fullAssetName))
             {
                 const Animation& anim = m_game.assets().getAnimation(fullAssetName);
-                if (assetType == "BushTall")
+                if (assetType.find("BushTall") != std::string::npos)
                     realY += LoadLevel::GRID_SIZE * 1.5f;
                 decor->add<CAnimation>(anim, true);
                 decor->add<CTransform>(Vec2<float>(realX, realY));

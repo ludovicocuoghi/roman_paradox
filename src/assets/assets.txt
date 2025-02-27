@@ -76,6 +76,10 @@ Texture TexAlienPipeTall Tile/alien_rome/pipetall.png
 Texture TexAlienTreasure Tile/alien_rome/treasure.png
 Texture TexAlienTreasureHit Tile/alien_rome/treasure_hit.png
 
+Texture TexAlienBushSmall Dec/alien_rome/smallbush.png
+Texture TexAlienBushTall1 Dec/alien_rome/tallbush-1.png
+Texture TexAlienBushTall2 Dec/alien_rome/tallbush-2.png
+
 Animation AlienGround TexAlienGround 96 96 5 8
 Animation AlienBrick TexAlienBrick 96 96 5 5
 Animation AlienPipeTall TexAlienPipeTall 96 384 7 6
@@ -85,6 +89,10 @@ Animation AlienTreasureHit TexAlienTreasureHit 96 96 1 0
 Animation AlienStandEnemySuper TexFutureStandEnemySuper 100 100 1 0
 Animation AlienRunEnemySuper TexFutureRunEnemySuper 100 100 4 6
 Animation AlienHitEnemySuper TexFutureHitEnemySuper 100 100 1 0
+
+Animation AlienBushSmall TexAlienBushSmall 192 96 1 0
+Animation AlienBushTall1 TexAlienBushTall1 96 384 1 0
+Animation AlienBushTall2 TexAlienBushTall2 96 384 1 0
 
 Animation AncientEmperorGrave TexAncientEmperorGrave 73 93 1 0
 Animation AncientEnemyGrave TexAncientEnemyGrave 66 75 1 0

@@ -32,7 +32,7 @@ void Scene_Play::initializeCamera()
 
     // 4) Center the camera on the middle of the background
     float centerX = static_cast<float>(bgSize.x) / 2.f;
-    float centerY = static_cast<float>(bgSize.y) / 2.f - 1000;
+    float centerY = static_cast<float>(bgSize.y) / 2.f - CAMERA_Y_OFFSET;
     m_cameraView.setCenter(centerX, centerY);
 
     m_cameraView.zoom(1.4f);

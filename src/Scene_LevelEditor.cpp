@@ -387,7 +387,7 @@ void Scene_LevelEditor::loadTileOptions() {
 }
 
 void Scene_LevelEditor::loadDecOptions() {
-    m_decOptions = { "BushSmall", "BushTall", "CloudSmall", "CloudBig" };
+    m_decOptions = { "BushSmall", "BushTall1", "BushTall2", "CloudSmall", "CloudBig" };
     if (!m_decOptions.empty()) {
         m_selectedDec = m_decOptions[0];
     }
@@ -414,14 +414,16 @@ void Scene_LevelEditor::saveLevel(const std::string& filePath) {
         return fullName;
     };
 
-    // Save tiles
+    // ========================
+    // ✅ Save Tiles
+    // ========================
     for (auto& tile : m_entityManager.getEntities("tile")) {
         auto& transform = tile->get<CTransform>();
         int gridX = static_cast<int>(transform.pos.x / tileSize);
         int gridY = static_cast<int>(transform.pos.y / tileSize);
         int savedGridY = worldHeight - 1 - gridY;
 
-        // Check if tile has animation
+        // Ensure the tile has an animation
         if (!tile->has<CAnimation>()) {
             std::cerr << "[ERROR] Tile at (" << gridX << ", " << savedGridY << ") is missing an animation!\n";
             continue;
@@ -432,49 +434,77 @@ void Scene_LevelEditor::saveLevel(const std::string& filePath) {
 
         // **Check if animName is empty**
         if (animName.empty()) {
-            std::cerr << "[ERROR] Empty tile name at (" << gridX << ", " << savedGridY << ")!\n";
+            std::cerr << "[ERROR] Empty tile name at (" << gridX << ", " << savedGridY << ")! Skipping...\n";
             continue;
         }
 
-        std::cout << "[DEBUG] Saving Tile: " << animName << " at (" << gridX << ", " << savedGridY << ")\n";
         out << "Tile " << animName << " " << gridX << " " << savedGridY << "\n";
     }
     
-    // Save decorations
+    // ========================
+    // ✅ Save Decorations
+    // ========================
     for (auto& dec : m_entityManager.getEntities("decoration")) {
         auto& transform = dec->get<CTransform>();
         int gridX = static_cast<int>(transform.pos.x / tileSize);
         int gridY = static_cast<int>(transform.pos.y / tileSize);
         int savedGridY = worldHeight - 1 - gridY;
+
+        // Ensure the decoration has an animation component
+        if (!dec->has<CAnimation>()) {
+            std::cerr << "[ERROR] Decoration at (" << gridX << ", " << savedGridY << ") is missing an animation!\n";
+            continue;
+        }
+
         std::string animName = dec->get<CAnimation>().animation.getName();
         animName = stripWorldCategory(animName);
+
+        // **Check if animName is empty**
+        if (animName.empty()) {
+            std::cerr << "[ERROR] Empty decoration name at (" << gridX << ", " << savedGridY << ")! Skipping...\n";
+            continue;
+        }
+
         out << "Dec " << animName << " " << gridX << " " << savedGridY << "\n";
     }
     
-    // Save enemies (with patrol points: original X and X+2)
+    // ========================
+    // ✅ Save Enemies
+    // ========================
     for (auto& enemy : m_entityManager.getEntities("enemy")) {
         auto& transform = enemy->get<CTransform>();
         int gridX = static_cast<int>(transform.pos.x / tileSize);
         int gridY = static_cast<int>(transform.pos.y / tileSize);
         int savedGridY = worldHeight - 1 - gridY;
         
-        // Determine enemy type (we save the core enemy type without the world prefix)
+        // Ensure the enemy has an AI component
+        if (!enemy->has<CEnemyAI>()) {
+            std::cerr << "[ERROR] Enemy at (" << gridX << ", " << savedGridY << ") is missing AI! Skipping...\n";
+            continue;
+        }
+
         std::string enemyType;
-        if (enemy->get<CEnemyAI>().enemyType == EnemyType::Fast)
-            enemyType = "EnemyFast";
-        else if (enemy->get<CEnemyAI>().enemyType == EnemyType::Strong)
-            enemyType = "EnemyStrong";
-        else if (enemy->get<CEnemyAI>().enemyType == EnemyType::Elite)
-            enemyType = "EnemyElite";
-        else if (enemy->get<CEnemyAI>().enemyType == EnemyType::Super)
-            enemyType = "EnemySuper";
-        else if (enemy->get<CEnemyAI>().enemyType == EnemyType::Emperor)
-            enemyType = "Emperor";
-        
-        // Save enemy type without worldcategory prefix.
+        switch (enemy->get<CEnemyAI>().enemyType) {
+            case EnemyType::Fast:    enemyType = "EnemyFast"; break;
+            case EnemyType::Strong:  enemyType = "EnemyStrong"; break;
+            case EnemyType::Elite:   enemyType = "EnemyElite"; break;
+            case EnemyType::Super:   enemyType = "EnemySuper"; break;
+            case EnemyType::Emperor: enemyType = "Emperor"; break;
+            default:
+                std::cerr << "[ERROR] Unknown enemy type at (" << gridX << ", " << savedGridY << ")! Skipping...\n";
+                continue;
+        }
+
+        // Ensure enemyType is valid
+        if (enemyType.empty()) {
+            std::cerr << "[ERROR] Empty enemy type at (" << gridX << ", " << savedGridY << ")! Skipping...\n";
+            continue;
+        }
+
         out << "Enemy " << enemyType << " " << gridX << " " << savedGridY << " "
             << gridX << " " << savedGridY << " " << (gridX + 2) << " " << savedGridY << "\n";
     }
+
     out.close();
     std::cout << "[DEBUG] Level saved to " << filePath << "\n";
 }
