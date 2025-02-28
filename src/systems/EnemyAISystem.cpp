@@ -330,7 +330,7 @@ void EnemyAISystem::update(float deltaTime)
                 }
             }
 
-            if (tileDetected) {
+            if (tileDetected && enemyAI.enemyType == EnemyType::Super) {
                 enemyAI.enemyState = EnemyState::BlockedByTile;  // 🔥 Switch to the new state
                 std::cout << "[DEBUG] Enemy touching a tile! Switching to BLOCKEDBYTILE state.\n";
                 return;

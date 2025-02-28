@@ -380,14 +380,14 @@ void Scene_LevelEditor::renderImGui() {
 }
 
 void Scene_LevelEditor::loadTileOptions() {
-    m_tileOptions = { "Ground", "Brick", "Box1", "Box2", "PipeTall", "Pipe", "PipeBroken", "Treasure", "LevelDoor", "BlackHoleRedBig" };
+    m_tileOptions = { "Ground", "Brick", "Box1", "Box2", "PipeTall", "Pipe", "PipeBroken", "Treasure",  "LevelDoor", "BlackHoleRedBig" };
     if (!m_tileOptions.empty()) {
         m_selectedTile = m_tileOptions[0];
     }
 }
 
 void Scene_LevelEditor::loadDecOptions() {
-    m_decOptions = { "BushSmall", "BushTall","BushTall1", "BushTall2", "CloudSmall", "CloudBig" };
+    m_decOptions = { "BushSmall", "BushTall","BushTall1", "BushTall2", "CloudSmall", "CloudBig" , "EnemyGrave"};
     if (!m_decOptions.empty()) {
         m_selectedDec = m_decOptions[0];
     }

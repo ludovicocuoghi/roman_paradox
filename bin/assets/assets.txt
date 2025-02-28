@@ -104,6 +104,8 @@ Animation AlienLevelDoor TexAlienLevelDoor 348 480 1 0
 Animation AncientEmperorGrave TexAncientEmperorGrave 73 93 1 0
 Animation AncientEnemyGrave TexAncientEnemyGrave 66 75 1 0
 
+Animation AlienEnemyGrave TexAncientEnemyGrave 66 75 1 0
+
 Animation PlayerStand TexStand 100 100 6 8
 Animation PlayerRun TexRun 100 100 4 6
 Animation PlayerAir TexAir 100 130 1 0

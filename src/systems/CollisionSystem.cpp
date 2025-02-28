@@ -552,22 +552,29 @@ void CollisionSystem::handleSwordCollisions() {
             auto& tileBB        = tile->get<CBoundingBox>();
             auto& tileAnim      = tile->get<CAnimation>().animation;
             sf::FloatRect tileRect = tileBB.getRect(tileTransform.pos);
-        
+
             if (!swordRect.intersects(tileRect))
                 continue;
-        
-            // ✅ Check if the sword belongs to an enemy of type "Super"
+
+            bool shouldDestroyTile = false;  // Flag to determine if the tile should be destroyed
+
             if (enemySword->has<CEnemyAI>()) {
                 auto& swordAI = enemySword->get<CEnemyAI>();
-        
+
                 if (swordAI.enemyType == EnemyType::Super) {
                     std::cout << "[DEBUG] Super enemy sword destroyed a tile!\n";
-        
-                    // ✅ Create block fragments & spawn item
-                    m_spawner->createBlockFragments(tileTransform.pos, tileAnim.getName());
-        
-                    tile->destroy();  // ✅ Destroy tile
+                    shouldDestroyTile = true;  // Super enemy destroys any tile
+                } else if (tileAnim.getName().find("Box") != std::string::npos) {
+                    std::cout << "[DEBUG] Non-super enemy sword destroyed a tile containing 'Box'!\n";
+                    shouldDestroyTile = true;  // Other enemies destroy only tiles containing "Box"
                 }
+            }
+
+            if (shouldDestroyTile) {
+                // ✅ Create block fragments & spawn item
+                m_spawner->createBlockFragments(tileTransform.pos, tileAnim.getName());
+
+                tile->destroy();  // ✅ Destroy tile
             }
 
             enemySword->destroy(); // ✅ Destroy the sword on impact

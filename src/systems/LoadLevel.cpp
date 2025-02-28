@@ -111,6 +111,8 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
             decor->add<CUniqueID>(decID);
             if (assetType == "GoldPipeTall")
                 realY += LoadLevel::GRID_SIZE * LoadLevel::PIPETALL_REALY_OFFSET_MULTIPLIER;
+            if (assetType == "EnemyGrave" || assetType == "EmperorGrave")
+                realY += +10;
             std::string fullAssetName =  m_game.worldType + assetType;
             if (m_game.assets().hasAnimation(fullAssetName))
             {
