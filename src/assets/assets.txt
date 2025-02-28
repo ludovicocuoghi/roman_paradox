@@ -117,7 +117,7 @@ Texture TexFutureBushTall1 Dec/future_rome/bushtall.png
 Texture TexFutureBox1 Tile/future_rome/box1.png
 Texture TexFutureLevelDoor Tile/future_rome/level_door.png
 
-Animation FutureGround TexFutureGround 96 96 4 5
+Animation FutureGround TexFutureGround 96 96 4 8
 Animation FutureBrick TexFutureBrick 96 96 11 7
 Animation FuturePipeTall TexFuturePipeTall 96 384 14 10
 Animation FutureTreasure TexFutureTreasure 96 96 1 0
@@ -127,8 +127,8 @@ Animation FutureStandEnemySuper TexFutureStandEnemySuper 100 100 1 0
 Animation FutureRunEnemySuper TexFutureRunEnemySuper 100 100 4 6
 Animation FutureHitEnemySuper TexFutureHitEnemySuper 100 100 1 0
 
-Animation FutureBushSmall TexFutureBushSmall 190 93 5 13
-Animation FutureBushTall TexFutureBushTall1 96 384 8 13
+Animation FutureBushSmall TexFutureBushSmall 169 92 11 10
+Animation FutureBushTall TexFutureBushTall1 96 384 26 24
 
 Animation FutureLevelDoor TexFutureLevelDoor 348 480 1 0
 
@@ -136,6 +136,35 @@ Animation FutureEmperorGrave TexFutureEmperorGrave 73 93 1 0
 Animation FutureEnemyGrave TexFutureEnemyGrave 66 75 1 0
 
 Animation FutureEnemyGrave TexFutureEnemyGrave 66 75 1 0
+
+
+Texture TexFutureStandEnemyStrong Enemy/future_rome/strong/stand_strong.png
+Texture TexFutureRunEnemyStrong Enemy/future_rome/strong/run_strong.png
+Texture TexFutureAirEnemyStrong Enemy/future_rome/strong/air_strong.png
+Texture TexFutureHitEnemyStrong Enemy/future_rome/strong/hit_strong.png
+
+Texture TexFutureStandEnemyElite Enemy/future_rome/elite/stand_elite.png
+Texture TexFutureRunEnemyElite Enemy/future_rome/elite/run_elite.png
+Texture TexFutureAirEnemyElite Enemy/future_rome/elite/air_elite.png
+Texture TexFutureHitEnemyElite Enemy/future_rome/elite/hit_elite.png
+
+Texture TexFutureStandEnemyNormal Enemy/future_rome/normal/stand_normal.png
+Texture TexFutureRunEnemyNormal Enemy/future_rome/normal/run_normal.png
+Texture TexFutureAirEnemyNormal Enemy/future_rome/normal/air_normal.png
+Texture TexFutureHitEnemyNormal Enemy/future_rome/normal/hit_normal.png
+
+Animation FutureStandEnemyStrong TexFutureStandEnemyStrong 100 100 1 0
+Animation FutureRunEnemyStrong TexFutureRunEnemyStrong 100 100 4 6
+Animation FutureHitEnemyStrong TexFutureHitEnemyStrong 100 100 1 0
+
+Animation FutureStandEnemyElite TexFutureStandEnemyElite 100 100 1 0
+Animation FutureRunEnemyElite TexFutureRunEnemyElite 100 100 4 6
+Animation FutureHitEnemyElite TexFutureHitEnemyElite 100 100 1 0
+
+Animation FutureStandEnemyNormal TexFutureStandEnemyNormal 100 100 1 0
+Animation FutureRunEnemyNormal TexFutureRunEnemyNormal 100 100 4 6
+Animation FutureHitEnemyNormal TexFutureHitEnemyNormal 100 100 1 0
+
 
 
 Animation FutureBox1 TexFutureBox1 96 96 1 0
