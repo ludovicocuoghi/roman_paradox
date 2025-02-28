@@ -112,6 +112,15 @@ void Scene_Play::selectBackgroundFromLevel(const std::string& levelPath) {
     } else if (levelName == "ancient_rome_level_4_emperor_room.txt") {
         m_backgroundPath = "src/images/Background/ancient_rome/ancient_rome_level_4_emperor_room.png";
         m_timeofday = "EMPEROR ROOM";
+    } else if (levelName == "future_rome_level_1.txt") {
+        m_backgroundPath = "src/images/Background/future_rome/rome2.png";
+        m_timeofday = "FUTURE ROME (DAY)";
+    } else if (levelName == "future_rome_level_2.txt") {
+        m_backgroundPath = "src/images/Background/future_rome/rome3.png";
+        m_timeofday = "FUTURE ROME (NIGHT)";
+    } else if (levelName == "future_rome_level_emperor_room.txt") {
+        m_backgroundPath = "src/images/Background/future_rome/emperor_room.png";
+        m_timeofday = "FUTURE EMPEROR ROOM";
     }  
     else {
         // Default background if level is not mapped

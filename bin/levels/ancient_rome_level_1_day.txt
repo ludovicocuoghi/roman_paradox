@@ -253,7 +253,6 @@ Tile Ground 67 2
 Tile Ground 67 3
 Tile Ground 73 23
 Tile BlackHoleRedBig 2 15
-Tile PipeTall 0 5
 Dec CloudBig 1 10
 Dec CloudSmall 10 9
 Dec CloudBig 22 11

@@ -16,7 +16,6 @@ Texture TexAncientCoinBronze Collectables/ancient_rome/coinAnimbronze.png
 Texture TexAncientBlackHoleRed Tile/ancient_rome/blackhole_reds.png
 Texture TexAlienBlackHoleRedBig Tile/alien_rome/blackhole_reds_big.png
 
-
 Texture TexAncientBlackHoleBlue Tile/ancient_rome/blackhole_blues.png
 Texture TexAncientBlackHoleRedBig Tile/ancient_rome/blackhole_reds_big.png
 Texture TexAncientBlackHoleBlueBig Tile/ancient_rome/blackhole_blues_big.png
@@ -105,6 +104,41 @@ Animation AncientEmperorGrave TexAncientEmperorGrave 73 93 1 0
 Animation AncientEnemyGrave TexAncientEnemyGrave 66 75 1 0
 
 Animation AlienEnemyGrave TexAncientEnemyGrave 66 75 1 0
+
+Texture TexFutureGround Tile/future_rome/ground.png
+Texture TexFutureBrick Tile/future_rome/brick.png
+Texture TexFuturePipeTall Tile/future_rome/pipetall.png
+Texture TexFutureTreasure Tile/future_rome/treasure.png
+Texture TexFutureTreasureHit Tile/future_rome/treasure_hit.png
+
+Texture TexFutureBushSmall Dec/future_rome/bushsmall.png
+Texture TexFutureBushTall1 Dec/future_rome/bushtall.png
+
+Texture TexFutureBox1 Tile/future_rome/box1.png
+Texture TexFutureLevelDoor Tile/future_rome/level_door.png
+
+Animation FutureGround TexFutureGround 96 96 4 5
+Animation FutureBrick TexFutureBrick 96 96 11 7
+Animation FuturePipeTall TexFuturePipeTall 96 384 14 10
+Animation FutureTreasure TexFutureTreasure 96 96 1 0
+Animation FutureTreasureHit TexFutureTreasureHit 96 96 1 0
+
+Animation FutureStandEnemySuper TexFutureStandEnemySuper 100 100 1 0
+Animation FutureRunEnemySuper TexFutureRunEnemySuper 100 100 4 6
+Animation FutureHitEnemySuper TexFutureHitEnemySuper 100 100 1 0
+
+Animation FutureBushSmall TexFutureBushSmall 190 93 5 13
+Animation FutureBushTall TexFutureBushTall1 96 384 8 13
+
+Animation FutureLevelDoor TexFutureLevelDoor 348 480 1 0
+
+Animation FutureEmperorGrave TexFutureEmperorGrave 73 93 1 0
+Animation FutureEnemyGrave TexFutureEnemyGrave 66 75 1 0
+
+Animation FutureEnemyGrave TexFutureEnemyGrave 66 75 1 0
+
+
+Animation FutureBox1 TexFutureBox1 96 96 1 0
 
 Animation PlayerStand TexStand 100 100 6 8
 Animation PlayerRun TexRun 100 100 4 6
