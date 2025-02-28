@@ -275,6 +275,7 @@ void EnemyAISystem::update(float deltaTime)
 
         bool canSeePlayer  = checkLineOfSight(enemyTrans.pos, playerTrans.pos, m_entityManager);
         bool playerVisible = (distance < PLAYER_VISIBLE_DISTANCE) || canSeePlayer;
+        bool playerVisible_elite = (distance < PLAYER_VISIBLE_DISTANCE*2) || canSeePlayer;
 
         bool shouldFollow = false;
 
@@ -285,8 +286,8 @@ void EnemyAISystem::update(float deltaTime)
                 break;
 
             case EnemyBehavior::FollowTwo:
-                // 🔥 FollowTwo: Always follows, ignoring distance and visibility
-                shouldFollow = true;
+                // 🔹 FollowOne: Follows only if the player is visible or close
+                if (playerVisible_elite) shouldFollow = true;
                 break;
         }
 
@@ -297,16 +298,92 @@ void EnemyAISystem::update(float deltaTime)
                 enemyAI.attackCooldown = 0.f;
             }
         }
+        //----------------------------------------------------
+        // Stato Follow
+        //----------------------------------------------------
+        Vec2<float> previousPos = enemyTrans.pos;
+
+        if (enemyAI.enemyState == EnemyState::Follow) {
+            const float xThreshold = 5.0f; // Tolerance to avoid rapid flipping
+
+            bool tileDetected = false;
+            sf::FloatRect enemyRect = enemy->get<CBoundingBox>().getRect(enemyTrans.pos);
+
+            for (auto& tile : m_entityManager.getEntities("tile")) {
+                if (!tile->has<CTransform>() || !tile->has<CBoundingBox>()) continue;
+                auto& tileTrans = tile->get<CTransform>();
+                auto& tileBB    = tile->get<CBoundingBox>();
+                sf::FloatRect tileRect = tileBB.getRect(tileTrans.pos);
+
+                bool horizontallyAligned = (tileRect.top < enemyRect.top + enemyRect.height) &&
+                                        (tileRect.top + tileRect.height > enemyRect.top);
+
+                if (horizontallyAligned &&
+                    ((enemyAI.facingDirection > 0.f && tileRect.left <= enemyRect.left + enemyRect.width &&
+                    tileRect.left > enemyRect.left) ||
+                    (enemyAI.facingDirection < 0.f && tileRect.left + tileRect.width >= enemyRect.left &&
+                    tileRect.left < enemyRect.left)))
+                {
+                    tileDetected = true;
+                    std::cout << "[DEBUG] tileinfront true!!!\n";
+                    break;
+                }
+            }
+
+            if (tileDetected) {
+                enemyAI.enemyState = EnemyState::BlockedByTile;  // 🔥 Switch to the new state
+                std::cout << "[DEBUG] Enemy touching a tile! Switching to BLOCKEDBYTILE state.\n";
+                return;
+            }
+
+            // Normal movement logic
+            if (std::abs(dx) > xThreshold) {
+                enemyTrans.velocity.x = (dx > 0.f) ? FOLLOW_MOVE_SPEED : -FOLLOW_MOVE_SPEED;
+                enemyAI.facingDirection = (dx > 0.f) ? 1.f : -1.f;
+            } else {
+                enemyTrans.velocity.x = 0.f;
+            }
+        }
+
+        std::string runAnimName;
+        switch (enemyAI.enemyType) {
+            case EnemyType::Fast:   
+                runAnimName = m_game.worldType + "RunEnemyFast";   
+                break;
+            case EnemyType::Strong: 
+                runAnimName = m_game.worldType + "RunEnemyStrong"; 
+                break;
+            case EnemyType::Elite:  
+                runAnimName = m_game.worldType + "RunEnemyElite";  
+                break;
+            case EnemyType::Normal: 
+                runAnimName = m_game.worldType + "RunEnemyNormal"; 
+                break;
+            case EnemyType::Super: 
+                runAnimName = m_game.worldType + "RunEnemySuper";
+                break;
+            case EnemyType::Emperor: 
+                runAnimName = m_game.worldType + "RunEmperor";
+                break;
+        }
+        if (anim.animation.getName() != runAnimName) {
+            const Animation& runAnim = m_game.assets().getAnimation(runAnimName);
+            anim.animation = runAnim;
+            anim.animation.reset();
+        }
 
         //----------------------------------------------------
         // Imposta stato Attack se in range
         //----------------------------------------------------
         float currentAttackRange = (enemyAI.enemyType == EnemyType::Emperor)
-                                   ? EMPEROR_ATTACK_RANGE
-                                   : ATTACK_RANGE;
+        ? EMPEROR_ATTACK_RANGE
+        : ATTACK_RANGE;
 
-        if (shouldFollow && distance < currentAttackRange 
-            && enemyAI.attackCooldown <= 0.f 
+        // Determine if attack should be triggered
+        bool shouldAttack = (shouldFollow && distance < currentAttackRange) || 
+                            (enemyAI.enemyType == EnemyType::Super && enemyAI.enemyState == EnemyState::BlockedByTile);
+
+        if (shouldAttack && enemyAI.attackCooldown <= 0.f 
             && enemyAI.enemyState != EnemyState::Attack)
         {
             enemyAI.enemyState   = EnemyState::Attack;
@@ -314,8 +391,8 @@ void EnemyAISystem::update(float deltaTime)
             enemyAI.swordSpawned = false;
 
             std::cout << "[DEBUG] Enemy " << enemy->id() 
-                      << " entering Attack state. (cooldown=" 
-                      << enemyAI.attackCooldown << ")\n";
+                    << " entering Attack state. (cooldown=" 
+                    << enemyAI.attackCooldown << ")\n";
         }
         else if (shouldFollow && enemyAI.enemyState != EnemyState::Attack) {
             enemyAI.enemyState = EnemyState::Follow;
@@ -395,84 +472,6 @@ void EnemyAISystem::update(float deltaTime)
                 std::cout << "[DEBUG] Enemy " << enemy->id() 
                           << " Attack finished. Setting cooldown=" 
                           << enemyAI.attackCooldown << "\n";
-            }
-        }
-
-        //----------------------------------------------------
-        // Stato Follow
-        //----------------------------------------------------
-        Vec2<float> previousPos = enemyTrans.pos;
-        
-        if (enemyAI.enemyState == EnemyState::Follow) {
-            const float xThreshold = 5.0f; // Tolerance to avoid rapid flipping
-
-            bool tileInFront = false;
-            sf::FloatRect enemyRect = enemy->get<CBoundingBox>().getRect(enemyTrans.pos);
-
-            for (auto& tile : m_entityManager.getEntities("tile")) {
-                if (!tile->has<CTransform>() || !tile->has<CBoundingBox>()) continue;
-                auto& tileTrans = tile->get<CTransform>();
-                auto& tileBB    = tile->get<CBoundingBox>();
-                sf::FloatRect tileRect = tileBB.getRect(tileTrans.pos);
-
-                // Check if the enemy is touching the tile horizontally (ignores ground)
-                bool horizontallyAligned = (tileRect.top < enemyRect.top + enemyRect.height) &&
-                                        (tileRect.top + tileRect.height > enemyRect.top);
-
-                if (horizontallyAligned &&
-                    ((enemyAI.facingDirection > 0.f && tileRect.left <= enemyRect.left + enemyRect.width &&
-                    tileRect.left > enemyRect.left) ||
-                    (enemyAI.facingDirection < 0.f && tileRect.left + tileRect.width >= enemyRect.left &&
-                    tileRect.left < enemyRect.left)))
-                {
-                    tileInFront = true;
-                    std::cout << "[DEBUG] tileinfront true!!!\n";
-                    break;
-                }
-            }
-
-            // 🔥 If touching a tile horizontally, go to Attack state immediately
-            if (tileInFront && enemyAI.enemyType == EnemyType::Super) {
-                std::cout << "[DEBUG] Enemy touching a tile! Switching to ATTACK.\n";
-                enemyAI.enemyState = EnemyState::Attack;
-                enemyAI.attackTimer = ATTACK_TIMER_DEFAULT;
-                enemyAI.swordSpawned = false;
-                return;
-            }
-
-            // Normal movement logic
-            if (std::abs(dx) > xThreshold) {
-                enemyTrans.velocity.x = (dx > 0.f) ? FOLLOW_MOVE_SPEED : -FOLLOW_MOVE_SPEED;
-                enemyAI.facingDirection = (dx > 0.f) ? 1.f : -1.f;
-            } else {
-                enemyTrans.velocity.x = 0.f;
-            }
-
-            std::string runAnimName;
-            switch (enemyAI.enemyType) {
-                case EnemyType::Fast:   
-                    runAnimName = m_game.worldType + "RunEnemyFast";   
-                    break;
-                case EnemyType::Strong: 
-                    runAnimName = m_game.worldType + "RunEnemyStrong"; 
-                    break;
-                case EnemyType::Elite:  
-                    runAnimName = m_game.worldType + "RunEnemyElite";  
-                    break;
-                case EnemyType::Normal: 
-                    runAnimName = m_game.worldType + "RunEnemyNormal"; 
-                    break;
-                case EnemyType::Super: 
-                    runAnimName = m_game.worldType + "RunEnemySuper";
-                    break;
-                case EnemyType::Emperor: 
-                    runAnimName = m_game.worldType + "RunEmperor";
-                    break;
-            }
-            if (anim.animation.getName() != runAnimName) {
-                const Animation& runAnim = m_game.assets().getAnimation(runAnimName);
-                anim.animation = runAnim;
-                anim.animation.reset();
             }
         }
 

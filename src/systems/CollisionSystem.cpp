@@ -565,7 +565,6 @@ void CollisionSystem::handleSwordCollisions() {
         
                     // ✅ Create block fragments & spawn item
                     m_spawner->createBlockFragments(tileTransform.pos, tileAnim.getName());
-                    m_spawner->spawnItem(tileTransform.pos, tileAnim.getName());
         
                     tile->destroy();  // ✅ Destroy tile
                 }

@@ -221,7 +221,8 @@ enum class EnemyState {
     Follow,     // The enemy is following the player
     Attack,     // The enemy is attacking
     Knockback,   // The enemy is being pushed back,
-    FinalAttack // The enemy is in final burst mode
+    FinalAttack,
+    BlockedByTile
 };
 
 // Reordered fields: declare 'patrolPoints' before 'enemyState' 
@@ -283,6 +284,7 @@ class CEnemyAI : public Component {
         bool burstCooldownActive;     // Whether burst mode is in cooldown
         float burstCooldownTimer;     // Timer for cooldown phase
         bool isInBurstMode;           // Whether the enemy is in final burst mode
+        bool TileInFront;             // Whether the enemy is touching a tile in front
 
         // Constructor
         CEnemyAI(EnemyType type = EnemyType::Normal, EnemyBehavior behavior = EnemyBehavior::FollowOne)
@@ -318,6 +320,7 @@ class CEnemyAI : public Component {
               burstCount(0),
               burstCooldownActive(false),
               burstCooldownTimer(0.f),
-              isInBurstMode(false)          // Default: not in burst mode
+              isInBurstMode(false),
+              TileInFront(false)
         {}
     };

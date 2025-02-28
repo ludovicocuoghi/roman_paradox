@@ -141,8 +141,6 @@ Tile Ground 103 0
 Tile Ground 104 0
 Tile Ground 105 0
 Tile Ground 106 0
-Tile Ground 93 1
-Tile Ground 94 1
 Tile Ground 96 1
 Tile Ground 95 1
 Tile Ground 97 1
@@ -155,44 +153,17 @@ Tile Ground 99 2
 Tile Ground 98 2
 Tile Ground 97 2
 Tile Ground 96 2
-Tile Ground 95 2
-Tile Ground 94 2
-Tile Ground 95 3
-Tile Ground 97 3
-Tile Ground 98 3
-Tile Ground 96 3
-Tile Ground 99 3
 Tile Ground 103 1
 Tile Ground 102 1
 Tile Ground 105 1
 Tile Ground 104 1
 Tile Ground 102 2
-Tile Ground 100 3
-Tile Ground 101 3
 Tile Ground 101 2
-Tile Ground 102 3
 Tile Ground 103 2
-Tile Ground 103 3
 Tile Ground 104 2
-Tile Ground 104 3
-Tile Ground 105 3
-Tile Ground 106 2
-Tile Ground 106 3
-Tile Ground 105 2
-Tile Ground 107 1
 Tile Ground 107 0
-Tile Ground 106 1
-Tile Ground 107 2
-Tile Ground 107 3
-Tile Ground 108 3
-Tile Ground 108 2
-Tile Ground 108 1
 Tile Ground 109 0
-Tile Ground 109 1
-Tile Ground 109 2
 Tile Ground 110 0
-Tile Ground 110 1
-Tile Ground 111 1
 Tile Ground 108 0
 Tile Ground 111 0
 Tile Ground 112 0
@@ -205,8 +176,6 @@ Tile Ground 118 0
 Tile Ground 119 0
 Tile Ground 121 0
 Tile Ground 122 0
-Tile Ground 110 2
-Tile Ground 109 3
 Tile Ground 120 0
 Tile Ground 123 0
 Tile Ground 124 0
@@ -228,5 +197,11 @@ Dec BushTall2 47 4
 Dec BushTall1 42 4
 Dec BushTall1 44 4
 Dec BushTall1 46 4
+Dec BushTall2 122 4
+Dec BushTall2 120 4
+Dec BushTall2 121 4
+Dec BushTall2 128 4
+Dec BushTall1 119 4
+Dec BushTall1 118 4
 Enemy EnemySuper 87 1 87 1 89 1
-Player 127 6
+Player 2 2

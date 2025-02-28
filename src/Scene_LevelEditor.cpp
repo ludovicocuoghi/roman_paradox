@@ -488,6 +488,7 @@ void Scene_LevelEditor::saveLevel(const std::string& filePath) {
             case EnemyType::Fast:    enemyType = "EnemyFast"; break;
             case EnemyType::Strong:  enemyType = "EnemyStrong"; break;
             case EnemyType::Elite:   enemyType = "EnemyElite"; break;
+            case EnemyType::Normal:   enemyType = "EnemyNormal"; break;
             case EnemyType::Super:   enemyType = "EnemySuper"; break;
             case EnemyType::Emperor: enemyType = "Emperor"; break;
             default:
