@@ -117,10 +117,10 @@ std::shared_ptr<Entity> Spawner::spawnEnemyBullet(std::shared_ptr<Entity> enemy)
     // Pick bullet animation based on enemy type
     std::string animationName;
     switch (enemyAI.enemyType) {
-        case EnemyType::Elite:   animationName = "FutureBlueBullet"; break;
-        case EnemyType::Strong:  animationName = "FutureBlueBullet";  break;
-        case EnemyType::Normal:  
-        default:                 animationName = "FutureBlueBullet"; break;
+        case EnemyType::Elite:   animationName = "FutureBlackBullet"; break;
+        case EnemyType::Strong:  animationName = "FutureRedBullet";  break;
+        case EnemyType::Fast:  animationName = "FutureBlueBullet";  break;
+        case EnemyType::Normal:  animationName = "FutureGoldBullet"; break;
     }
 
     // Load bullet animation

@@ -181,19 +181,20 @@ Animation FutureHitEnemyNormal TexFutureHitEnemyNormal 100 100 1 0
 Texture TexFutureRedBullet Bullet/future_red_bullet.png
 Texture TexFutureBlueBullet Bullet/future_blue_bullet.png
 Texture TexFutureGoldBullet Bullet/future_gold_bullet.png
+Texture TexFutureBlackBullet Bullet/future_black_bullet.png
 Texture TexFuturePurpleBullet Bullet/future_purple_bullet.png
 
 Texture TexFutureEnemyGrave Tile/future_rome/grave_enemy.png
 Animation FutureEnemyGrave TexFutureEnemyGrave 55 65 25 15
 
 
-Animation FutureRedBullet TexFutureRedBullet 32 6 1 0
-Animation FutureBlueBullet TexFutureBlueBullet 32 6 1 0
-Animation FutureGoldBullet TexFutureGoldBullet 32 6 1 0
-Animation FuturePurpleBullet TexFuturePurpleBullet 32 6 1 0
+Animation FutureRedBullet TexFutureRedBullet 30 6 1 0
+Animation FutureBlueBullet TexFutureBlueBullet 30 6 1 0
+Animation FutureGoldBullet TexFutureGoldBullet 30 6 1 0
+Animation FutureBlackBullet TexFutureBlackBullet 30 6 1 0
+Animation FuturePurpleBullet TexFuturePurpleBullet 30 6 1 0
 
 Animation FutureBox1 TexFutureBox1 96 96 1 0
-
 
 Texture TexFutureStand Player/future_rome/standanim.png
 Texture TexFutureRun Player/future_rome/run.png
