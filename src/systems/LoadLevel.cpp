@@ -284,6 +284,47 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
             enemy->get<CEnemyAI>().damage = enemyDamage;
             enemy->get<CEnemyAI>().speedMultiplier = speedMultiplier;
             std::cout << "[DEBUG] Enemy Damage: " << enemyDamage << std::endl;
+            
+            if (m_game.worldType == "Future")
+                {
+                    switch (enemyType)
+                    {
+                        case EnemyType::Elite:
+                            enemy->get<CEnemyAI>().bulletCount      = 4;    // Example
+                            enemy->get<CEnemyAI>().minShootDistance = 150.f;
+                            enemy->get<CEnemyAI>().shootCooldown    = 1.0f;
+                            break;
+
+                        case EnemyType::Strong:
+                            enemy->get<CEnemyAI>().bulletCount      = 3;
+                            enemy->get<CEnemyAI>().minShootDistance = 120.f;
+                            enemy->get<CEnemyAI>().shootCooldown    = 1.5f;
+                            break;
+
+                        case EnemyType::Normal:
+                            enemy->get<CEnemyAI>().bulletCount      = 2;
+                            enemy->get<CEnemyAI>().minShootDistance = 100.f;
+                            enemy->get<CEnemyAI>().shootCooldown    = 2.0f;
+                            break;
+
+                        case EnemyType::Fast:
+                            enemy->get<CEnemyAI>().bulletCount      = 2;
+                            enemy->get<CEnemyAI>().minShootDistance = 80.f;
+                            enemy->get<CEnemyAI>().shootCooldown    = 0.8f;
+                            break;
+
+                        case EnemyType::Emperor:
+                            // If Emperor also uses bullets in Future
+                            enemy->get<CEnemyAI>().bulletCount      = 6;
+                            enemy->get<CEnemyAI>().minShootDistance = 200.f;
+                            enemy->get<CEnemyAI>().shootCooldown    = 2.0f;
+                            break;
+
+                        default:
+                            break;
+                    }
+                }
+
             std::vector<Vec2<float>> patrolPoints;
             patrolPoints.push_back(Vec2<float>(
                 px1 * LoadLevel::GRID_SIZE + LoadLevel::HALF_GRID,

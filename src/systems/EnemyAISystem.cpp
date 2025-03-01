@@ -92,7 +92,8 @@ void EnemyAISystem::update(float deltaTime)
             float healthPercentage = 1.0f;
             if (enemy->has<CHealth>()) {
                 auto& health = enemy->get<CHealth>();
-                healthPercentage = static_cast<float>(health.currentHealth) / static_cast<float>(health.maxHealth);
+                healthPercentage = static_cast<float>(health.currentHealth) / 
+                                   static_cast<float>(health.maxHealth);
             }
 
             std::cout << "[DEBUG] Emperor Health: " << healthPercentage << "\n";
@@ -139,27 +140,30 @@ void EnemyAISystem::update(float deltaTime)
             // 🌀 Normal Attack Phases 🌀
             // ============================
             if (enemyAI.enemyState != EnemyState::FinalAttack) {
-
                 // **Radial Attack (Above 50% HP)**
                 if (healthPercentage > 0.7f) {
                     enemyAI.radialAttackTimer += deltaTime;
                     if (enemyAI.radialAttackTimer >= 4.f) {
                         enemyAI.radialAttackTimer = 0.f;
                         std::cout << "[DEBUG] Emperor Super Attack: Radial Swords (Normal)\n";
-                        m_spawner->spawnEmperorSwordsRadial(enemy, EMPEROR_RADIAL_SWORDS_COUNT, EMPEROR_RADIAL_SWORDS_RADIUS, EMPEROR_RADIAL_SWORDS_SPEED);
+                        m_spawner->spawnEmperorSwordsRadial(enemy, 
+                                                            EMPEROR_RADIAL_SWORDS_COUNT, 
+                                                            EMPEROR_RADIAL_SWORDS_RADIUS, 
+                                                            EMPEROR_RADIAL_SWORDS_SPEED);
                     }
                 }
-
                 // **Enhanced Radial Attack (50% > HP > 20%)**
                 else if (healthPercentage <= 0.7f && healthPercentage > 0.5f) {
                     enemyAI.radialAttackTimer += deltaTime;
                     if (enemyAI.radialAttackTimer >= 3.f) {
                         enemyAI.radialAttackTimer = 0.f;
                         std::cout << "[DEBUG] Emperor Super Attack: DOUBLE Radial Swords (Enhanced)\n";
-                        m_spawner->spawnEmperorSwordsRadial(enemy, EMPEROR_RADIAL_SWORDS_COUNT * 2, EMPEROR_RADIAL_SWORDS_RADIUS, EMPEROR_RADIAL_SWORDS_SPEED);
+                        m_spawner->spawnEmperorSwordsRadial(enemy, 
+                                                            EMPEROR_RADIAL_SWORDS_COUNT * 2, 
+                                                            EMPEROR_RADIAL_SWORDS_RADIUS, 
+                                                            EMPEROR_RADIAL_SWORDS_SPEED);
                     }
                 }
-
                 // **Final Burst Phase (Below 40% HP, Above 10%)**
                 else if (healthPercentage <= 0.5f && healthPercentage > 0.1f) {
                     if (!enemyAI.burstCooldownActive) {
@@ -167,7 +171,10 @@ void EnemyAISystem::update(float deltaTime)
                         if (enemyAI.radialAttackTimer >= 0.2f) { 
                             enemyAI.radialAttackTimer = 0.f;
                             std::cout << "[DEBUG] Emperor Super Attack: QUADRUPLE Radial Swords (Final Phase)\n";
-                            m_spawner->spawnEmperorSwordsRadial(enemy, EMPEROR_RADIAL_SWORDS_COUNT, EMPEROR_RADIAL_SWORDS_RADIUS, EMPEROR_RADIAL_SWORDS_SPEED);
+                            m_spawner->spawnEmperorSwordsRadial(enemy, 
+                                                                EMPEROR_RADIAL_SWORDS_COUNT, 
+                                                                EMPEROR_RADIAL_SWORDS_RADIUS, 
+                                                                EMPEROR_RADIAL_SWORDS_SPEED);
 
                             enemyAI.burstCount++;
                             if (enemyAI.burstCount >= 20) {
@@ -208,7 +215,6 @@ void EnemyAISystem::update(float deltaTime)
         if (enemyAI.enemyState == EnemyState::Knockback) {
             std::cout << "[DEBUG] Knockback: vel.x=" << enemyTrans.velocity.x
                       << " pos.x=" << enemyTrans.pos.x
-
                       << " timer=" << enemyAI.knockbackTimer << "\n";
 
             // Distruggi subito le spade nemiche associate all'enemy
@@ -252,9 +258,12 @@ void EnemyAISystem::update(float deltaTime)
             }
         }
         if (!isOnGround) {
-            float grav = enemy->has<CGravity>() ? enemy->get<CGravity>().gravity : DEFAULT_GRAVITY;
+            float grav = enemy->has<CGravity>() 
+                       ? enemy->get<CGravity>().gravity 
+                       : DEFAULT_GRAVITY;
             enemyTrans.velocity.y += grav * deltaTime;
-            enemyTrans.velocity.y = std::clamp(enemyTrans.velocity.y, -MAX_FALL_SPEED, MAX_FALL_SPEED);
+            enemyTrans.velocity.y = std::clamp(enemyTrans.velocity.y, 
+                                               -MAX_FALL_SPEED, MAX_FALL_SPEED);
         } else {
             enemyTrans.velocity.y = 0.f;
         }
@@ -275,18 +284,16 @@ void EnemyAISystem::update(float deltaTime)
 
         bool canSeePlayer  = checkLineOfSight(enemyTrans.pos, playerTrans.pos, m_entityManager);
         bool playerVisible = (distance < PLAYER_VISIBLE_DISTANCE) || canSeePlayer;
-        bool playerVisible_elite = (distance < PLAYER_VISIBLE_DISTANCE*2) || canSeePlayer;
+        bool playerVisible_elite = (distance < PLAYER_VISIBLE_DISTANCE * 2) || canSeePlayer;
 
         bool shouldFollow = false;
-
         switch (enemyAI.enemyBehavior) {
             case EnemyBehavior::FollowOne:
                 // 🔹 FollowOne: Follows only if the player is visible or close
                 if (playerVisible) shouldFollow = true;
                 break;
-
             case EnemyBehavior::FollowTwo:
-                // 🔹 FollowOne: Follows only if the player is visible or close
+                // 🔹 FollowTwo: Follows only if the player is visible or close
                 if (playerVisible_elite) shouldFollow = true;
                 break;
         }
@@ -298,11 +305,10 @@ void EnemyAISystem::update(float deltaTime)
                 enemyAI.attackCooldown = 0.f;
             }
         }
+
         //----------------------------------------------------
         // Stato Follow
         //----------------------------------------------------
-        Vec2<float> previousPos = enemyTrans.pos;
-
         if (enemyAI.enemyState == EnemyState::Follow) {
             const float xThreshold = 5.0f; // Tolerance to avoid rapid flipping
 
@@ -315,14 +321,15 @@ void EnemyAISystem::update(float deltaTime)
                 auto& tileBB    = tile->get<CBoundingBox>();
                 sf::FloatRect tileRect = tileBB.getRect(tileTrans.pos);
 
-                bool horizontallyAligned = (tileRect.top < enemyRect.top + enemyRect.height) &&
-                                        (tileRect.top + tileRect.height > enemyRect.top);
+                bool horizontallyAligned =
+                    (tileRect.top < enemyRect.top + enemyRect.height) &&
+                    (tileRect.top + tileRect.height > enemyRect.top);
 
                 if (horizontallyAligned &&
-                    ((enemyAI.facingDirection > 0.f && tileRect.left <= enemyRect.left + enemyRect.width &&
-                    tileRect.left > enemyRect.left) ||
+                   ((enemyAI.facingDirection > 0.f && tileRect.left <= enemyRect.left + enemyRect.width &&
+                     tileRect.left > enemyRect.left) ||
                     (enemyAI.facingDirection < 0.f && tileRect.left + tileRect.width >= enemyRect.left &&
-                    tileRect.left < enemyRect.left)))
+                     tileRect.left < enemyRect.left)))
                 {
                     tileDetected = true;
                     std::cout << "[DEBUG] tileinfront true!!!\n";
@@ -345,6 +352,9 @@ void EnemyAISystem::update(float deltaTime)
             }
         }
 
+        // ----------------------------------------------------
+        // Gestione animazione Run
+        // ----------------------------------------------------
         std::string runAnimName;
         switch (enemyAI.enemyType) {
             case EnemyType::Fast:   
@@ -373,26 +383,117 @@ void EnemyAISystem::update(float deltaTime)
         }
 
         //----------------------------------------------------
-        // Imposta stato Attack se in range
+        // Future World: Bullet Attack (instead of Sword)
+        //----------------------------------------------------
+        if (m_game.worldType == "Future") {
+            enemyAI.shootTimer += deltaTime;
+            enemyAI.superMoveTimer += deltaTime;  // Track time for super move
+        
+            // 1) Check if it's time for a super move
+            if (enemyAI.superMoveTimer >= enemyAI.superMoveCooldown) {
+                enemyAI.superMoveTimer = 0.f; // Reset timer
+                enemyAI.superMoveReady = true;
+            }
+        
+            // 2) If we’re NOT currently in a burst, check if we can start one
+            if (!enemyAI.inBurst) {
+                // Normal shooting condition
+                bool canShoot = checkLineOfSight(enemyTrans.pos, playerTrans.pos, m_entityManager)
+                                && (distance >= enemyAI.minShootDistance);
+        
+                // If super move is ready, we do that instead
+                if (enemyAI.superMoveReady && canShoot) {
+                    // Fire a big volley all at once with spread angles
+                    enemyAI.superMoveReady = false;
+                    std::cout << "[DEBUG] Enemy " << enemy->id() << " uses SUPER MOVE!\n";
+        
+                    int superBullets = 8; // For example, 8 bullets
+                    float angleRange  = 30.f; // Spread angle
+        
+                    for (int i = 0; i < superBullets; ++i) {
+                        auto bullet = m_spawner->spawnEnemyBullet(enemy);
+                        if (bullet->has<CTransform>()) {
+                            auto& bulletTrans = bullet->get<CTransform>();
+                            // Spread from -15° to +15°
+                            float step  = angleRange / (superBullets - 1);
+                            float angle = -angleRange * 0.5f + (step * i);
+                            bulletTrans.rotate(angle);
+                        }
+                    }
+                }
+                // Otherwise do normal burst logic
+                else if (canShoot && enemyAI.shootTimer >= enemyAI.shootCooldown) {
+                    // Start a burst
+                    enemyAI.shootTimer = 0.f;
+                    enemyAI.inBurst = true;
+                    enemyAI.bulletsShot = 0;
+                    enemyAI.burstTimer = 0.f;
+        
+                    std::cout << "[DEBUG] Enemy " << enemy->id()
+                              << " starts a bullet burst (one-at-a-time)!\n";
+                }
+            }
+            else {
+                // 3) We ARE in a burst, fire bullets one-by-one, spaced by burstInterval
+                enemyAI.burstTimer += deltaTime;
+                if (enemyAI.burstTimer >= enemyAI.burstInterval) {
+                    enemyAI.burstTimer = 0.f;
+                    enemyAI.bulletsShot++;
+        
+                    // Spawn a single bullet
+                    auto bullet = m_spawner->spawnEnemyBullet(enemy);
+                    std::cout << "[DEBUG] Enemy " << enemy->id()
+                              << " fires bullet #" << enemyAI.bulletsShot << " of burst.\n";
+        
+                    // If you want a small spread in normal bursts, do:
+                    if (bullet->has<CTransform>()) {
+                        auto& bulletTrans = bullet->get<CTransform>();
+                        float angleOffset = -3.f + static_cast<float>(rand() % 6); 
+                        bulletTrans.rotate(angleOffset);
+                    }
+        
+                    // End the burst if we've fired enough bullets
+                    if (enemyAI.bulletsShot >= enemyAI.bulletCount) {
+                        enemyAI.inBurst = false;
+                        std::cout << "[DEBUG] Burst finished for enemy " << enemy->id() << "\n";
+                    }
+                }
+            }
+        }
+
+        //----------------------------------------------------
+        // Determina se attaccare con la spada (Non-Future)
         //----------------------------------------------------
         float currentAttackRange = (enemyAI.enemyType == EnemyType::Emperor)
-        ? EMPEROR_ATTACK_RANGE
-        : ATTACK_RANGE;
+                                   ? EMPEROR_ATTACK_RANGE
+                                   : ATTACK_RANGE;
 
-        // Determine if attack should be triggered
-        bool shouldAttack = (shouldFollow && distance < currentAttackRange) || 
-                            (enemyAI.enemyType == EnemyType::Super && enemyAI.enemyState == EnemyState::BlockedByTile);
+        bool shouldAttack = (shouldFollow && distance < currentAttackRange) ||
+                            (enemyAI.enemyType == EnemyType::Super &&
+                             enemyAI.enemyState == EnemyState::BlockedByTile);
 
         if (shouldAttack && enemyAI.attackCooldown <= 0.f 
             && enemyAI.enemyState != EnemyState::Attack)
         {
+            // -----------------------------------------------------
+            // Skip sword spawn if Future world
+            // (So they never spawn swords, only bullets)
+            // -----------------------------------------------------
+            if (m_game.worldType == "Future") {
+                // We could do nothing or set a different state
+                // but let's just do nothing so no sword spawns
+                // for Future enemies
+                continue;
+            }
+
+            // Normal sword attack for non-Future
             enemyAI.enemyState   = EnemyState::Attack;
             enemyAI.attackTimer  = ATTACK_TIMER_DEFAULT;
             enemyAI.swordSpawned = false;
 
             std::cout << "[DEBUG] Enemy " << enemy->id() 
-                    << " entering Attack state. (cooldown=" 
-                    << enemyAI.attackCooldown << ")\n";
+                      << " entering Attack state. (cooldown=" 
+                      << enemyAI.attackCooldown << ")\n";
         }
         else if (shouldFollow && enemyAI.enemyState != EnemyState::Attack) {
             enemyAI.enemyState = EnemyState::Follow;
@@ -413,7 +514,7 @@ void EnemyAISystem::update(float deltaTime)
         }
 
         //----------------------------------------------------
-        // Aggiornamento durante lo stato Attack
+        // Gestione stato Attack (Melee)
         //----------------------------------------------------
         if (enemyAI.enemyState == EnemyState::Attack) {
             enemyTrans.velocity.x = 0.f;
@@ -421,12 +522,12 @@ void EnemyAISystem::update(float deltaTime)
 
             std::string baseAnimName;
             switch (enemyAI.enemyType) {
-                case EnemyType::Normal: baseAnimName = "EnemyNormal"; break;
-                case EnemyType::Fast:   baseAnimName = "EnemyFast"; break;
-                case EnemyType::Strong: baseAnimName = "EnemyStrong"; break;
-                case EnemyType::Elite:  baseAnimName = "EnemyElite"; break;
-                case EnemyType::Super:  baseAnimName = "EnemySuper"; break;
-                case EnemyType::Emperor: baseAnimName = "Emperor"; break;
+                case EnemyType::Normal:  baseAnimName = "EnemyNormal";  break;
+                case EnemyType::Fast:    baseAnimName = "EnemyFast";    break;
+                case EnemyType::Strong:  baseAnimName = "EnemyStrong";  break;
+                case EnemyType::Elite:   baseAnimName = "EnemyElite";   break;
+                case EnemyType::Super:   baseAnimName = "EnemySuper";   break;
+                case EnemyType::Emperor: baseAnimName = "Emperor";      break;
             }
         
             // Ensure the attack animation plays
@@ -440,6 +541,7 @@ void EnemyAISystem::update(float deltaTime)
             }
         
             // Spawn the sword at the correct attack moment
+            // (Skip if Future world, so no sword)
             if (!enemyAI.swordSpawned && enemyAI.attackTimer <= SWORD_SPAWN_THRESHOLD) {
                 if (enemyAI.enemyType == EnemyType::Emperor) {
                     if (distance < 100.f) {
@@ -454,7 +556,9 @@ void EnemyAISystem::update(float deltaTime)
                             swTrans.velocity = Vec2<float>(200.f * dirX, 0.f);
                         }
                     }
-                } else {
+                }
+                else if (m_game.worldType != "Future") {
+                    // For normal worlds only
                     m_spawner->spawnEnemySword(enemy);
                 }
         

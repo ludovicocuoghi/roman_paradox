@@ -13,19 +13,32 @@ public:
 };
 
 // Transform Component.
-struct CTransform {
-    Vec2<float> pos;
-    Vec2<float> velocity;
-    Vec2<float> scale;
-    float rotation;
-
-    CTransform(const Vec2<float>& p = {0, 0},
-               const Vec2<float>& v = {0, 0},
-               const Vec2<float>& s = {1, 1},
-               float r = 0.0f)
-        : pos(p), velocity(v), scale(s), rotation(r) {}
-};
-
+class CTransform : public Component {
+    public:
+        Vec2<float> pos;
+        Vec2<float> velocity;
+        Vec2<float> scale;
+        float rotation;
+    
+        CTransform(const Vec2<float>& p = {0, 0},
+                   const Vec2<float>& v = {0, 0},
+                   const Vec2<float>& s = {1, 1},
+                   float r = 0.0f)
+            : pos(p), velocity(v), scale(s), rotation(r) {}
+    
+        // Rotate velocity vector by a given angle in degrees
+        void rotate(float angleDegrees) {
+            float radians = angleDegrees * (M_PI / 180.f); // Convert degrees to radians
+            float cosA = cos(radians);
+            float sinA = sin(radians);
+    
+            float newX = velocity.x * cosA - velocity.y * sinA;
+            float newY = velocity.x * sinA + velocity.y * cosA;
+    
+            velocity.x = newX;
+            velocity.y = newY;
+        }
+    };
 class CHealth : public Component {
 public:
     int currentHealth;
@@ -270,11 +283,11 @@ class CEnemyAI : public Component {
         float blockedHorizontallyTime; 
         bool  isJumping;
         float jumpTimer;
-
+    
         // Attack Timers
         float radialAttackTimer;
         float horizontalShootTimer;
-
+    
         // **New Fields for Emperor Attack Scaling**
         float radialAttackMultiplier; // Multiplier for sword count in radial attacks
         float radialAttackCooldown;   // Cooldown time for radial attack
@@ -285,7 +298,25 @@ class CEnemyAI : public Component {
         float burstCooldownTimer;     // Timer for cooldown phase
         bool isInBurstMode;           // Whether the enemy is in final burst mode
         bool TileInFront;             // Whether the enemy is touching a tile in front
+        float shootTimer;             // Timer for normal shooting intervals
+    
+        // -----------------------------------------
+        // New Fields for Bullet Burst & Super Move
+        // -----------------------------------------
+        bool  inBurst;          // True if currently firing a burst of bullets
+        int   bulletsShot;      // How many bullets have been fired in the current burst
+        float burstInterval;    // Delay between bullets in a single burst
+        float burstTimer;       // Tracks time for spacing out burst bullets
+        int bulletCount;
+    
+        bool  superMoveReady;   // Whether a super move volley is ready to fire
+        float superMoveTimer;   // Accumulates time for super move cooldown
+        float superMoveCooldown;// Time between super moves (e.g., 5 seconds)
 
+        // In CEnemyAI.h
+        float minShootDistance;
+        float shootCooldown;
+    
         // Constructor
         CEnemyAI(EnemyType type = EnemyType::Normal, EnemyBehavior behavior = EnemyBehavior::FollowOne)
             : enemyType(type),
@@ -313,14 +344,27 @@ class CEnemyAI : public Component {
               jumpTimer(0.f),
               radialAttackTimer(0.f),
               horizontalShootTimer(0.f),
-              radialAttackMultiplier(1.0f), // Default to normal attack power
-              radialAttackCooldown(5.0f),   // Default cooldown for normal attack
-              radialAttackTimerSuper(5.0f),   // Default cooldown for normal attack
+              radialAttackMultiplier(1.0f),
+              radialAttackCooldown(5.0f),
+              radialAttackTimerSuper(5.0f),
               finalBurstTimer(0.f),
               burstCount(0),
               burstCooldownActive(false),
               burstCooldownTimer(0.f),
               isInBurstMode(false),
-              TileInFront(false)
+              TileInFront(false),
+              shootTimer(0.f),
+    
+              // Initialize new burst & super move fields
+              inBurst(false),
+              bulletsShot(0),
+              burstInterval(0.1f),
+              burstTimer(0.f),
+              bulletCount(8),
+              superMoveReady(false),
+              superMoveTimer(0.f),
+              superMoveCooldown(5.f),
+              minShootDistance(100.f),
+              shootCooldown(1.f)
         {}
     };

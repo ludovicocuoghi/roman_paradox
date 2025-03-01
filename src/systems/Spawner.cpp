@@ -32,6 +32,60 @@ std::shared_ptr<Entity> Spawner::spawnSword(std::shared_ptr<Entity> player) {
     return sword;
 }
 
+std::shared_ptr<Entity> Spawner::spawnEnemyBullet(std::shared_ptr<Entity> enemy) {
+    auto bullet = m_entityManager.addEntity("enemyBullet");
+
+    // Copy relevant data from the enemy
+    if (enemy->has<CEnemyAI>()) {
+        bullet->add<CEnemyAI>(enemy->get<CEnemyAI>()); 
+    }
+
+    // Basic positioning & velocity
+    auto& enemyAI = enemy->get<CEnemyAI>();
+    auto& eTrans  = enemy->get<CTransform>();
+    float dir     = enemyAI.facingDirection;
+
+    // Bullet velocity goes left or right depending on dir
+    Vec2<float> bulletVelocity(dir * ENEMY_BULLET_SPEED, 0.0f);
+
+    // Offsets so the bullet spawns near the enemy
+    float offsetX = (dir < 0) ? -ENEMY_BULLET_OFFSET_X : ENEMY_BULLET_OFFSET_X;
+    float offsetY = ENEMY_BULLET_OFFSET_Y;
+    Vec2<float> bulletPos = eTrans.pos + Vec2<float>(offsetX, offsetY);
+
+    bullet->add<CTransform>(bulletPos, bulletVelocity);
+    bullet->add<CLifeSpan>(ENEMY_BULLET_DURATION);
+    bullet->add<CState>(std::to_string(enemy->id()));
+
+    std::cout << "[DEBUG] Spawned enemy bullet at (" << bulletPos.x << ", " << bulletPos.y << ")\n";
+
+    // Pick bullet animation based on enemy type
+    std::string animationName;
+    switch (enemyAI.enemyType) {
+        case EnemyType::Elite:   animationName = "FutureBlueBullet"; break;
+        case EnemyType::Strong:  animationName = "FutureBlueBullet";  break;
+        case EnemyType::Normal:  
+        default:                 animationName = "FutureBlueBullet"; break;
+    }
+
+    // Load bullet animation
+    if (m_game.assets().hasAnimation(animationName)) {
+        auto& bulletAnim = m_game.assets().getAnimation(animationName);
+        bullet->add<CAnimation>(bulletAnim, false);
+
+        // Use animation size for bounding box
+        sf::Vector2i animSize = bulletAnim.getSize();
+        float w = static_cast<float>(animSize.x);
+        float h = static_cast<float>(animSize.y);
+        bullet->add<CBoundingBox>(Vec2<float>(w, h), Vec2<float>(w * 0.5f, h * 0.5f));
+    } else {
+        std::cerr << "[ERROR] Missing " << animationName << " animation!\n";
+    }
+
+    return bullet;
+}
+
+
 // Spawn della spada del nemico
 std::shared_ptr<Entity> Spawner::spawnEnemySword(std::shared_ptr<Entity> enemy) {
     auto sword = m_entityManager.addEntity("enemySword");
@@ -41,6 +95,8 @@ std::shared_ptr<Entity> Spawner::spawnEnemySword(std::shared_ptr<Entity> enemy) 
     float dir = enemyAI.facingDirection;
     float offsetX = (dir < 0) ? -ENEMY_SWORD_OFFSET_X : ENEMY_SWORD_OFFSET_X;
     float offsetY = ENEMY_SWORD_OFFSET_Y;
+
+    
     Vec2<float> swordPos = eTrans.pos + Vec2<float>(offsetX, offsetY);
     sword->add<CTransform>(swordPos);
     sword->add<CLifeSpan>(ENEMY_SWORD_DURATION);
@@ -48,15 +104,14 @@ std::shared_ptr<Entity> Spawner::spawnEnemySword(std::shared_ptr<Entity> enemy) 
 
     std::cout << "[DEBUG] Spawned enemy sword at (" << swordPos.x << ", " << swordPos.y << ")\n";
 
-    // Check if enemy is EnemySuper and the world type is Alien
-    bool isSuperSword = (enemyAI.enemyType == EnemyType::Super && m_game.worldType == "Alien");
+    // Determine sword animation based on world and enemy type
+    std::string animationName;
 
-    // Select animation based on condition
-    std::string animationName = isSuperSword ? "SuperSword" : "EnemySword";
+    animationName = (enemyAI.enemyType == EnemyType::Super) ? "SuperSword" : "EnemySword";
+
     std::cout << "[DEBUG] Using " << animationName << " animation for enemy sword.\n";
 
     if (m_game.assets().hasAnimation(animationName)) {
-        std::cout << "[DEBUG] Using " << animationName << " animation for enemy sword.\n";
         auto& swordAnim = m_game.assets().getAnimation(animationName);
         sword->add<CAnimation>(swordAnim, false);
         sf::Vector2i animSize = swordAnim.getSize();
@@ -70,24 +125,11 @@ std::shared_ptr<Entity> Spawner::spawnEnemySword(std::shared_ptr<Entity> enemy) 
             flipSpriteLeft(sword->get<CAnimation>().animation.getMutableSprite());
         else
             flipSpriteRight(sword->get<CAnimation>().animation.getMutableSprite());
-    } else if (m_game.assets().hasAnimation("Sword")) {
-        auto& swordAnim = m_game.assets().getAnimation("Sword");
-        sword->add<CAnimation>(swordAnim, false);
-        sf::Vector2i animSize = swordAnim.getSize();
-        float w = static_cast<float>(animSize.x);
-        float h = static_cast<float>(animSize.y);
-        Vec2<float> boxSize(w, h);
-        Vec2<float> halfSize(w * 0.5f, h * 0.5f);
-        sword->add<CBoundingBox>(boxSize, halfSize);
-        if (dir < 0)
-            flipSpriteLeft(sword->get<CAnimation>().animation.getMutableSprite());
-        else
-            flipSpriteRight(sword->get<CAnimation>().animation.getMutableSprite());
     } else {
-        std::cerr << "[ERROR] Missing enemy sword animation!\n";
+        std::cerr << "[ERROR] Missing " << animationName << " animation!\n";
     }
     
-    // Attach a CEnemyAI component to the sword and copy the damage from the enemy.
+    // Copy AI data to sword
     if (enemy->has<CEnemyAI>()) {
         sword->add<CEnemyAI>(enemy->get<CEnemyAI>());
     }

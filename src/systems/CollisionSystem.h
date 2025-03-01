@@ -40,6 +40,10 @@ public:
     static constexpr int COLLECTIBLE_SILVER_COIN_POINTS = 25;
     static constexpr int COLLECTIBLE_BRONZE_COIN_POINTS = 10;
 
+    static constexpr int BULLET_DAMAGE_NORMAL = 10;
+    static constexpr int BULLET_DAMAGE_STRONG = 20;
+    static constexpr int BULLET_DAMAGE_ELITE  = 30;
+
     void updateCollisions();
     void handlePlayerTileCollisions();
     void handleEnemyTileCollisions();
@@ -47,6 +51,7 @@ public:
     void handleSwordCollisions();
     void handlePlayerCollectibleCollisions();
     void handleEnemyEnemyCollisions();
+    void handleBulletPlayerCollisions();
 
 private:
     EntityManager& m_entityManager;

@@ -83,3 +83,4 @@ Tile Ground 35 1
 Tile Ground 34 1
 Tile Ground 32 1
 Tile Ground 36 1
+Player 2 5

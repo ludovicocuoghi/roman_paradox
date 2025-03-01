@@ -154,18 +154,25 @@ Texture TexFutureAirEnemyNormal Enemy/future_rome/normal/air_normal.png
 Texture TexFutureHitEnemyNormal Enemy/future_rome/normal/hit_normal.png
 
 Animation FutureStandEnemyStrong TexFutureStandEnemyStrong 100 100 1 0
-Animation FutureRunEnemyStrong TexFutureRunEnemyStrong 100 100 4 6
+Animation FutureRunEnemyStrong TexFutureRunEnemyStrong 100 100 4 8
 Animation FutureHitEnemyStrong TexFutureHitEnemyStrong 100 100 1 0
 
 Animation FutureStandEnemyElite TexFutureStandEnemyElite 100 100 1 0
-Animation FutureRunEnemyElite TexFutureRunEnemyElite 100 100 4 6
+Animation FutureRunEnemyElite TexFutureRunEnemyElite 100 100 4 8
 Animation FutureHitEnemyElite TexFutureHitEnemyElite 100 100 1 0
 
 Animation FutureStandEnemyNormal TexFutureStandEnemyNormal 100 100 1 0
-Animation FutureRunEnemyNormal TexFutureRunEnemyNormal 100 100 4 6
+Animation FutureRunEnemyNormal TexFutureRunEnemyNormal 100 100 4 8
 Animation FutureHitEnemyNormal TexFutureHitEnemyNormal 100 100 1 0
 
 
+Texture TexFutureRedBullet Bullet/future_red_bullet.png
+Texture TexFutureBlueBullet Bullet/future_blue_bullet.png
+Texture TexFutureGoldBullet Bullet/future_gold_bullet.png
+
+Animation FutureRedBullet TexFutureRedBullet 32 6 1 0
+Animation FutureBlueBullet TexFutureBlueBullet 32 6 1 0
+Animation FutureGoldBullet TexFutureGoldBullet 32 6 1 0
 
 Animation FutureBox1 TexFutureBox1 96 96 1 0
 

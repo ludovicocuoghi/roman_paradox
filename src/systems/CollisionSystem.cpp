@@ -22,6 +22,7 @@ void CollisionSystem::updateCollisions() {
     handlePlayerEnemyCollisions();
     handleEnemyEnemyCollisions();
     handleSwordCollisions();
+    handleBulletPlayerCollisions(); // ✅ NEW: Check bullet collisions
     handlePlayerCollectibleCollisions();
 }
 
@@ -405,6 +406,85 @@ void CollisionSystem::handlePlayerEnemyCollisions() {
     }
 }
 
+void CollisionSystem::handleBulletPlayerCollisions() {
+    for (auto& bullet : m_entityManager.getEntities("enemyBullet")) {
+        if (!bullet->has<CTransform>() || !bullet->has<CBoundingBox>()) 
+            continue;
+
+        auto& bulletTrans = bullet->get<CTransform>();
+        auto& bulletBB    = bullet->get<CBoundingBox>();
+        sf::FloatRect bulletRect = bulletBB.getRect(bulletTrans.pos);
+
+        // 1) Destroy bullet if it hits a tile
+        for (auto& tile : m_entityManager.getEntities("tile")) {
+            if (!tile->has<CTransform>() || !tile->has<CBoundingBox>())
+                continue;
+
+            auto& tileTrans = tile->get<CTransform>();
+            auto& tileBB    = tile->get<CBoundingBox>();
+            sf::FloatRect tileRect = tileBB.getRect(tileTrans.pos);
+
+            if (bulletRect.intersects(tileRect)) {
+                std::cout << "[DEBUG] Bullet hit a tile! Destroying bullet.\n";
+                bullet->destroy();
+                break; // Stop checking after first tile hit
+            }
+        }
+
+        // 2) Destroy bullet if it hits the player
+        for (auto& player : m_entityManager.getEntities("player")) {
+            if (!player->has<CTransform>() || !player->has<CBoundingBox>())
+                continue;
+
+            auto& playerTrans = player->get<CTransform>();
+            auto& playerBB    = player->get<CBoundingBox>();
+            sf::FloatRect playerRect = playerBB.getRect(playerTrans.pos);
+
+            if (!bulletRect.intersects(playerRect))
+                continue; // No collision, skip
+
+            // Even if the player is invulnerable, bullet is destroyed
+            if (player->has<CHealth>()) {
+                auto& health = player->get<CHealth>();
+
+                // Only apply damage if invulnerability is 0
+                if (health.invulnerabilityTimer <= 0.f) {
+                    int bulletDamage = BULLET_DAMAGE_NORMAL; // Default
+                    if (bullet->has<CEnemyAI>()) {
+                        auto& bulletAI = bullet->get<CEnemyAI>();
+                        switch (bulletAI.enemyType) {
+                            case EnemyType::Elite:
+                                bulletDamage = BULLET_DAMAGE_ELITE;
+                                break;
+                            case EnemyType::Strong:
+                                bulletDamage = BULLET_DAMAGE_STRONG;
+                                break;
+                            case EnemyType::Normal:
+                            default:
+                                bulletDamage = BULLET_DAMAGE_NORMAL;
+                                break;
+                        }
+                    }
+                    // Apply damage and knockback
+                    health.takeDamage(bulletDamage);
+                    health.invulnerabilityTimer = PLAYER_HIT_INVULNERABILITY_TIME;
+                    std::cout << "[DEBUG] Player hit by bullet! Damage: " 
+                              << bulletDamage << " Health: " << health.currentHealth << "\n";
+
+                    // Set knockback if needed
+                    if (player->has<CState>()) {
+                        player->get<CState>().state = "knockback";
+                        player->get<CState>().knockbackTimer = PLAYER_KNOCKBACK_TIMER;
+                    }
+                }
+            }
+
+            // Destroy bullet on impact, regardless of invulnerability
+            bullet->destroy();
+            break; // Exit after first player hit
+        }
+    }
+}
 
 void CollisionSystem::handleSwordCollisions() {
     // Player sword
