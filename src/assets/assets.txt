@@ -1,7 +1,7 @@
-Texture TexStand Player/a_stand100Anim.png
-Texture TexRun Player/a_run1004.png
-Texture TexAir Player/a_air1002.png
-Texture TexHit Player/a_hit100nosword.png
+Texture TexStand Player/ancient_rome/a_stand100Anim.png
+Texture TexRun Player/ancient_rome/a_run1004.png
+Texture TexAir Player/ancient_rome/a_air1002.png
+Texture TexHit Player/ancient_rome/a_hit100nosword.png
 Texture TexSword /sword/a_sword.png
 Texture TexEnemySword /sword/sword.png
 Texture TexEmperorSword /sword/gold_sword.png
