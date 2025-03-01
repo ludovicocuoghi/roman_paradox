@@ -58,7 +58,7 @@ void AnimationSystem::update(float deltaTime) {
 
     // --- Tile Animation (e.g., Question Blocks) ---
     for (auto& entity : m_entityManager.getEntities("tile")) {
-        if (!entity->has<CAnimation>() || !entity->has<CState>()) continue;
+        if (!entity->has<CAnimation>()) continue;
 
         auto& anim  = entity->get<CAnimation>();
         auto& state = entity->get<CState>();
@@ -71,6 +71,11 @@ void AnimationSystem::update(float deltaTime) {
             }
         }
         anim.animation.update(deltaTime);
+    }
+
+    for (auto& grave : m_entityManager.getEntities("enemyGrave")) {
+        if (!grave->has<CAnimation>()) continue;
+        grave->get<CAnimation>().animation.update(deltaTime);
     }
 
     // --- Collectable Animation (e.g., Coins, Items) ---

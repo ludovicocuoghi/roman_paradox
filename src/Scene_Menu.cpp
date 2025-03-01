@@ -47,15 +47,16 @@ void Scene_Menu::loadLevelOptions() {
 }
 
 void Scene_Menu::sRender() {
-    m_game.window().clear(sf::Color(100, 100, 255));
+    m_game.window().clear(sf::Color(0, 0, 0));
 
     sf::Text text;
     text.setFont(m_game.assets().getFont("Menu"));
-    text.setCharacterSize(50);
+    text.setCharacterSize(40);
     text.setStyle(sf::Text::Bold);
+    text.setFillColor(sf::Color::White);
 
     float startY = 150.f;
-    float spacing = 80.f;
+    float spacing = 40.f;
 
     // Render title
     text.setString("ROME INTERGALACTIC PARADOX");
@@ -67,7 +68,7 @@ void Scene_Menu::sRender() {
         text.setString(m_menuStrings[i]);
         text.setPosition(m_game.window().getSize().x / 2 - text.getLocalBounds().width / 2, startY + i * spacing);
 
-        text.setFillColor((i == m_selectedMenuIndex) ? sf::Color::White : sf::Color::Black);
+        text.setFillColor((i == m_selectedMenuIndex) ? sf::Color::Blue : sf::Color::White);
         m_game.window().draw(text);
     }
 

@@ -61,6 +61,4 @@ Dec BushTall 2 5
 Dec BushSmall 12 2
 Dec BushSmall 18 2
 Enemy EnemyNormal 16 2 16 2 18 2
-Enemy EnemyNormal 11 2 11 2 13 2
-Enemy EnemyNormal 20 2 20 2 22 2
 Player 2 5

@@ -116,8 +116,12 @@ Texture TexFutureBushTall1 Dec/future_rome/bushtall.png
 
 Texture TexFutureBox1 Tile/future_rome/box1.png
 Texture TexFutureLevelDoor Tile/future_rome/level_door.png
+Texture TexFutureArmor Tile/future_rome/armor.png
 
-Animation FutureGround TexFutureGround 96 96 4 8
+Animation FutureGround TexFutureGround 96 96 4 12
+
+Animation FutureArmor TexFutureArmor 100 100 2 4
+
 Animation FutureBrick TexFutureBrick 96 96 11 7
 Animation FuturePipeTall TexFuturePipeTall 96 384 14 10
 Animation FutureTreasure TexFutureTreasure 96 96 1 0
@@ -169,6 +173,10 @@ Animation FutureHitEnemyNormal TexFutureHitEnemyNormal 100 100 1 0
 Texture TexFutureRedBullet Bullet/future_red_bullet.png
 Texture TexFutureBlueBullet Bullet/future_blue_bullet.png
 Texture TexFutureGoldBullet Bullet/future_gold_bullet.png
+
+Texture TexFutureEnemyGrave Tile/future_rome/grave_enemy.png
+Animation FutureEnemyGrave TexFutureEnemyGrave 55 65 25 15
+
 
 Animation FutureRedBullet TexFutureRedBullet 32 6 1 0
 Animation FutureBlueBullet TexFutureBlueBullet 32 6 1 0
