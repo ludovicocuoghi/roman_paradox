@@ -19,7 +19,8 @@ using ComponentTuple = std::tuple<
     CHealth,
     CShape,
     CEnemyAI,
-    CUniqueID
+    CUniqueID,
+    CPlayerEquipment
 >;
 
 class Entity {

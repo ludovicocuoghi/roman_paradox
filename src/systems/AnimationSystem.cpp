@@ -13,46 +13,71 @@ void AnimationSystem::update(float deltaTime) {
     // --- Player Animation ---
     for (auto& entity : m_entityManager.getEntities("player")) {
         if (!entity->has<CAnimation>() || !entity->has<CState>()) continue;
-
+    
         auto& canim = entity->get<CAnimation>();
         auto& st    = entity->get<CState>();
         auto& trans = entity->get<CTransform>();
-
+    
+        // 1) Check if the player has FutureArmor
+        bool hasFutureArmor = false;
+        if (entity->has<CPlayerEquipment>()) {
+            hasFutureArmor = entity->get<CPlayerEquipment>().hasFutureArmor;
+        }
+    
+        // Decide animation prefix: "Player" vs. "Future"
+        std::string prefix = hasFutureArmor ? "FuturePlayer" : "Player";
+    
         if (st.state == "attack") {
+            // Attack logic
             st.attackTime -= deltaTime;
-            if (m_game.assets().hasAnimation("PlayerAttack")) {
-                if (canim.animation.getName() != "PlayerAttack") {
-                    canim.animation = m_game.assets().getAnimation("PlayerAttack");
+    
+            // e.g., "PlayerAttack" or "FutureAttack"
+            std::string attackAnim = prefix + "Attack";
+    
+            if (m_game.assets().hasAnimation(attackAnim)) {
+                if (canim.animation.getName() != attackAnim) {
+                    canim.animation = m_game.assets().getAnimation(attackAnim);
                     canim.repeat = false;
+    
+                    // Flip based on last direction
                     if (m_lastDirection < 0)
                         flipSpriteLeft(canim.animation.getMutableSprite());
                     else
                         flipSpriteRight(canim.animation.getMutableSprite());
                 }
             }
+            // Once attackTime is done, revert to run/idle
             if (st.attackTime <= 0.f) {
-                st.state = (std::abs(trans.velocity.x) > 1.f) ? "run" : "idle";
+                if (std::abs(trans.velocity.x) > 1.f)
+                    st.state = "run";
+                else
+                    st.state = "idle";
             }
         } else {
+            // e.g., "PlayerAir", "PlayerRun", or "PlayerStand"
+            // or "FutureAir", "FutureRun", or "FutureStand"
             std::string desiredAnim;
             if (std::abs(trans.velocity.y) > 0.1f)
-                desiredAnim = "PlayerAir";
+                desiredAnim = prefix + "Air";
             else if (std::abs(trans.velocity.x) > 1.f)
-                desiredAnim = "PlayerRun";
+                desiredAnim = prefix + "Run";
             else
-                desiredAnim = "PlayerStand";
-
+                desiredAnim = prefix + "Stand";
+    
             if (m_game.assets().hasAnimation(desiredAnim) &&
                 canim.animation.getName() != desiredAnim)
             {
                 canim.animation = m_game.assets().getAnimation(desiredAnim);
                 canim.repeat = true;
+                // Flip sprite
                 if (m_lastDirection < 0)
                     flipSpriteLeft(canim.animation.getMutableSprite());
                 else
                     flipSpriteRight(canim.animation.getMutableSprite());
             }
         }
+    
+        // Update current animation frame
         canim.animation.update(deltaTime);
     }
 

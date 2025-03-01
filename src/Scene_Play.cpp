@@ -14,6 +14,7 @@
 #include <cmath>
 #include "systems/CollisionSystem.h"
 #include "systems/SpriteUtils.h"
+#include "systems/Spawner.h"
 
 void Scene_Play::initializeCamera()
 {
@@ -248,7 +249,8 @@ void Scene_Play::sDoAction(const Action& action)
     if (playerEntities.empty()) return;
 
     auto player = playerEntities[0];
-    auto& vel   = player->get<CTransform>().velocity;
+    auto& PTrans   = player->get<CTransform>();
+    auto& vel = PTrans.velocity;  
     auto& state = player->get<CState>();
 
     static bool isMovingLeft  = false;
@@ -258,6 +260,7 @@ void Scene_Play::sDoAction(const Action& action)
         if (action.name() == "MOVE_LEFT") {
             isMovingLeft = true;
             isMovingRight = false;
+            PTrans.facingDirection = -1.f;
             vel.x = -xSpeed;
             if (state.state != "air")
                 state.state = "run";
@@ -265,6 +268,7 @@ void Scene_Play::sDoAction(const Action& action)
         else if (action.name() == "MOVE_RIGHT") {
             isMovingRight = true;
             isMovingLeft = false;
+            PTrans.facingDirection = 1.f;
             vel.x = xSpeed;
             if (state.state != "air")
                 state.state = "run";
@@ -278,12 +282,17 @@ void Scene_Play::sDoAction(const Action& action)
             m_showBoundingBoxes = !m_showBoundingBoxes;
         }
         else if (action.name() == "ATTACK") {
-            // Attacca solo se il cooldown è terminato
             if (state.attackCooldown <= 0.f) {
                 state.state = "attack";
-                state.attackTime = 0.2f;      // Durata dell'attacco (animazione)
-                state.attackCooldown = 0.5f;  // Imposta il cooldown di attacco (0.5 secondi)
-                spawnSword(player);           // Spawna la spada
+                state.attackTime = 0.2f;
+                state.attackCooldown = 0.5f;
+        
+                // If the player has FutureArmor, spawn bullet; otherwise, spawn sword
+                if (player->has<CPlayerEquipment>() && player->get<CPlayerEquipment>().hasFutureArmor) {
+                    m_spawner.spawnPlayerBullet(player);
+                } else {
+                    spawnSword(player);
+                }
             }
         }
         else if (action.name() == "JUMP") {

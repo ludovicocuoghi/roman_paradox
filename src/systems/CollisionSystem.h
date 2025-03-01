@@ -52,6 +52,7 @@ public:
     void handlePlayerCollectibleCollisions();
     void handleEnemyEnemyCollisions();
     void handleBulletPlayerCollisions();
+    void handlePlayerBulletCollisions();
 
 private:
     EntityManager& m_entityManager;

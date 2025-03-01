@@ -32,6 +32,61 @@ std::shared_ptr<Entity> Spawner::spawnSword(std::shared_ptr<Entity> player) {
     return sword;
 }
 
+std::shared_ptr<Entity> Spawner::spawnPlayerBullet(std::shared_ptr<Entity> player) {
+    // 1) Create the bullet entity
+    auto bullet = m_entityManager.addEntity("playerBullet");
+
+    // 2) Get player's transform to figure out where to spawn the bullet
+    if (!player->has<CTransform>()) {
+        std::cerr << "[ERROR] Player missing CTransform, cannot spawn bullet.\n";
+        return nullptr;
+    }
+    auto& pTrans = player->get<CTransform>();
+
+    // (Optional) If you track facing direction in a component (e.g., CState or CTransform),
+    // retrieve it here. For simplicity, we assume positive X is facing right, negative X is left.
+    float facingDir = 1.f; // default right
+    if (player->has<CState>()) {
+        // Suppose your CState has a float 'facingDirection'
+        facingDir = pTrans.facingDirection;
+    }
+
+    // 3) Calculate bullet spawn position & velocity
+    float offsetX = (facingDir < 0) ? -PLAYER_BULLET_OFFSET_X : PLAYER_BULLET_OFFSET_X;
+    float offsetY = PLAYER_BULLET_OFFSET_Y;
+    Vec2<float> bulletPos = pTrans.pos + Vec2<float>(offsetX, offsetY);
+
+    Vec2<float> bulletVelocity(facingDir * PLAYER_BULLET_SPEED, 0.f);
+
+    // 4) Add components to the bullet
+    bullet->add<CTransform>(bulletPos, bulletVelocity);
+    bullet->add<CLifeSpan>(PLAYER_BULLET_DURATION);
+
+    // (Optional) If you want to store which player fired the bullet, add a CState or similar
+    bullet->add<CState>("playerBullet"); 
+
+    // 5) Choose an animation name (e.g., "FuturePlayerBullet")
+    std::string animationName = "FuturePurpleBullet";
+
+    // 6) Load & attach bullet animation
+    if (m_game.assets().hasAnimation(animationName)) {
+        auto& bulletAnim = m_game.assets().getAnimation(animationName);
+        bullet->add<CAnimation>(bulletAnim, false);
+
+        // Use the animation size for bounding box
+        sf::Vector2i animSize = bulletAnim.getSize();
+        float w = static_cast<float>(animSize.x);
+        float h = static_cast<float>(animSize.y);
+        bullet->add<CBoundingBox>(Vec2<float>(w, h), Vec2<float>(w * 0.5f, h * 0.5f));
+    } else {
+        std::cerr << "[ERROR] Missing animation for " << animationName << "!\n";
+    }
+
+    std::cout << "[DEBUG] Spawned player bullet at (" 
+              << bulletPos.x << ", " << bulletPos.y << ")\n";
+    return bullet;
+}
+
 std::shared_ptr<Entity> Spawner::spawnEnemyBullet(std::shared_ptr<Entity> enemy) {
     auto bullet = m_entityManager.addEntity("enemyBullet");
 

@@ -25,8 +25,8 @@ public:
     // Costanti per lo spawn dei proiettili nemici (bullets)
     static constexpr float ENEMY_BULLET_SPEED = 900.f; // Velocità del proiettile
     static constexpr float ENEMY_BULLET_DURATION = 3.0f; // Durata prima di scomparire
-    static constexpr float ENEMY_BULLET_OFFSET_X = 25.0f; // Posizione iniziale rispetto al nemico
-    static constexpr float ENEMY_BULLET_OFFSET_Y = -5.0f; // Leggermente sopra il nemico
+    static constexpr float ENEMY_BULLET_OFFSET_X = 30.0f; // Posizione iniziale rispetto al nemico
+    static constexpr float ENEMY_BULLET_OFFSET_Y = 5.0f; // Leggermente sopra il nemico
 
     // Costanti per lo spawn degli item da box
     static constexpr int BOX_ITEM_DIST_MIN = 0;
@@ -54,6 +54,11 @@ public:
     static constexpr float FRAGMENT_SIZE = 50.f;
     static constexpr float FRAGMENT_DURATION = 0.6f;
 
+    static constexpr float PLAYER_BULLET_SPEED      = 900.f;  // Adjust as needed
+    static constexpr float PLAYER_BULLET_DURATION   = 3.0f;   // Bullet lifespan
+    static constexpr float PLAYER_BULLET_OFFSET_X   = 30.f;   // X offset from player
+    static constexpr float PLAYER_BULLET_OFFSET_Y   = 5.f;   // Y offset from player
+
     Spawner(GameEngine& game, EntityManager& entityManager);
 
     // Funzioni di spawn
@@ -63,6 +68,7 @@ public:
     
     std::shared_ptr<Entity> spawnItem(const Vec2<float>& position, const std::string& tileType);
     std::shared_ptr<Entity> spawnEmperorSwordOffset(std::shared_ptr<Entity> enemy);
+    std::shared_ptr<Entity> spawnPlayerBullet(std::shared_ptr<Entity> player);
 
 
     void spawnEmperorSwordsRadial(std::shared_ptr<Entity> enemy, int swordCount, float radius, float swordSpeed);

@@ -310,6 +310,33 @@ void PlayRenderer::render() {
             m_game.window().draw(debugBox);
         }
     }
+    for (auto& bullet : m_entityManager.getEntities("playerBullet")) {
+        if (!bullet->has<CTransform>()) continue;
+        auto& bulletTrans = bullet->get<CTransform>();
+    
+        // Draw bullet sprite if it has an animation
+        if (bullet->has<CAnimation>()) {
+            auto& anim = bullet->get<CAnimation>();
+            sf::Sprite sprite = anim.animation.getSprite();
+            sprite.setPosition(bulletTrans.pos.x, bulletTrans.pos.y);
+            sprite.setOrigin(anim.animation.getSize().x * 0.5f,
+                             anim.animation.getSize().y * 0.5f);
+            m_game.window().draw(sprite);
+        }
+    
+        // Draw bounding box if enabled
+        if (m_showBoundingBoxes && bullet->has<CBoundingBox>()) {
+            auto& bbox = bullet->get<CBoundingBox>();
+            sf::RectangleShape debugBox;
+            debugBox.setSize(sf::Vector2f(bbox.size.x, bbox.size.y));
+            debugBox.setOrigin(bbox.halfSize.x, bbox.halfSize.y);
+            debugBox.setPosition(bulletTrans.pos.x, bulletTrans.pos.y);
+            debugBox.setFillColor(sf::Color::Transparent);
+            debugBox.setOutlineColor(sf::Color::Green); // or any color you prefer
+            debugBox.setOutlineThickness(2.f);
+            m_game.window().draw(debugBox);
+        }
+    }
 
     // --- HUD: Black Bar with Score, Time-of-Day, and Health ---
     m_game.window().setView(defaultView);

@@ -22,7 +22,8 @@ void CollisionSystem::updateCollisions() {
     handlePlayerEnemyCollisions();
     handleEnemyEnemyCollisions();
     handleSwordCollisions();
-    handleBulletPlayerCollisions(); // ✅ NEW: Check bullet collisions
+    handleBulletPlayerCollisions();
+    handlePlayerBulletCollisions();
     handlePlayerCollectibleCollisions();
 }
 
@@ -43,6 +44,12 @@ void CollisionSystem::handlePlayerTileCollisions() {
         // Reset onGround each frame; we’ll set it to true if we land on a tile
         state.onGround = false;
 
+        // -------------------------------------
+        // We'll store if we picked up armor here
+        // -------------------------------------
+        bool pickedUpArmor = false;
+        std::shared_ptr<Entity> tileToDestroy = nullptr;
+
         // Check collision with each tile
         for (auto& tile : m_entityManager.getEntities("tile")) {
             // Make sure the tile has the needed components
@@ -59,36 +66,43 @@ void CollisionSystem::handlePlayerTileCollisions() {
             if (!pRect.intersects(tRect))
                 continue;
 
-            std::string nextLevelPath = "";  // ✅ Store next level path instead of switching immediately
+            // Potential next-level logic
+            std::string nextLevelPath = "";
 
-            // ✅ NEW: Check if this tile is a LevelDoor
-            if (tile->has<CAnimation>()) {
-                std::string animName = tile->get<CAnimation>().animation.getName();
-                std::string worldLevelDoor = m_game.worldType + "LevelDoor";  
-                std::string worldLevelDoorGold = m_game.worldType + "LevelDoorGold";
-                std::string worldLevelBlackHole = m_game.worldType + "BlackHoleRedBig";
-            
-                if (animName == worldLevelDoor || animName == worldLevelDoorGold || animName == worldLevelBlackHole) {
-                    std::cout << "[DEBUG] Player entered " << animName << ". Scheduling level change...\n";
-                    m_game.scheduleLevelChange(m_game.getNextLevelPath());
-                    return;
-                }
+            // Check tile's animation name
+            std::string animName = tileAnim.getName();
+            std::string worldLevelDoor       = m_game.worldType + "LevelDoor";  
+            std::string worldLevelDoorGold   = m_game.worldType + "LevelDoorGold";
+            std::string worldLevelBlackHole  = m_game.worldType + "BlackHoleRedBig";
+
+            // 1) If tile is a LevelDoor/BlackHole
+            if (animName == worldLevelDoor || animName == worldLevelDoorGold || animName == worldLevelBlackHole) {
+                std::cout << "[DEBUG] Player entered " << animName << ". Scheduling level change...\n";
+                m_game.scheduleLevelChange(m_game.getNextLevelPath());
+                return;
             }
-            
-            // ✅ Move level transition **outside the loop** to avoid modifying entities while iterating
+            // 2) If tile is FutureArmor, mark it for destruction AFTER overlap resolution
+            if (animName == "FutureArmor") {
+                std::cout << "[DEBUG] Player picked up Future Armor!\n";
+                if (player->has<CPlayerEquipment>()) {
+                    player->get<CPlayerEquipment>().hasFutureArmor = true;
+                }
+                pickedUpArmor = true;
+                tileToDestroy = tile;  // We'll destroy it after we do overlap resolution
+            }
+
+            // 3) Next-level path check (unused in your snippet, but kept for consistency)
             if (!nextLevelPath.empty()) {
                 std::cout << "[DEBUG] Transitioning to next level: " << nextLevelPath << std::endl;
-            
                 if (nextLevelPath == "./bin/levels/") {
                     std::cerr << "[ERROR] Invalid next level path (empty string)!\n";
                     return;
                 }
-            
                 m_game.loadLevel(nextLevelPath);
                 return;
             }
-            
-            // Calculate overlap on X and Y
+
+            // 4) Calculate overlap on X and Y
             float overlapX = std::min(pRect.left + pRect.width, tRect.left + tRect.width)
                            - std::max(pRect.left, tRect.left);
             float overlapY = std::min(pRect.top + pRect.height, tRect.top + tRect.height)
@@ -98,14 +112,11 @@ void CollisionSystem::handlePlayerTileCollisions() {
             if (overlapX < overlapY) {
                 // Fix X overlap
                 if (transform.pos.x < tileTransform.pos.x) {
-                    // Player is left of tile, push left
-                    transform.pos.x -= overlapX;
+                    transform.pos.x -= overlapX; // Player is left, push left
                 } else {
-                    // Player is right of tile, push right
-                    transform.pos.x += overlapX;
+                    transform.pos.x += overlapX; // Player is right, push right
                 }
-                // Stop horizontal velocity
-                velocity.x = 0.f;
+                velocity.x = 0.f; // Stop horizontal velocity
             } else {
                 // Fix Y overlap
                 if (transform.pos.y < tileTransform.pos.y) {
@@ -118,25 +129,22 @@ void CollisionSystem::handlePlayerTileCollisions() {
                     if (velocity.y < 0) {
                         transform.pos.y += overlapY;
                         velocity.y = 0.f;
-                
+
                         // Example: breakable or special tiles
-                        std::string animName = tileAnim.getName();
-                        std::string expectedBox1 = m_game.worldType + "Box1";
-                        std::string expectedBox2 = m_game.worldType + "Box2";  
-                        std::string expectedTreasure = m_game.worldType + "Treasure";
-                
-                        if (animName == expectedBox1 || animName == expectedBox2) {  
+                        if (animName == m_game.worldType + "Box1" ||
+                            animName == m_game.worldType + "Box2")
+                        {
                             m_spawner->createBlockFragments(tileTransform.pos, animName);
                             m_spawner->spawnItem(tileTransform.pos, animName);
-                            tile->destroy();
+                            tileToDestroy = tile;
                             std::cout << "[DEBUG] " << animName << " broken from below!\n";
                         } 
-                        else if (animName == expectedTreasure) {
+                        else if (animName == m_game.worldType + "Treasure") {
                             auto& tileState = tile->get<CState>();
                             if (tileState.state == "inactive") {
                                 tileState.state = "activated";
                                 std::string treasureHitAnim = m_game.worldType + "TreasureHit";
-                
+
                                 if (m_game.assets().hasAnimation(treasureHitAnim)) {
                                     tile->get<CAnimation>().animation = m_game.assets().getAnimation(treasureHitAnim);
                                     tile->get<CAnimation>().repeat = false;
@@ -151,9 +159,14 @@ void CollisionSystem::handlePlayerTileCollisions() {
 
             // Update pRect in case we moved the player
             pRect = playerBB.getRect(transform.pos);
+        } // end for tile
+
+        // 5) AFTER checking all tiles, destroy any tile we flagged
+        if (tileToDestroy) {
+            tileToDestroy->destroy();
         }
 
-        // Update player state if not attacking
+        // 6) Update player state if not attacking
         if (state.state != "attack") {
             if (state.onGround) {
                 state.state = (std::abs(velocity.x) > PLAYER_RUN_VELOCITY_THRESHOLD)
@@ -402,6 +415,67 @@ void CollisionSystem::handlePlayerEnemyCollisions() {
                     }
                 }
             }
+        }
+    }
+}
+
+void CollisionSystem::handlePlayerBulletCollisions() {
+    for (auto& bullet : m_entityManager.getEntities("playerBullet")) {
+        // Must have CTransform & CBoundingBox
+        if (!bullet->has<CTransform>() || !bullet->has<CBoundingBox>())
+            continue;
+
+        auto& bulletTrans = bullet->get<CTransform>();
+        auto& bulletBB    = bullet->get<CBoundingBox>();
+        sf::FloatRect bulletRect = bulletBB.getRect(bulletTrans.pos);
+
+        // 1) Destroy bullet if it hits a tile
+        for (auto& tile : m_entityManager.getEntities("tile")) {
+            if (!tile->has<CTransform>() || !tile->has<CBoundingBox>())
+                continue;
+
+            auto& tileTrans = tile->get<CTransform>();
+            auto& tileBB    = tile->get<CBoundingBox>();
+            sf::FloatRect tileRect = tileBB.getRect(tileTrans.pos);
+
+            if (bulletRect.intersects(tileRect)) {
+                std::cout << "[DEBUG] Player bullet hit a tile! Destroying bullet.\n";
+                bullet->destroy();
+                break; // Stop checking after first tile collision
+            }
+        }
+
+        // 2) Destroy bullet if it hits an enemy
+        //    and apply damage/knockback if you want
+        for (auto& enemy : m_entityManager.getEntities("enemy")) {
+            if (!enemy->has<CTransform>() || !enemy->has<CBoundingBox>())
+                continue;
+
+            auto& enemyTrans = enemy->get<CTransform>();
+            auto& enemyBB    = enemy->get<CBoundingBox>();
+            sf::FloatRect enemyRect = enemyBB.getRect(enemyTrans.pos);
+
+            if (!bulletRect.intersects(enemyRect))
+                continue; // no collision
+
+            // We have a collision: apply damage, destroy bullet
+            std::cout << "[DEBUG] Player bullet hit an enemy! Destroying bullet.\n";
+
+            // Example: apply damage
+            if (enemy->has<CHealth>()) {
+                auto& health = enemy->get<CHealth>();
+                const int PLAYER_BULLET_DAMAGE = 5; // or some constant
+                health.takeDamage(PLAYER_BULLET_DAMAGE);
+
+                // Optionally set invulnerabilityTimer if you want a grace period
+                // health.invulnerabilityTimer = 0.2f;
+
+                // Possibly do knockback
+                // if (enemy->has<CState>()) { ... }
+            }
+
+            bullet->destroy();
+            break; // Exit after first enemy hit
         }
     }
 }

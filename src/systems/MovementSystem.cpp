@@ -186,5 +186,12 @@ void MovementSystem::update(float deltaTime)
         trans.pos += trans.velocity * deltaTime;
     }
 
+    for (auto& bullet : m_entityManager.getEntities("playerBullet")) {
+        if (!bullet->has<CTransform>()) continue;
+        auto& trans = bullet->get<CTransform>();
+        // Move the bullet
+        trans.pos += trans.velocity * deltaTime;
+    }
+
     m_game.window().setView(m_cameraView);
 }

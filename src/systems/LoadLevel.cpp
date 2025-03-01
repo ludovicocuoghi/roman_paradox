@@ -149,6 +149,7 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
                 player->add<CBoundingBox>(bboxSize, bboxSize * 0.5f);
                 player->add<CGravity>(LoadLevel::GRAVITY_VAL);
                 player->add<CState>("idle");
+                player->add<CPlayerEquipment>();
                 auto& state = player->get<CState>();
                 state.isInvincible = false;
                 state.invincibilityTimer = 0.0f;
