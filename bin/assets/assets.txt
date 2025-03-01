@@ -115,7 +115,7 @@ Texture TexFutureBushSmall Dec/future_rome/bushsmall.png
 Texture TexFutureBushTall1 Dec/future_rome/bushtall.png
 
 Texture TexFutureBox1 Tile/future_rome/box1.png
-Texture TexFutureLevelDoor Tile/future_rome/level_door.png
+Texture TexFutureLevelDoor Tile/future_rome/leveldoor.png
 Texture TexFutureArmor Tile/future_rome/armor.png
 
 Animation FutureGround TexFutureGround 96 96 4 12
@@ -141,6 +141,10 @@ Animation FutureEnemyGrave TexFutureEnemyGrave 66 75 1 0
 
 Animation FutureEnemyGrave TexFutureEnemyGrave 66 75 1 0
 
+Texture TexFutureStandEnemyFast Enemy/future_rome/fast/stand_fast.png
+Texture TexFutureRunEnemyFast Enemy/future_rome/fast/run_fast.png
+Texture TexFutureAirEnemyFast Enemy/future_rome/fast/air_fast.png
+Texture TexFutureHitEnemyFast Enemy/future_rome/fast/hit_fast.png
 
 Texture TexFutureStandEnemyStrong Enemy/future_rome/strong/stand_strong.png
 Texture TexFutureRunEnemyStrong Enemy/future_rome/strong/run_strong.png
@@ -157,16 +161,20 @@ Texture TexFutureRunEnemyNormal Enemy/future_rome/normal/run_normal.png
 Texture TexFutureAirEnemyNormal Enemy/future_rome/normal/air_normal.png
 Texture TexFutureHitEnemyNormal Enemy/future_rome/normal/hit_normal.png
 
+Animation FutureStandEnemyFast TexFutureStandEnemyFast 100 100 1 0
+Animation FutureRunEnemyFast TexFutureRunEnemyFast 100 100 4 7
+Animation FutureHitEnemyFast TexFutureHitEnemyFast 100 100 1 0
+
 Animation FutureStandEnemyStrong TexFutureStandEnemyStrong 100 100 1 0
-Animation FutureRunEnemyStrong TexFutureRunEnemyStrong 100 100 4 8
+Animation FutureRunEnemyStrong TexFutureRunEnemyStrong 100 100 4 7
 Animation FutureHitEnemyStrong TexFutureHitEnemyStrong 100 100 1 0
 
 Animation FutureStandEnemyElite TexFutureStandEnemyElite 100 100 1 0
-Animation FutureRunEnemyElite TexFutureRunEnemyElite 100 100 4 8
+Animation FutureRunEnemyElite TexFutureRunEnemyElite 100 100 4 7
 Animation FutureHitEnemyElite TexFutureHitEnemyElite 100 100 1 0
 
 Animation FutureStandEnemyNormal TexFutureStandEnemyNormal 100 100 1 0
-Animation FutureRunEnemyNormal TexFutureRunEnemyNormal 100 100 4 8
+Animation FutureRunEnemyNormal TexFutureRunEnemyNormal 100 100 4 7
 Animation FutureHitEnemyNormal TexFutureHitEnemyNormal 100 100 1 0
 
 
@@ -193,7 +201,7 @@ Texture TexFutureAir Player/future_rome/jump.png
 Texture TexFutureHit Player/future_rome/hit.png
 
 Animation FuturePlayerStand TexFutureStand 100 100 5 8
-Animation FuturePlayerRun TexFutureRun 100 100 4 6
+Animation FuturePlayerRun TexFutureRun 100 100 4 8
 Animation FuturePlayerAir TexFutureAir 100 130 1 0
 Animation FuturePlayerAttack TexFutureHit 100 100 1 0
 
@@ -204,16 +212,24 @@ Animation SuperSword TexSuperSword 48 13 1 0
 
 Animation AncientGrapeSmall TexAncientGrapeSmall 64 64 1 0
 Animation AncientGrapeBig TexAncientGrapeBig 100 80 1 0
-Animation AncientCoinGold TexAncientCoinGold 96 95 5 5
-Animation AncientCoinSilver TexAncientCoinSilver 96 95 5 5
-Animation AncientCoinBronze TexAncientCoinBronze 96 95 5 5
+Animation AncientCoinGold TexAncientCoinGold 70 70 4 8
+Animation AncientCoinSilver TexAncientCoinSilver 70 70 4 8
+Animation AncientCoinBronze TexAncientCoinBronze 70 70 4 8
 
 Animation AncientBlackHoleRed TexAncientBlackHoleRed 176 175 11 11
 
 Animation AncientBlackHoleBlue TexAncientBlackHoleBlue 176 175 11 11
 Animation AncientBlackHoleRedBig TexAncientBlackHoleRedBig 500 500 10 14
 Animation AlienBlackHoleRedBig TexAlienBlackHoleRedBig 500 500 10 14
+Animation FutureBlackHoleRedBig TexAlienBlackHoleRedBig 500 500 10 14
 
+Texture TexFutureGrapeSmall Collectables/future_rome/smallgrape.png
+Texture TexFutureGrapeBig Collectables/future_rome/biggrape.png
+Texture TexFutureCoinGold Collectables/future_rome/coin.png
+
+Animation FutureGrapeSmall TexFutureGrapeSmall 48 47 1 0
+Animation FutureGrapeBig TexFutureGrapeBig 100 80 1 0
+Animation FutureCoinGold TexFutureCoinGold 70 70 4 8
 
 Animation AncientBlackHoleBlueBig TexAncientBlackHoleBlueBig 1050 1050 10 14
 

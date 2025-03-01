@@ -282,17 +282,30 @@ void Scene_Play::sDoAction(const Action& action)
             m_showBoundingBoxes = !m_showBoundingBoxes;
         }
         else if (action.name() == "ATTACK") {
+            // 1) Check bulletCooldown
+            if (state.bulletCooldown > 0.f) {
+                std::cout << "[DEBUG] Bullet on cooldown! " << state.bulletCooldown << "s left.\n";
+                return; // Can't shoot yet
+            }
+        
+            // 2) We can shoot or slash, plus normal attack logic
             if (state.attackCooldown <= 0.f) {
-                state.state = "attack";
-                state.attackTime = 0.2f;
+                state.state        = "attack";
+                state.attackTime   = 0.2f;
                 state.attackCooldown = 0.5f;
         
-                // If the player has FutureArmor, spawn bullet; otherwise, spawn sword
+                // Check if player has FutureArmor => if so, bulletCooldownMax = smaller
+                float armorBulletCooldown = 0.5f; // default
                 if (player->has<CPlayerEquipment>() && player->get<CPlayerEquipment>().hasFutureArmor) {
+                    armorBulletCooldown = 0.2f; // shorter cooldown if armor is equipped
                     m_spawner.spawnPlayerBullet(player);
                 } else {
                     spawnSword(player);
                 }
+        
+                // 3) Reset bulletCooldown to whichever we decided
+                state.bulletCooldown = armorBulletCooldown;
+                std::cout << "[DEBUG] Bullet fired/slash. bulletCooldown set to " << armorBulletCooldown << "\n";
             }
         }
         else if (action.name() == "JUMP") {

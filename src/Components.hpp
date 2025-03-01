@@ -143,6 +143,8 @@ public:
     float attackTime;
     float attackCooldown;
     bool blockedHorizontally;
+    float bulletCooldown   = 0.f;  // Current bullet cooldown
+    float bulletCooldownMax= 0.5f; // Default cooldown if no armor
 
     CState(const std::string& s = "idle")
         : state(s),
@@ -175,6 +177,20 @@ public:
             if (knockbackTimer < 0.f) {
                 knockbackTimer = 0.f;
             }
+        }
+        if (bulletCooldown > 0.f) {
+            bulletCooldown -= deltaTime;
+            if (bulletCooldown < 0.f) bulletCooldown = 0.f;
+        }
+
+        // Decrement attackCooldown, attackTime, knockbackTimer, etc., if you want
+        if (attackCooldown > 0.f) {
+            attackCooldown -= deltaTime;
+            if (attackCooldown < 0.f) attackCooldown = 0.f;
+        }
+        if (attackTime > 0.f) {
+            attackTime -= deltaTime;
+            if (attackTime < 0.f) attackTime = 0.f;
         }
     }
 };

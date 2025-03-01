@@ -345,7 +345,8 @@ void EnemyAISystem::update(float deltaTime)
 
             // Normal movement logic
             if (std::abs(dx) > xThreshold) {
-                enemyTrans.velocity.x = (dx > 0.f) ? FOLLOW_MOVE_SPEED : -FOLLOW_MOVE_SPEED;
+                int follow_speed =  m_game.worldType == "Future" ? FOLLOW_MOVE_SPEED * 0.7 : FOLLOW_MOVE_SPEED;
+                enemyTrans.velocity.x = (dx > 0.f) ? follow_speed : -follow_speed;
                 enemyAI.facingDirection = (dx > 0.f) ? 1.f : -1.f;
             } else {
                 enemyTrans.velocity.x = 0.f;

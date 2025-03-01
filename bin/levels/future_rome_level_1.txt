@@ -9,7 +9,6 @@ Tile Ground 5 0
 Tile Ground 8 0
 Tile Ground 9 0
 Tile Ground 10 0
-Tile Armor 10 3
 Tile Ground 11 0
 Tile Ground 12 0
 Tile Ground 13 0
@@ -186,11 +185,8 @@ Tile Ground 14 2
 Tile Ground 34 6
 Tile Ground 40 6
 Tile Ground 30 2
-Tile Ground 32 2
 Tile Ground 33 2
 Tile Ground 33 3
-Tile Ground 32 3
-Tile Ground 32 4
 Tile Ground 33 4
 Tile Ground 34 5
 Tile Ground 34 4
@@ -206,11 +202,8 @@ Tile Ground 40 3
 Tile Ground 40 4
 Tile Ground 40 5
 Tile Ground 41 4
-Tile Ground 42 4
 Tile Ground 41 3
-Tile Ground 42 3
 Tile Ground 41 2
-Tile Ground 42 2
 Tile Ground 35 4
 Tile Ground 36 4
 Tile Ground 37 4
@@ -231,8 +224,6 @@ Tile Ground 37 6
 Tile Ground 36 6
 Tile Ground 35 6
 Tile Ground 39 6
-Tile PipeTall 31 5
-Tile PipeTall 43 5
 Tile Ground 88 0
 Tile Ground 90 0
 Tile Ground 89 0
@@ -302,6 +293,119 @@ Tile Ground 87 3
 Tile Ground 87 2
 Tile Ground 88 2
 Tile Armor 84 7
+Tile Ground 33 5
+Tile Ground 41 5
+Tile PipeTall 32 5
+Tile PipeTall 42 5
+Tile Ground 31 4
+Tile Ground 31 3
+Tile Ground 31 2
+Tile Ground 43 4
+Tile Ground 43 3
+Tile Ground 43 2
+Tile Ground 44 2
+Tile Ground 63 2
+Tile Ground 64 2
+Tile Ground 64 3
+Tile Ground 63 3
+Tile Ground 62 2
+Tile Ground 65 2
+Tile Ground 111 1
+Tile Ground 111 0
+Tile Ground 112 1
+Tile Ground 112 0
+Tile Ground 113 1
+Tile Ground 113 0
+Tile Ground 111 2
+Tile Ground 112 2
+Tile Ground 112 3
+Tile Ground 113 4
+Tile Ground 113 3
+Tile Ground 113 2
+Tile Brick 114 5
+Tile Brick 115 5
+Tile Brick 116 5
+Tile Brick 117 5
+Tile Brick 118 5
+Tile Brick 119 5
+Tile Brick 120 5
+Tile Brick 121 5
+Tile Ground 122 4
+Tile Ground 122 3
+Tile Ground 122 2
+Tile Ground 122 1
+Tile Ground 122 0
+Tile Ground 123 0
+Tile Ground 123 1
+Tile Ground 123 2
+Tile Ground 123 3
+Tile Ground 124 2
+Tile Ground 124 1
+Tile Ground 124 0
+Tile Ground 125 0
+Tile Ground 125 1
+Tile Ground 126 1
+Tile Ground 127 1
+Tile Ground 127 0
+Tile Ground 126 0
+Tile Ground 128 0
+Tile Ground 128 1
+Tile Ground 129 1
+Tile Ground 129 0
+Tile Ground 130 1
+Tile Ground 130 0
+Tile Ground 131 1
+Tile Ground 131 0
+Tile Ground 132 1
+Tile Ground 132 0
+Tile Ground 133 1
+Tile Ground 133 0
+Tile Ground 134 1
+Tile Ground 136 1
+Tile Ground 138 1
+Tile Ground 139 1
+Tile Ground 135 1
+Tile Ground 140 1
+Tile Ground 142 1
+Tile Ground 137 1
+Tile Ground 135 0
+Tile Ground 136 0
+Tile Ground 134 0
+Tile Ground 138 0
+Tile Ground 139 0
+Tile Ground 141 0
+Tile Ground 142 0
+Tile Ground 140 0
+Tile Ground 137 0
+Tile Ground 144 0
+Tile Ground 143 0
+Tile Ground 143 1
+Tile Ground 141 1
+Tile Ground 145 1
+Tile Ground 145 0
+Tile Ground 144 1
+Tile Ground 146 1
+Tile Ground 146 0
+Tile Ground 147 1
+Tile Ground 147 0
+Tile Ground 148 1
+Tile Ground 148 0
+Tile LevelDoor 145 6
+Tile Ground 149 1
+Tile Ground 149 0
+Tile Ground 150 0
+Tile Ground 150 1
+Tile Ground 150 2
+Tile Box1 64 4
+Tile Box1 63 4
+Tile Box1 63 5
+Tile Box1 64 5
+Tile Box1 98 3
+Tile Treasure 85 8
+Tile Treasure 83 8
+Tile Treasure 117 8
+Tile Treasure 118 8
+Tile BlackHoleRedBig 0 15
 Dec BushTall 2 5
 Dec BushTall 0 5
 Dec BushSmall 21 2
@@ -310,7 +414,16 @@ Dec BushTall 52 5
 Dec BushSmall 71 2
 Dec BushTall 34 10
 Dec BushTall 40 10
-Enemy EnemyNormal 58 2 58 2 60 2
-Enemy EnemyNormal 37 7 37 7 39 7
-Enemy EnemyNormal 66 2 66 2 68 2
-Player 3 3
+Dec BushTall 94 5
+Dec BushTall 95 5
+Enemy EnemyFast 110 1 110 1 112 1
+Enemy EnemyFast 111 0 111 0 113 0
+Enemy EnemyFast 111 1 111 1 113 1
+Enemy EnemyNormal 104 2 104 2 106 2
+Enemy EnemyNormal 118 6 118 6 120 6
+Enemy EnemyNormal 130 2 130 2 132 2
+Enemy EnemyFast 37 7 37 7 39 7
+Enemy EnemyStrong 56 2 56 2 58 2
+Enemy EnemyElite 74 2 74 2 76 2
+Enemy EnemyNormal 102 2 102 2 104 2
+Player 2 4
