@@ -24,7 +24,10 @@ GameEngine::GameEngine(const std::string& path) {
         {"ancient_rome_level_1_day.txt", "ancient_rome_level_2_sunset.txt"},
         {"ancient_rome_level_2_sunset.txt", "ancient_rome_level_3_night.txt"},
         {"ancient_rome_level_3_night.txt", "ancient_rome_level_4_emperor_room.txt"},
-        {"ancient_rome_level_4_emperor_room.txt", "ancient_rome_level_1_day.txt"} // Loop back
+        {"ancient_rome_level_4_emperor_room.txt", "future_rome_level_1.txt"},
+        {"future_rome_level_1.txt", "future_rome_level_2.txt"},
+        {"future_rome_level_2.txt", "future_rome_emperor_room.txt"},
+
     };
 
     // Start in menu

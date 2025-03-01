@@ -310,8 +310,6 @@ Tile Ground 64 3
 Tile Ground 63 3
 Tile Ground 62 2
 Tile Ground 65 2
-Tile Ground 111 1
-Tile Ground 111 0
 Tile Ground 112 1
 Tile Ground 112 0
 Tile Ground 113 1
@@ -406,6 +404,8 @@ Tile Treasure 83 8
 Tile Treasure 117 8
 Tile Treasure 118 8
 Tile BlackHoleRedBig 0 15
+Tile Ground 111 1
+Tile Ground 111 0
 Dec BushTall 2 5
 Dec BushTall 0 5
 Dec BushSmall 21 2
@@ -416,9 +416,6 @@ Dec BushTall 34 10
 Dec BushTall 40 10
 Dec BushTall 94 5
 Dec BushTall 95 5
-Enemy EnemyFast 110 1 110 1 112 1
-Enemy EnemyFast 111 0 111 0 113 0
-Enemy EnemyFast 111 1 111 1 113 1
 Enemy EnemyNormal 104 2 104 2 106 2
 Enemy EnemyNormal 118 6 118 6 120 6
 Enemy EnemyNormal 130 2 130 2 132 2
@@ -426,4 +423,4 @@ Enemy EnemyFast 37 7 37 7 39 7
 Enemy EnemyStrong 56 2 56 2 58 2
 Enemy EnemyElite 74 2 74 2 76 2
 Enemy EnemyNormal 102 2 102 2 104 2
-Player 2 4
+Player 1 8

@@ -423,3 +423,4 @@ Enemy EnemyFast 37 7 37 7 39 7
 Enemy EnemyStrong 56 2 56 2 58 2
 Enemy EnemyElite 74 2 74 2 76 2
 Enemy EnemyNormal 102 2 102 2 104 2
+Player 1 8
