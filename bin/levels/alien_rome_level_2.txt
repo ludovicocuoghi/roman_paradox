@@ -524,10 +524,8 @@ Enemy EnemySuper 105 9
 Enemy EnemySuper 107 9
 Enemy EnemySuper 46 8
 Enemy EnemySuper 62 10
-Enemy EnemySuper 65 10
 Enemy EnemySuper 69 10
 Enemy EnemySuper 41 8
-Enemy EnemySuper 43 8
-Enemy EnemySuper 125 1
-Enemy EnemySuper 124 1
-Player 2 2 
+Enemy EnemySuper 18 3
+Enemy EnemySuper 130 1
+Player 2 5

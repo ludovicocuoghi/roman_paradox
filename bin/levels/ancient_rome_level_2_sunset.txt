@@ -909,14 +909,46 @@ Tile Ground 57 4
 Tile Ground 58 4
 Tile Ground 59 4
 Tile Ground 53 6
-Tile Ground 51 5
-Tile Ground 52 9
 Tile Ground 54 6
 Tile Ground 50 8
 Tile Ground 49 8
 Tile Ground 46 12
 Tile Ground 52 19
-Tile Treasure 43 24
+Tile Ground 27 21
+Tile Ground 38 22
+Tile Ground 9 16
+Tile Ground 44 15
+Tile Ground 47 11
+Tile Ground 45 13
+Tile Ground 44 14
+Tile Ground 43 15
+Tile Ground 42 16
+Tile Ground 42 15
+Tile Ground 41 16
+Tile Ground 41 17
+Tile Ground 40 18
+Tile Ground 39 19
+Tile Ground 43 16
+Tile Ground 42 17
+Tile Ground 41 18
+Tile Ground 40 19
+Tile Ground 43 14
+Tile Ground 44 13
+Tile Ground 45 12
+Tile Ground 46 11
+Tile Ground 39 18
+Tile Ground 40 17
+Tile Ground 45 14
+Tile Ground 46 13
+Tile Ground 47 12
+Tile Ground 48 11
+Tile Ground 48 10
+Tile Ground 47 10
+Tile Ground 48 9
+Tile Ground 49 9
+Tile Ground 50 9
+Tile Ground 49 10
+Tile Ground 52 6
 Dec BushTall 0 19
 Dec BushTall 2 19
 Dec CloudBig 21 36
@@ -1020,23 +1052,19 @@ Dec CloudBig 114 14
 Dec CloudBig 123 22
 Dec BushTall 108 25
 Dec BushTall 98 25
-Dec BushSmall 48 26
-Dec BushSmall 42 19
-Dec BushSmall 47 19
-Enemy EnemyFast 22 1 22 1 24 1
-Enemy EnemyFast 26 1 26 1 28 1
-Enemy EnemyNormal 10 1 10 1 12 1
-Enemy EnemyNormal 62 1 62 1 64 1
-Enemy EnemyNormal 41 1 41 1 43 1
-Enemy EnemyNormal 28 1 28 1 30 1
-Enemy EnemyStrong 138 2 138 2 140 2
-Enemy EnemyStrong 144 2 144 2 146 2
-Enemy EnemyStrong 143 2 143 2 145 2
-Enemy EnemyStrong 152 2 152 2 154 2
-Enemy EnemyStrong 148 2 148 2 150 2
-Enemy EnemyStrong 106 22 106 22 108 22
-Enemy EnemyFast 14 3 14 3 16 3
-Enemy EnemyFast 37 24 37 24 39 24
-Enemy EnemyFast 50 35 50 35 52 35
-Enemy EnemyFast 38 38 38 38 40 38
+Enemy EnemyFast 22 1
+Enemy EnemyFast 26 1
+Enemy EnemyNormal 10 1
+Enemy EnemyNormal 62 1
+Enemy EnemyNormal 41 1
+Enemy EnemyNormal 28 1
+Enemy EnemyStrong 138 2
+Enemy EnemyStrong 143 2
+Enemy EnemyStrong 152 2
+Enemy EnemyStrong 106 22
+Enemy EnemyFast 14 3
+Enemy EnemyFast 50 35
+Enemy EnemyNormal 69 1
+Enemy EnemyNormal 32 21
+Enemy EnemyNormal 11 16
 Player 1 18

@@ -292,7 +292,6 @@ Tile Ground 80 2
 Tile Ground 87 3
 Tile Ground 87 2
 Tile Ground 88 2
-Tile Armor 10 4
 Tile Ground 33 5
 Tile Ground 41 5
 Tile PipeTall 32 5
@@ -416,11 +415,16 @@ Dec BushTall 34 10
 Dec BushTall 40 10
 Dec BushTall 94 5
 Dec BushTall 95 5
-Enemy EnemyNormal 104 2 104 2 106 2
-Enemy EnemyNormal 118 6 118 6 120 6
-Enemy EnemyNormal 130 2 130 2 132 2
-Enemy EnemyFast 37 7 37 7 39 7
-Enemy EnemyStrong 56 2 56 2 58 2
-Enemy EnemyElite 74 2 74 2 76 2
-Enemy EnemyNormal 102 2 102 2 104 2
-Player 1 8
+Dec BushTall 114 9
+Dec BushTall 121 9
+Dec BushTall 140 5
+Dec BushTall 139 5
+Dec BushTall 138 5
+Enemy EnemyNormal 104 2
+Enemy EnemyNormal 118 6
+Enemy EnemyNormal 130 2
+Enemy EnemyFast 37 7
+Enemy EnemyNormal 102 2
+Enemy EnemyNormal 23 2
+Enemy EnemyNormal 74 2
+Player 2 4

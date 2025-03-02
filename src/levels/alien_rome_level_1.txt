@@ -104,11 +104,6 @@ Tile Brick 64 7
 Tile Brick 65 7
 Tile Brick 66 7
 Tile Brick 67 7
-Tile Brick 61 8
-Tile Brick 62 8
-Tile Brick 63 8
-Tile Brick 64 8
-Tile Brick 65 8
 Tile Ground 75 0
 Tile Ground 76 0
 Tile Ground 77 0
@@ -184,6 +179,8 @@ Tile Ground 128 0
 Tile Ground 125 0
 Tile Ground 127 0
 Tile LevelDoor 124 5
+Tile Ground 59 8
+Tile Ground 67 8
 Dec BushTall2 0 4
 Dec BushTall2 3 4
 Dec BushSmall 32 1
@@ -204,4 +201,9 @@ Dec BushTall2 128 4
 Dec BushTall1 119 4
 Dec BushTall1 118 4
 Enemy EnemySuper 87 1
-Player 2 2
+Enemy EnemySuper 40 1
+Enemy EnemySuper 48 1
+Enemy EnemySuper 70 1
+Enemy EnemySuper 98 3
+Enemy EnemySuper 62 8
+Player 2 5

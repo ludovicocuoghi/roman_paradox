@@ -277,6 +277,9 @@ Dec BushTall 64 5
 Dec BushTall 1 5
 Dec BushTall 3 5
 Dec BushTall 108 5
-Enemy EnemyNormal 56 2 56 2 58 2
-Enemy EnemyNormal 84 2 84 2 86 2
-Player 2 10
+Enemy EnemyNormal 56 2
+Enemy EnemyNormal 84 2
+Enemy EnemyNormal 34 5
+Enemy EnemyNormal 86 2
+Enemy EnemyNormal 89 2
+Player 2 8
