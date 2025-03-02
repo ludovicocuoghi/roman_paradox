@@ -88,6 +88,9 @@ Texture TexAlienBushSmall Dec/alien_rome/smallbush.png
 Texture TexAlienBushTall1 Dec/alien_rome/tallbush-1.png
 Texture TexAlienBushTall2 Dec/alien_rome/tallbush-2.png
 
+Texture TexFutureChickenSmall Collectables/future_rome/smallChicken.png
+Texture TexFutureChickenBig Collectables/future_rome/bigChicken.png
+
 Texture TexAlienLevelDoor Tile/alien_rome/level_door.png
 
 Animation AlienGround TexAlienGround 96 96 5 8
@@ -214,6 +217,8 @@ Animation FuturePlayerAir TexFutureAir 100 130 1 0
 Animation FuturePlayerAttack TexFutureHit 100 100 1 0
 Animation FuturePlayerDefense TexFutureDefense 100 100 1 0
 
+Animation FutureChickenSmall TexFutureChickenSmall 48 48 1 0
+Animation FutureChickenBig TexFuture ChickenBig 69 52 1 0
 
 Animation Sword TexSword 48 13 1 0
 Animation EnemySword TexEnemySword 48 13 1 0

@@ -16,7 +16,7 @@ public:
 
     // Player Sword vs Enemy
     static constexpr int PLAYER_SWORD_DAMAGE = 10;
-    static constexpr float PLAYER_SWORD_INVULNERABILITY_TIME = 0.5f;
+    static constexpr float PLAYER_SWORD_INVULNERABILITY_TIME = 0.1f;
     static constexpr int PLAYER_SWORD_KNOCKBACK_ROLL_MIN = 1;
     static constexpr int PLAYER_SWORD_KNOCKBACK_ROLL_MAX = 5;
     static constexpr int PLAYER_SWORD_KNOCKBACK_ROLL_TRIGGER = 1;

@@ -421,7 +421,6 @@ void CollisionSystem::handlePlayerEnemyCollisions() {
 
 void CollisionSystem::handlePlayerBulletCollisions() {
     for (auto& bullet : m_entityManager.getEntities("playerBullet")) {
-        // Must have CTransform & CBoundingBox
         if (!bullet->has<CTransform>() || !bullet->has<CBoundingBox>())
             continue;
 
@@ -429,24 +428,35 @@ void CollisionSystem::handlePlayerBulletCollisions() {
         auto& bulletBB    = bullet->get<CBoundingBox>();
         sf::FloatRect bulletRect = bulletBB.getRect(bulletTrans.pos);
 
-        // 1) Destroy bullet if it hits a tile
+        // 1) Distruggi bullet se tocca una tile
         for (auto& tile : m_entityManager.getEntities("tile")) {
-            if (!tile->has<CTransform>() || !tile->has<CBoundingBox>())
+            if (!tile->has<CTransform>() || !tile->has<CBoundingBox>() || !tile->has<CAnimation>())
                 continue;
 
             auto& tileTrans = tile->get<CTransform>();
             auto& tileBB    = tile->get<CBoundingBox>();
+            auto& tileAnim  = tile->get<CAnimation>().animation;
             sf::FloatRect tileRect = tileBB.getRect(tileTrans.pos);
 
-            if (bulletRect.intersects(tileRect)) {
-                std::cout << "[DEBUG] Player bullet hit a tile! Destroying bullet.\n";
-                bullet->destroy();
-                break; // Stop checking after first tile collision
+            if (!bulletRect.intersects(tileRect))
+                continue;
+
+            std::cout << "[DEBUG] Player bullet hit a tile! Destroying bullet.\n";
+            bullet->destroy();
+
+            // Se la tile è "Box", distruggila
+            std::string animName = tileAnim.getName();
+            if (animName.find("Box") != std::string::npos) {
+                std::cout << "[DEBUG] Player bullet destroyed a box tile!\n";
+                // Se vuoi spawnare item o frammenti:
+                m_spawner->createBlockFragments(tileTrans.pos, animName);
+                m_spawner->spawnItem(tileTrans.pos, animName);
+                tile->destroy();
             }
+            break; // Stop checking after first tile collision
         }
 
-        // 2) Destroy bullet if it hits an enemy
-        //    and apply damage/knockback if you want
+        // 2) Distruggi bullet se tocca un nemico
         for (auto& enemy : m_entityManager.getEntities("enemy")) {
             if (!enemy->has<CTransform>() || !enemy->has<CBoundingBox>())
                 continue;
@@ -456,20 +466,17 @@ void CollisionSystem::handlePlayerBulletCollisions() {
             sf::FloatRect enemyRect = enemyBB.getRect(enemyTrans.pos);
 
             if (!bulletRect.intersects(enemyRect))
-                continue; // no collision
+                continue; 
 
-            // We have a collision: apply damage, destroy bullet
             std::cout << "[DEBUG] Player bullet hit an enemy! Destroying bullet.\n";
 
-            // Example: apply damage
             if (enemy->has<CHealth>()) {
                 auto& health = enemy->get<CHealth>();
-                const int PLAYER_BULLET_DAMAGE = 5; // or some constant
+                const int PLAYER_BULLET_DAMAGE = 5; 
                 health.takeDamage(PLAYER_BULLET_DAMAGE);
             }
-
             bullet->destroy();
-            break; // Exit after first enemy hit
+            break; 
         }
     }
 }
@@ -483,7 +490,7 @@ void CollisionSystem::handleBulletPlayerCollisions() {
         auto& bulletBB    = bullet->get<CBoundingBox>();
         sf::FloatRect bulletRect = bulletBB.getRect(bulletTrans.pos);
 
-        // 1) Destroy bullet if it hits a tile
+        // 1) Distruggi il proiettile se tocca una tile
         for (auto& tile : m_entityManager.getEntities("tile")) {
             if (!tile->has<CTransform>() || !tile->has<CBoundingBox>())
                 continue;
@@ -495,11 +502,11 @@ void CollisionSystem::handleBulletPlayerCollisions() {
             if (bulletRect.intersects(tileRect)) {
                 std::cout << "[DEBUG] Bullet hit a tile! Destroying bullet.\n";
                 bullet->destroy();
-                break; // Stop checking after first tile hit
+                break;
             }
         }
 
-        // 2) Destroy bullet if it hits the player
+        // 2) Se tocca il player
         for (auto& player : m_entityManager.getEntities("player")) {
             if (!player->has<CTransform>() || !player->has<CBoundingBox>())
                 continue;
@@ -509,41 +516,55 @@ void CollisionSystem::handleBulletPlayerCollisions() {
             sf::FloatRect playerRect = playerBB.getRect(playerTrans.pos);
 
             if (!bulletRect.intersects(playerRect))
-                continue; // No collision, skip
+                continue;
 
-            // Even if the player is invulnerable, bullet is destroyed
+            // Se il giocatore è in difesa, ignora il danno
+            if (player->has<CState>()) {
+                auto& st = player->get<CState>();
+                if (st.state == "defense") {
+                    std::cout << "[DEBUG] Player in defense, ignoring bullet damage.\n";
+                    // Distruggi comunque il proiettile
+                    bullet->destroy();
+                    break;
+                }
+            }
+
+            // Altrimenti, se non è invincibile, subisce danno
             if (player->has<CHealth>()) {
                 auto& health = player->get<CHealth>();
-
-                // Only apply damage if invulnerability is 0
                 if (health.invulnerabilityTimer <= 0.f) {
-                    int bulletDamage = BULLET_DAMAGE_NORMAL; // Default
+                    int bulletDamage = BULLET_DAMAGE_NORMAL;
                     if (bullet->has<CEnemyAI>()) {
                         auto& bulletAI = bullet->get<CEnemyAI>();
                         switch (bulletAI.enemyType) {
-                            case EnemyType::Elite:
-                                bulletDamage = BULLET_DAMAGE_ELITE;
-                                break;
-                            case EnemyType::Strong:
-                                bulletDamage = BULLET_DAMAGE_STRONG;
-                                break;
-                            case EnemyType::Normal:
-                            default:
-                                bulletDamage = BULLET_DAMAGE_NORMAL;
-                                break;
+                            case EnemyType::Elite:  bulletDamage = BULLET_DAMAGE_ELITE;   break;
+                            case EnemyType::Strong: bulletDamage = BULLET_DAMAGE_STRONG;  break;
+                            default:                bulletDamage = BULLET_DAMAGE_NORMAL;  break;
                         }
                     }
-                    // Apply damage
+                    // *** Verifica se il player NON ha la FutureArmor => +30% danno ***
+                    bool hasFutureArmor = false;
+                    if (player->has<CPlayerEquipment>()) {
+                        hasFutureArmor = player->get<CPlayerEquipment>().hasFutureArmor;
+                    }
+                    if (!hasFutureArmor) {
+                        bulletDamage = static_cast<int>(bulletDamage * 1.3f);
+                        std::cout << "[DEBUG] Player without FutureArmor => bulletDamage x1.3 => " 
+                                  << bulletDamage << "\n";
+                    }
+
                     health.takeDamage(bulletDamage);
                     health.invulnerabilityTimer = PLAYER_HIT_INVULNERABILITY_TIME;
                     std::cout << "[DEBUG] Player hit by bullet! Damage: " 
                               << bulletDamage << " Health: " << health.currentHealth << "\n";
+                } else {
+                    std::cout << "[DEBUG] Player already invincible, ignoring bullet.\n";
                 }
             }
 
-            // Destroy bullet on impact, regardless of invulnerability
+            // Distruggi il proiettile dopo aver colpito il player
             bullet->destroy();
-            break; // Exit after first player hit
+            break; // esci dal loop player
         }
     }
 }
@@ -731,36 +752,39 @@ void CollisionSystem::handleSwordCollisions() {
             sf::FloatRect playerRect = pBB.getRect(pTrans.pos);
 
             if (!swordRect.intersects(playerRect))
-                continue; // niente collisione
+                continue;
+
+            // Se il giocatore è in difesa, ignora il danno
+            if (player->has<CState>()) {
+                auto& st = player->get<CState>();
+                if (st.state == "defense") {
+                    std::cout << "[DEBUG] Player in defense, ignoring Emperor sword damage.\n";
+                    // Se vuoi distruggere la spada comunque, empSword->destroy();
+                    break;
+                }
+            }
 
             // Esempio di knockback orizzontale
             float attackDirection = (swTrans.pos.x < pTrans.pos.x) ? 1.f : -1.f;
             Vec2<float> hitDirection = { attackDirection, 0.f };
-
-            // Applica il knockback
             Physics::Forces::ApplyKnockback(player, hitDirection, EMPEROR_SWORD_KNOCKBACK_STRENGTH);
 
             // Danno al player
             if (player->has<CHealth>()) {
                 auto& health = player->get<CHealth>();
-
-                // Se la spada ha un CEnemyAI, usiamo "damage"
                 int empSwordDamage = 10; // default
                 if (empSword->has<CEnemyAI>()) {
                     empSwordDamage = empSword->get<CEnemyAI>().damage;
                 }
-
                 health.takeDamage(empSwordDamage);
                 health.invulnerabilityTimer = PLAYER_HIT_INVULNERABILITY_TIME;
-
                 std::cout << "[DEBUG] Player hit by emperor sword! Damage: " 
-                          << empSwordDamage 
-                          << " Health: " << health.currentHealth << "\n";
+                        << empSwordDamage 
+                        << " Health: " << health.currentHealth << "\n";
             }
 
-            // Se vuoi distruggere la spada all'impatto, scommenta:
+            // Se vuoi distruggere la spada all'impatto
             empSword->destroy();
-
             break; // Esci dal loop player
         }
 

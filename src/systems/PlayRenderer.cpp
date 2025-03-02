@@ -157,11 +157,47 @@ void PlayRenderer::render() {
 
     // Render enemies
     for (auto& enemy : m_entityManager.getEntities("enemy")) {
-        auto& transform = enemy->get<CTransform>();
+
+        if (!enemy->has<CTransform>() || !enemy->has<CHealth>()) continue;
+
+        auto& eTrans  = enemy->get<CTransform>();
+        auto& eHealth = enemy->get<CHealth>();
+    
+        // Calcola il rapporto di salute
+        float currentHealth = eHealth.currentHealth;
+        float maxHealth     = eHealth.maxHealth;
+        float healthRatio   = (maxHealth > 0.f) ? (currentHealth / maxHealth) : 0.f;
+        if (healthRatio < 0.f) healthRatio = 0.f;
+        if (healthRatio > 1.f) healthRatio = 1.f;
+    
+        // Dimensioni e offset della barra
+        float barWidth  = 40.f;  // Larghezza della barra
+        float barHeight = 5.f;   // Altezza della barra
+        float offsetY   = 60.f;  // Distanza sopra la testa del nemico
+    
+        // Posizione di base per la barra (centrata orizzontalmente sopra il nemico)
+        float barX = eTrans.pos.x - (barWidth / 2.f);
+        float barY = eTrans.pos.y - offsetY;
+    
+        // Sfondo grigio
+        sf::RectangleShape healthBg(sf::Vector2f(barWidth, barHeight));
+        healthBg.setFillColor(sf::Color(50, 50, 50));
+        healthBg.setPosition(barX, barY);
+    
+        // Barra di colore (verde, giallo, rosso... se vuoi differenziarla)
+        // Qui usiamo solo verde come esempio
+        sf::RectangleShape healthRect(sf::Vector2f(barWidth * healthRatio, barHeight));
+        healthRect.setFillColor(sf::Color::Green);
+        healthRect.setPosition(barX, barY);
+    
+        // Disegno delle due parti
+        m_game.window().draw(healthBg);
+        m_game.window().draw(healthRect);
+
         if (enemy->has<CAnimation>()) {
             auto& animation = enemy->get<CAnimation>();
             sf::Sprite sprite = animation.animation.getSprite();
-            sprite.setPosition(transform.pos.x, transform.pos.y);
+            sprite.setPosition(eTrans.pos.x, eTrans.pos.y);
             sprite.setOrigin(animation.animation.getSize().x / 2.f,
                              animation.animation.getSize().y / 2.f);
             m_game.window().draw(sprite);
@@ -170,7 +206,7 @@ void PlayRenderer::render() {
             auto& bbox = enemy->get<CBoundingBox>();
             debugBox.setSize(sf::Vector2f(bbox.size.x, bbox.size.y));
             debugBox.setOrigin(bbox.halfSize.x, bbox.halfSize.y);
-            debugBox.setPosition(transform.pos.x, transform.pos.y);
+            debugBox.setPosition(eTrans.pos.x, eTrans.pos.y);
             debugBox.setOutlineColor(sf::Color::Magenta);
             debugBox.setOutlineThickness(2.f);
             m_game.window().draw(debugBox);
@@ -337,159 +373,183 @@ void PlayRenderer::render() {
             m_game.window().draw(debugBox);
         }
     }
-
-    // --- HUD: Black Bar with Score, Time-of-Day, and Health ---
+    // --- HUD: Black Bar with Score, Time-of-Day, Health, and Stamina ---
     m_game.window().setView(defaultView);
     {
-        // 1) Barra nera in fondo
-        float hudHeight = 70.f;
+        // Altezza della barra HUD
+        float hudHeight = 80.f;
         sf::RectangleShape hudBar(sf::Vector2f(static_cast<float>(windowSize.x), hudHeight));
         hudBar.setFillColor(sf::Color::Black);
         hudBar.setPosition(0.f, windowSize.y - hudHeight);
         m_game.window().draw(hudBar);
     
-        // 2) Variabili per le barre
-        float barWidth     = 120.f;
-        float barHeight    = 20.f;
-        float barSpacing   = 20.f;   // distanza orizzontale tra le due barre
-        float paddingLeft  = 20.f;   // distanza dal bordo sinistro della barra nera
-        float paddingTop   = 20.f;   // distanza dal bordo superiore della barra nera
+        // Determina l’era (PRESENT, PAST, ALTERED PRESENT) dal worldType
+        std::string centerEra;
+        if      (m_game.worldType == "Alien")   centerEra = "PRESENT";
+        else if (m_game.worldType == "Ancient") centerEra = "PAST";
+        else if (m_game.worldType == "Future")  centerEra = "ALTERED PRESENT";
+        else                                    centerEra = "UNKNOWN ERA";
     
-        // Coordinate di base per le barre
-        float baseY        = windowSize.y - hudHeight + paddingTop;
-        float healthBarX   = paddingLeft;
-        float staminaBarX  = healthBarX + barWidth + barSpacing;
+        // ----- LATO SINISTRO: NOME LIVELLO + SCORE -----
+        {
+            // 1) Nome del livello (es. "ANCIENT ROME (NIGHT)")
+            sf::Text levelText;
+            levelText.setFont(m_game.assets().getFont("Menu"));
+            levelText.setCharacterSize(18);
+            levelText.setFillColor(sf::Color::White);
+            levelText.setString(m_timeofday); 
+            float leftX = 10.f;
+            float topY  = windowSize.y - hudHeight + 10.f; 
+            levelText.setPosition(leftX, topY);
+            m_game.window().draw(levelText);
     
-        // Otteniamo i componenti di stato e salute dal giocatore
+            // 2) Score sotto al nome del livello
+            sf::Text scoreText;
+            scoreText.setFont(m_game.assets().getFont("Menu"));
+            scoreText.setCharacterSize(18);
+            scoreText.setFillColor(sf::Color::White);
+            scoreText.setString("Score: " + std::to_string(m_score));
+            // Più spazio tra level name e score (35 invece di 25)
+            scoreText.setPosition(leftX, topY + 35.f);
+            m_game.window().draw(scoreText);
+        }
+    
+        // ----- CENTRO: ERA (PRESENT, PAST, ALTERED PRESENT) -----
+        {
+            sf::Text eraText;
+            eraText.setFont(m_game.assets().getFont("Menu"));
+            eraText.setCharacterSize(28); // Più grande
+            eraText.setFillColor(sf::Color::White);
+            eraText.setString(centerEra);
+    
+            sf::FloatRect textRect = eraText.getLocalBounds();
+            float centerX = (windowSize.x - textRect.width) * 0.5f;
+            float centerY = windowSize.y - hudHeight + 25.f;
+            eraText.setPosition(centerX, centerY);
+            m_game.window().draw(eraText);
+        }
+        // ----- LATO DESTRO: BARRA HEALTH E STAMINA -----
         auto players = m_entityManager.getEntities("player");
-        if (players.empty()) return; // safety check
-    
-        auto& state  = players[0]->get<CState>();
-        auto& health = players[0]->get<CHealth>();
-    
-        // -----------------------------
-        // BARRA DELLA SALUTE (Health)
-        // -----------------------------
-        float currentHealth = health.currentHealth;
-        float maxHealth     = health.maxHealth;
-        float healthRatio   = (maxHealth > 0.f) ? (currentHealth / maxHealth) : 0.f;
-        if (healthRatio < 0.f) healthRatio = 0.f;
-        if (healthRatio > 1.f) healthRatio = 1.f;
-    
-        // Sfondo (grigio) della barra Health
-        sf::RectangleShape healthBg(sf::Vector2f(barWidth, barHeight));
-        healthBg.setFillColor(sf::Color(50,50,50));
-        healthBg.setPosition(healthBarX, baseY);
-        m_game.window().draw(healthBg);
-    
-        // Colore della barra in base alla percentuale
-        sf::Color healthColor;
-        if (healthRatio < 0.3f) {
-            healthColor = sf::Color::Red;
-        } else if (healthRatio < 0.5f) {
-            healthColor = sf::Color::Yellow;
-        } else {
-            healthColor = sf::Color::Green;
+        if (!players.empty()) {
+            auto& player = players[0];
+            if (player->has<CHealth>() && player->has<CState>()) {
+                auto& health = player->get<CHealth>();
+                auto& state  = player->get<CState>();
+
+                // Calcolo ratio Health
+                float currentHealth = health.currentHealth;
+                float maxHealth     = health.maxHealth;
+                float healthRatio   = (maxHealth > 0.f) ? (currentHealth / maxHealth) : 0.f;
+                healthRatio         = std::clamp(healthRatio, 0.f, 1.f);
+
+                // Calcolo ratio Stamina
+                float shieldStamina = state.shieldStamina;
+                float maxStamina    = state.maxshieldStamina;
+                float staminaRatio  = (maxStamina > 0.f) ? (shieldStamina / maxStamina) : 0.f;
+                staminaRatio        = std::clamp(staminaRatio, 0.f, 1.f);
+
+                // Dimensioni delle barre
+                float barWidth   = 120.f;
+                float barHeight  = 14.f;
+                float barSpacing = 12.f;  // Distanza verticale tra Health e Stamina
+                float rightX     = windowSize.x - 10.f - barWidth;
+                float baseY      = windowSize.y - hudHeight + 10.f;
+
+                //---------------------------------------
+                // 1) BARRA HEALTH
+                //---------------------------------------
+                // Posizione della barra Health
+                float barX = rightX;
+                float barY = baseY;
+
+                // Sfondo (grigio)
+                sf::RectangleShape healthBg(sf::Vector2f(barWidth, barHeight));
+                healthBg.setFillColor(sf::Color(50, 50, 50));
+                healthBg.setPosition(barX, barY);
+                m_game.window().draw(healthBg);
+
+                // Riempimento (colore in base a ratio)
+                sf::RectangleShape healthRect(sf::Vector2f(barWidth * healthRatio, barHeight));
+                healthRect.setFillColor(sf::Color::Green);
+                healthRect.setPosition(barX, barY);
+                m_game.window().draw(healthRect);
+
+                // Etichetta "Health" a sinistra della barra
+                {
+                    sf::Text healthLabel;
+                    healthLabel.setFont(m_game.assets().getFont("Menu"));
+                    healthLabel.setCharacterSize(16);
+                    healthLabel.setFillColor(sf::Color::White);
+                    healthLabel.setString("Health");
+
+                    // Calcola bounding box del testo
+                    sf::FloatRect lblRect = healthLabel.getLocalBounds();
+
+                    // Offset orizzontale a sinistra
+                    float offsetX = 15.f; 
+                    float offsetY = 8.f;
+                    float labelX  = barX - (lblRect.width + offsetX);
+                    // Centra verticalmente
+                    float labelY  = barY + (barHeight - lblRect.height - offsetY) * 0.5f;
+
+                    healthLabel.setPosition(labelX, labelY);
+                    m_game.window().draw(healthLabel);
+                }
+
+                //---------------------------------------
+                // 2) BARRA STAMINA (facoltativo)
+                //---------------------------------------
+                // Se vuoi anche la barra Stamina, calcola la Y spostata di barHeight + barSpacing
+                float staminaBarX = rightX;
+                float staminaBarY = baseY + barHeight + barSpacing;
+
+                // Sfondo Stamina
+                sf::RectangleShape staminaBg(sf::Vector2f(barWidth, barHeight));
+                staminaBg.setFillColor(sf::Color(50, 50, 50));
+                staminaBg.setPosition(staminaBarX, staminaBarY);
+                m_game.window().draw(staminaBg);
+
+                // Riempimento Stamina (blu)
+                sf::RectangleShape staminaRect(sf::Vector2f(barWidth * staminaRatio, barHeight));
+                staminaRect.setFillColor(sf::Color::Blue);
+                staminaRect.setPosition(staminaBarX, staminaBarY);
+                m_game.window().draw(staminaRect);
+
+                // Etichetta "Stamina" a sinistra
+                {
+                    sf::Text staminaLabel;
+                    staminaLabel.setFont(m_game.assets().getFont("Menu"));
+                    staminaLabel.setCharacterSize(16);
+                    staminaLabel.setFillColor(sf::Color::White);
+                    staminaLabel.setString("Stamina");
+
+                    sf::FloatRect lblRect = staminaLabel.getLocalBounds();
+                    float offsetX  = 15.f; 
+                    float offsetY = 8.f;
+                    float labelX   = staminaBarX - (lblRect.width + offsetX);
+                    float labelY   = staminaBarY + (barHeight - lblRect.height - offsetY) * 0.5f;
+
+                    staminaLabel.setPosition(labelX, labelY);
+                    m_game.window().draw(staminaLabel);
+                }
+
+                // Se stamina == 0, mostra "No stamina!"
+                if (shieldStamina <= 0.f) {
+                    sf::Text noStaminaText;
+                    noStaminaText.setFont(m_game.assets().getFont("Menu"));
+                    noStaminaText.setCharacterSize(12);
+                    noStaminaText.setFillColor(sf::Color::White);
+                    noStaminaText.setString("No stamina!");
+                    sf::FloatRect textRect = noStaminaText.getLocalBounds();
+
+                    float textX = staminaBarX + (barWidth - textRect.width)/2.f;
+                    float textY = staminaBarY + (barHeight - textRect.height)/2.f;
+                    noStaminaText.setPosition(textX, textY);
+                    m_game.window().draw(noStaminaText);
+                }
+            }
         }
-    
-        // Riempimento della barra Health
-        sf::RectangleShape healthBarRect(sf::Vector2f(barWidth * healthRatio, barHeight));
-        healthBarRect.setFillColor(healthColor);
-        healthBarRect.setPosition(healthBarX, baseY);
-        m_game.window().draw(healthBarRect);
-    
-        // Testo “Health” centrato dentro la barra
-        {
-            sf::Text healthText;
-            healthText.setFont(m_game.assets().getFont("Menu"));
-            healthText.setString("Health");
-            healthText.setCharacterSize(14);
-            healthText.setFillColor(sf::Color::White);
-    
-            // Centriamo il testo all’interno della barra
-            sf::FloatRect textRect = healthText.getLocalBounds();
-            float textX = healthBarX + (barWidth  - textRect.width)  / 2.f;
-            float textY = baseY     + (barHeight - textRect.height) / 2.f;
-            healthText.setPosition(textX, textY);
-            m_game.window().draw(healthText);
-        }
-    
-        // -----------------------------
-        // BARRA DELLA STAMINA (Scudo)
-        // -----------------------------
-        float maxStamina    = state.maxshieldStamina;  
-        float shieldStamina = state.shieldStamina;
-        float staminaRatio  = (maxStamina > 0.f) ? (shieldStamina / maxStamina) : 0.f;
-        if (staminaRatio < 0.f) staminaRatio = 0.f;
-        if (staminaRatio > 1.f) staminaRatio = 1.f;
-    
-        // Sfondo (grigio) della barra Stamina
-        sf::RectangleShape staminaBg(sf::Vector2f(barWidth, barHeight));
-        staminaBg.setFillColor(sf::Color(50,50,50));
-        staminaBg.setPosition(staminaBarX, baseY);
-        m_game.window().draw(staminaBg);
-    
-        // Riempimento della barra Stamina (blu)
-        sf::RectangleShape staminaBarRect(sf::Vector2f(barWidth * staminaRatio, barHeight));
-        staminaBarRect.setFillColor(sf::Color::Blue);
-        staminaBarRect.setPosition(staminaBarX, baseY);
-        m_game.window().draw(staminaBarRect);
-    
-        // Testo “Stamina” centrato dentro la barra
-        {
-            sf::Text staminaText;
-            staminaText.setFont(m_game.assets().getFont("Menu"));
-            staminaText.setString("Stamina");
-            staminaText.setCharacterSize(14);
-            staminaText.setFillColor(sf::Color::White);
-    
-            sf::FloatRect textRect = staminaText.getLocalBounds();
-            float textX = staminaBarX + (barWidth  - textRect.width)  / 2.f;
-            float textY = baseY      + (barHeight - textRect.height) / 2.f;
-            staminaText.setPosition(textX, textY);
-            m_game.window().draw(staminaText);
-        }
-    
-        // Se la stamina è a zero, mostra un testo aggiuntivo
-        if (shieldStamina <= 0.f) {
-            sf::Text noStaminaText;
-            noStaminaText.setFont(m_game.assets().getFont("Menu"));
-            noStaminaText.setCharacterSize(14);
-            noStaminaText.setFillColor(sf::Color::White);
-            noStaminaText.setString("No stamina, cannot protect");
-            sf::FloatRect textRect = noStaminaText.getLocalBounds();
-            noStaminaText.setOrigin(textRect.left + textRect.width  / 2.f,
-                                    textRect.top  + textRect.height / 2.f);
-            noStaminaText.setPosition(
-                staminaBarX + (barWidth / 2.f),
-                baseY       + (barHeight / 2.f)
-            );
-            m_game.window().draw(noStaminaText);
-        }
-    
-        // 3) Testo del punteggio (opzionale) in basso a sinistra
-        sf::Text scoreText;
-        scoreText.setFont(m_game.assets().getFont("Menu"));
-        scoreText.setCharacterSize(20);
-        scoreText.setFillColor(sf::Color::White);
-        scoreText.setString("Score: " + std::to_string(m_score));
-        scoreText.setPosition(paddingLeft, windowSize.y - hudHeight + 45.f); 
-        m_game.window().draw(scoreText);
-    
-        // 4) Time-of-day (ad es. “Ancient Rome (Night)”) centrato orizzontalmente nella barra
-        sf::Text timeText;
-        timeText.setFont(m_game.assets().getFont("Menu"));
-        timeText.setCharacterSize(20);
-        timeText.setFillColor(sf::Color::White);
-        timeText.setString(m_timeofday);
-    
-        sf::FloatRect timeRect = timeText.getLocalBounds();
-        float centerX = (windowSize.x - timeRect.width) * 0.5f;
-        // Collocato un po’ sopra il fondo, ad es. 10 px di margine
-        timeText.setPosition(centerX, windowSize.y - hudHeight + 10.f);
-        m_game.window().draw(timeText);
     }
-    
     m_game.window().setView(m_cameraView);
     m_game.window().display();
 }
