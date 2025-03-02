@@ -20,10 +20,6 @@ void Scene_Play::initializeCamera()
 {
     // 1) Start with the window's default view
     m_cameraView = m_game.window().getDefaultView();
-
-    // 2) Get window size
-    sf::Vector2u windowSize = m_game.window().getSize();
-
     // 3) Get the background texture size (assuming m_backgroundTexture is loaded)
     sf::Vector2u bgSize = m_backgroundTexture.getSize();
     if (bgSize.x == 0 || bgSize.y == 0) {
@@ -178,13 +174,6 @@ void Scene_Play::update(float deltaTime) {
                 entity->get<CState>().update(deltaTime);
        
         }
-        for (auto& entity : m_entityManager.getEntities("player")) {
-            if (entity->has<CState>()) {
-                auto& state = entity->get<CState>();
-                //std::cout << "[DEBUG] Player state: " << state.state 
-                //          << " | defenseTimer: " << state.defenseTimer << "\n";
-            }
-        }
         
         sMovement(deltaTime);
         sEnemyAI(deltaTime);
@@ -310,7 +299,7 @@ void Scene_Play::sDoAction(const Action& action)
             }
             if (state.attackCooldown <= 0.f) {
                 state.state        = "attack";
-                state.attackTime   = 0.2f;
+                state.attackTime   = 0.5f;
                 state.attackCooldown = 0.5f;
 
                 float armorBulletCooldown = 0.5f; // default

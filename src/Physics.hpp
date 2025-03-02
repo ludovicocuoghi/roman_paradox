@@ -84,8 +84,6 @@ namespace Physics
         static void ApplyKnockback(std::shared_ptr<Entity> entity, Vec2<float> direction, float strength) {
             if (!entity->has<CTransform>() || !entity->has<CState>()) return;
             auto& transform = entity->get<CTransform>();
-            auto& state = entity->get<CState>();
-
             // Imposta una velocità orizzontale molto elevata basata sulla direzione e sulla forza.
             transform.velocity.x = direction.x * strength;
         }

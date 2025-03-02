@@ -47,7 +47,7 @@ void CollisionSystem::handlePlayerTileCollisions() {
         // -------------------------------------
         // We'll store if we picked up armor here
         // -------------------------------------
-        bool pickedUpArmor = false;
+        [[maybe_unused]]bool pickedUpArmor = false;
         std::shared_ptr<Entity> tileToDestroy = nullptr;
 
         // Check collision with each tile
@@ -718,12 +718,6 @@ void CollisionSystem::handleSwordCollisions() {
 
         auto& swTrans = empSword->get<CTransform>();
         auto& swBB    = empSword->get<CBoundingBox>();
-        
-        // Se ha un CLifeSpan, puoi leggerlo o stamparlo (opzionale)
-        if (empSword->has<CLifeSpan>()) {
-            auto& swLS = empSword->get<CLifeSpan>();
-            //std::cout << "[DEBUG] Emperor sword lifespan: " << swLS.remainingTime << "\n";
-        }
 
         sf::FloatRect swordRect = swBB.getRect(swTrans.pos);
 
@@ -817,10 +811,10 @@ void CollisionSystem::handlePlayerCollectibleCollisions() {
                 if (itemType.find("Grape") != std::string::npos) {
                     if (itemType.find("Small") != std::string::npos) {
                         health.heal(COLLECTIBLE_SMALL_GRAPE_POINTS);
-                    } else if (itemType.find("Big") != std::string::npos && player->has<CHealth>()) {
+                    } else if (itemType.find("Big") != std::string::npos) {
                         health.heal(COLLECTIBLE_BIG_GRAPE_HEAL);
                     }
-                } 
+                }
                 else if (itemType.find("Coin") != std::string::npos) {
                     if (itemType.find("Gold") != std::string::npos) {
                         m_score += COLLECTIBLE_GOLD_COIN_POINTS;
@@ -828,6 +822,26 @@ void CollisionSystem::handlePlayerCollectibleCollisions() {
                         m_score += COLLECTIBLE_SILVER_COIN_POINTS;
                     } else if (itemType.find("Bronze") != std::string::npos) {
                         m_score += COLLECTIBLE_BRONZE_COIN_POINTS;
+                    }
+                }
+                // AGGIUNGI QUESTO BLOCCO PER IL POLLO
+                else if (itemType.find("Chicken") != std::string::npos) {
+                    auto& playerState = player->get<CState>();
+                
+                    if (itemType.find("Small") != std::string::npos) {
+                        // Aggiunge 5 secondi alla stamina dello scudo
+                        playerState.shieldStamina += 5.f;
+                        std::cout << "[DEBUG] Player picked up ChickenSmall: +5s shield stamina.\n";
+                    } 
+                    else if (itemType.find("Big") != std::string::npos) {
+                        // Aggiunge 10 secondi alla stamina dello scudo
+                        playerState.shieldStamina += 10.f;
+                        std::cout << "[DEBUG] Player picked up ChickenBig: +10s shield stamina.\n";
+                    }
+                
+                    // Se la stamina supera il limite, clamp al massimo
+                    if (playerState.shieldStamina > playerState.maxshieldStamina) {
+                        playerState.shieldStamina = playerState.maxshieldStamina;
                     }
                 }
             

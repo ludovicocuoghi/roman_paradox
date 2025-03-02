@@ -22,7 +22,6 @@ void MovementSystem::updateCamera()
         return;
     }
     auto& transform = players[0]->get<CTransform>();
-    auto& st = players[0]->get<CState>();
 
     // Offset for the camera
     sf::Vector2f offset(200.f, -100.f);

@@ -18,7 +18,7 @@ void AnimationSystem::update(float deltaTime) {
         auto& st    = entity->get<CState>();
         auto& trans = entity->get<CTransform>();
 
-        //std::cout << "Current state in AnimSystem" << st.state << std::endl;
+        std::cout << "Current state in AnimSystem" << st.state << std::endl;
     
         // 1) Check if the player has FutureArmor
         bool hasFutureArmor = false;
@@ -27,14 +27,14 @@ void AnimationSystem::update(float deltaTime) {
         }
     
         // Decide animation prefix: "Player" vs. "Future"
-        std::string prefix = hasFutureArmor ? "FuturePlayer" : "Player";
+        std::string prefix = hasFutureArmor ? "Future" : "";
     
         if (st.state == "attack") {
             // Attack logic
             st.attackTime -= deltaTime;
     
             // e.g., "PlayerAttack" or "FutureAttack"
-            std::string attackAnim = prefix + "Attack";
+            std::string attackAnim = prefix + "PlayerAttack";
     
             if (m_game.assets().hasAnimation(attackAnim)) {
                 if (canim.animation.getName() != attackAnim) {
@@ -57,7 +57,7 @@ void AnimationSystem::update(float deltaTime) {
             }
         } else if (st.state == "defense") {
                 // Gestione della difesa (scudo)
-                std::string defenseAnim = prefix + "Defense";
+                std::string defenseAnim = prefix + "PlayerDefense";
                 if (m_game.assets().hasAnimation(defenseAnim)) {
                     if (canim.animation.getName() != defenseAnim) {
                         std::cout << "[DEBUG] Defense animation activated.\n";
@@ -74,11 +74,11 @@ void AnimationSystem::update(float deltaTime) {
             // or "FutureAir", "FutureRun", or "FutureStand"
             std::string desiredAnim;
             if (std::abs(trans.velocity.y) > 0.1f)
-                desiredAnim = prefix + "Air";
+                desiredAnim = prefix + "PlayerAir";
             else if (std::abs(trans.velocity.x) > 1.f)
-                desiredAnim = prefix + "Run";
+                desiredAnim = prefix + "PlayerRun";
             else
-                desiredAnim = prefix + "Stand";
+                desiredAnim = prefix + "PlayerStand";
     
             if (m_game.assets().hasAnimation(desiredAnim) &&
                 canim.animation.getName() != desiredAnim)

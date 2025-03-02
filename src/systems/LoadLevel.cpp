@@ -157,7 +157,7 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
                 state.jumpTime = 0.0f;
                 state.knockbackTimer = 0.0f;
                 state.onGround = false;
-                state.attackTime = 0.0f;
+                state.attackTime = 1.0f;
                 state.attackCooldown = 0.0f;
                 state.defenseTimer = 3.0f;
                 state.shieldStamina = 5.0f;

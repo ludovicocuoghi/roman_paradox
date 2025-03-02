@@ -11,6 +11,10 @@ Texture TexSuperEnemySword /sword/super_sword.png
 
 Texture TexAncientGrapeSmall Collectables/ancient_rome/smallgrape.png
 Texture TexAncientGrapeBig Collectables/ancient_rome/biggrape.png
+
+Texture TexAncientChickenSmall Collectables/ancient_rome/smallChicken.png
+Texture TexAncientChickenBig Collectables/ancient_rome/bigChicken.png
+
 Texture TexAncientCoinGold Collectables/ancient_rome/coinAnimgold.png
 Texture TexAncientCoinSilver Collectables/ancient_rome/coinAnimsilver.png
 Texture TexAncientCoinBronze Collectables/ancient_rome/coinAnimbronze.png
@@ -208,7 +212,7 @@ Animation FuturePlayerStand TexFutureStand 100 100 5 8
 Animation FuturePlayerRun TexFutureRun 100 100 4 8
 Animation FuturePlayerAir TexFutureAir 100 130 1 0
 Animation FuturePlayerAttack TexFutureHit 100 100 1 0
-Animation FutureDefense TexFutureDefense 100 100 1 0
+Animation FuturePlayerDefense TexFutureDefense 100 100 1 0
 
 
 Animation Sword TexSword 48 13 1 0
@@ -216,8 +220,12 @@ Animation EnemySword TexEnemySword 48 13 1 0
 Animation EmperorSword TexEmperorSword 48 13 1 0
 Animation SuperSword TexSuperSword 48 13 1 0
 
+Animation AncientChickenSmall TexAncientChickenSmall 48 48 1 0
+Animation AncientChickenBig TexAncientChickenBig 69 52 1 0
+
 Animation AncientGrapeSmall TexAncientGrapeSmall 64 64 1 0
 Animation AncientGrapeBig TexAncientGrapeBig 100 80 1 0
+
 Animation AncientCoinGold TexAncientCoinGold 70 70 4 8
 Animation AncientCoinSilver TexAncientCoinSilver 70 70 4 8
 Animation AncientCoinBronze TexAncientCoinBronze 70 70 4 8

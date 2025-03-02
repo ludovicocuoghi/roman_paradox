@@ -34,11 +34,11 @@ public:
     static constexpr float PLAYER_KNOCKBACK_TIMER = 0.5f;
 
     // Collectibles
-    static constexpr int COLLECTIBLE_SMALL_GRAPE_POINTS = 15;
-    static constexpr int COLLECTIBLE_BIG_GRAPE_HEAL = 30;
-    static constexpr int COLLECTIBLE_GOLD_COIN_POINTS = 50;
-    static constexpr int COLLECTIBLE_SILVER_COIN_POINTS = 25;
-    static constexpr int COLLECTIBLE_BRONZE_COIN_POINTS = 10;
+    static constexpr int COLLECTIBLE_SMALL_GRAPE_POINTS = 25;
+    static constexpr int COLLECTIBLE_BIG_GRAPE_HEAL = 60;
+    static constexpr int COLLECTIBLE_GOLD_COIN_POINTS = 99;
+    static constexpr int COLLECTIBLE_SILVER_COIN_POINTS = 70;
+    static constexpr int COLLECTIBLE_BRONZE_COIN_POINTS = 40;
 
     static constexpr int BULLET_DAMAGE_NORMAL = 10;
     static constexpr int BULLET_DAMAGE_STRONG = 20;

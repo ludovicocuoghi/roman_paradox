@@ -252,7 +252,6 @@ std::shared_ptr<Entity> Spawner::spawnEmperorSwordOffset(std::shared_ptr<Entity>
 
 void Spawner::spawnEmperorSwordsRadial(std::shared_ptr<Entity> enemy, int swordCount, float radius, float swordSpeed) {
     auto& eTrans = enemy->get<CTransform>();
-    auto& eAI    = enemy->get<CEnemyAI>();
 
     float centerX = eTrans.pos.x;
     float centerY = eTrans.pos.y;
@@ -344,19 +343,49 @@ std::shared_ptr<Entity> Spawner::spawnItem(const Vec2<float>& position, const st
     Vec2<float> spawnPos = position;
 
     if (tileType == m_game.worldType + "Box1" || tileType == m_game.worldType + "Box2" ) {  
-        std::uniform_int_distribution<> dist(BOX_ITEM_DIST_MIN, BOX_ITEM_DIST_MAX);
+        // 5 possibili risultati: 20% ciascuno
+        //  1) CoinBronze
+        //  2) CoinSilver
+        //  3) GrapeSmall
+        //  4) ChickenSmall
+        //  5) Nessun item
+        std::uniform_int_distribution<int> dist(0, 99);
         int roll = dist(gen);
-        if (roll < BOX_ITEM_THRESHOLD_COINBRONZE)
+
+        if (roll < 15) {
             itemName = m_game.worldType + "CoinBronze";
-        else if (roll < BOX_ITEM_THRESHOLD_GRAPESMALL)
-            itemName = m_game.worldType + "GrapeSmall";
-        else
+        } else if (roll < 30) {
             itemName = m_game.worldType + "CoinSilver";
+        } else if (roll < 60) {
+            itemName = m_game.worldType + "GrapeSmall";
+        } else if (roll < 90) {
+            itemName = m_game.worldType + "ChickenSmall";
+        } else {
+            std::cout << "[DEBUG] Box is empty, no item spawned.\n";
+            return nullptr; 
+        }
     } 
-    else if (tileType == m_game.worldType + "TreasureHit") {  // Match world-specific TreasureBox
-        std::cout << "Hit treasure box ¥n";
-        std::uniform_int_distribution<> dist(TREASURE_BOX_DIST_MIN, TREASURE_BOX_DIST_MAX);
-        itemName = (dist(gen) == 0) ? m_game.worldType + "CoinGold" : m_game.worldType + "GrapeBig";
+    else if (tileType == m_game.worldType + "TreasureHit") {
+        // 4 possibili risultati: 25% ciascuno
+        //  1) CoinGold
+        //  2) GrapeBig
+        //  3) ChickenBig
+        //  4) Nessun item
+        std::cout << "Hit treasure box\n";
+        std::uniform_int_distribution<int> dist(0, 99);
+        int roll = dist(gen);
+
+        if (roll < 20) {
+            itemName = m_game.worldType + "CoinGold";
+        } else if (roll < 60) {
+            itemName = m_game.worldType + "GrapeBig";
+        } else if (roll < 95) {
+            itemName = m_game.worldType + "ChickenBig";
+        } else {
+            std::cout << "[DEBUG] Treasure is empty, no item spawned.\n";
+            return nullptr; 
+        }
+        // Se esce un item, lo spawniamo un po' più in alto
         spawnPos.y -= TREASURE_BOX_TILE_SIZE;
     } 
     else {
@@ -364,8 +393,11 @@ std::shared_ptr<Entity> Spawner::spawnItem(const Vec2<float>& position, const st
         return nullptr;
     }
 
+    // Se itemName è impostato, creiamo l'entità
     auto item = m_entityManager.addEntity("collectable");
     item->add<CTransform>(spawnPos);
+
+    // Carichiamo l'animazione associata all'item
     if (m_game.assets().hasAnimation(itemName)) {
         auto& anim = m_game.assets().getAnimation(itemName);
         item->add<CAnimation>(anim, true);
@@ -374,11 +406,15 @@ std::shared_ptr<Entity> Spawner::spawnItem(const Vec2<float>& position, const st
         item->destroy();
         return nullptr;
     }
+
+    // Creiamo bounding box basandoci sulla dimensione dell'animazione
     auto& anim = item->get<CAnimation>().animation;
     Vec2<float> animSize(static_cast<float>(anim.getSize().x), static_cast<float>(anim.getSize().y));
     Vec2<float> bboxSize = animSize * COLLECTABLE_SCALE_FACTOR;
     Vec2<float> bboxOffset = bboxSize * 0.5f;
     item->add<CBoundingBox>(bboxSize, bboxOffset);
+
+    // Aggiungiamo un CState con il nome dell'item (opzionale)
     item->add<CState>(itemName);
 
     std::cout << "[DEBUG] Spawned " << itemName << " from " << tileType
