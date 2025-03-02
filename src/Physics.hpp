@@ -86,21 +86,8 @@ namespace Physics
             auto& transform = entity->get<CTransform>();
             auto& state = entity->get<CState>();
 
-            // Se l'entità è già in knockback, non fare nulla.
-            if (state.knockbackTimer > 0.f)
-                return;
-
             // Imposta una velocità orizzontale molto elevata basata sulla direzione e sulla forza.
             transform.velocity.x = direction.x * strength;
-            // Se desideri un leggero impulso verso l'alto, puoi impostare anche velocity.y:
-            // transform.velocity.y = -50.f; // opzionale
-
-            // Imposta il timer di knockback per 1 secondo.
-            state.knockbackTimer = 1.0f;
-            state.state = "knockback";
-            std::cout << "[DEBUG] Knockback on " << entity->tag()
-                    << " (ID=" << entity->id() << ") at ("
-                    << transform.pos.x << ", " << transform.pos.y << ")...\n";
         }
     };
 }

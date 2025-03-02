@@ -466,12 +466,6 @@ void CollisionSystem::handlePlayerBulletCollisions() {
                 auto& health = enemy->get<CHealth>();
                 const int PLAYER_BULLET_DAMAGE = 5; // or some constant
                 health.takeDamage(PLAYER_BULLET_DAMAGE);
-
-                // Optionally set invulnerabilityTimer if you want a grace period
-                // health.invulnerabilityTimer = 0.2f;
-
-                // Possibly do knockback
-                // if (enemy->has<CState>()) { ... }
             }
 
             bullet->destroy();
@@ -539,17 +533,11 @@ void CollisionSystem::handleBulletPlayerCollisions() {
                                 break;
                         }
                     }
-                    // Apply damage and knockback
+                    // Apply damage
                     health.takeDamage(bulletDamage);
                     health.invulnerabilityTimer = PLAYER_HIT_INVULNERABILITY_TIME;
                     std::cout << "[DEBUG] Player hit by bullet! Damage: " 
                               << bulletDamage << " Health: " << health.currentHealth << "\n";
-
-                    // Set knockback if needed
-                    if (player->has<CState>()) {
-                        player->get<CState>().state = "knockback";
-                        player->get<CState>().knockbackTimer = PLAYER_KNOCKBACK_TIMER;
-                    }
                 }
             }
 
@@ -627,20 +615,6 @@ void CollisionSystem::handleSwordCollisions() {
 
                     // Applica il knockback
                     Physics::Forces::ApplyKnockback(enemy, hitDirection, finalKnockback);
-
-                    // Aggiorna lo stato dell'AI, se presente
-                    if (enemy->has<CEnemyAI>()) {
-                        auto& enemyAI = enemy->get<CEnemyAI>();
-                        enemyAI.enemyState = EnemyState::Knockback;
-                        enemyAI.knockbackTimer = ENEMY_KNOCKBACK_AI_TIMER;
-                    }
-                    // Aggiorna lo stato generico
-                    if (enemy->has<CState>()) {
-                        auto& state = enemy->get<CState>();
-                        state.state = "knockback";
-                        state.knockbackTimer = ENEMY_KNOCKBACK_STATE_TIMER;
-                    }
-                    std::cout << "[DEBUG] Knockback applicato al nemico!\n";
                 }
             }
         }
@@ -665,34 +639,35 @@ void CollisionSystem::handleSwordCollisions() {
 
             auto& pTrans = player->get<CTransform>();
             auto& pBB    = player->get<CBoundingBox>();
+            auto& st     = player->get<CState>();
             sf::FloatRect playerRect = pBB.getRect(pTrans.pos);
 
             if (!swordRect.intersects(playerRect))
                 continue;
 
-            // Se il player è già in knockback, salto
-            if (player->has<CState>()) {
-                auto& playerState = player->get<CState>();
-                if (playerState.state == "knockback")
-                    continue;
-            }
-
             // Knockback del player
             float attackDirection = (swTrans.pos.x < pTrans.pos.x) ? 1.f : -1.f;
             Vec2<float> hitDirection = { attackDirection, 0.f };
             Physics::Forces::ApplyKnockback(player, hitDirection, ENEMY_SWORD_KNOCKBACK_STRENGTH);
-
             // Danno al player
             if (player->has<CHealth>()) {
                 auto& health = player->get<CHealth>();
-                int enemyDamage = enemySword->get<CEnemyAI>().damage;
-                health.takeDamage(enemyDamage);
-                std::cout << "[DEBUG] Player hit by enemy sword! Damage: " << enemyDamage << " " << "Health: " << health.currentHealth << "\n" ;
-                health.invulnerabilityTimer = PLAYER_HIT_INVULNERABILITY_TIME;
-            }
-            if (player->has<CState>()) {
-                player->get<CState>().state = "knockback";
-                player->get<CState>().knockbackTimer = PLAYER_KNOCKBACK_TIMER;
+            
+                // Se il giocatore NON è già invincibile
+                if (st.state == "defense" || health.invulnerabilityTimer <= 0.f) {
+                    // Applica danno
+                    int enemyDamage = enemySword->get<CEnemyAI>().damage;
+                    health.takeDamage(enemyDamage);
+            
+                    // Avvia l'invincibilità per 1 secondo
+                    health.invulnerabilityTimer = 0.5f;
+            
+                    std::cout << "[DEBUG] Player took damage: " << enemyDamage 
+                              << " HP = " << health.currentHealth << "\n";
+                } else {
+                    // [DEBUG] Player era già invincibile, quindi ignora o stampa un messaggio
+                    std::cout << "[DEBUG] Player already invincible, ignoring extra hits.\n";
+                }
             }
             break;
         }
@@ -764,13 +739,6 @@ void CollisionSystem::handleSwordCollisions() {
             if (!swordRect.intersects(playerRect))
                 continue; // niente collisione
 
-            // Se il player è già in knockback, salta
-            if (player->has<CState>()) {
-                auto& playerState = player->get<CState>();
-                if (playerState.state == "knockback")
-                    continue;
-            }
-
             // Esempio di knockback orizzontale
             float attackDirection = (swTrans.pos.x < pTrans.pos.x) ? 1.f : -1.f;
             Vec2<float> hitDirection = { attackDirection, 0.f };
@@ -794,13 +762,6 @@ void CollisionSystem::handleSwordCollisions() {
                 std::cout << "[DEBUG] Player hit by emperor sword! Damage: " 
                           << empSwordDamage 
                           << " Health: " << health.currentHealth << "\n";
-            }
-
-            // Settiamo lo stato a knockback
-            if (player->has<CState>()) {
-                auto& pState = player->get<CState>();
-                pState.state = "knockback";
-                pState.knockbackTimer = PLAYER_KNOCKBACK_TIMER;
             }
 
             // Se vuoi distruggere la spada all'impatto, scommenta:

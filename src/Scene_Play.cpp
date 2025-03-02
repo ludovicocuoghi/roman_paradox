@@ -171,7 +171,6 @@ void Scene_Play::update(float deltaTime) {
     if (!m_gameOver) {
         m_entityManager.update();
         
-        // Update immediate timers (invulnerability, knockback, etc.) before collisions.
         for (auto& entity : m_entityManager.getEntities()) {
             if (entity->has<CHealth>())
                 entity->get<CHealth>().update(deltaTime);
@@ -182,8 +181,8 @@ void Scene_Play::update(float deltaTime) {
         for (auto& entity : m_entityManager.getEntities("player")) {
             if (entity->has<CState>()) {
                 auto& state = entity->get<CState>();
-                std::cout << "[DEBUG] Player state: " << state.state 
-                          << " | defenseTimer: " << state.defenseTimer << "\n";
+                //std::cout << "[DEBUG] Player state: " << state.state 
+                //          << " | defenseTimer: " << state.defenseTimer << "\n";
             }
         }
         

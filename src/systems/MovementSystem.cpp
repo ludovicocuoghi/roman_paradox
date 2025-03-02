@@ -104,16 +104,7 @@ void MovementSystem::update(float deltaTime)
         transform.velocity.y = std::min(transform.velocity.y, MAX_FALL_SPEED);
 
         // Gestione del movimento orizzontale in base allo stato
-        if (state.state == "knockback") {
-            state.knockbackTimer -= deltaTime;
-            if (state.knockbackTimer > 0.f) {
-                transform.pos += transform.velocity * deltaTime;
-            } else {
-                state.state = state.onGround ? "idle" : "air";
-                transform.velocity.x = 0.f;
-            }
-        }
-        else if (state.state == "defense") {
+        if (state.state == "defense") {
             // Se il giocatore è a terra, annulla il movimento orizzontale
             if (state.onGround)
                 transform.velocity.x = 0.f;
