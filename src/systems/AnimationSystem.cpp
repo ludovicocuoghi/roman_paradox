@@ -17,6 +17,8 @@ void AnimationSystem::update(float deltaTime) {
         auto& canim = entity->get<CAnimation>();
         auto& st    = entity->get<CState>();
         auto& trans = entity->get<CTransform>();
+
+        //std::cout << "Current state in AnimSystem" << st.state << std::endl;
     
         // 1) Check if the player has FutureArmor
         bool hasFutureArmor = false;
@@ -53,6 +55,20 @@ void AnimationSystem::update(float deltaTime) {
                 else
                     st.state = "idle";
             }
+        } else if (st.state == "defense") {
+                // Gestione della difesa (scudo)
+                std::string defenseAnim = prefix + "Defense";
+                if (m_game.assets().hasAnimation(defenseAnim)) {
+                    if (canim.animation.getName() != defenseAnim) {
+                        std::cout << "[DEBUG] Defense animation activated.\n";
+                        canim.animation = m_game.assets().getAnimation(defenseAnim);
+                        canim.repeat = true;  // L'animazione si ripete finché il tasto è premuto
+                        if (m_lastDirection < 0)
+                            flipSpriteLeft(canim.animation.getMutableSprite());
+                        else
+                            flipSpriteRight(canim.animation.getMutableSprite());
+                    }
+                }
         } else {
             // e.g., "PlayerAir", "PlayerRun", or "PlayerStand"
             // or "FutureAir", "FutureRun", or "FutureStand"

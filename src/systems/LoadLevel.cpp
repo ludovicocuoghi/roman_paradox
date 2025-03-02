@@ -159,7 +159,10 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
                 state.onGround = false;
                 state.attackTime = 0.0f;
                 state.attackCooldown = 0.0f;
-                player->add<CHealth>(PLAYER_HEALTH);
+                state.defenseTimer = 3.0f;
+                state.shieldStamina = 5.0f;
+                state.maxshieldStamina = 5.0f;
+                player->add<CHealth>(PLAYER_HEALTH, PLAYER_HEALTH);
                 playerSpawned = true;
                 std::cout << "[DEBUG] Player Spawned at (" << x << ", " << y << ")" << std::endl;
             }

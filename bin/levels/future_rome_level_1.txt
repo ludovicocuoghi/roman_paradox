@@ -292,7 +292,7 @@ Tile Ground 80 2
 Tile Ground 87 3
 Tile Ground 87 2
 Tile Ground 88 2
-Tile Armor 84 7
+Tile Armor 10 4
 Tile Ground 33 5
 Tile Ground 41 5
 Tile PipeTall 32 5

@@ -167,7 +167,7 @@ void CollisionSystem::handlePlayerTileCollisions() {
         }
 
         // 6) Update player state if not attacking
-        if (state.state != "attack") {
+        if (state.state != "attack" && state.state != "defense") {
             if (state.onGround) {
                 state.state = (std::abs(velocity.x) > PLAYER_RUN_VELOCITY_THRESHOLD)
                               ? "run" : "idle";

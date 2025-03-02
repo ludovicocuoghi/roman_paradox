@@ -132,67 +132,75 @@ public:
 };
 
 class CState : public Component {
-public:
-    std::string state;  // "idle", "run", "attack" (only for players)
-    bool isInvincible;
-    float invincibilityTimer;
-    bool isJumping;
-    float jumpTime;
-    float knockbackTimer;
-    bool onGround;
-    float attackTime;
-    float attackCooldown;
-    bool blockedHorizontally;
-    float bulletCooldown   = 0.f;  // Current bullet cooldown
-    float bulletCooldownMax= 0.5f; // Default cooldown if no armor
-
-    CState(const std::string& s = "idle")
-        : state(s),
-          isInvincible(false),
-          invincibilityTimer(0.f),
-          isJumping(false),
-          jumpTime(0.f),
-          knockbackTimer(0.f),
-          onGround(false),
-          attackTime(0.f),
-          attackCooldown(0.f),
-          blockedHorizontally(false)
-    {}
-
-    void update(float deltaTime) {
-        if (isInvincible && invincibilityTimer > 0.f) {
-            invincibilityTimer -= deltaTime;
-            if (invincibilityTimer <= 0.f) {
-                isInvincible = false;
+    public:
+        std::string state;  // "idle", "run", "attack", "defense", ecc.
+        bool isInvincible;
+        float invincibilityTimer;
+        bool isJumping;
+        float jumpTime;
+        float knockbackTimer;
+        bool onGround;
+        float attackTime;
+        float attackCooldown;
+        bool blockedHorizontally;
+        float bulletCooldown   = 0.f;  // Tempo corrente di cooldown del proiettile
+        float bulletCooldownMax= 0.5f;   // Cooldown di default se non hai armatura
+        float defenseTimer     = 0.f;   // Timer per la difesa
+        float shieldStamina;
+        float maxshieldStamina;
+    
+        CState(const std::string& s = "idle")
+            : state(s),
+              isInvincible(false),
+              invincibilityTimer(0.f),
+              isJumping(false),
+              jumpTime(0.f),
+              knockbackTimer(0.f),
+              onGround(false),
+              attackTime(0.f),
+              attackCooldown(0.f),
+              blockedHorizontally(false),
+              shieldStamina(10.0f),
+              maxshieldStamina(10.0f)
+        {}
+    
+        void update(float deltaTime) {
+            if (isInvincible && invincibilityTimer > 0.f) {
+                invincibilityTimer -= deltaTime;
+                if (invincibilityTimer <= 0.f) {
+                    isInvincible = false;
+                }
+            }
+            if (attackCooldown > 0.f) {
+                attackCooldown -= deltaTime;
+                if (attackCooldown < 0.f) {
+                    attackCooldown = 0.f;
+                }
+            }
+            if (knockbackTimer > 0.f) {
+                knockbackTimer -= deltaTime;
+                if (knockbackTimer < 0.f) {
+                    knockbackTimer = 0.f;
+                }
+            }
+            if (bulletCooldown > 0.f) {
+                bulletCooldown -= deltaTime;
+                if (bulletCooldown < 0.f) bulletCooldown = 0.f;
+            }
+            // Aggiornamento del timer per l'attacco
+            if (attackTime > 0.f) {
+                attackTime -= deltaTime;
+                if (attackTime < 0.f) attackTime = 0.f;
+            }
+            // Se siamo in stato defense, accumula il tempo d'uso e verifica se si è esaurito il tempo massimo (2 sec)
+            if (state == "defense") {
+                shieldStamina -= deltaTime;
+                if (shieldStamina <= 0.f) {
+                    shieldStamina = 0.f;
+                    state = "idle";
+                }
             }
         }
-        if (attackCooldown > 0.f) {
-            attackCooldown -= deltaTime;
-            if (attackCooldown < 0.f) {
-                attackCooldown = 0.f;
-            }
-        }
-        if (knockbackTimer > 0.f) {
-            knockbackTimer -= deltaTime;
-            if (knockbackTimer < 0.f) {
-                knockbackTimer = 0.f;
-            }
-        }
-        if (bulletCooldown > 0.f) {
-            bulletCooldown -= deltaTime;
-            if (bulletCooldown < 0.f) bulletCooldown = 0.f;
-        }
-
-        // Decrement attackCooldown, attackTime, knockbackTimer, etc., if you want
-        if (attackCooldown > 0.f) {
-            attackCooldown -= deltaTime;
-            if (attackCooldown < 0.f) attackCooldown = 0.f;
-        }
-        if (attackTime > 0.f) {
-            attackTime -= deltaTime;
-            if (attackTime < 0.f) attackTime = 0.f;
-        }
-    }
 };
 
 class CShape : public Component {

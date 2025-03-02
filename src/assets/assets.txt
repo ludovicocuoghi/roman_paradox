@@ -2,10 +2,12 @@ Texture TexStand Player/ancient_rome/a_stand100Anim.png
 Texture TexRun Player/ancient_rome/a_run1004.png
 Texture TexAir Player/ancient_rome/a_air1002.png
 Texture TexHit Player/ancient_rome/a_hit100nosword.png
+Texture TexDefense Player/ancient_rome/defense.png
 Texture TexSword /sword/a_sword.png
 Texture TexEnemySword /sword/sword.png
 Texture TexEmperorSword /sword/gold_sword.png
 Texture TexSuperEnemySword /sword/super_sword.png
+
 
 Texture TexAncientGrapeSmall Collectables/ancient_rome/smallgrape.png
 Texture TexAncientGrapeBig Collectables/ancient_rome/biggrape.png
@@ -120,7 +122,7 @@ Texture TexFutureArmor Tile/future_rome/armor.png
 
 Animation FutureGround TexFutureGround 96 96 4 12
 
-Animation FutureArmor TexFutureArmor 100 100 2 4
+Animation FutureArmor TexFutureArmor 100 100 16 10
 
 Animation FutureBrick TexFutureBrick 96 96 11 7
 Animation FuturePipeTall TexFuturePipeTall 96 384 14 10
@@ -200,11 +202,14 @@ Texture TexFutureStand Player/future_rome/standanim.png
 Texture TexFutureRun Player/future_rome/run.png
 Texture TexFutureAir Player/future_rome/jump.png
 Texture TexFutureHit Player/future_rome/hit.png
+Texture TexFutureDefense Player/future_rome/defense.png
 
 Animation FuturePlayerStand TexFutureStand 100 100 5 8
 Animation FuturePlayerRun TexFutureRun 100 100 4 8
 Animation FuturePlayerAir TexFutureAir 100 130 1 0
 Animation FuturePlayerAttack TexFutureHit 100 100 1 0
+Animation FutureDefense TexFutureDefense 100 100 1 0
+
 
 Animation Sword TexSword 48 13 1 0
 Animation EnemySword TexEnemySword 48 13 1 0
@@ -282,6 +287,7 @@ Animation PlayerStand TexStand 100 100 6 8
 Animation PlayerRun TexRun 100 100 4 6
 Animation PlayerAir TexAir 100 130 1 0
 Animation PlayerAttack TexHit 100 100 1 0
+Animation PlayerDefense TexDefense 100 100 1 0
 
 Animation Sword TexSword 48 13 1 0
 Animation EnemySword TexEnemySword 48 13 1 0

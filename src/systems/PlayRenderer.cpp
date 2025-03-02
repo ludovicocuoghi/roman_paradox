@@ -341,52 +341,155 @@ void PlayRenderer::render() {
     // --- HUD: Black Bar with Score, Time-of-Day, and Health ---
     m_game.window().setView(defaultView);
     {
-        // Create a black rectangle at the bottom (height = 50)
-        sf::RectangleShape hudBar(sf::Vector2f(static_cast<float>(windowSize.x), 50.f));
+        // 1) Barra nera in fondo
+        float hudHeight = 70.f;
+        sf::RectangleShape hudBar(sf::Vector2f(static_cast<float>(windowSize.x), hudHeight));
         hudBar.setFillColor(sf::Color::Black);
-        hudBar.setPosition(0, windowSize.y - 50.f);
+        hudBar.setPosition(0.f, windowSize.y - hudHeight);
         m_game.window().draw(hudBar);
-
-        // Score text (left-aligned)
+    
+        // 2) Variabili per le barre
+        float barWidth     = 120.f;
+        float barHeight    = 20.f;
+        float barSpacing   = 20.f;   // distanza orizzontale tra le due barre
+        float paddingLeft  = 20.f;   // distanza dal bordo sinistro della barra nera
+        float paddingTop   = 20.f;   // distanza dal bordo superiore della barra nera
+    
+        // Coordinate di base per le barre
+        float baseY        = windowSize.y - hudHeight + paddingTop;
+        float healthBarX   = paddingLeft;
+        float staminaBarX  = healthBarX + barWidth + barSpacing;
+    
+        // Otteniamo i componenti di stato e salute dal giocatore
+        auto players = m_entityManager.getEntities("player");
+        if (players.empty()) return; // safety check
+    
+        auto& state  = players[0]->get<CState>();
+        auto& health = players[0]->get<CHealth>();
+    
+        // -----------------------------
+        // BARRA DELLA SALUTE (Health)
+        // -----------------------------
+        float currentHealth = health.currentHealth;
+        float maxHealth     = health.maxHealth;
+        float healthRatio   = (maxHealth > 0.f) ? (currentHealth / maxHealth) : 0.f;
+        if (healthRatio < 0.f) healthRatio = 0.f;
+        if (healthRatio > 1.f) healthRatio = 1.f;
+    
+        // Sfondo (grigio) della barra Health
+        sf::RectangleShape healthBg(sf::Vector2f(barWidth, barHeight));
+        healthBg.setFillColor(sf::Color(50,50,50));
+        healthBg.setPosition(healthBarX, baseY);
+        m_game.window().draw(healthBg);
+    
+        // Colore della barra in base alla percentuale
+        sf::Color healthColor;
+        if (healthRatio < 0.3f) {
+            healthColor = sf::Color::Red;
+        } else if (healthRatio < 0.5f) {
+            healthColor = sf::Color::Yellow;
+        } else {
+            healthColor = sf::Color::Green;
+        }
+    
+        // Riempimento della barra Health
+        sf::RectangleShape healthBarRect(sf::Vector2f(barWidth * healthRatio, barHeight));
+        healthBarRect.setFillColor(healthColor);
+        healthBarRect.setPosition(healthBarX, baseY);
+        m_game.window().draw(healthBarRect);
+    
+        // Testo “Health” centrato dentro la barra
+        {
+            sf::Text healthText;
+            healthText.setFont(m_game.assets().getFont("Menu"));
+            healthText.setString("Health");
+            healthText.setCharacterSize(14);
+            healthText.setFillColor(sf::Color::White);
+    
+            // Centriamo il testo all’interno della barra
+            sf::FloatRect textRect = healthText.getLocalBounds();
+            float textX = healthBarX + (barWidth  - textRect.width)  / 2.f;
+            float textY = baseY     + (barHeight - textRect.height) / 2.f;
+            healthText.setPosition(textX, textY);
+            m_game.window().draw(healthText);
+        }
+    
+        // -----------------------------
+        // BARRA DELLA STAMINA (Scudo)
+        // -----------------------------
+        float maxStamina    = state.maxshieldStamina;  
+        float shieldStamina = state.shieldStamina;
+        float staminaRatio  = (maxStamina > 0.f) ? (shieldStamina / maxStamina) : 0.f;
+        if (staminaRatio < 0.f) staminaRatio = 0.f;
+        if (staminaRatio > 1.f) staminaRatio = 1.f;
+    
+        // Sfondo (grigio) della barra Stamina
+        sf::RectangleShape staminaBg(sf::Vector2f(barWidth, barHeight));
+        staminaBg.setFillColor(sf::Color(50,50,50));
+        staminaBg.setPosition(staminaBarX, baseY);
+        m_game.window().draw(staminaBg);
+    
+        // Riempimento della barra Stamina (blu)
+        sf::RectangleShape staminaBarRect(sf::Vector2f(barWidth * staminaRatio, barHeight));
+        staminaBarRect.setFillColor(sf::Color::Blue);
+        staminaBarRect.setPosition(staminaBarX, baseY);
+        m_game.window().draw(staminaBarRect);
+    
+        // Testo “Stamina” centrato dentro la barra
+        {
+            sf::Text staminaText;
+            staminaText.setFont(m_game.assets().getFont("Menu"));
+            staminaText.setString("Stamina");
+            staminaText.setCharacterSize(14);
+            staminaText.setFillColor(sf::Color::White);
+    
+            sf::FloatRect textRect = staminaText.getLocalBounds();
+            float textX = staminaBarX + (barWidth  - textRect.width)  / 2.f;
+            float textY = baseY      + (barHeight - textRect.height) / 2.f;
+            staminaText.setPosition(textX, textY);
+            m_game.window().draw(staminaText);
+        }
+    
+        // Se la stamina è a zero, mostra un testo aggiuntivo
+        if (shieldStamina <= 0.f) {
+            sf::Text noStaminaText;
+            noStaminaText.setFont(m_game.assets().getFont("Menu"));
+            noStaminaText.setCharacterSize(14);
+            noStaminaText.setFillColor(sf::Color::White);
+            noStaminaText.setString("No stamina, cannot protect");
+            sf::FloatRect textRect = noStaminaText.getLocalBounds();
+            noStaminaText.setOrigin(textRect.left + textRect.width  / 2.f,
+                                    textRect.top  + textRect.height / 2.f);
+            noStaminaText.setPosition(
+                staminaBarX + (barWidth / 2.f),
+                baseY       + (barHeight / 2.f)
+            );
+            m_game.window().draw(noStaminaText);
+        }
+    
+        // 3) Testo del punteggio (opzionale) in basso a sinistra
         sf::Text scoreText;
         scoreText.setFont(m_game.assets().getFont("Menu"));
         scoreText.setCharacterSize(20);
         scoreText.setFillColor(sf::Color::White);
         scoreText.setString("Score: " + std::to_string(m_score));
-        scoreText.setPosition(10.f, windowSize.y - 40.f);
-
-        // Time-of-day text (centered)
+        scoreText.setPosition(paddingLeft, windowSize.y - hudHeight + 45.f); 
+        m_game.window().draw(scoreText);
+    
+        // 4) Time-of-day (ad es. “Ancient Rome (Night)”) centrato orizzontalmente nella barra
         sf::Text timeText;
         timeText.setFont(m_game.assets().getFont("Menu"));
         timeText.setCharacterSize(20);
         timeText.setFillColor(sf::Color::White);
         timeText.setString(m_timeofday);
+    
         sf::FloatRect timeRect = timeText.getLocalBounds();
-        timeText.setPosition(windowSize.x / 2.f - timeRect.width / 2.f, windowSize.y - 40.f);
-
-        // Health text (right-aligned)
-        int currentHealth = 100;
-        int maxHealth = 100;
-        auto players = m_entityManager.getEntities("player");
-        if (!players.empty() && players[0]->has<CHealth>()) {
-            auto& healthComp = players[0]->get<CHealth>();
-            currentHealth = healthComp.currentHealth;
-            maxHealth = healthComp.maxHealth;
-        }
-        sf::Text healthText;
-        healthText.setFont(m_game.assets().getFont("Menu"));
-        healthText.setCharacterSize(20);
-        healthText.setFillColor(sf::Color::White);
-        healthText.setString("HP: " + std::to_string(currentHealth) + " / " + std::to_string(maxHealth));
-        sf::FloatRect healthRect = healthText.getLocalBounds();
-        healthText.setPosition(windowSize.x - healthRect.width - 10.f, windowSize.y - 40.f);
-
-        // Draw HUD texts
-        m_game.window().draw(scoreText);
+        float centerX = (windowSize.x - timeRect.width) * 0.5f;
+        // Collocato un po’ sopra il fondo, ad es. 10 px di margine
+        timeText.setPosition(centerX, windowSize.y - hudHeight + 10.f);
         m_game.window().draw(timeText);
-        m_game.window().draw(healthText);
     }
-
+    
     m_game.window().setView(m_cameraView);
     m_game.window().display();
 }

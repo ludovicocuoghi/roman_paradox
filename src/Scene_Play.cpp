@@ -141,6 +141,7 @@ void Scene_Play::init()
     registerAction(sf::Keyboard::W, "JUMP");
     registerAction(sf::Keyboard::Escape, "QUIT");
     registerAction(sf::Keyboard::Space, "ATTACK");
+    registerAction(sf::Keyboard::M, "DEFENSE");
     registerAction(sf::Keyboard::G, "TOGGLE_GRID");
     registerAction(sf::Keyboard::B, "TOGGLE_BB");
 
@@ -176,6 +177,14 @@ void Scene_Play::update(float deltaTime) {
                 entity->get<CHealth>().update(deltaTime);
             if (entity->has<CState>())
                 entity->get<CState>().update(deltaTime);
+       
+        }
+        for (auto& entity : m_entityManager.getEntities("player")) {
+            if (entity->has<CState>()) {
+                auto& state = entity->get<CState>();
+                std::cout << "[DEBUG] Player state: " << state.state 
+                          << " | defenseTimer: " << state.defenseTimer << "\n";
+            }
         }
         
         sMovement(deltaTime);
@@ -253,94 +262,107 @@ void Scene_Play::sDoAction(const Action& action)
     auto& vel = PTrans.velocity;  
     auto& state = player->get<CState>();
 
+    // Se siamo in difesa, ignoriamo gli input di movimento e salto (oppure li gestiamo separatamente)
+    bool inDefense = (state.state == "defense");
+
     static bool isMovingLeft  = false;
     static bool isMovingRight = false;
 
     if (action.type() == "START") {
-        if (action.name() == "MOVE_LEFT") {
-            isMovingLeft = true;
-            isMovingRight = false;
-            PTrans.facingDirection = -1.f;
-            vel.x = -xSpeed;
-            if (state.state != "air")
-                state.state = "run";
+        if (!inDefense) { // Solo se non in difesa
+            if (action.name() == "MOVE_LEFT") {
+                isMovingLeft = true;
+                isMovingRight = false;
+                PTrans.facingDirection = -1.f;
+                vel.x = -xSpeed;
+                if (state.state != "air")
+                    state.state = "run";
+            }
+            else if (action.name() == "MOVE_RIGHT") {
+                isMovingRight = true;
+                isMovingLeft = false;
+                PTrans.facingDirection = 1.f;
+                vel.x = xSpeed;
+                if (state.state != "air")
+                    state.state = "run";
+            }
+            else if (action.name() == "JUMP") {
+                // Solo se non in difesa
+                if (state.onGround && (state.state == "idle" || state.state == "run" || state.state == "attack")) {
+                    state.isJumping = true;
+                    state.jumpTime  = 0.0f;
+                    vel.y           = -ySpeed;
+                    state.state     = "air";
+                }
+            }
         }
-        else if (action.name() == "MOVE_RIGHT") {
-            isMovingRight = true;
-            isMovingLeft = false;
-            PTrans.facingDirection = 1.f;
-            vel.x = xSpeed;
-            if (state.state != "air")
-                state.state = "run";
-        }
-        else if (action.name() == "TOGGLE_GRID")
-        {
+
+        if (action.name() == "TOGGLE_GRID") {
             m_showGrid = !m_showGrid;
         }
-        else if (action.name() == "TOGGLE_BB")
-        {
+        else if (action.name() == "TOGGLE_BB") {
             m_showBoundingBoxes = !m_showBoundingBoxes;
         }
         else if (action.name() == "ATTACK") {
-            // 1) Check bulletCooldown
+            // Gestione attacco
             if (state.bulletCooldown > 0.f) {
                 std::cout << "[DEBUG] Bullet on cooldown! " << state.bulletCooldown << "s left.\n";
-                return; // Can't shoot yet
+                return;
             }
-        
-            // 2) We can shoot or slash, plus normal attack logic
             if (state.attackCooldown <= 0.f) {
                 state.state        = "attack";
                 state.attackTime   = 0.2f;
                 state.attackCooldown = 0.5f;
-        
-                // Check if player has FutureArmor => if so, bulletCooldownMax = smaller
+
                 float armorBulletCooldown = 0.5f; // default
                 if (player->has<CPlayerEquipment>() && player->get<CPlayerEquipment>().hasFutureArmor) {
-                    armorBulletCooldown = 0.2f; // shorter cooldown if armor is equipped
+                    armorBulletCooldown = 0.2f;
                     m_spawner.spawnPlayerBullet(player);
                 } else {
                     spawnSword(player);
                 }
-        
-                // 3) Reset bulletCooldown to whichever we decided
                 state.bulletCooldown = armorBulletCooldown;
                 std::cout << "[DEBUG] Bullet fired/slash. bulletCooldown set to " << armorBulletCooldown << "\n";
             }
         }
-        else if (action.name() == "JUMP") {
-            // Player must abe on ground AND in idle/run/attack if you want jump from attack stance
-            if (state.onGround && (state.state == "idle" || state.state == "run" || state.state == "attack")) {
-                state.isJumping = true;
-                state.jumpTime  = 0.0f;
-                vel.y           = -ySpeed;
-                state.state     = "air";
+        else if (action.name() == "DEFENSE") {
+            // Attiva la difesa solo se c'è ancora stamina
+            if (state.shieldStamina > 0.f && state.state != "defense") {
+                std::cout << "[DEBUG] Defense activated.\n";
+                state.state = "defense";
             }
         }
     }
     else if (action.type() == "END") {
-        if (action.name() == "MOVE_LEFT") {
-            isMovingLeft = false;
-            if (!isMovingRight) {
-                vel.x = 0.f;
-                if (state.state != "air")
-                    state.state = "idle";
+        if (!inDefense) { // Solo se non in difesa, per evitare di sovrascrivere lo stato difesa
+            if (action.name() == "MOVE_LEFT") {
+                isMovingLeft = false;
+                if (!isMovingRight) {
+                    vel.x = 0.f;
+                    if (state.state != "air")
+                        state.state = "idle";
+                }
+            }
+            else if (action.name() == "MOVE_RIGHT") {
+                isMovingRight = false;
+                if (!isMovingLeft) {
+                    vel.x = 0.f;
+                    if (state.state != "air")
+                        state.state = "idle";
+                }
+            }
+            else if (action.name() == "JUMP") {
+                state.isJumping = false;
             }
         }
-        else if (action.name() == "MOVE_RIGHT") {
-            isMovingRight = false;
-            if (!isMovingLeft) {
-                vel.x = 0.f;
-                if (state.state != "air")
-                    state.state = "idle";
+        else if (action.name() == "DEFENSE") {
+            // Se l'utente rilascia il tasto di difesa, termina la difesa
+            if (state.state == "defense") {
+                state.state = "idle";
             }
-        }
-        else if (action.name() == "JUMP") {
-            state.isJumping = false;
         }
     }
 }
-
 // Wrapper: chiama il metodo updateFragments del Spawner
 void Scene_Play::UpdateFragments(float deltaTime) {
     m_spawner.updateFragments(deltaTime);

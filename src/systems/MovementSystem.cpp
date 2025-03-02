@@ -22,6 +22,7 @@ void MovementSystem::updateCamera()
         return;
     }
     auto& transform = players[0]->get<CTransform>();
+    auto& st = players[0]->get<CState>();
 
     // Offset for the camera
     sf::Vector2f offset(200.f, -100.f);
@@ -45,22 +46,21 @@ void MovementSystem::updateCamera()
     // Horizontal trap zone check
     if (dx < -halfTrapZoneWidth) {
         desiredCenter.x = targetPos.x + halfTrapZoneWidth;
-    } 
-    else if (dx > halfTrapZoneWidth) {
+    } else if (dx > halfTrapZoneWidth) {
         desiredCenter.x = targetPos.x - halfTrapZoneWidth;
     }
 
     // Vertical trap zone check
     if (dy < -halfTrapZoneHeight) {
         desiredCenter.y = targetPos.y + halfTrapZoneHeight;
-    } 
-    else if (dy > halfTrapZoneHeight) {
+    } else if (dy > halfTrapZoneHeight) {
         desiredCenter.y = targetPos.y - halfTrapZoneHeight;
     }
 
     // Set the camera center
     m_cameraView.setCenter(desiredCenter);
-    // Example: One-time zoom to 1.1f
+
+    // Example: One-time zoom to ZOOM_STRENGTH
     if (m_currentZoom != ZOOM_STRENGTH) {
         float zoomFactor = ZOOM_STRENGTH / m_currentZoom;
         m_cameraView.zoom(zoomFactor);
@@ -70,7 +70,6 @@ void MovementSystem::updateCamera()
         std::cout << "Current zoom factor: " << m_currentZoom << "\n";
         std::cout << "Zooming view by: " << zoomFactor << "\n";
         
-        // Also helpful to see the final View size:
         auto size = m_cameraView.getSize();
         std::cout << "View size after zoom: " << size.x << " x " << size.y << "\n";
     }
@@ -78,6 +77,7 @@ void MovementSystem::updateCamera()
     // Apply the final camera
     m_game.window().setView(m_cameraView);
 }
+
 
 void MovementSystem::update(float deltaTime)
 {
@@ -103,6 +103,7 @@ void MovementSystem::update(float deltaTime)
         }
         transform.velocity.y = std::min(transform.velocity.y, MAX_FALL_SPEED);
 
+        // Gestione del movimento orizzontale in base allo stato
         if (state.state == "knockback") {
             state.knockbackTimer -= deltaTime;
             if (state.knockbackTimer > 0.f) {
@@ -111,19 +112,36 @@ void MovementSystem::update(float deltaTime)
                 state.state = state.onGround ? "idle" : "air";
                 transform.velocity.x = 0.f;
             }
-        } else {
+        }
+        else if (state.state == "defense") {
+            // Se il giocatore è a terra, annulla il movimento orizzontale
+            if (state.onGround)
+                transform.velocity.x = 0.f;
+            // Aggiorna la posizione con l'intera velocità (la gravità e l'eventuale velocità orizzontale sono applicate)
+            transform.pos += transform.velocity * deltaTime;
+        }
+        else {
+            // Movimenti standard (solo se non in "defense")
             transform.velocity.x = 0.f;
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
                 transform.velocity.x = -X_SPEED;
                 m_lastDirection = -1.f;
+                if(state.onGround)
+                    state.state = "run";
             } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
                 transform.velocity.x = X_SPEED;
                 m_lastDirection = 1.f;
+                if(state.onGround)
+                    state.state = "run";
+            } else {
+                // Se non c'è input orizzontale, imposta "idle" solo se non siamo in aria
+                if (state.state != "air")
+                    state.state = "idle";
             }
             transform.pos += transform.velocity * deltaTime;
         }
 
-        // Flip sprite based on direction
+        // Flip sprite in base alla direzione
         if (m_lastDirection < 0) {
             flipSpriteLeft(canim.animation.getMutableSprite());
         } else {
@@ -160,15 +178,14 @@ void MovementSystem::update(float deltaTime)
             }
         }
     }
+
+    // ... Resto del codice per spade dei nemici, proiettili, ecc.
     auto enemySwords = m_entityManager.getEntities("EmperorSword");
     for (auto& eSword : enemySwords) {
         if (!eSword->has<CTransform>()) continue;
         auto& swTrans = eSword->get<CTransform>();
 
-        // Se la spada ha velocity, la aggiorniamo
         swTrans.pos += swTrans.velocity * deltaTime;
-
-        // Se vuoi gestire un flip dello sprite in base alla velocity:
         if (eSword->has<CAnimation>()) {
             auto& swordAnim = eSword->get<CAnimation>();
             if (swTrans.velocity.x < 0.f) {
@@ -182,14 +199,12 @@ void MovementSystem::update(float deltaTime)
     for (auto& bullet : m_entityManager.getEntities("enemyBullet")) {
         if (!bullet->has<CTransform>()) continue;
         auto& trans = bullet->get<CTransform>();
-        // Move the bullet
         trans.pos += trans.velocity * deltaTime;
     }
 
     for (auto& bullet : m_entityManager.getEntities("playerBullet")) {
         if (!bullet->has<CTransform>()) continue;
         auto& trans = bullet->get<CTransform>();
-        // Move the bullet
         trans.pos += trans.velocity * deltaTime;
     }
 

@@ -25,7 +25,7 @@ public:
     static constexpr float EMPEROR_BB_WIDTH = 160.f;
     static constexpr float EMPEROR_BB_HEIGHT = 250.f;
     // Parametri per il player
-    static constexpr float PLAYER_HEALTH = 99999.f;
+    static constexpr float PLAYER_HEALTH = 100.f;
     static constexpr float PLAYER_BB_SIZE = 80.f;
     static constexpr float GRAVITY_VAL = 1000.f;
 
