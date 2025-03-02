@@ -267,108 +267,146 @@ enum class EnemyState {
 // so that 'enemyState' can safely check patrolPoints in its own initialization.
 class CEnemyAI : public Component {
     public:
-        // Basic properties
-        EnemyType enemyType;
-        EnemyBehavior enemyBehavior;
+        // ------------------------------------------------------
+        // 1) Proprietà di base e comportamento
+        // ------------------------------------------------------
+        EnemyType     enemyType;      // Tipo di nemico (Normal, Elite, ecc.)
+        EnemyBehavior enemyBehavior;  // Comportamento (FollowOne, FollowTwo, ecc.)
+        EnemyState    enemyState;     // Stato corrente (Idle, Attack, ecc.)
     
-        // Patrol Behavior
-        std::vector<Vec2<float>> patrolPoints;
-        EnemyState enemyState;
+        // ------------------------------------------------------
+        // 2) Parametri di movimento e combattimento
+        // ------------------------------------------------------
+        float speedMultiplier;        // Moltiplicatore di velocità di movimento
+        int   damage;                 // Danno inflitto dal nemico
     
-        // Movement & Combat Stats
-        float speedMultiplier;
-        int damage;
+        // ------------------------------------------------------
+        // 3) Parametri di visione e attacco
+        // ------------------------------------------------------
+        float lineOfSightRange;       // Raggio di vista del nemico
+        float attackRadius;           // Distanza entro la quale attacca
     
-        // Vision & Attack Parameters
-        float lineOfSightRange;
-        float attackRadius;
-    
-        int currentPatrolIndex;
-        float patrolWaitTime;
-    
-        // Jumping & Movement
-        float facingDirection;
+        // ------------------------------------------------------
+        // 4) Gestione del salto e del movimento
+        // ------------------------------------------------------
+        float facingDirection;        // 1.f o -1.f per direzione
         float jumpCooldown;
-    
-        // Attack Handling
-        bool swordSpawned;
-        float attackCooldown;
-        float attackTimer;
-        
-        // Knockback Handling
-        float knockbackTimer;
-    
-        // Recognition Handling
-        float recognitionTimer;
-        float maxRecognitionTime;
-        bool inRecognitionArea;
-        Vec2<float> lastSeenPlayerPos;
-    
-        // Blocked movement handling
-        float blockedHorizontallyTime; 
         bool  isJumping;
         float jumpTimer;
+        float blockedHorizontallyTime; // Tempo bloccato orizzontalmente
     
-        // Attack Timers
-        float radialAttackTimer;
-        float horizontalShootTimer;
+        // ------------------------------------------------------
+        // 5) Gestione dell’attacco standard
+        // ------------------------------------------------------
+        bool  swordSpawned;
+        float attackCooldown;
+        float attackTimer;
     
-        // **New Fields for Emperor Attack Scaling**
-        float radialAttackMultiplier; // Multiplier for sword count in radial attacks
-        float radialAttackCooldown;   // Cooldown time for radial attack
-        float radialAttackTimerSuper; // Timer for Emperor's super attack
-        float finalBurstTimer;
-        int burstCount;               // Tracks bursts fired in final phase
-        bool burstCooldownActive;     // Whether burst mode is in cooldown
-        float burstCooldownTimer;     // Timer for cooldown phase
-        bool isInBurstMode;           // Whether the enemy is in final burst mode
-        bool TileInFront;             // Whether the enemy is touching a tile in front
-        float shootTimer;             // Timer for normal shooting intervals
+        // ------------------------------------------------------
+        // 6) Gestione del knockback
+        // ------------------------------------------------------
+        float knockbackTimer;
     
-        // -----------------------------------------
-        // New Fields for Bullet Burst & Super Move
-        // -----------------------------------------
-        bool  inBurst;          // True if currently firing a burst of bullets
-        int   bulletsShot;      // How many bullets have been fired in the current burst
-        float burstInterval;    // Delay between bullets in a single burst
-        float burstTimer;       // Tracks time for spacing out burst bullets
-        int bulletCount;
+        // ------------------------------------------------------
+        // 7) Riconoscimento del giocatore
+        // ------------------------------------------------------
+        float recognitionTimer;       // Timer di riconoscimento
+        float maxRecognitionTime;     // Tempo massimo di inseguimento dopo aver perso di vista il player
+        bool  inRecognitionArea;      // Se il player è nell'area di riconoscimento
+        Vec2<float> lastSeenPlayerPos;// Ultima posizione vista del giocatore
     
-        bool  superMoveReady;   // Whether a super move volley is ready to fire
-        float superMoveTimer;   // Accumulates time for super move cooldown
-        float superMoveCooldown;// Time between super moves (e.g., 5 seconds)
-
-        // In CEnemyAI.h
-        float minShootDistance;
-        float shootCooldown;
+        // ------------------------------------------------------
+        // 8) Timer di attacco “radiale” e “shooting”
+        // ------------------------------------------------------
+        float radialAttackTimer;      // Timer per l'attacco radiale
+        float horizontalShootTimer;   // Timer per l'attacco orizzontale
+        bool  TileInFront;            // Se c’è un tile di fronte (per logiche di salto/blocco)
+        float shootTimer;             // Timer per gli intervalli di tiro "normale"
     
-        // Constructor
+        // ------------------------------------------------------
+        // 9) Parametri per Emperor Attack Scaling
+        // ------------------------------------------------------
+        float radialAttackMultiplier; // Moltiplicatore per numero di spade in attacco radiale
+        float radialAttackCooldown;   // Cooldown tra un attacco radiale e l'altro
+        float radialAttackTimerSuper; // Timer per super attacco radiale
+        float finalBurstTimer;        // Timer per la fase finale di burst
+        int   burstCount;             // Quanti burst sono stati fatti nella fase finale
+        bool  burstCooldownActive;    // Se il burst è in cooldown
+        float burstCooldownTimer;     // Timer per il cooldown del burst
+        bool  isInBurstMode;          // Se il nemico è in fase finale di burst
+    
+        // ------------------------------------------------------
+        // 10) Parametri per il “Bullet Burst” e la “Super Move”
+        // ------------------------------------------------------
+        bool  inBurst;          // True se sta sparando un burst di proiettili
+        int   bulletsShot;      // Quanti proiettili sparati in questo burst
+        float burstInterval;    // Ritardo tra i proiettili di un burst
+        float burstTimer;       // Timer per lo spacing dei proiettili in un burst
+        int   bulletCount;      // Numero totale di proiettili per burst
+    
+        bool  superMoveReady;   // Se è pronto a eseguire una super mossa
+        float superMoveTimer;   // Timer accumulato per la super move
+        float superMoveCooldown;// Tempo di cooldown tra super move
+    
+        // ------------------------------------------------------
+        // 11) Distanza di shooting e cooldown
+        // ------------------------------------------------------
+        float minShootDistance; // Distanza minima per sparare
+        float shootCooldown;    // Cooldown tra un colpo e l’altro
+    
+        // ------------------------------------------------------
+        // 12) Cooldown forzato dopo X attacchi consecutivi
+        // ------------------------------------------------------
+        int   consecutiveAttacks;       // Quanti attacchi consecutivi ha fatto
+        int   maxAttacksBeforeCooldown; // Quanti attacchi prima del cooldown
+        float forcedCooldownDuration;   // Durata del cooldown (in secondi)
+        float forcedCooldownTimer;      // Timer per il cooldown
+        bool  isInForcedCooldown;       // Se il nemico è in cooldown
+    
+        // ------------------------------------------------------
+        // Costruttore
+        // ------------------------------------------------------
         CEnemyAI(EnemyType type = EnemyType::Normal, EnemyBehavior behavior = EnemyBehavior::FollowOne)
             : enemyType(type),
               enemyBehavior(behavior),
-              patrolPoints(),
-              enemyState(patrolPoints.empty() ? EnemyState::Idle : EnemyState::Patrol),
+              enemyState(EnemyState::Idle), // Default: Idle
+    
+              // Movement & Combat
               speedMultiplier(1.0f),
               damage(1),
+    
+              // Vision & Attack
               lineOfSightRange(200.f),
               attackRadius(100.f),
-              currentPatrolIndex(0),
-              patrolWaitTime(0.f),
+    
+              // Jump & Movement
               facingDirection(1.f),
               jumpCooldown(0.5f),
+              isJumping(false),
+              jumpTimer(0.f),
+              blockedHorizontallyTime(0.f),
+    
+              // Attack Handling
               swordSpawned(false),
               attackCooldown(0.f),
               attackTimer(0.f),
+    
+              // Knockback
               knockbackTimer(0.f),
+    
+              // Recognition
               recognitionTimer(0.f),
               maxRecognitionTime(5.0f),
               inRecognitionArea(false),
               lastSeenPlayerPos(Vec2<float>(0.f, 0.f)),
-              blockedHorizontallyTime(0.f),
-              isJumping(false),
-              jumpTimer(0.f),
+    
+              // Attack Timers
               radialAttackTimer(0.f),
               horizontalShootTimer(0.f),
+              TileInFront(false),
+              shootTimer(0.f),            // Inizializzato a 0
+    
+              // Emperor Attack Scaling
               radialAttackMultiplier(1.0f),
               radialAttackCooldown(5.0f),
               radialAttackTimerSuper(5.0f),
@@ -377,10 +415,8 @@ class CEnemyAI : public Component {
               burstCooldownActive(false),
               burstCooldownTimer(0.f),
               isInBurstMode(false),
-              TileInFront(false),
-              shootTimer(0.f),
     
-              // Initialize new burst & super move fields
+              // Bullet Burst & Super Move
               inBurst(false),
               bulletsShot(0),
               burstInterval(0.1f),
@@ -389,9 +425,24 @@ class CEnemyAI : public Component {
               superMoveReady(false),
               superMoveTimer(0.f),
               superMoveCooldown(5.f),
+    
+              // Shooting distance & cooldown
               minShootDistance(100.f),
-              shootCooldown(1.f)
-        {}
+              shootCooldown(1.f),
+    
+              // Forced cooldown
+              consecutiveAttacks(0),
+              maxAttacksBeforeCooldown(5),
+              forcedCooldownDuration(5.f),
+              forcedCooldownTimer(0.f),
+              isInForcedCooldown(false)
+        {
+            // Parametri speciali per Elite
+            if (type == EnemyType::Elite) {
+                maxAttacksBeforeCooldown = 5;
+                forcedCooldownDuration   = 2.f;  // Esempio: Elite ha cooldown più breve
+            }
+        }
     };
 
 class CPlayerEquipment : public Component {

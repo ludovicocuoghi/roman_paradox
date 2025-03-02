@@ -329,22 +329,9 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
                     }
                 }
 
-            std::vector<Vec2<float>> patrolPoints;
-            patrolPoints.push_back(Vec2<float>(
-                px1 * LoadLevel::GRID_SIZE + LoadLevel::HALF_GRID,
-                windowHeight - (py1 * LoadLevel::GRID_SIZE) - LoadLevel::HALF_GRID
-            ));
-            patrolPoints.push_back(Vec2<float>(
-                px2 * LoadLevel::GRID_SIZE + LoadLevel::HALF_GRID,
-                windowHeight - (py2 * LoadLevel::GRID_SIZE) - LoadLevel::HALF_GRID
-            ));
-            enemy->get<CEnemyAI>().patrolPoints = patrolPoints;
-            enemy->get<CEnemyAI>().currentPatrolIndex = 0;
             enemy->get<CEnemyAI>().enemyState = EnemyState::Idle;
             std::cout << "[DEBUG] Spawned " << enemyTypeStr << " Enemy at ("
-                      << enemyX << ", " << enemyY << ") with patrol ("
-                      << px1 << "," << py1 << ") <-> (" << px2 << "," << py2 << ")"
-                      << " ID: " << enemyID << std::endl;
+                      << enemyX << ", " << enemyY << std::endl;
         }
         else
         {

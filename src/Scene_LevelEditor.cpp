@@ -502,8 +502,7 @@ void Scene_LevelEditor::saveLevel(const std::string& filePath) {
             continue;
         }
 
-        out << "Enemy " << enemyType << " " << gridX << " " << savedGridY << " "
-            << gridX << " " << savedGridY << " " << (gridX + 2) << " " << savedGridY << "\n";
+        out << "Enemy " << enemyType << " " << gridX << " " << savedGridY << "\n";
     }
 
     out.close();

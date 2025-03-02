@@ -79,6 +79,24 @@ void EnemyAISystem::update(float deltaTime)
         auto& enemyAI    = enemy->get<CEnemyAI>();
         auto& anim       = enemy->get<CAnimation>();
 
+        
+        // Forced cooldown
+        if (enemyAI.isInForcedCooldown) {
+            enemyAI.forcedCooldownTimer -= deltaTime;
+            if (enemyAI.forcedCooldownTimer <= 0.f) {
+                // Fine cooldown: reset attacchi
+                enemyAI.forcedCooldownTimer = 0.f;
+                enemyAI.consecutiveAttacks  = 0;
+                enemyAI.isInForcedCooldown  = false;
+    
+                std::cout << "[DEBUG] Enemy " << enemy->id() << " forced cooldown ended.\n";
+            } else {
+                // Se siamo ancora in cooldown, il nemico non può attaccare
+                // Quindi saltiamo la logica di attacco e passiamo al prossimo enemy
+                // (Oppure potresti permettergli di muoversi ma non attaccare)
+                continue;
+            }
+        }
         // ----------------------------------------------------
         // Emperor Attack Logic
         // ----------------------------------------------------
@@ -577,99 +595,6 @@ void EnemyAISystem::update(float deltaTime)
                 std::cout << "[DEBUG] Enemy " << enemy->id() 
                           << " Attack finished. Setting cooldown=" 
                           << enemyAI.attackCooldown << "\n";
-            }
-        }
-
-        //----------------------------------------------------
-        // Stato Recognition
-        //----------------------------------------------------
-        if (enemyAI.enemyState == EnemyState::Recognition) {
-            float recognitionMoveSpeed = RECOGNITION_MOVE_SPEED;
-            float distanceToLastSeen = std::sqrt(
-                std::pow(enemyAI.lastSeenPlayerPos.x - enemyTrans.pos.x, 2) +
-                std::pow(enemyAI.lastSeenPlayerPos.y - enemyTrans.pos.y, 2)
-            );
-
-            if (distanceToLastSeen > RECOGNITION_DISTANCE_THRESHOLD) {
-                if (enemyAI.lastSeenPlayerPos.x > enemyTrans.pos.x) {
-                    enemyTrans.velocity.x = recognitionMoveSpeed;
-                    enemyAI.facingDirection = 1.f;
-                    anim.animation.reset();
-                } else if (enemyAI.lastSeenPlayerPos.x < enemyTrans.pos.x) {
-                    enemyTrans.velocity.x = -recognitionMoveSpeed;
-                    enemyAI.facingDirection = -1.f;
-                    anim.animation.reset();
-                } else {
-                    enemyTrans.velocity.x = 0.f;
-                    anim.animation.reset();
-                }
-            } else {
-                enemyTrans.velocity.x = 0.f;
-                anim.animation.reset();
-
-                if (!enemyAI.inRecognitionArea) {
-                    enemyAI.inRecognitionArea = true;
-                    enemyAI.recognitionTimer += deltaTime;
-                    if (enemyAI.recognitionTimer >= enemyAI.maxRecognitionTime) {
-                        enemyAI.recognitionTimer = 0.f;
-                        enemyAI.inRecognitionArea = false;
-                        if (!enemyAI.patrolPoints.empty()) {
-                            enemyAI.enemyState = EnemyState::Patrol;
-                        } else {
-                            enemyAI.enemyState = EnemyState::Idle;
-                        }
-                    }
-                } else {
-                    enemyAI.recognitionTimer += deltaTime;
-                    if (enemyAI.recognitionTimer >= enemyAI.maxRecognitionTime) {
-                        enemyAI.recognitionTimer = 0.f;
-                        enemyAI.inRecognitionArea = false;
-                        if (!enemyAI.patrolPoints.empty()) {
-                            enemyAI.enemyState = EnemyState::Patrol;
-                        } else {
-                            enemyAI.enemyState = EnemyState::Idle;
-                        }
-                    }
-                }
-            }
-        }
-
-        //----------------------------------------------------
-        // Stato Patrol
-        //----------------------------------------------------
-        if (enemyAI.enemyState == EnemyState::Patrol) {
-            if (enemyAI.patrolPoints.empty()) {
-                enemyAI.enemyState = EnemyState::Idle;
-            } else {
-                Vec2<float> target = enemyAI.patrolPoints[enemyAI.currentPatrolIndex];
-                float dxPatrol = target.x - enemyTrans.pos.x;
-                float dyPatrol = target.y - enemyTrans.pos.y;
-                float patrolDist = std::sqrt(dxPatrol * dxPatrol + dyPatrol * dyPatrol);
-
-                if (patrolDist < PATROL_DISTANCE_THRESHOLD) {
-                    enemyTrans.velocity.x = 0.f;
-                    anim.animation.reset();
-                    enemyAI.patrolWaitTime += deltaTime;
-                    if (enemyAI.patrolWaitTime >= PATROL_WAIT_DURATION) {
-                        enemyAI.patrolWaitTime = 0.f;
-                        enemyAI.currentPatrolIndex =
-                            (enemyAI.currentPatrolIndex + 1) % enemyAI.patrolPoints.size();
-                    }
-                } else {
-                    enemyAI.patrolWaitTime = 0.f;
-                    if (dxPatrol > 0.f) {
-                        enemyTrans.velocity.x = PATROL_SPEED;
-                        enemyAI.facingDirection = 1.f;
-                        anim.animation.reset();
-                    } else if (dxPatrol < 0.f) {
-                        enemyTrans.velocity.x = -PATROL_SPEED;
-                        enemyAI.facingDirection = -1.f;
-                        anim.animation.reset();
-                    } else {
-                        enemyTrans.velocity.x = 0.f;
-                        anim.animation.reset();
-                    }
-                }
             }
         }
 

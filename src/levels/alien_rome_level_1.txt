@@ -203,5 +203,5 @@ Dec BushTall2 121 4
 Dec BushTall2 128 4
 Dec BushTall1 119 4
 Dec BushTall1 118 4
-Enemy EnemySuper 87 1 87 1 89 1
+Enemy EnemySuper 87 1
 Player 2 2
