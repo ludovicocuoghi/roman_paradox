@@ -519,15 +519,15 @@ Dec EnemyGrave 84 2
 Dec EnemyGrave 83 1
 Dec EnemyGrave 82 1
 Dec EnemyGrave 66 10
-Enemy EnemySuper 52 1 52 1 54 1
-Enemy EnemySuper 105 9 105 9 107 9
-Enemy EnemySuper 107 9 107 9 109 9
-Enemy EnemySuper 46 8 46 8 48 8
-Enemy EnemySuper 62 10 62 10 64 10
-Enemy EnemySuper 65 10 65 10 67 10
-Enemy EnemySuper 69 10 69 10 71 10
-Enemy EnemySuper 41 8 41 8 43 8
-Enemy EnemySuper 43 8 43 8 45 8
-Enemy EnemySuper 125 1 125 1 127 1
-Enemy EnemySuper 124 1 124 1 126 1
-Player 2 5
+Enemy EnemySuper 52 1
+Enemy EnemySuper 105 9
+Enemy EnemySuper 107 9
+Enemy EnemySuper 46 8
+Enemy EnemySuper 62 10
+Enemy EnemySuper 65 10
+Enemy EnemySuper 69 10
+Enemy EnemySuper 41 8
+Enemy EnemySuper 43 8
+Enemy EnemySuper 125 1
+Enemy EnemySuper 124 1
+Player 2 2 

@@ -111,26 +111,39 @@ void MovementSystem::update(float deltaTime)
             transform.pos += transform.velocity * deltaTime;
         }
         else {
-            // Movimenti standard (solo se non in "defense")
             transform.velocity.x = 0.f;
+        
+            // Se il giocatore sta premendo A
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
                 transform.velocity.x = -X_SPEED;
                 m_lastDirection = -1.f;
-                if(state.onGround)
+        
+                // Non cambiare lo stato a "run" se è già "attack" o "air"
+                if (state.state != "air" && state.state != "attack") {
                     state.state = "run";
-            } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+                }
+            }
+            // Se il giocatore sta premendo D
+            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
                 transform.velocity.x = X_SPEED;
                 m_lastDirection = 1.f;
-                if(state.onGround)
+        
+                if (state.state != "air" && state.state != "attack") {
                     state.state = "run";
-            } else {
-                // Se non c'è input orizzontale, imposta "idle" solo se non siamo in aria
-                if (state.state != "air")
-                    state.state = "idle";
+                }
             }
+            else {
+                // Se non c'è input orizzontale, imposta "idle" solo se
+                // non siamo in aria E non stiamo attaccando
+                if (state.state != "air" && state.state != "attack") {
+                    state.state = "idle";
+                }
+            }
+        
+            // Aggiorna la posizione
             transform.pos += transform.velocity * deltaTime;
         }
-
+        
         // Flip sprite in base alla direzione
         if (m_lastDirection < 0) {
             flipSpriteLeft(canim.animation.getMutableSprite());

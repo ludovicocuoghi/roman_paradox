@@ -175,7 +175,7 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
         {
             std::string enemyTypeStr;
             int enemyX, enemyY, px1, py1, px2, py2;
-            if (!(file >> enemyTypeStr >> enemyX >> enemyY >> px1 >> py1 >> px2 >> py2))
+            if (!(file >> enemyTypeStr >> enemyX >> enemyY))
             {
                 std::cerr << "[WARNING] Incomplete Enemy entry. Skipping.\n";
                 continue;
