@@ -442,6 +442,11 @@ class CEnemyAI : public Component {
                 maxAttacksBeforeCooldown = 5;
                 forcedCooldownDuration   = 2.f;  // Esempio: Elite ha cooldown più breve
             }
+            // Parametri speciali per Elite
+            else if (type == EnemyType::Super) {
+                maxAttacksBeforeCooldown = 100;
+                forcedCooldownDuration   = 2.f;  // Esempio: Elite ha cooldown più breve
+            }
         }
     };
 

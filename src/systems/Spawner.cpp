@@ -443,6 +443,31 @@ void Spawner::updateFragments(float deltaTime) {
     }
 }
 
+std::shared_ptr<Entity> Spawner::spawnBlackHoleAfterTileDestruction(const Vec2<float>& position)
+{
+    // 2) Spawn the permanent black-hole tile
+    //
+    auto blackHoleTile = m_entityManager.addEntity("tile");
+    blackHoleTile->add<CTransform>(position);
+
+    // Load black hole tile animation
+    if (m_game.assets().hasAnimation("AlienBlackHoleRedSmall")) {
+        auto& tileAnim = m_game.assets().getAnimation("AlienBlackHoleRedSmall");
+        blackHoleTile->add<CAnimation>(tileAnim, true); // loop
+        sf::Vector2i animSize = tileAnim.getSize();
+        Vec2<float> boxSize(animSize.x, animSize.y);
+        Vec2<float> boxOffset(boxSize.x * 0.5f, boxSize.y * 0.5f);
+        blackHoleTile->add<CBoundingBox>(boxSize, boxOffset);
+    } else {
+        std::cerr << "[ERROR] Missing AlienBlackHoleRedSmall animation!\n";
+    }
+
+    std::cout << "[DEBUG] Spawned BlackHoleVanish + lethal BlackHoleTilc at (" 
+              << position.x << ", " << position.y << ")\n";
+
+    return blackHoleTile;
+}
+
 void Spawner::updateGraves(float deltaTime) {
     for (auto& grave : m_entityManager.getEntities("enemyGrave")) {
         auto& transform = grave->get<CTransform>();

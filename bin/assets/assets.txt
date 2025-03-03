@@ -21,6 +21,9 @@ Texture TexAncientCoinBronze Collectables/ancient_rome/coinAnimbronze.png
 
 Texture TexAncientBlackHoleRed Tile/ancient_rome/blackhole_reds.png
 Texture TexAlienBlackHoleRedBig Tile/alien_rome/blackhole_reds_big.png
+Texture TexAlienBlackHoleRedSmall Tile/alien_rome/blackhole_reds_small.png
+
+Texture TexAlienBlackHoleVanish Tile/alien_rome/vanish_black_hole.png
 
 Texture TexAncientBlackHoleBlue Tile/ancient_rome/blackhole_blues.png
 Texture TexAncientBlackHoleRedBig Tile/ancient_rome/blackhole_reds_big.png
@@ -240,7 +243,13 @@ Animation AncientBlackHoleRed TexAncientBlackHoleRed 176 175 11 11
 Animation AncientBlackHoleBlue TexAncientBlackHoleBlue 176 175 11 11
 Animation AncientBlackHoleRedBig TexAncientBlackHoleRedBig 500 500 10 14
 Animation AlienBlackHoleRedBig TexAlienBlackHoleRedBig 500 500 10 14
+
+
+Animation AlienBlackHoleRedSmall TexAlienBlackHoleRedSmall 75 75 10 14
+
+
 Animation FutureBlackHoleRedBig TexAlienBlackHoleRedBig 500 500 10 14
+Animation AlienBlackHoleVanish TexAlienBlackHoleVanish 50 50 4 10
 
 Texture TexFutureGrapeSmall Collectables/future_rome/smallgrape.png
 Texture TexFutureGrapeBig Collectables/future_rome/biggrape.png

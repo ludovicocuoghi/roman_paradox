@@ -12,7 +12,7 @@ public:
     static constexpr float MAX_FALL_SPEED = 600.f;
     static constexpr float KNOCKBACK_DECAY_FACTOR = 0.99f;
     static constexpr float DEFAULT_GRAVITY = 800.f;
-    static constexpr float PLAYER_VISIBLE_DISTANCE = 500.f;
+    static constexpr float PLAYER_VISIBLE_DISTANCE = 600.f;
     static constexpr float ATTACK_RANGE = 100.f;
     static constexpr float EMPEROR_ATTACK_RANGE = 200.f;
 
@@ -26,12 +26,6 @@ public:
 
     static constexpr float ATTACK_COOLDOWN = 0.3f;
     static constexpr float FOLLOW_MOVE_SPEED = 290.f;
-    static constexpr float RECOGNITION_MOVE_SPEED = 80.f;
-    static constexpr float RECOGNITION_DISTANCE_THRESHOLD = 15.f;
-
-    static constexpr float PATROL_SPEED = 100.f;
-    static constexpr float PATROL_DISTANCE_THRESHOLD = 10.f;
-    static constexpr float PATROL_WAIT_DURATION = 2.0f;
     void update(float deltaTime);
 
 private:

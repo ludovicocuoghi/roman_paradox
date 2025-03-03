@@ -206,4 +206,5 @@ Enemy EnemySuper 48 1
 Enemy EnemySuper 70 1
 Enemy EnemySuper 98 3
 Enemy EnemySuper 62 8
-Player 2 5
+Enemy EnemySuper 23 1
+Player 4 4

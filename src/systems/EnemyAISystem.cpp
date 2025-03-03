@@ -305,7 +305,7 @@ void EnemyAISystem::update(float deltaTime)
 
         bool canSeePlayer  = checkLineOfSight(enemyTrans.pos, playerTrans.pos, m_entityManager);
         bool playerVisible = (distance < PLAYER_VISIBLE_DISTANCE) || canSeePlayer;
-        bool playerVisible_elite = (distance < PLAYER_VISIBLE_DISTANCE * 2) || canSeePlayer;
+        bool playerVisible_elite = (distance < PLAYER_VISIBLE_DISTANCE * 3) || canSeePlayer;
 
         bool shouldFollow = false;
         switch (enemyAI.enemyBehavior) {
@@ -354,12 +354,6 @@ void EnemyAISystem::update(float deltaTime)
                     std::cout << "[DEBUG] tileinfront true!!!\n";
                     break;
                 }
-            }
-
-            if (tileDetected && enemyAI.enemyType == EnemyType::Super) {
-                enemyAI.enemyState = EnemyState::BlockedByTile;
-                std::cout << "[DEBUG] Enemy touching a tile! Switching to BLOCKEDBYTILE state.\n";
-                return;
             }
 
             // Normal movement logic
