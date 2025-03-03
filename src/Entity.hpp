@@ -20,7 +20,8 @@ using ComponentTuple = std::tuple<
     CShape,
     CEnemyAI,
     CUniqueID,
-    CPlayerEquipment
+    CPlayerEquipment,
+    CTileTouched
 >;
 
 class Entity {

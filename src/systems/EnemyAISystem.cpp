@@ -5,7 +5,10 @@
 #include <algorithm>
 #include <iostream>
 
-// Le funzioni statiche di utilità rimangono invariate
+// ----------------------------------------------------------------------
+// 1) Utility Functions (unchanged)
+// ----------------------------------------------------------------------
+
 static bool segmentsIntersect(const Vec2<float>& p1, const Vec2<float>& p2,
                               const Vec2<float>& q1, const Vec2<float>& q2)
 {
@@ -21,7 +24,8 @@ static bool segmentsIntersect(const Vec2<float>& p1, const Vec2<float>& p2,
     return (o1 * o2 < 0 && o3 * o4 < 0);
 }
 
-static bool lineIntersectsRect(const Vec2<float>& start, const Vec2<float>& end,
+static bool lineIntersectsRect(const Vec2<float>& start,
+                               const Vec2<float>& end,
                                const sf::FloatRect& rect)
 {
     Vec2<float> topLeft  { rect.left,               rect.top };
@@ -43,6 +47,7 @@ bool checkLineOfSight(const Vec2<float>& enemyCenter,
         if (!tile->has<CTransform>() || !tile->has<CBoundingBox>()) continue;
         auto& tileTrans = tile->get<CTransform>();
         auto& tileBB    = tile->get<CBoundingBox>();
+
         sf::FloatRect tileRect = tileBB.getRect(tileTrans.pos);
         if (lineIntersectsRect(enemyCenter, playerCenter, tileRect)) {
             return false;
@@ -51,13 +56,26 @@ bool checkLineOfSight(const Vec2<float>& enemyCenter,
     return true;
 }
 
-EnemyAISystem::EnemyAISystem(EntityManager& entityManager, Spawner& spawner, GameEngine& game)
-    : m_entityManager(entityManager), m_spawner(&spawner), m_game(game)
+// ----------------------------------------------------------------------
+// 2) EnemyAISystem Constructor
+// ----------------------------------------------------------------------
+
+EnemyAISystem::EnemyAISystem(EntityManager& entityManager,
+                             Spawner& spawner,
+                             GameEngine& game)
+    : m_entityManager(entityManager),
+      m_spawner(&spawner),
+      m_game(game)
 {
 }
 
+// ----------------------------------------------------------------------
+// 3) update() - The Main Logic
+// ----------------------------------------------------------------------
+
 void EnemyAISystem::update(float deltaTime)
 {
+    // Early checks: No enemies or players -> Nothing to do
     auto enemies = m_entityManager.getEntities("enemy");
     if (enemies.empty()) return;
 
@@ -67,161 +85,177 @@ void EnemyAISystem::update(float deltaTime)
     auto& player      = players[0];
     auto& playerTrans = player->get<CTransform>();
 
+    // ============================================================
+    // Loop Through All Enemies
+    // ============================================================
     for (auto& enemy : enemies) {
-        if (!enemy->has<CTransform>() || 
-            !enemy->has<CEnemyAI>()    || 
-            !enemy->has<CAnimation>()) 
+        // Must have these components or skip
+        if (!enemy->has<CTransform>() ||
+            !enemy->has<CEnemyAI>()  ||
+            !enemy->has<CAnimation>())
         {
             continue;
         }
 
+        // Shorthand references
         auto& enemyTrans = enemy->get<CTransform>();
         auto& enemyAI    = enemy->get<CEnemyAI>();
         auto& anim       = enemy->get<CAnimation>();
 
-        // Nuova variabile per saltare solo la logica di attacco
+        // This flag allows movement but prevents attacking
         bool skipAttack = false;
 
         // ----------------------------------------------------
-        // 1) FORCED COOLDOWN CHECK
+        // 1) Forced Cooldown Check
         // ----------------------------------------------------
         if (enemyAI.isInForcedCooldown) {
             enemyAI.forcedCooldownTimer -= deltaTime;
             if (enemyAI.forcedCooldownTimer <= 0.f) {
-                // Fine cooldown: reset attacchi
+                // End forced cooldown
                 enemyAI.forcedCooldownTimer = 0.f;
                 enemyAI.consecutiveAttacks  = 0;
                 enemyAI.isInForcedCooldown  = false;
 
-                std::cout << "[DEBUG] Enemy " << enemy->id() 
+                std::cout << "[DEBUG] Enemy " << enemy->id()
                           << " forced cooldown ended.\n";
             } else {
-                // NEMICO ANCORA IN COOLDOWN:
-                // Non può attaccare, ma può muoversi
-                skipAttack = true; 
+                // Still in forced cooldown:
+                // can move, but cannot attack
+                skipAttack = true;
             }
         }
 
         // ----------------------------------------------------
-        // 2) LOGICA SPECIFICA PER L'EMPEROR
+        // 2) Emperor-Specific Logic
         // ----------------------------------------------------
-        if (enemyAI.enemyType == EnemyType::Emperor) 
+        if (enemyAI.enemyType == EnemyType::Emperor)
         {
-            float dx = playerTrans.pos.x - enemyTrans.pos.x;
-            float dy = playerTrans.pos.y - enemyTrans.pos.y;
-            float distance = std::sqrt(dx * dx + dy * dy);
+            float dx       = playerTrans.pos.x - enemyTrans.pos.x;
+            float dy       = playerTrans.pos.y - enemyTrans.pos.y;
+            float distance = std::sqrt(dx*dx + dy*dy);
 
-            // Fetch Emperor's health correctly
-            float healthPercentage = 1.0f;
+            // (A) Fetch Emperor's Health Percentage
+            float healthPercentage = 1.f;
             if (enemy->has<CHealth>()) {
                 auto& health = enemy->get<CHealth>();
-                healthPercentage = static_cast<float>(health.currentHealth) / 
-                                   static_cast<float>(health.maxHealth);
+                healthPercentage = static_cast<float>(health.currentHealth)
+                                 / static_cast<float>(health.maxHealth);
             }
+            std::cout << "[DEBUG] Emperor Health: "
+                      << healthPercentage << "\n";
 
-            std::cout << "[DEBUG] Emperor Health: " << healthPercentage << "\n";
-
-            // ========== FINAL BURST (10% HP) ==========
+            // (B) Final Burst If HP <= 10%
             if (healthPercentage <= 0.1f) {
                 if (enemyAI.enemyState != EnemyState::FinalAttack) {
                     std::cout << "[DEBUG] Emperor entering FINAL ATTACK mode!\n";
-                    enemyAI.enemyState = EnemyState::FinalAttack;
+                    enemyAI.enemyState    = EnemyState::FinalAttack;
                     enemyAI.finalBurstTimer = 0.f;
                     enemyAI.burstCount = 0;
                 }
 
-                // Stop all movement
+                // Stop movement & run final burst logic
                 enemyTrans.velocity.x = 0.f;
                 enemyTrans.velocity.y = 0.f;
 
-                // Execute Final Burst
                 enemyAI.finalBurstTimer += deltaTime;
                 if (enemyAI.finalBurstTimer >= 0.2f) {
                     enemyAI.finalBurstTimer = 0.f;
                     std::cout << "[DEBUG] Emperor FINAL ATTACK: 8x Radial Swords!\n";
-                    m_spawner->spawnEmperorSwordsRadial(enemy, 
+
+                    m_spawner->spawnEmperorSwordsRadial(enemy,
                                                         EMPEROR_RADIAL_SWORDS_COUNT * 2,
-                                                        EMPEROR_RADIAL_SWORDS_RADIUS, 
+                                                        EMPEROR_RADIAL_SWORDS_RADIUS,
                                                         EMPEROR_RADIAL_SWORDS_SPEED);
-
                     enemyAI.burstCount++;
-                    std::cout << "[DEBUG] Emperor FINAL ATTACK: Burst #" << enemyAI.burstCount << "\n";
+                    std::cout << "[DEBUG] Emperor FINAL ATTACK: Burst #"
+                              << enemyAI.burstCount << "\n";
 
-                    if (enemyAI.burstCount >= 25) {  
+                    if (enemyAI.burstCount >= 25) {
                         std::cout << "[DEBUG] Emperor FINAL ATTACK FINISHED! No more attacks.\n";
                         auto enemySwords = m_entityManager.getEntities("EmperorSword");
                         for (auto& sword : enemySwords) {
                             sword->destroy();
                         }
-                        return;
+                        return; // Done with final attack
                     }
                 }
-                return; // 🔹 No other attacks in Final Attack mode
+                return; // Skip other logic in final attack mode
             }
 
-            // ========== NORMAL ATTACK PHASES ==========
+            // (C) Normal Attack Phases (Above 10% HP)
+            // ---- Radial Attack ( > 70% HP)
             if (enemyAI.enemyState != EnemyState::FinalAttack) {
-                // Radial Attack (Above 70% HP)
                 if (healthPercentage > 0.7f) {
                     enemyAI.radialAttackTimer += deltaTime;
                     if (enemyAI.radialAttackTimer >= 4.f) {
                         enemyAI.radialAttackTimer = 0.f;
-                        std::cout << "[DEBUG] Emperor Super Attack: Radial Swords (Normal)\n";
-                        m_spawner->spawnEmperorSwordsRadial(enemy, 
-                                                            EMPEROR_RADIAL_SWORDS_COUNT, 
-                                                            EMPEROR_RADIAL_SWORDS_RADIUS, 
-                                                            EMPEROR_RADIAL_SWORDS_SPEED);
+                        std::cout << "[DEBUG] Emperor Attack: Radial Swords\n";
+                        m_spawner->spawnEmperorSwordsRadial(
+                            enemy,
+                            EMPEROR_RADIAL_SWORDS_COUNT,
+                            EMPEROR_RADIAL_SWORDS_RADIUS,
+                            EMPEROR_RADIAL_SWORDS_SPEED
+                        );
                     }
                 }
-                // Enhanced Radial Attack (70% > HP > 50%)
-                else if (healthPercentage <= 0.7f && healthPercentage > 0.5f) {
+                // ---- Enhanced Radial Attack (70% > HP > 50%)
+                else if (healthPercentage <= 0.7f &&
+                         healthPercentage > 0.5f)
+                {
                     enemyAI.radialAttackTimer += deltaTime;
                     if (enemyAI.radialAttackTimer >= 3.f) {
                         enemyAI.radialAttackTimer = 0.f;
-                        std::cout << "[DEBUG] Emperor Super Attack: DOUBLE Radial Swords (Enhanced)\n";
-                        m_spawner->spawnEmperorSwordsRadial(enemy, 
-                                                            EMPEROR_RADIAL_SWORDS_COUNT * 2, 
-                                                            EMPEROR_RADIAL_SWORDS_RADIUS, 
-                                                            EMPEROR_RADIAL_SWORDS_SPEED);
+                        std::cout << "[DEBUG] Emperor Attack: DOUBLE Radial Swords\n";
+                        m_spawner->spawnEmperorSwordsRadial(
+                            enemy,
+                            EMPEROR_RADIAL_SWORDS_COUNT * 2,
+                            EMPEROR_RADIAL_SWORDS_RADIUS,
+                            EMPEROR_RADIAL_SWORDS_SPEED
+                        );
                     }
                 }
-                // Final Burst Phase (Below 50% HP, Above 10%)
-                else if (healthPercentage <= 0.5f && healthPercentage > 0.1f) {
+                // ---- Final Burst Phase (50% > HP > 10%)
+                else if (healthPercentage <= 0.5f) {
                     if (!enemyAI.burstCooldownActive) {
+                        // Quick radial bursts
                         enemyAI.radialAttackTimer += deltaTime;
-                        if (enemyAI.radialAttackTimer >= 0.2f) { 
+                        if (enemyAI.radialAttackTimer >= 0.2f) {
                             enemyAI.radialAttackTimer = 0.f;
-                            std::cout << "[DEBUG] Emperor Super Attack: QUADRUPLE Radial Swords (Final Phase)\n";
-                            m_spawner->spawnEmperorSwordsRadial(enemy, 
-                                                                EMPEROR_RADIAL_SWORDS_COUNT, 
-                                                                EMPEROR_RADIAL_SWORDS_RADIUS, 
-                                                                EMPEROR_RADIAL_SWORDS_SPEED);
-
+                            std::cout << "[DEBUG] Emperor Attack: QUADRUPLE Radial Swords\n";
+                            m_spawner->spawnEmperorSwordsRadial(
+                                enemy,
+                                EMPEROR_RADIAL_SWORDS_COUNT,
+                                EMPEROR_RADIAL_SWORDS_RADIUS,
+                                EMPEROR_RADIAL_SWORDS_SPEED
+                            );
                             enemyAI.burstCount++;
+                            // If enough bursts -> 5s cooldown
                             if (enemyAI.burstCount >= 20) {
                                 enemyAI.burstCooldownActive = true;
-                                enemyAI.burstCooldownTimer = 0.f;
-                                enemyAI.burstCount = 0;
+                                enemyAI.burstCooldownTimer  = 0.f;
+                                enemyAI.burstCount          = 0;
+
                                 auto enemySwords = m_entityManager.getEntities("EmperorSword");
                                 for (auto& sword : enemySwords) {
                                     sword->destroy();
                                 }
-                                std::cout << "[DEBUG] Emperor Super Attack: COOLDOWN STARTED (5 sec)\n";
+                                std::cout << "[DEBUG] Emperor: 5s COOLDOWN STARTED\n";
                             }
                         }
                     }
                     else {
+                        // In cooldown
                         enemyAI.burstCooldownTimer += deltaTime;
                         if (enemyAI.burstCooldownTimer >= 5.f) {
                             enemyAI.burstCooldownActive = false;
-                            std::cout << "[DEBUG] Emperor Super Attack: COOLDOWN ENDED\n";
+                            std::cout << "[DEBUG] Emperor COOLDOWN ENDED\n";
                         }
                     }
                 }
 
-                // Close-range attack (distance < 100) 
+                // (D) Close-range attack
                 if (distance < 100.f && !enemyAI.swordSpawned) {
-                    std::cout << "[DEBUG] Emperor spawns static swords (Close-range attack)\n";
+                    std::cout << "[DEBUG] Emperor spawns static swords (Close-range)\n";
                     for (int i = 0; i < 3; ++i) {
                         m_spawner->spawnEmperorSwordOffset(enemy);
                     }
@@ -231,14 +265,14 @@ void EnemyAISystem::update(float deltaTime)
         }
 
         // ----------------------------------------------------
-        // 3) GESTIONE KNOCKBACK
+        // 3) Knockback Handling
         // ----------------------------------------------------
         if (enemyAI.enemyState == EnemyState::Knockback) {
             std::cout << "[DEBUG] Knockback: vel.x=" << enemyTrans.velocity.x
                       << " pos.x=" << enemyTrans.pos.x
                       << " timer=" << enemyAI.knockbackTimer << "\n";
 
-            // Distruggi subito le spade nemiche associate all'enemy
+            // Destroy associated swords
             auto enemySwords = m_entityManager.getEntities("enemySword");
             for (auto& sword : enemySwords) {
                 if (sword->has<CState>()) {
@@ -253,24 +287,26 @@ void EnemyAISystem::update(float deltaTime)
                 enemyTrans.velocity.x *= KNOCKBACK_DECAY_FACTOR;
                 enemyTrans.pos += enemyTrans.velocity * deltaTime;
                 enemyAI.knockbackTimer -= deltaTime;
-                continue;
+                continue; // Skip the rest for this frame
             } else {
                 enemyAI.knockbackTimer = 0.f;
-                enemyAI.enemyState = EnemyState::Follow; // oppure "Idle"
+                enemyAI.enemyState = EnemyState::Follow; // or Idle
             }
         }
 
         // ----------------------------------------------------
-        // 4) GRAVITÀ / CONTROLLO A TERRA
+        // 4) Gravity & Ground Check
         // ----------------------------------------------------
         bool isOnGround = false;
         if (enemy->has<CBoundingBox>()) {
             auto& bb = enemy->get<CBoundingBox>();
             sf::FloatRect enemyRect = bb.getRect(enemyTrans.pos);
+
             for (auto& tile : m_entityManager.getEntities("tile")) {
                 if (!tile->has<CTransform>() || !tile->has<CBoundingBox>()) continue;
                 auto& tileTrans = tile->get<CTransform>();
                 auto& tileBB    = tile->get<CBoundingBox>();
+
                 sf::FloatRect tileRect = tileBB.getRect(tileTrans.pos);
                 if (enemyRect.intersects(tileRect)) {
                     isOnGround = true;
@@ -279,45 +315,53 @@ void EnemyAISystem::update(float deltaTime)
             }
         }
         if (!isOnGround) {
-            float grav = enemy->has<CGravity>() 
-                       ? enemy->get<CGravity>().gravity 
+            float grav = enemy->has<CGravity>()
+                       ? enemy->get<CGravity>().gravity
                        : DEFAULT_GRAVITY;
             enemyTrans.velocity.y += grav * deltaTime;
-            enemyTrans.velocity.y = std::clamp(enemyTrans.velocity.y, 
-                                               -MAX_FALL_SPEED, MAX_FALL_SPEED);
+            enemyTrans.velocity.y =
+                std::clamp(enemyTrans.velocity.y,
+                           -MAX_FALL_SPEED,
+                            MAX_FALL_SPEED);
         } else {
             enemyTrans.velocity.y = 0.f;
         }
 
         // ----------------------------------------------------
-        // 5) DISTANZA DAL GIOCATORE E VISTA
+        // 5) Distance & Visibility
         // ----------------------------------------------------
-        float dx = playerTrans.pos.x - enemyTrans.pos.x;
-        float dy = playerTrans.pos.y - enemyTrans.pos.y;
-        float distance = std::sqrt(dx * dx + dy * dy);
+        float dx       = playerTrans.pos.x - enemyTrans.pos.x;
+        float dy       = playerTrans.pos.y - enemyTrans.pos.y;
+        float distance = std::sqrt(dx*dx + dy*dy);
 
-        // Se il giocatore è praticamente sulla stessa X ma più in alto, Idle
+        // If player is basically above enemy on same X, switch to Idle
         if (std::fabs(dx) < 1.0f && playerTrans.pos.y < enemyTrans.pos.y) {
             enemyAI.enemyState = EnemyState::Idle;
             enemyTrans.velocity.x = 0.f;
-            continue;
+            continue; // Skip further logic
         }
 
-        bool canSeePlayer  = checkLineOfSight(enemyTrans.pos, playerTrans.pos, m_entityManager);
-        bool playerVisible = (distance < PLAYER_VISIBLE_DISTANCE) || canSeePlayer;
+        bool canSeePlayer = checkLineOfSight(enemyTrans.pos,
+                                             playerTrans.pos,
+                                             m_entityManager);
+
+        bool playerVisible       = (distance < PLAYER_VISIBLE_DISTANCE) || canSeePlayer;
         bool playerVisible_elite = (distance < PLAYER_VISIBLE_DISTANCE * 3) || canSeePlayer;
 
         bool shouldFollow = false;
         switch (enemyAI.enemyBehavior) {
             case EnemyBehavior::FollowOne:
-                if (playerVisible) shouldFollow = true;
+                shouldFollow = playerVisible;
                 break;
             case EnemyBehavior::FollowTwo:
-                if (playerVisible_elite) shouldFollow = true;
+                shouldFollow = playerVisible_elite;
+                break;
+                case EnemyBehavior::FollowThree:
+                shouldFollow = true;  // Always follow, regardless of distance
                 break;
         }
 
-        // Decremento attacco se > 0
+        // Attack cooldown decrement
         if (enemyAI.attackCooldown > 0.f) {
             enemyAI.attackCooldown -= deltaTime;
             if (enemyAI.attackCooldown < 0.f) {
@@ -325,257 +369,378 @@ void EnemyAISystem::update(float deltaTime)
             }
         }
 
-        // ----------------------------------------------------
-        // 6) STATO FOLLOW
-        // ----------------------------------------------------
-        if (enemyAI.enemyState == EnemyState::Follow) {
-            const float xThreshold = 5.0f; // Tolerance to avoid rapid flipping
-
-            bool tileDetected = false;
-            sf::FloatRect enemyRect = enemy->get<CBoundingBox>().getRect(enemyTrans.pos);
-
+        // Check for tiles in front of Super enemies
+        if (enemyAI.enemyType == EnemyType::Super) {
+            enemyAI.tileDetected = false; // Reset flag
+            
+            auto& bb = enemy->get<CBoundingBox>();
+            sf::FloatRect enemyRect = bb.getRect(enemyTrans.pos);
+            float enemyFrontX = (enemyAI.facingDirection > 0.f)
+                                ? enemyRect.left + enemyRect.width
+                                : enemyRect.left;
+        
+            // Check for tile in front
             for (auto& tile : m_entityManager.getEntities("tile")) {
-                if (!tile->has<CTransform>() || !tile->has<CBoundingBox>()) continue;
+                if (!tile->has<CTransform>() || !tile->has<CBoundingBox>() || !tile->has<CAnimation>())
+                    continue;
+        
                 auto& tileTrans = tile->get<CTransform>();
-                auto& tileBB    = tile->get<CBoundingBox>();
+                auto& tileBB = tile->get<CBoundingBox>();
+                auto& tileAnim = tile->get<CAnimation>().animation;
+        
                 sf::FloatRect tileRect = tileBB.getRect(tileTrans.pos);
-
-                bool horizontallyAligned =
+        
+                // Skip black hole
+                std::string animName = tileAnim.getName();
+                if (animName.find("AlienBlackHoleVanish") != std::string::npos)
+                    continue;
+        
+                bool isHorizontallyAligned =
                     (tileRect.top < enemyRect.top + enemyRect.height) &&
                     (tileRect.top + tileRect.height > enemyRect.top);
-
-                if (horizontallyAligned &&
-                   ((enemyAI.facingDirection > 0.f && tileRect.left <= enemyRect.left + enemyRect.width &&
-                     tileRect.left > enemyRect.left) ||
-                    (enemyAI.facingDirection < 0.f && tileRect.left + tileRect.width >= enemyRect.left &&
-                     tileRect.left < enemyRect.left)))
-                {
-                    tileDetected = true;
-                    std::cout << "[DEBUG] tileinfront true!!!\n";
+        
+                bool isInFront =
+                    (enemyAI.facingDirection > 0.f &&
+                     tileRect.left <= enemyFrontX &&
+                     tileRect.left > enemyRect.left)
+                    ||
+                    (enemyAI.facingDirection < 0.f &&
+                     tileRect.left + tileRect.width >= enemyFrontX &&
+                     tileRect.left < enemyRect.left);
+        
+                if (isHorizontallyAligned && isInFront) {
+                    enemyAI.tileDetected = true;
+                    std::cout << "[DEBUG] Enemy " << enemy->id()
+                              << " detected tile in front!\n";
                     break;
                 }
             }
+        }
 
-            // Normal movement logic
+        // ----------------------------------------------------
+        // 6) FOLLOW State
+        // ----------------------------------------------------
+        if (enemyAI.enemyState == EnemyState::Follow) {
+            const float xThreshold = 5.0f; // Previene flip ripetuti
+        
+            // Esegue il rilevamento dei tile solo se il giocatore è entro 1000 pixel
+            if (distance <= 100.f) {
+                enemyAI.tileDetected = false; // Reset del flag
+                
+                auto& bb = enemy->get<CBoundingBox>();
+                sf::FloatRect enemyRect = bb.getRect(enemyTrans.pos);
+                float enemyFrontX = (enemyAI.facingDirection > 0.f)
+                                    ? enemyRect.left + enemyRect.width
+                                    : enemyRect.left;
+                
+                // Controlla i tile davanti al nemico
+                for (auto& tile : m_entityManager.getEntities("tile")) {
+                    if (!tile->has<CTransform>() || !tile->has<CBoundingBox>() || !tile->has<CAnimation>())
+                        continue;
+                
+                    auto& tileTrans = tile->get<CTransform>();
+                    auto& tileBB    = tile->get<CBoundingBox>();
+                    auto& tileAnim  = tile->get<CAnimation>().animation;
+                
+                    sf::FloatRect tileRect = tileBB.getRect(tileTrans.pos);
+                
+                    // Salta il buco nero
+                    std::string animName = tileAnim.getName();
+                    if (animName.find("AlienBlackHoleVanish") != std::string::npos)
+                        continue;
+                
+                    bool isHorizontallyAligned =
+                        (tileRect.top < enemyRect.top + enemyRect.height) &&
+                        (tileRect.top + tileRect.height > enemyRect.top);
+                
+                    bool isInFront =
+                        (enemyAI.facingDirection > 0.f &&
+                         tileRect.left <= enemyFrontX &&
+                         tileRect.left > enemyRect.left)
+                        ||
+                        (enemyAI.facingDirection < 0.f &&
+                         tileRect.left + tileRect.width >= enemyFrontX &&
+                         tileRect.left < enemyRect.left);
+                
+                    if (isHorizontallyAligned && isInFront) {
+                        enemyAI.tileDetected = true;
+                        std::cout << "[DEBUG] Enemy " << enemy->id()
+                                  << " detected tile in front!\n";
+                        break;
+                    }
+                }
+            }
+            
+            // Se il nemico di tipo Super rileva un tile, passa allo stato Attack
+            if (enemyAI.enemyType == EnemyType::Super &&
+                enemyAI.tileDetected &&
+                (enemyAI.enemyState == EnemyState::Follow || enemyAI.enemyState == EnemyState::Idle))
+            {
+                std::cout << "[DEBUG] EnemySuper " << enemy->id()
+                          << " switching to Attack state.\n";
+                enemyAI.enemyState = EnemyState::Attack;
+                // Imposta l'animazione di attacco, resetta la velocità, ecc.
+                if (enemy->has<CAnimation>()) {
+                    std::string attackAnimName = m_game.worldType + "Hit" + "EnemySuper";
+                    if (m_game.assets().hasAnimation(attackAnimName)) {
+                        auto& anim = enemy->get<CAnimation>();
+                        anim.animation = m_game.assets().getAnimation(attackAnimName);
+                        anim.repeat = false;
+                        std::cout << "[DEBUG] Setting attack animation: " << attackAnimName << std::endl;
+                        if (enemyAI.facingDirection < 0) {
+                            flipSpriteLeft(anim.animation.getMutableSprite());
+                        } else {
+                            flipSpriteRight(anim.animation.getMutableSprite());
+                        }
+                    } else {
+                        std::cout << "[DEBUG] ERROR: Attack animation not found: " << attackAnimName << std::endl;
+                    }
+                }
+                enemyTrans.velocity.x = 0.f;
+                enemyAI.attackTimer = ATTACK_TIMER_DEFAULT;
+                enemyAI.swordSpawned = false;
+            }
+            
+            // Logica di movimento
             if (std::abs(dx) > xThreshold) {
-                int follow_speed =  (m_game.worldType == "Future") 
-                                      ? static_cast<int>(FOLLOW_MOVE_SPEED * 0.7f) 
-                                      : FOLLOW_MOVE_SPEED;
-                enemyTrans.velocity.x = (dx > 0.f) ? follow_speed : -follow_speed;
+                float followSpeed = (m_game.worldType == "Future")
+                                    ? FOLLOW_MOVE_SPEED * 0.7f
+                                    : FOLLOW_MOVE_SPEED;
                 enemyAI.facingDirection = (dx > 0.f) ? 1.f : -1.f;
+                enemyTrans.velocity.x   = enemyAI.facingDirection * followSpeed;
             } else {
                 enemyTrans.velocity.x = 0.f;
             }
         }
 
-        // Imposta l'animazione di corsa (Run)
+        // ----------------------------------------------------
+        // (Animation) Running State
+        // ----------------------------------------------------
         std::string runAnimName;
         switch (enemyAI.enemyType) {
-            case EnemyType::Fast:   
-                runAnimName = m_game.worldType + "RunEnemyFast";   
+            case EnemyType::Fast:
+                runAnimName = m_game.worldType + "RunEnemyFast";
                 break;
-            case EnemyType::Strong: 
-                runAnimName = m_game.worldType + "RunEnemyStrong"; 
+            case EnemyType::Strong:
+                runAnimName = m_game.worldType + "RunEnemyStrong";
                 break;
-            case EnemyType::Elite:  
-                runAnimName = m_game.worldType + "RunEnemyElite";  
+            case EnemyType::Elite:
+                runAnimName = m_game.worldType + "RunEnemyElite";
                 break;
-            case EnemyType::Normal: 
-                runAnimName = m_game.worldType + "RunEnemyNormal"; 
+            case EnemyType::Normal:
+                runAnimName = m_game.worldType + "RunEnemyNormal";
                 break;
-            case EnemyType::Super: 
+            case EnemyType::Super:
                 runAnimName = m_game.worldType + "RunEnemySuper";
                 break;
-            case EnemyType::Emperor: 
+            case EnemyType::Emperor:
                 runAnimName = m_game.worldType + "RunEmperor";
                 break;
         }
         if (anim.animation.getName() != runAnimName) {
             const Animation& runAnim = m_game.assets().getAnimation(runAnimName);
-            anim.animation = runAnim;
+            anim.animation           = runAnim;
             anim.animation.reset();
         }
 
         // ----------------------------------------------------
-        // 7) FUTURE WORLD: ATTACCO A DISTANZA (BULLET)
+        // 7) FUTURE-WORLD Ranged Attacks (Bullets)
         // ----------------------------------------------------
         if (m_game.worldType == "Future") {
             enemyAI.shootTimer     += deltaTime;
-            enemyAI.superMoveTimer += deltaTime;  // Track time for super move
+            enemyAI.superMoveTimer += deltaTime; // track super move timer
         
-            // 1) Check if it's time for a super move
+            // (A) Check super move cooldown
             if (enemyAI.superMoveTimer >= enemyAI.superMoveCooldown) {
-                enemyAI.superMoveTimer = 0.f; 
+                enemyAI.superMoveTimer = 0.f;
                 enemyAI.superMoveReady = true;
             }
         
-            // 2) Se non stiamo già sparando un burst
+            // (B) If not bursting
             if (!enemyAI.inBurst) {
-                bool canShoot = checkLineOfSight(enemyTrans.pos, playerTrans.pos, m_entityManager)
+                bool canShoot = checkLineOfSight(enemyTrans.pos,
+                                                 playerTrans.pos,
+                                                 m_entityManager)
                                 && (distance >= enemyAI.minShootDistance);
-
-                // Se è pronto un super move
+        
+                // If super move ready + can shoot
                 if (enemyAI.superMoveReady && canShoot) {
                     enemyAI.superMoveReady = false;
-                    std::cout << "[DEBUG] Enemy " << enemy->id() << " uses SUPER MOVE!\n";
-
-                    int superBullets = 8; 
-                    float angleRange  = 30.f; // Spread angle
+                    std::cout << "[DEBUG] Enemy " << enemy->id()
+                              << " uses SUPER MOVE!\n";
+        
+                    // Use superBulletCount from CEnemyAI instead of hardcoded value
+                    int superBullets = enemyAI.superBulletCount;
+                    float angleRange = 30.f; // spread angle
+        
                     for (int i = 0; i < superBullets; ++i) {
                         auto bullet = m_spawner->spawnEnemyBullet(enemy);
-                        if (bullet->has<CTransform>()) {
+                        if (bullet && bullet->has<CTransform>()) {
                             auto& bulletTrans = bullet->get<CTransform>();
-                            // Spread da -15° a +15°
                             float step  = angleRange / (superBullets - 1);
-                            float angle = -angleRange * 0.5f + (step * i);
+                            float angle = -angleRange * 0.5f + step * i;
                             bulletTrans.rotate(angle);
                         }
                     }
                 }
-                // Altrimenti, spara in burst "normale"
-                else if (canShoot && enemyAI.shootTimer >= enemyAI.shootCooldown) {
+                // Otherwise do normal burst
+                else if (canShoot &&
+                         enemyAI.shootTimer >= enemyAI.shootCooldown)
+                {
                     enemyAI.shootTimer  = 0.f;
                     enemyAI.inBurst     = true;
                     enemyAI.bulletsShot = 0;
                     enemyAI.burstTimer  = 0.f;
-
+        
                     std::cout << "[DEBUG] Enemy " << enemy->id()
-                              << " starts a bullet burst (one-at-a-time)!\n";
+                              << " starts bullet burst (one at a time).\n";
                 }
             }
+            // (C) If already bursting
             else {
-                // Siamo in un burst: spariamo un proiettile ogni tot secondi
                 enemyAI.burstTimer += deltaTime;
                 if (enemyAI.burstTimer >= enemyAI.burstInterval) {
                     enemyAI.burstTimer = 0.f;
                     enemyAI.bulletsShot++;
-
+        
                     auto bullet = m_spawner->spawnEnemyBullet(enemy);
+                    
                     std::cout << "[DEBUG] Enemy " << enemy->id()
-                              << " fires bullet #" << enemyAI.bulletsShot << " of burst.\n";
-
-                    // Leggero spread
-                    if (bullet->has<CTransform>()) {
+                              << " fires bullet #" << enemyAI.bulletsShot << "\n";
+        
+                    // Slight random angle
+                    if (bullet && bullet->has<CTransform>()) {
                         auto& bulletTrans = bullet->get<CTransform>();
-                        float angleOffset = -3.f + static_cast<float>(rand() % 6); 
+                        float angleOffset = -3.f + static_cast<float>(rand() % 6);
                         bulletTrans.rotate(angleOffset);
                     }
-
-                    if (enemyAI.bulletsShot >= enemyAI.bulletCount) {
+        
+                    // Use bulletBurstCount from CEnemyAI instead of bulletCount
+                    if (enemyAI.bulletsShot >= enemyAI.bulletBurstCount) {
                         enemyAI.inBurst = false;
-                        std::cout << "[DEBUG] Burst finished for enemy " << enemy->id() << "\n";
+                        std::cout << "[DEBUG] Burst finished for enemy "
+                                  << enemy->id() << "\n";
                     }
                 }
             }
         }
 
         // ----------------------------------------------------
-        // 8) ATTACCO MELEE (NON-FUTURE)
+        // 8) Melee Attack (Non-Future)
         // ----------------------------------------------------
-        float currentAttackRange = (enemyAI.enemyType == EnemyType::Emperor)
-                                   ? EMPEROR_ATTACK_RANGE
-                                   : ATTACK_RANGE;
-
-        bool shouldAttack = (shouldFollow && distance < currentAttackRange) ||
-                            (enemyAI.enemyType == EnemyType::Super &&
-                             enemyAI.enemyState == EnemyState::BlockedByTile);
-
-         // Se skipAttack è true, saltiamo la logica di attacco
-         if (!skipAttack) 
-         {
-             if (shouldAttack && enemyAI.attackCooldown <= 0.f 
-                 && enemyAI.enemyState != EnemyState::Attack)
-             {
-                 // (A) Incrementa il conteggio di attacchi
-                 enemyAI.consecutiveAttacks++;
-                 std::cout << "[DEBUG] Enemy " << enemy->id() 
-                           << " consecutiveAttacks = "
-                           << enemyAI.consecutiveAttacks << "\n";
- 
-                 // (B) Se raggiunge il limite, parte il forced cooldown
-                 if (enemyAI.consecutiveAttacks >= enemyAI.maxAttacksBeforeCooldown) {
-                     enemyAI.isInForcedCooldown  = true;
-                     enemyAI.forcedCooldownTimer = enemyAI.forcedCooldownDuration;
-                     std::cout << "[DEBUG] Enemy " << enemy->id() 
-                               << " forced cooldown started after "
-                               << enemyAI.consecutiveAttacks << " attacks.\n";
-                     // Non facciamo "continue;", così può muoversi
-                 }
-                 else {
-                     // (C) Altrimenti, esegui l'attacco
-                     if (m_game.worldType == "Future") {
-                         // Se il mondo è Future, saltiamo la spada
-                     } else {
-                         // Normale sword attack
-                         enemyAI.enemyState   = EnemyState::Attack;
-                         enemyAI.attackTimer  = ATTACK_TIMER_DEFAULT;
-                         enemyAI.swordSpawned = false;
- 
-                         std::cout << "[DEBUG] Enemy " << enemy->id() 
-                                   << " entering Attack state. (cooldown="
-                                   << enemyAI.attackCooldown << ")\n";
-                     }
-                 }
-             }
-             else if (shouldFollow && enemyAI.enemyState != EnemyState::Attack) {
-                 enemyAI.enemyState = EnemyState::Follow;
-             }
-             else {
-                 // Se il player non è visibile, passiamo a Recognition/Idle
-                 if (!playerVisible) {
-                     if (enemyAI.enemyState == EnemyState::Follow 
-                         || enemyAI.enemyState == EnemyState::Attack)
-                     {
-                         enemyAI.enemyState        = EnemyState::Recognition;
-                         enemyAI.recognitionTimer  = 0.f;
-                         enemyAI.lastSeenPlayerPos = playerTrans.pos;
-                     } else {
-                         enemyAI.enemyState = EnemyState::Idle;
-                     }
-                 }
-             }
-         } 
-         else {
-             // Se skipAttack è true, il nemico non può attaccare,
-             // ma continua a fare follow / idle / etc.
-             if (shouldFollow && enemyAI.enemyState != EnemyState::Attack) {
-                 enemyAI.enemyState = EnemyState::Follow;
-             }
-         }
- 
+        float currentAttackRange =
+        (enemyAI.enemyType == EnemyType::Emperor)
+        ? EMPEROR_ATTACK_RANGE
+        : ATTACK_RANGE;
+    
+    bool shouldAttack = (shouldFollow && distance < currentAttackRange)
+               ||
+               (enemyAI.enemyType == EnemyType::Super && 
+                enemyAI.enemyState == EnemyState::BlockedByTile)
+               || 
+               (enemyAI.enemyType == EnemyType::Super && 
+                enemyAI.tileDetected);  // Add this condition
+    
+    // If skipAttack is true, we skip the logic below
+    if (!skipAttack)
+    {
+        if (shouldAttack &&
+            enemyAI.attackCooldown <= 0.f &&
+            enemyAI.enemyState != EnemyState::Attack)
+        {
+            // (A) Increase consecutiveAttacks
+            enemyAI.consecutiveAttacks++;
+            std::cout << "[DEBUG] Enemy " << enemy->id()
+                      << " consecutiveAttacks = "
+                      << enemyAI.consecutiveAttacks << "\n";
+    
+            // (B) If reached limit -> forced cooldown
+            // Use maxConsecutiveSwordAttacks from CEnemyAI
+            if (enemyAI.consecutiveAttacks >= enemyAI.maxConsecutiveSwordAttacks) {
+                enemyAI.isInForcedCooldown  = true;
+                enemyAI.forcedCooldownTimer = enemyAI.forcedCooldownDuration;
+                std::cout << "[DEBUG] Enemy " << enemy->id()
+                          << " forced cooldown started after "
+                          << enemyAI.consecutiveAttacks << " attacks.\n";
+                // We let it move still
+            }
+            else {
+                // (C) Normal sword attack
+                if (m_game.worldType != "Future") {
+                    enemyAI.enemyState   = EnemyState::Attack;
+                    enemyAI.attackTimer  = ATTACK_TIMER_DEFAULT;
+                    enemyAI.swordSpawned = false;
+                    std::cout << "[DEBUG] Enemy " << enemy->id()
+                              << " entering Attack state (cooldown="
+                              << enemyAI.attackCooldown << ")\n";
+                }
+            }
+        }
+        // If still following, ensure state = Follow
+        else if (shouldFollow &&
+                 enemyAI.enemyState != EnemyState::Attack)
+        {
+            enemyAI.enemyState = EnemyState::Follow;
+        }
+        else {
+            // If player not visible ->Idle
+            if (!playerVisible) {
+                if (enemyAI.enemyState == EnemyState::Follow ||
+                    enemyAI.enemyState == EnemyState::Attack)
+                {
+                    enemyAI.enemyState = EnemyState::Idle;
+                }
+            }
+        }
+    }
+    else {
+        // If skipAttack == true, no attacking allowed,
+        // but we still set follow/idle
+        if (shouldFollow &&
+            enemyAI.enemyState != EnemyState::Attack)
+        {
+            enemyAI.enemyState = EnemyState::Follow;
+        }
+    }
 
         // ----------------------------------------------------
-        // 9) GESTIONE STATO ATTACK (MELEE)
+        // 9) Handling Attack State (Melee)
         // ----------------------------------------------------
         if (enemyAI.enemyState == EnemyState::Attack) {
-            enemyTrans.velocity.x = 0.f;
-            enemyAI.attackTimer  -= deltaTime;
+            enemyTrans.velocity.x  = 0.f;
+            enemyAI.attackTimer   -= deltaTime;
 
+            // Choose base anim
             std::string baseAnimName;
             switch (enemyAI.enemyType) {
-                case EnemyType::Normal:  baseAnimName = "EnemyNormal";  break;
-                case EnemyType::Fast:    baseAnimName = "EnemyFast";    break;
-                case EnemyType::Strong:  baseAnimName = "EnemyStrong";  break;
-                case EnemyType::Elite:   baseAnimName = "EnemyElite";   break;
-                case EnemyType::Super:   baseAnimName = "EnemySuper";   break;
-                case EnemyType::Emperor: baseAnimName = "Emperor";      break;
+                case EnemyType::Normal:  baseAnimName = "EnemyNormal";   break;
+                case EnemyType::Fast:    baseAnimName = "EnemyFast";     break;
+                case EnemyType::Strong:  baseAnimName = "EnemyStrong";   break;
+                case EnemyType::Elite:   baseAnimName = "EnemyElite";    break;
+                case EnemyType::Super:   baseAnimName = "EnemySuper";    break;
+                case EnemyType::Emperor: baseAnimName = "Emperor";       break;
             }
 
-            // Animazione di attacco
+            // Attack animation
             std::string attackAnimName = m_game.worldType + "Hit" + baseAnimName;
             if (anim.animation.getName() != attackAnimName) {
-                std::cout << "[DEBUG] Enemy " << enemy->id() 
-                          << " entering Attack animation: " << attackAnimName << "\n";
+                std::cout << "[DEBUG] Enemy " << enemy->id()
+                          << " entering Attack animation: "
+                          << attackAnimName << "\n";
                 anim.animation = m_game.assets().getAnimation(attackAnimName);
                 anim.animation.reset();
-                anim.repeat = false; 
+                anim.repeat = false;
             }
 
-            // Spawn sword al momento giusto
-            if (!enemyAI.swordSpawned && enemyAI.attackTimer <= SWORD_SPAWN_THRESHOLD) {
+            // Spawn sword at correct time
+            if (!enemyAI.swordSpawned &&
+                enemyAI.attackTimer <= SWORD_SPAWN_THRESHOLD)
+            {
+                // Emperor spawns sword differently
                 if (enemyAI.enemyType == EnemyType::Emperor) {
-                    float dx = playerTrans.pos.x - enemyTrans.pos.x;
+                    float dx       = playerTrans.pos.x - enemyTrans.pos.x;
                     float distance = std::fabs(dx);
+
                     if (distance < 100.f) {
                         std::cout << "[DEBUG] Emperor spawns static sword (close)!\n";
                         m_spawner->spawnEmperorSwordOffset(enemy);
@@ -590,27 +755,29 @@ void EnemyAISystem::update(float deltaTime)
                     }
                 }
                 else if (m_game.worldType != "Future") {
+                    // Normal sword for non-future
                     m_spawner->spawnEnemySword(enemy);
                 }
                 enemyAI.swordSpawned = true;
-                std::cout << "[DEBUG] Enemy " << enemy->id() 
-                          << " spawning sword at AttackTimer: " 
+
+                std::cout << "[DEBUG] Enemy " << enemy->id()
+                          << " spawning sword at AttackTimer: "
                           << enemyAI.attackTimer << "\n";
             }
 
-            // Fine attacco
+            // End Attack
             if (enemyAI.attackTimer <= 0.f) {
                 enemyAI.attackCooldown = ATTACK_COOLDOWN;
-                enemyAI.enemyState     = EnemyState::Follow;
+                enemyAI.enemyState     = EnemyState::Follow; // Switch back
                 enemyAI.attackTimer    = 0.f;
-                std::cout << "[DEBUG] Enemy " << enemy->id() 
-                          << " Attack finished. Setting cooldown=" 
-                          << enemyAI.attackCooldown << "\n";
+
+                std::cout << "[DEBUG] Enemy " << enemy->id()
+                          << " Attack finished. Switching to Follow.\n";
             }
         }
 
         // ----------------------------------------------------
-        // 10) STATO IDLE
+        // 10) Idle State
         // ----------------------------------------------------
         if (enemyAI.enemyState == EnemyState::Idle) {
             enemyTrans.velocity.x = 0.f;
@@ -618,7 +785,7 @@ void EnemyAISystem::update(float deltaTime)
         }
 
         // ----------------------------------------------------
-        // 11) AGGIORNAMENTO POSIZIONE E FLIP
+        // 11) Update Position + Flip
         // ----------------------------------------------------
         enemyTrans.pos.x += enemyTrans.velocity.x * deltaTime;
         enemyTrans.pos.y += enemyTrans.velocity.y * deltaTime;
@@ -628,5 +795,5 @@ void EnemyAISystem::update(float deltaTime)
         } else {
             flipSpriteRight(anim.animation.getMutableSprite());
         }
-    }
+    } // End for (enemies)
 }

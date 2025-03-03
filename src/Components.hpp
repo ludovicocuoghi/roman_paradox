@@ -131,6 +131,14 @@ public:
     explicit CGravity(float g = 800.f) : gravity(g) {}
 };
 
+class CTileTouched : public Component {
+    public:
+        bool inFront;
+
+        explicit CTileTouched(bool inFront_ = false) 
+            : inFront(inFront_) {}
+};
+
 class CState : public Component {
     public:
         std::string state;  // "idle", "run", "attack", "defense", ecc.
@@ -249,7 +257,8 @@ enum class EnemyType {
 
 enum class EnemyBehavior {
     FollowOne,  // Only follows when player is in line-of-sight
-    FollowTwo   // Keeps following once the player is spotted
+    FollowTwo,   // Keeps following once the player is spotted
+    FollowThree  // Super always follows (ignores distance checks)
 };
 
 enum class EnemyState {
@@ -263,13 +272,12 @@ enum class EnemyState {
     BlockedByTile
 };
 
-// Reordered fields: declare 'patrolPoints' before 'enemyState' 
-// so that 'enemyState' can safely check patrolPoints in its own initialization.
 class CEnemyAI : public Component {
     public:
         // ------------------------------------------------------
         // 1) Proprietà di base e comportamento
         // ------------------------------------------------------
+        std::vector<Vec2<float>> patrolPoints; // Punti di pattugliamento (da dichiarare PRIMA di enemyState)
         EnemyType     enemyType;      // Tipo di nemico (Normal, Elite, ecc.)
         EnemyBehavior enemyBehavior;  // Comportamento (FollowOne, FollowTwo, ecc.)
         EnemyState    enemyState;     // Stato corrente (Idle, Attack, ecc.)
@@ -326,7 +334,7 @@ class CEnemyAI : public Component {
         // ------------------------------------------------------
         // 9) Parametri per Emperor Attack Scaling
         // ------------------------------------------------------
-        float radialAttackMultiplier; // Moltiplicatore per numero di spade in attacco radiale
+        float radialAttackMultiplier; // Moltiplicatore per il numero di spade in attacco radiale
         float radialAttackCooldown;   // Cooldown tra un attacco radiale e l'altro
         float radialAttackTimerSuper; // Timer per super attacco radiale
         float finalBurstTimer;        // Timer per la fase finale di burst
@@ -339,14 +347,14 @@ class CEnemyAI : public Component {
         // 10) Parametri per il “Bullet Burst” e la “Super Move”
         // ------------------------------------------------------
         bool  inBurst;          // True se sta sparando un burst di proiettili
-        int   bulletsShot;      // Quanti proiettili sparati in questo burst
+        int   bulletsShot;      // Quanti proiettili sono stati sparati in questo burst
         float burstInterval;    // Ritardo tra i proiettili di un burst
         float burstTimer;       // Timer per lo spacing dei proiettili in un burst
         int   bulletCount;      // Numero totale di proiettili per burst
     
         bool  superMoveReady;   // Se è pronto a eseguire una super mossa
         float superMoveTimer;   // Timer accumulato per la super move
-        float superMoveCooldown;// Tempo di cooldown tra super move
+        float superMoveCooldown;// Tempo di cooldown tra le super move
     
         // ------------------------------------------------------
         // 11) Distanza di shooting e cooldown
@@ -357,19 +365,37 @@ class CEnemyAI : public Component {
         // ------------------------------------------------------
         // 12) Cooldown forzato dopo X attacchi consecutivi
         // ------------------------------------------------------
-        int   consecutiveAttacks;       // Quanti attacchi consecutivi ha fatto
+        int   consecutiveAttacks;       // Quanti attacchi consecutivi ha fatto il nemico
         int   maxAttacksBeforeCooldown; // Quanti attacchi prima del cooldown
         float forcedCooldownDuration;   // Durata del cooldown (in secondi)
         float forcedCooldownTimer;      // Timer per il cooldown
         bool  isInForcedCooldown;       // Se il nemico è in cooldown
     
         // ------------------------------------------------------
+        // 13) Parametri aggiuntivi per collisioni e gestione stato
+        // ------------------------------------------------------
+        bool tileDetected;
+        bool isAttackingTile;
+        bool canChangeState;
+        float stateChangeCooldown;
+    
+        // ------------------------------------------------------
+        // 14) Parametri per attacchi con spada e proiettili
+        // ------------------------------------------------------
+        int   maxConsecutiveSwordAttacks; // Numero massimo di attacchi consecutivi con spada
+        float bulletDamage;               // Danno dei proiettili
+        int   bulletBurstCount;           // Numero di proiettili sparati in un burst
+        int   superBulletCount;           // Numero di super proiettili sparati in un burst
+        float superBulletDamage;          // Danno dei super proiettili
+    
+        // ------------------------------------------------------
         // Costruttore
         // ------------------------------------------------------
         CEnemyAI(EnemyType type = EnemyType::Normal, EnemyBehavior behavior = EnemyBehavior::FollowOne)
-            : enemyType(type),
+            : patrolPoints(),
+              enemyType(type),
               enemyBehavior(behavior),
-              enemyState(EnemyState::Idle), // Default: Idle
+              enemyState(EnemyState::Idle),
     
               // Movement & Combat
               speedMultiplier(1.0f),
@@ -404,7 +430,7 @@ class CEnemyAI : public Component {
               radialAttackTimer(0.f),
               horizontalShootTimer(0.f),
               TileInFront(false),
-              shootTimer(0.f),            // Inizializzato a 0
+              shootTimer(0.f),
     
               // Emperor Attack Scaling
               radialAttackMultiplier(1.0f),
@@ -435,19 +461,21 @@ class CEnemyAI : public Component {
               maxAttacksBeforeCooldown(5),
               forcedCooldownDuration(5.f),
               forcedCooldownTimer(0.f),
-              isInForcedCooldown(false)
-        {
-            // Parametri speciali per Elite
-            if (type == EnemyType::Elite) {
-                maxAttacksBeforeCooldown = 5;
-                forcedCooldownDuration   = 2.f;  // Esempio: Elite ha cooldown più breve
-            }
-            // Parametri speciali per Elite
-            else if (type == EnemyType::Super) {
-                maxAttacksBeforeCooldown = 100;
-                forcedCooldownDuration   = 2.f;  // Esempio: Elite ha cooldown più breve
-            }
-        }
+              isInForcedCooldown(false),
+    
+              // Additional parameters
+              tileDetected(false),
+              isAttackingTile(false),
+              canChangeState(true),
+              stateChangeCooldown(0.f),
+    
+              // Sword and bullet parameters
+              maxConsecutiveSwordAttacks(3),
+              bulletDamage(5.f),
+              bulletBurstCount(3),
+              superBulletCount(4),
+              superBulletDamage(2.f)
+        {}
     };
 
 class CPlayerEquipment : public Component {

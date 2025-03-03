@@ -6,6 +6,7 @@ Tile Ground 5 0
 Tile Ground 6 0
 Tile Ground 7 0
 Tile Ground 3 0
+Tile Armor 3 4
 Tile Ground 0 1
 Tile Ground 1 1
 Tile Ground 2 1
@@ -383,10 +384,10 @@ Dec BushTall 46 7
 Dec BushSmall 65 2
 Dec BushSmall 57 2
 Dec BushSmall 114 2
-Enemy EnemyNormal 16 2
+Enemy EnemyElite 16 2
 Enemy EnemyStrong 37 4
 Enemy EnemyStrong 62 2
-Enemy EnemyStrong 81 2
+Enemy EnemyElite 81 2
 Enemy EnemyElite 99 8
 Enemy EnemyElite 123 2
 Player 2 4

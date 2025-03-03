@@ -18,7 +18,7 @@ void AnimationSystem::update(float deltaTime) {
         auto& st    = entity->get<CState>();
         auto& trans = entity->get<CTransform>();
 
-        std::cout << "Current state in AnimSystem" << st.state << std::endl;
+        //std::cout << "Current state in AnimSystem" << st.state << std::endl;
     
         // 1) Check if the player has FutureArmor
         bool hasFutureArmor = false;
@@ -138,28 +138,38 @@ void AnimationSystem::update(float deltaTime) {
     // --- Enemy Animation ---
     for (auto& enemy : m_entityManager.getEntities("enemy")) {
         if (!enemy->has<CAnimation>() || !enemy->has<CEnemyAI>()) continue;
-
+    
         auto& canim = enemy->get<CAnimation>();
         auto& ai = enemy->get<CEnemyAI>();
-
+    
         std::string baseAnimName;
         switch (ai.enemyType) {
-            case EnemyType::Fast:   baseAnimName = "EnemyFast"; break;
-            case EnemyType::Strong: baseAnimName = "EnemyStrong"; break;
-            case EnemyType::Elite:  baseAnimName = "EnemyElite"; break;
-            case EnemyType::Super:  baseAnimName = "EnemySuper"; break;
-            case EnemyType::Emperor:  baseAnimName = "Emperor"; break;
-            default:                baseAnimName = "EnemyNormal"; break;
+            case EnemyType::Fast:    baseAnimName = "EnemyFast"; break;
+            case EnemyType::Strong:  baseAnimName = "EnemyStrong"; break;
+            case EnemyType::Elite:   baseAnimName = "EnemyElite"; break;
+            case EnemyType::Super:   baseAnimName = "EnemySuper"; break;
+            case EnemyType::Emperor: baseAnimName = "Emperor"; break;
+            default:                 baseAnimName = "EnemyNormal"; break;
         }
 
+        // Inside your AnimationSystem.cpp, in the enemy animation section
+        if (enemy->has<CEnemyAI>() && enemy->get<CEnemyAI>().enemyType == EnemyType::Super) {
+            std::cout << "[DEBUG] Animation system processing Super enemy " << enemy->id()
+                    << " State: " << (int)ai.enemyState
+                    << " Animation: " << canim.animation.getName() << std::endl;
+                    // Only update the animation frames, don't change anything else
+            canim.animation.update(deltaTime);
+            continue;  // Skip to next entity
+        }
+    
         std::string desiredAnim;
         switch (ai.enemyState) {
-            case EnemyState::Follow: desiredAnim = m_game.worldType + "Run" + baseAnimName; break;  // Fix: Renamed from Chase
-            case EnemyState::Attack: desiredAnim = m_game.worldType + "Attack" + baseAnimName; break;
-            case EnemyState::Knockback: desiredAnim = m_game.worldType + "Attack" + baseAnimName; break;
-            default: desiredAnim = m_game.worldType + "Stand"+ baseAnimName; break;
+            case EnemyState::Follow:    desiredAnim = m_game.worldType + "Run" + baseAnimName; break;
+            case EnemyState::Attack:    desiredAnim = m_game.worldType + "Hit" + baseAnimName; break; // CHANGED "Attack" to "Hit"
+            case EnemyState::Knockback: desiredAnim = m_game.worldType + "Hit" + baseAnimName; break; // CHANGED "Attack" to "Hit"
+            default:                    desiredAnim = m_game.worldType + "Stand" + baseAnimName; break;
         }
-
+    
         if (m_game.assets().hasAnimation(desiredAnim) &&
             canim.animation.getName() != desiredAnim)
         {

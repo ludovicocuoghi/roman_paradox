@@ -95,6 +95,7 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
                 std::cerr << "[WARNING] Missing animation for tile: " << assetType << std::endl;
             }
             tile->add<CTransform>(Vec2<float>(realX, realY));
+            tile->add<CTileTouched>(false);
         }
         else if (type == "Dec")
         {
@@ -184,73 +185,128 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
             std::string enemyID = enemyTypeStr + "_" + std::to_string(enemyIndex);
             auto enemy = entityManager.addEntity("enemy");
             enemy->add<CUniqueID>(enemyID);
+            
+            // Convert the enemyTypeStr to the proper EnemyType enum
             EnemyType enemyType;
-            float speedMultiplier = 1.0f;
-            int enemyHealth = 10;
-            int enemyDamage = 3;
-            if (enemyTypeStr == "EnemyFast")
-            {
+            if (enemyTypeStr == "Fast" || enemyTypeStr == "EnemyFast") {
                 enemyType = EnemyType::Fast;
-                speedMultiplier = LoadLevel::ENEMY_FAST_SPEED_MULTIPLIER;
-                enemyHealth = LoadLevel::ENEMY_FAST_HEALTH;
-                enemyDamage = LoadLevel::ENEMY_FAST_DAMAGE;
             }
-            else if (enemyTypeStr == "EnemyStrong")
-            {
-                enemyType = EnemyType::Strong;
-                speedMultiplier = LoadLevel::ENEMY_STRONG_SPEED_MULTIPLIER;
-                enemyHealth = LoadLevel::ENEMY_STRONG_HEALTH;
-                enemyDamage = LoadLevel::ENEMY_STRONG_DAMAGE;
-            }
-            else if (enemyTypeStr == "EnemyElite")
-            {
-                enemyType = EnemyType::Elite;
-                speedMultiplier = LoadLevel::ENEMY_ELITE_SPEED_MULTIPLIER;
-                enemyHealth = LoadLevel::ENEMY_ELITE_HEALTH;
-                enemyDamage = LoadLevel::ENEMY_ELITE_DAMAGE;
-            }
-            else if (enemyTypeStr == "Emperor")
-            {
-                enemyType = EnemyType::Emperor;
-                speedMultiplier = LoadLevel::ENEMY_EMPEROR_SPEED_MULTIPLIER;
-                enemyHealth = LoadLevel::ENEMY_EMPEROR_HEALTH;
-                enemyDamage = LoadLevel::ENEMY_EMPEROR_DAMAGE;
-            }
-            else if (enemyTypeStr == "EnemyNormal")
-            {
+            else if (enemyTypeStr == "Normal" || enemyTypeStr == "EnemyNormal") {
                 enemyType = EnemyType::Normal;
-                speedMultiplier = LoadLevel::ENEMY_NORMAL_SPEED_MULTIPLIER;
-                enemyHealth = LoadLevel::ENEMY_NORMAL_HEALTH;
-                enemyDamage = LoadLevel::ENEMY_NORMAL_DAMAGE;
             }
-            else if (enemyTypeStr == "EnemySuper")
-            {
+            else if (enemyTypeStr == "Strong" || enemyTypeStr == "EnemyStrong") {
+                enemyType = EnemyType::Strong;
+            }
+            else if (enemyTypeStr == "Elite" || enemyTypeStr == "EnemyElite") {
+                enemyType = EnemyType::Elite;
+            }
+            else if (enemyTypeStr == "Emperor" || enemyTypeStr == "EnemyEmperor") {
+                enemyType = EnemyType::Emperor;
+            }
+            else if (enemyTypeStr == "Super" || enemyTypeStr == "EnemySuper") {
                 enemyType = EnemyType::Super;
-                speedMultiplier = LoadLevel::ENEMY_NORMAL_SPEED_MULTIPLIER;
-                enemyHealth = LoadLevel::ENEMY_NORMAL_HEALTH;
-                enemyDamage = LoadLevel::ENEMY_NORMAL_DAMAGE;
             }
-            else
-            {
-                std::cerr << "[WARNING] Unknown enemy type: " << enemyTypeStr << std::endl;
-                continue;
+            else {
+                std::cerr << "[WARNING] Unknown enemy type: " << enemyTypeStr << ". Defaulting to Normal.\n";
+                enemyType = EnemyType::Normal;
             }
+            
+            // Now add the components based on the properly set enemyType
+            enemy->add<CEnemyAI>();
+            enemy->add<CHealth>();
+            
+            if (enemyType == EnemyType::Fast) {
+                enemy->get<CEnemyAI>().enemyType = EnemyType::Fast;
+                enemy->get<CEnemyAI>().damage = LoadLevel::ENEMY_FAST_DAMAGE;
+                enemy->get<CEnemyAI>().bulletDamage = LoadLevel::BULLET_DAMAGE_ENEMY_FAST;
+                enemy->get<CEnemyAI>().speedMultiplier = LoadLevel::ENEMY_FAST_SPEED_MULTIPLIER;
+                enemy->get<CEnemyAI>().maxConsecutiveSwordAttacks = LoadLevel::ENEMY_FAST_MAX_CONSECUTIVE_SWORD_ATTACKS;
+                enemy->get<CEnemyAI>().bulletBurstCount = LoadLevel::ENEMY_FAST_BULLET_BURST_COUNT;
+                enemy->get<CEnemyAI>().superBulletCount = LoadLevel::ENEMY_FAST_SUPER_BULLET_COUNT;
+                enemy->get<CEnemyAI>().superBulletDamage = LoadLevel::ENEMY_FAST_SUPER_BULLET_DAMAGE;
+                enemy->get<CEnemyAI>().enemyBehavior = EnemyBehavior::FollowOne;
+                enemy->get<CHealth>().maxHealth = LoadLevel::ENEMY_FAST_HEALTH;
+                enemy->get<CHealth>().currentHealth = LoadLevel::ENEMY_FAST_HEALTH;
+            }
+            else if (enemyType == EnemyType::Normal) {
+                enemy->get<CEnemyAI>().enemyType = EnemyType::Normal;
+                enemy->get<CEnemyAI>().damage = LoadLevel::ENEMY_NORMAL_DAMAGE;
+                enemy->get<CEnemyAI>().bulletDamage = LoadLevel::BULLET_DAMAGE_ENEMY_NORMAL;
+                enemy->get<CEnemyAI>().speedMultiplier = LoadLevel::ENEMY_NORMAL_SPEED_MULTIPLIER;
+                enemy->get<CEnemyAI>().maxConsecutiveSwordAttacks = LoadLevel::ENEMY_NORMAL_MAX_CONSECUTIVE_SWORD_ATTACKS;
+                enemy->get<CEnemyAI>().bulletBurstCount = LoadLevel::ENEMY_NORMAL_BULLET_BURST_COUNT;
+                enemy->get<CEnemyAI>().superBulletCount = LoadLevel::ENEMY_NORMAL_SUPER_BULLET_COUNT;
+                enemy->get<CEnemyAI>().superBulletDamage = LoadLevel::ENEMY_NORMAL_SUPER_BULLET_DAMAGE;
+                enemy->get<CEnemyAI>().enemyBehavior = EnemyBehavior::FollowOne;
+                enemy->get<CHealth>().maxHealth = LoadLevel::ENEMY_NORMAL_HEALTH;
+                enemy->get<CHealth>().currentHealth = LoadLevel::ENEMY_NORMAL_HEALTH;
+            }
+            else if (enemyType == EnemyType::Strong) {
+                enemy->get<CEnemyAI>().enemyType = EnemyType::Strong;
+                enemy->get<CEnemyAI>().damage = LoadLevel::ENEMY_STRONG_DAMAGE;
+                enemy->get<CEnemyAI>().bulletDamage = LoadLevel::BULLET_DAMAGE_ENEMY_STRONG;
+                enemy->get<CEnemyAI>().speedMultiplier = LoadLevel::ENEMY_STRONG_SPEED_MULTIPLIER;
+                enemy->get<CEnemyAI>().maxConsecutiveSwordAttacks = LoadLevel::ENEMY_STRONG_MAX_CONSECUTIVE_SWORD_ATTACKS;
+                enemy->get<CEnemyAI>().bulletBurstCount = LoadLevel::ENEMY_STRONG_BULLET_BURST_COUNT;
+                enemy->get<CEnemyAI>().superBulletCount = LoadLevel::ENEMY_STRONG_SUPER_BULLET_COUNT;
+                enemy->get<CEnemyAI>().superBulletDamage = LoadLevel::ENEMY_STRONG_SUPER_BULLET_DAMAGE;
+                enemy->get<CEnemyAI>().enemyBehavior = EnemyBehavior::FollowOne;
+                enemy->get<CHealth>().maxHealth = LoadLevel::ENEMY_STRONG_HEALTH;
+                enemy->get<CHealth>().currentHealth = LoadLevel::ENEMY_STRONG_HEALTH;
+            }
+            else if (enemyType == EnemyType::Elite) {
+                enemy->get<CEnemyAI>().enemyType = EnemyType::Elite;
+                enemy->get<CEnemyAI>().damage = LoadLevel::ENEMY_ELITE_DAMAGE;
+                enemy->get<CEnemyAI>().bulletDamage = LoadLevel::BULLET_DAMAGE_ENEMY_ELITE;
+                enemy->get<CEnemyAI>().speedMultiplier = LoadLevel::ENEMY_ELITE_SPEED_MULTIPLIER;
+                enemy->get<CEnemyAI>().maxConsecutiveSwordAttacks = LoadLevel::ENEMY_ELITE_MAX_CONSECUTIVE_SWORD_ATTACKS;
+                enemy->get<CEnemyAI>().bulletBurstCount = LoadLevel::ENEMY_ELITE_BULLET_BURST_COUNT;
+                enemy->get<CEnemyAI>().superBulletCount = LoadLevel::ENEMY_ELITE_SUPER_BULLET_COUNT;
+                enemy->get<CEnemyAI>().superBulletDamage = LoadLevel::ENEMY_ELITE_SUPER_BULLET_DAMAGE;
+                enemy->get<CEnemyAI>().enemyBehavior = EnemyBehavior::FollowTwo;
+                enemy->get<CHealth>().maxHealth = LoadLevel::ENEMY_ELITE_HEALTH;
+                enemy->get<CHealth>().currentHealth = LoadLevel::ENEMY_ELITE_HEALTH;
+            }
+            else if (enemyType == EnemyType::Emperor) {
+                enemy->get<CEnemyAI>().enemyType = EnemyType::Emperor;
+                enemy->get<CEnemyAI>().damage = LoadLevel::ENEMY_EMPEROR_DAMAGE;
+                enemy->get<CEnemyAI>().bulletDamage = LoadLevel::BULLET_DAMAGE_ENEMY_EMPEROR;
+                enemy->get<CEnemyAI>().speedMultiplier = LoadLevel::ENEMY_EMPEROR_SPEED_MULTIPLIER;
+                enemy->get<CEnemyAI>().maxConsecutiveSwordAttacks = LoadLevel::ENEMY_EMPEROR_MAX_CONSECUTIVE_SWORD_ATTACKS;
+                enemy->get<CEnemyAI>().bulletBurstCount = LoadLevel::ENEMY_EMPEROR_BULLET_BURST_COUNT;
+                enemy->get<CEnemyAI>().superBulletCount = LoadLevel::ENEMY_EMPEROR_SUPER_BULLET_COUNT;
+                enemy->get<CEnemyAI>().superBulletDamage = LoadLevel::ENEMY_EMPEROR_SUPER_BULLET_DAMAGE;
+                enemy->get<CEnemyAI>().enemyBehavior = EnemyBehavior::FollowThree;
+                enemy->get<CHealth>().maxHealth = LoadLevel::ENEMY_EMPEROR_HEALTH;
+                enemy->get<CHealth>().currentHealth = LoadLevel::ENEMY_EMPEROR_HEALTH;
+            }
+            else if (enemyType == EnemyType::Super) {
+                enemy->get<CEnemyAI>().enemyType = EnemyType::Super;
+                enemy->get<CEnemyAI>().damage = LoadLevel::ENEMY_SUPER_DAMAGE;
+                enemy->get<CEnemyAI>().bulletDamage = LoadLevel::BULLET_DAMAGE_ENEMY_SUPER;
+                enemy->get<CEnemyAI>().speedMultiplier = LoadLevel::ENEMY_SUPER_SPEED_MULTIPLIER;
+                enemy->get<CEnemyAI>().maxConsecutiveSwordAttacks = LoadLevel::ENEMY_SUPER_MAX_CONSECUTIVE_SWORD_ATTACKS;
+                enemy->get<CEnemyAI>().bulletBurstCount = LoadLevel::ENEMY_SUPER_BULLET_BURST_COUNT;
+                enemy->get<CEnemyAI>().superBulletCount = LoadLevel::ENEMY_SUPER_SUPER_BULLET_COUNT;
+                enemy->get<CEnemyAI>().superBulletDamage = LoadLevel::ENEMY_SUPER_SUPER_BULLET_DAMAGE;
+                enemy->get<CEnemyAI>().enemyBehavior = EnemyBehavior::FollowThree;
+                enemy->get<CHealth>().maxHealth = LoadLevel::ENEMY_SUPER_HEALTH;
+                enemy->get<CHealth>().currentHealth = LoadLevel::ENEMY_SUPER_HEALTH;
+            }
+            
             std::string runAnimName, standAnimName;
             if (enemyTypeStr == "Emperor")
             {
-                standAnimName =  m_game.worldType + "StandOldRomeEmperor";
-                runAnimName =  m_game.worldType + "RunOldRomeEmperor";
+                standAnimName = m_game.worldType + "StandOldRomeEmperor";
+                runAnimName = m_game.worldType + "RunOldRomeEmperor";
             }
             else
             {
-                standAnimName =  m_game.worldType + "StandAnim" + enemyTypeStr;
-                runAnimName =  m_game.worldType + "Run" + enemyTypeStr;
+                standAnimName = m_game.worldType + "StandAnim" + enemyTypeStr;
+                runAnimName = m_game.worldType + "Run" + enemyTypeStr;
+                std::cout << "[DEBUG] Stand Animation: " << standAnimName << std::endl;
+                std::cout << "[DEBUG] Run Animation: " << runAnimName << std::endl;
             }
-            std::cout << "[DEBUG] Enemy Type: " << enemyTypeStr
-                      << " | Using Animations: " << standAnimName << " / " << runAnimName
-                      << " Health: " << enemyHealth
-                      << " Damage: " << enemyDamage
-                      << " ID: " << enemyID << std::endl;
             if (m_game.assets().hasAnimation(runAnimName))
             {
                 const Animation& anim = m_game.assets().getAnimation(runAnimName);
@@ -282,56 +338,11 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
                 enemy->add<CBoundingBox>(enemyBBSize, enemyBBSize * 0.5f);
             }
             enemy->add<CGravity>(LoadLevel::GRAVITY_VAL);
-            enemy->add<CHealth>(enemyHealth);
-            EnemyBehavior behavior = (enemyType == EnemyType::Elite || enemyType == EnemyType::Super ) ? EnemyBehavior::FollowTwo : EnemyBehavior::FollowOne;
-            enemy->add<CEnemyAI>(enemyType, behavior);
-            enemy->get<CEnemyAI>().damage = enemyDamage;
-            enemy->get<CEnemyAI>().speedMultiplier = speedMultiplier;
-            std::cout << "[DEBUG] Enemy Damage: " << enemyDamage << std::endl;
             
-            if (m_game.worldType == "Future")
-                {
-                    switch (enemyType)
-                    {
-                        case EnemyType::Elite:
-                            enemy->get<CEnemyAI>().bulletCount      = 4;    // Example
-                            enemy->get<CEnemyAI>().minShootDistance = 150.f;
-                            enemy->get<CEnemyAI>().shootCooldown    = 1.0f;
-                            break;
-
-                        case EnemyType::Strong:
-                            enemy->get<CEnemyAI>().bulletCount      = 3;
-                            enemy->get<CEnemyAI>().minShootDistance = 120.f;
-                            enemy->get<CEnemyAI>().shootCooldown    = 1.5f;
-                            break;
-
-                        case EnemyType::Normal:
-                            enemy->get<CEnemyAI>().bulletCount      = 2;
-                            enemy->get<CEnemyAI>().minShootDistance = 100.f;
-                            enemy->get<CEnemyAI>().shootCooldown    = 2.0f;
-                            break;
-
-                        case EnemyType::Fast:
-                            enemy->get<CEnemyAI>().bulletCount      = 2;
-                            enemy->get<CEnemyAI>().minShootDistance = 80.f;
-                            enemy->get<CEnemyAI>().shootCooldown    = 0.8f;
-                            break;
-
-                        case EnemyType::Emperor:
-                            // If Emperor also uses bullets in Future
-                            enemy->get<CEnemyAI>().bulletCount      = 6;
-                            enemy->get<CEnemyAI>().minShootDistance = 200.f;
-                            enemy->get<CEnemyAI>().shootCooldown    = 2.0f;
-                            break;
-
-                        default:
-                            break;
-                    }
-                }
-
-            enemy->get<CEnemyAI>().enemyState = EnemyState::Idle;
+            std::cout << "[DEBUG] Enemy Damage: " << enemy->get<CEnemyAI>().damage
+                     << " | Bullet Damage: " << enemy->get<CEnemyAI>().bulletDamage << std::endl;
             std::cout << "[DEBUG] Spawned " << enemyTypeStr << " Enemy at ("
-                      << enemyX << ", " << enemyY << std::endl;
+                     << enemyX << ", " << enemyY << ")" << std::endl;
         }
         else
         {

@@ -67,7 +67,7 @@ void CollisionSystem::handlePlayerTileCollisions() {
                 continue;
 
             std::string animName = tileAnim.getName();
-            if (animName == "AlienBlackHoleRedSmall") {
+            if (animName == "AlienBlackHoleVanish") {
                 if (player->has<CHealth>()) {
                     auto& health = player->get<CHealth>();
             
@@ -195,72 +195,74 @@ void CollisionSystem::handlePlayerTileCollisions() {
     }
 }
 
-
 void CollisionSystem::handleEnemyTileCollisions() {
     for (auto& enemy : m_entityManager.getEntities("enemy")) {
-        if (!enemy->has<CTransform>() || !enemy->has<CBoundingBox>())
-            continue;
+        if (!enemy->has<CTransform>() || !enemy->has<CBoundingBox>()) continue;
 
         auto& transform = enemy->get<CTransform>();
         auto& velocity  = transform.velocity;
         auto& enemyBB   = enemy->get<CBoundingBox>();
+        sf::FloatRect eRect = enemyBB.getRect(transform.pos);
 
         bool onGround = false;
         if (enemy->has<CState>()) {
             enemy->get<CState>().onGround = false;
         }
 
-        sf::FloatRect eRect = enemyBB.getRect(transform.pos);
+        // NEW: Detect if an `EnemySuper` has a tile in front
+        bool tileInFront = false;
 
         for (auto& tile : m_entityManager.getEntities("tile")) {
-            if (!tile->has<CTransform>() || !tile->has<CBoundingBox>() || !tile->has<CAnimation>())
-                continue;
+            if (!tile->has<CTransform>() || !tile->has<CBoundingBox>() || !tile->has<CAnimation>()) continue;
 
-            auto& tileTransform = tile->get<CTransform>();
-            auto& tileBB        = tile->get<CBoundingBox>();
-            auto& tileAnim      = tile->get<CAnimation>().animation;
-            sf::FloatRect tRect = tileBB.getRect(tileTransform.pos);
+            auto& tileTrans = tile->get<CTransform>();
+            auto& tileBB    = tile->get<CBoundingBox>();
+            auto& tileAnim  = tile->get<CAnimation>().animation;
+            sf::FloatRect tRect = tileBB.getRect(tileTrans.pos);
 
-            // Skip if no collision
-            if (!eRect.intersects(tRect))
-                continue;
+            // Skip if no intersection
+            if (!eRect.intersects(tRect)) continue;
 
             std::string animName = tileAnim.getName();
-            float overlapX = std::min(eRect.left + eRect.width,  tRect.left + tRect.width)
-                           - std::max(eRect.left,                tRect.left);
-            float overlapY = std::min(eRect.top + eRect.height, tRect.top + tRect.height)
-                           - std::max(eRect.top,                 tRect.top);
 
-            // --- 1) If tile is Black Hole, allow enemy to pass ---
-            if (animName.find("AlienBlackHoleRedSmall") != std::string::npos) {
-                // Enemies walk through black holes with no effect
-                continue;
-            }
+            // (1) If tile is a black hole, let the enemy pass
+            if (animName.find("BlackHole") != std::string::npos) continue;
 
-            // --- 2) If enemy is Super, only destroy tile if it is ATTACKING ---
+            // (2) Check if tile is in front of EnemySuper (not just intersecting)
             if (enemy->has<CEnemyAI>()) {
-                auto& eAI = enemy->get<CEnemyAI>();
-                
-                if (eAI.enemyType == EnemyType::Super && eAI.enemyState == EnemyState::Attack) {
-                    std::cout << "[DEBUG] Super enemy attacking tile. Destroying + spawning black hole.\n";
-                    m_spawner->spawnBlackHoleAfterTileDestruction(tileTransform.pos);
-                    tile->destroy();
-                    float push = (eAI.facingDirection >= 0.f) ? 2.f : -2.f;
-                    transform.pos.x += push;
-                    continue;
+                auto& enemyAI = enemy->get<CEnemyAI>();
+                if (enemyAI.enemyType == EnemyType::Super) {
+                    float enemyFrontX = (enemyAI.facingDirection > 0.f) 
+                                        ? eRect.left + eRect.width 
+                                        : eRect.left;
+
+                    bool isHorizontallyAligned =
+                        (tRect.top < eRect.top + eRect.height) &&
+                        (tRect.top + tRect.height > eRect.top);
+
+                    bool isInFront =
+                        (enemyAI.facingDirection > 0.f && tRect.left <= enemyFrontX && tRect.left > eRect.left) ||
+                        (enemyAI.facingDirection < 0.f && tRect.left + tRect.width >= enemyFrontX && tRect.left < eRect.left);
+
+                    if (isHorizontallyAligned && isInFront) {
+                        tileInFront = true;
+                    }
                 }
             }
 
-            // --- 3) Normal collision resolution for regular tiles ---
+            // (3) Normal collision resolution for all enemies
+            float overlapX = std::min(eRect.left + eRect.width, tRect.left + tRect.width)
+                           - std::max(eRect.left, tRect.left);
+            float overlapY = std::min(eRect.top + eRect.height, tRect.top + tRect.height)
+                           - std::max(eRect.top, tRect.top);
+
             if (overlapX < overlapY) {
-                if (transform.pos.x < tileTransform.pos.x) {
-                    transform.pos.x -= overlapX;
-                } else {
-                    transform.pos.x += overlapX;
-                }
+                // Horizontal push
+                transform.pos.x += (transform.pos.x < tileTrans.pos.x) ? -overlapX : overlapX;
                 velocity.x = 0.f;
             } else {
-                if (transform.pos.y < tileTransform.pos.y) {
+                // Vertical push
+                if (transform.pos.y < tileTrans.pos.y) {
                     transform.pos.y -= overlapY;
                     velocity.y = 0.f;
                     onGround = true;
@@ -269,9 +271,17 @@ void CollisionSystem::handleEnemyTileCollisions() {
                     velocity.y = 0.f;
                 }
             }
+
+            // Update bounding rect in case we moved the enemy
             eRect = enemyBB.getRect(transform.pos);
         }
 
+        // NEW: Store tile detection in CEnemyAI for AI to use
+        if (enemy->has<CEnemyAI>()) {
+            enemy->get<CEnemyAI>().tileDetected = tileInFront;
+        }
+
+        // Update onGround if enemy has a CState
         if (enemy->has<CState>()) {
             enemy->get<CState>().onGround = onGround;
         }
@@ -552,6 +562,7 @@ void CollisionSystem::handleBulletPlayerCollisions() {
             // Altrimenti, se non è invincibile, subisce danno
             if (player->has<CHealth>()) {
                 auto& health = player->get<CHealth>();
+                std::cout << "[DEBUG] Player hit by bullet! Damage: 10\n";
                 if (health.invulnerabilityTimer <= 0.f) {
                     int bulletDamage = BULLET_DAMAGE_NORMAL;
                     if (bullet->has<CEnemyAI>()) {
@@ -568,7 +579,7 @@ void CollisionSystem::handleBulletPlayerCollisions() {
                         hasFutureArmor = player->get<CPlayerEquipment>().hasFutureArmor;
                     }
                     if (!hasFutureArmor) {
-                        bulletDamage = static_cast<int>(bulletDamage * 1.3f);
+                        bulletDamage = static_cast<int>(bulletDamage * 1.5f);
                         std::cout << "[DEBUG] Player without FutureArmor => bulletDamage x1.3 => " 
                                   << bulletDamage << "\n";
                     }
@@ -625,42 +636,54 @@ void CollisionSystem::handleSwordCollisions() {
         for (auto& enemy : m_entityManager.getEntities("enemy")) {
             if (!enemy->has<CTransform>() || !enemy->has<CBoundingBox>())
                 continue;
-
+        
             auto& enemyTrans = enemy->get<CTransform>();
             auto& enemyBB    = enemy->get<CBoundingBox>();
             sf::FloatRect enemyRect = enemyBB.getRect(enemyTrans.pos);
-
+        
             if (swordRect.intersects(enemyRect)) {
+                std::cout << "[DEBUG] Player sword hit enemy!\n";
                 // Applica il danno
                 if (enemy->has<CHealth>()) {
                     auto& health = enemy->get<CHealth>();
-                    health.takeDamage(PLAYER_SWORD_DAMAGE);
+                    int damage = PLAYER_SWORD_DAMAGE;
+                    // Se il mondo corrente è "Future" e il giocatore NON ha FutureArmor, riduci il danno
+                    if (m_game.worldType == "Future") {
+                        auto players = m_entityManager.getEntities("player");
+                        if (!players.empty() && players.front()->has<CPlayerEquipment>()) {
+                            if (!players.front()->get<CPlayerEquipment>().hasFutureArmor) {
+                                damage = static_cast<int>(damage / 1.5f);
+                                std::cout << "[DEBUG] Future world + no FutureArmor: sword damage reduced to " 
+                                          << damage << "\n";
+                            }
+                        }
+                    }
+                    health.takeDamage(damage);
                     health.invulnerabilityTimer = PLAYER_SWORD_INVULNERABILITY_TIME;
                     if (!health.isAlive()) {
                         enemy->destroy();
                         continue;
                     }
                 }
-
+        
                 static std::random_device rd;
                 static std::mt19937 gen(rd());
                 std::uniform_int_distribution<int> dist(PLAYER_SWORD_KNOCKBACK_ROLL_MIN, PLAYER_SWORD_KNOCKBACK_ROLL_MAX);
                 int roll = dist(gen);
                 std::cout << "[DEBUG] roll = " << roll << "\n";
-
+        
                 if (roll == PLAYER_SWORD_KNOCKBACK_ROLL_TRIGGER) {
                     float attackDirection = (swTrans.pos.x < enemyTrans.pos.x) ? 1.f : -1.f;
                     Vec2<float> hitDirection = { attackDirection, PLAYER_SWORD_KNOCKBACK_Y_DIRECTION };
-
+        
                     float finalKnockback = PLAYER_SWORD_KNOCKBACK_STRENGTH + (roll * 5.f);
-
+        
                     // Applica il knockback
                     Physics::Forces::ApplyKnockback(enemy, hitDirection, finalKnockback);
                 }
             }
         }
     }
-
     // Enemy sword collisions
     for (auto& enemySword : m_entityManager.getEntities("enemySword")) {
         if (!enemySword->has<CTransform>() || !enemySword->has<CBoundingBox>())
@@ -669,51 +692,6 @@ void CollisionSystem::handleSwordCollisions() {
         auto& swTrans  = enemySword->get<CTransform>();
         auto& swBB     = enemySword->get<CBoundingBox>();
         sf::FloatRect swordRect = swBB.getRect(swTrans.pos);
-
-        // Check collision with tiles
-        for (auto& tile : m_entityManager.getEntities("tile")) {
-            if (!tile->has<CTransform>() || !tile->has<CBoundingBox>() || !tile->has<CAnimation>())
-                continue;
-
-            auto& tileTransform = tile->get<CTransform>();
-            auto& tileBB        = tile->get<CBoundingBox>();
-            auto& tileAnim      = tile->get<CAnimation>().animation;
-            sf::FloatRect tileRect = tileBB.getRect(tileTransform.pos);
-
-            // If sword not intersecting tile, skip
-            if (!swordRect.intersects(tileRect))
-                continue;
-
-            bool shouldDestroyTile = false;
-
-            // --- 1) Check if enemy sword belongs to Super enemy ---
-            if (enemySword->has<CEnemyAI>()) {
-                auto& swordAI = enemySword->get<CEnemyAI>();
-                if (swordAI.enemyType == EnemyType::Super) {
-                    // Super enemy destroys any tile => spawn black hole
-                    shouldDestroyTile = true;
-                    std::cout << "[DEBUG] Super enemy sword destroyed a tile!\n";
-                }
-                else {
-                    // Example: normal enemies only destroy tiles containing "Box"
-                    if (tileAnim.getName().find("Box") != std::string::npos) {
-                        shouldDestroyTile = true;
-                        std::cout << "[DEBUG] Normal enemy sword destroyed a Box tile!\n";
-                    }
-                }
-            }
-
-            // --- 2) If we should destroy it, spawn black hole & remove tile ---
-            if (shouldDestroyTile) {
-                std::cout << "[DEBUG] Spawning black hole vanish + lethal tile.\n";
-                m_spawner->spawnBlackHoleAfterTileDestruction(tileTransform.pos);
-                tile->destroy();
-            }
-
-            // Destroy the sword on impact, then stop checking more tiles
-            enemySword->destroy();
-            break;
-        }
 
         // Enemy sword vs tile
         for (auto& tile : m_entityManager.getEntities("tile")) {
@@ -752,6 +730,25 @@ void CollisionSystem::handleSwordCollisions() {
 
             enemySword->destroy(); // ✅ Destroy the sword on impact
             break; // Exit loop after handling collision
+        }
+        //Collisions with Player
+        for (auto& player : m_entityManager.getEntities("player")) {
+            if (!player->has<CTransform>() || !player->has<CBoundingBox>())
+                continue;
+            
+            auto& playerTrans = player->get<CTransform>();
+            auto& playerBB    = player->get<CBoundingBox>();
+            sf::FloatRect playerRect = playerBB.getRect(playerTrans.pos);
+            
+            if (swordRect.intersects(playerRect)) {
+                if (player->has<CHealth>()) {
+                    auto& health = player->get<CHealth>();
+                    health.takeDamage(enemySword->get<CEnemyAI>().damage);
+                    std::cout << "[DEBUG] Enemy sword hit player! Damage: " << enemySword->get<CEnemyAI>().damage << "\n";
+                }
+                enemySword->destroy(); // Distruggi la spada dopo il colpo
+                break; // Esci dal loop del giocatore
+            }
         }
     }
 
