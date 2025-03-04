@@ -177,6 +177,10 @@ void Scene_Play::update(float deltaTime)
             if (entity->has<CState>())
                 entity->get<CState>().update(deltaTime);
         }
+        auto allEntities = m_entityManager.getEntities();
+        auto players = m_entityManager.getEntities("player");
+        std::cout << "[DEBUG] Total entities: " << allEntities.size() 
+                  << ", Players: " << players.size() << std::endl;
 
         sMovement(deltaTime);
         sEnemyAI(deltaTime);
@@ -185,6 +189,7 @@ void Scene_Play::update(float deltaTime)
         UpdateFragments(deltaTime);
         m_spawner.updateGraves(deltaTime);
         sUpdateSword();
+        sLifespan(deltaTime);
         sAmmoSystem(deltaTime);
         updateBurstFire(deltaTime);
 
@@ -449,26 +454,26 @@ void Scene_Play::sDoAction(const Action& action)
 
 void Scene_Play::sLifespan(float deltaTime)
 {
-    // Loop through all entities with a CLifeSpan component
     for (auto e : m_entityManager.getEntities())
     {
         if (e->has<CLifeSpan>())
         {
-            // Decrease the remaining lifespan by the elapsed time
-            auto& lifespan = e->get<CLifeSpan>();
-            lifespan.remainingTime -= deltaTime;
-            
-            // If lifespan is over, destroy the entity
-            if (lifespan.remainingTime <= 0)
+            // Only process lifespans for specific entity types
+            if (e->tag() == "enemySword" || e->tag() == "EmperorSword" || 
+                e->tag() == "playerBullet" || e->tag() == "enemyBullet" || 
+                e->tag() == "fragment" || e->tag() == "effect")
             {
-                e->destroy();
+                auto& lifespan = e->get<CLifeSpan>();
+                lifespan.remainingTime -= deltaTime;
                 
-                // If this is a sword, you might want to log it
-                if (e->tag() == "sword")
+                if (lifespan.remainingTime <= 0)
                 {
-                    std::cout << "[DEBUG] Sword despawned due to lifespan end.\n";
+                    std::cout << "[DEBUG] Entity '" << e->tag() << "' #" << e->id() 
+                              << " destroyed by lifespan system\n";
+                    e->destroy();
                 }
             }
+            // For all other entities, we ignore their lifespan
         }
     }
 }

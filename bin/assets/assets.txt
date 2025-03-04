@@ -307,19 +307,19 @@ Animation AncientHitEnemyNormal TexAncientHitEnemyNormal 100 100 1 0
 
 Animation AncientStandEmperor TexAncientStandEmperor 160 250 1 0
 Animation AncientRunEmperor TexAncientStandEmperor 160 250 1 0
-Animation AncientAttackEmperor TexAncientStandEmperor 160 250 1 0
+Animation AncientHitEmperor TexAncientStandEmperor 160 250 1 0
 
 Animation FutureStandEmperor1 TexFutureStandEmperor1 160 250 1 0
 Animation FutureRunEmperor1 TexFutureStandEmperor1 160 250 1 0
-Animation FutureAttackEmperor1 TexFutureStandEmperor1 160 250 1 0
+Animation FutureHitEmperor1 TexFutureStandEmperor1 160 250 1 0
 
 Animation FutureStandEmperor2 TexFutureStandEmperor2 160 250 1 0
 Animation FutureRunEmperor2 TexFutureStandEmperor2 160 250 1 0
-Animation FutureAttackEmperor2 TexFutureStandEmperor2 160 250 1 0
+Animation FutureHitEmperor2 TexFutureStandEmperor2 160 250 1 0
 
 Animation FutureStandEmperor3 TexFutureStandEmperor3 160 250 1 0
 Animation FutureRunEmperor3 TexFutureStandEmperor3 160 250 1 0
-Animation FutureAttackEmperor3 TexFutureStandEmperor3 160 250 1 0
+Animation FutureHitEmperor3 TexFutureStandEmperor3 160 250 1 0
 
 Texture TexFutureStandEmperor1 Enemy/future_rome/emperor/future_emperor_final_phase1.png
 Texture TexFutureStandEmperor2 Enemy/future_rome/emperor/future_emperor_final_phase2.png

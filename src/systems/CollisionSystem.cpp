@@ -361,8 +361,6 @@ void CollisionSystem::handleEnemyEnemyCollisions() {
         }
     }
 }
-
-// Player - Enemy
 void CollisionSystem::handlePlayerEnemyCollisions() {
     for (auto& enemy : m_entityManager.getEntities("enemy")) {
         // Skip enemy if in attack state.
@@ -383,12 +381,11 @@ void CollisionSystem::handlePlayerEnemyCollisions() {
         for (auto& player : m_entityManager.getEntities("player")) {
             auto& pTrans = player->get<CTransform>();
             auto& pBB    = player->get<CBoundingBox>();
+            auto& pState = player->get<CState>();
             sf::FloatRect playerRect = pBB.getRect(pTrans.pos);
 
             // Check player on-ground state.
-            bool playerOnGround = false;
-            if (player->has<CState>())
-                playerOnGround = player->get<CState>().onGround;
+            bool playerOnGround = pState.onGround;
 
             if (enemyRect.intersects(playerRect)) {
                 // Compute overlaps along X and Y.
@@ -399,48 +396,82 @@ void CollisionSystem::handlePlayerEnemyCollisions() {
 
                 const float MIN_VERTICAL_SEPARATION = 5.f;
                 float separation = std::max(overlapY * COLLISION_SEPARATION_FACTOR, MIN_VERTICAL_SEPARATION);
-                const float bounceSpeed = 100.f;
+                
+                // Adjusted bounce speeds
+                const float horizontalBounceSpeed = 100.f;
+                const float enemyVerticalBounceSpeed = 60.f; // Reduce enemy bounce
+                const float playerVerticalBounceSpeed = 250.f; // More controlled player bounce when landing on enemy
+                
+                // Check if player is moving downward (falling or jumping down)
+                bool playerFalling = pTrans.velocity.y > 0;
 
                 if (overlapX < overlapY) {
                     // Horizontal collision resolution (unchanged)
                     if (enemyTrans.pos.x < pTrans.pos.x) {
                         enemyTrans.pos.x -= overlapX * COLLISION_SEPARATION_FACTOR;
                         pTrans.pos.x     += overlapX * COLLISION_SEPARATION_FACTOR;
-                        enemyTrans.velocity.x = -std::max(std::abs(enemyTrans.velocity.x), bounceSpeed);
-                        pTrans.velocity.x     = std::max(std::abs(pTrans.velocity.x), bounceSpeed);
+                        enemyTrans.velocity.x = -std::max(std::abs(enemyTrans.velocity.x), horizontalBounceSpeed);
+                        pTrans.velocity.x     = std::max(std::abs(pTrans.velocity.x), horizontalBounceSpeed);
                     } else {
                         enemyTrans.pos.x += overlapX * COLLISION_SEPARATION_FACTOR;
                         pTrans.pos.x     -= overlapX * COLLISION_SEPARATION_FACTOR;
-                        enemyTrans.velocity.x = std::max(std::abs(enemyTrans.velocity.x), bounceSpeed);
-                        pTrans.velocity.x     = -std::max(std::abs(pTrans.velocity.x), bounceSpeed);
+                        enemyTrans.velocity.x = std::max(std::abs(enemyTrans.velocity.x), horizontalBounceSpeed);
+                        pTrans.velocity.x     = -std::max(std::abs(pTrans.velocity.x), horizontalBounceSpeed);
                     }
                 } else {
                     // Vertical collision resolution.
+                    // If player is above enemy (landing on enemy's head)
+                    if (playerFalling && pTrans.pos.y < enemyTrans.pos.y) {
+                        // Player is landing on enemy from above
+                        pTrans.pos.y -= separation;
+                        pTrans.velocity.y = -playerVerticalBounceSpeed; // Controlled upward bounce for player
+                        
+                        // Optionally apply damage or affect enemy
+                        if (enemy->has<CHealth>()) {
+                            auto& health = enemy->get<CHealth>();
+                            health.takeDamage(2); // Damage when jumped on
+                            std::cout << "[DEBUG] Player jumped on enemy. Damage: 2\n";
+                        }
+                        
+                        // Push enemy down slightly
+                        enemyTrans.velocity.y = enemyVerticalBounceSpeed;
+                        
+                        // Set a small invincibility period for the player
+                        pState.isInvincible = true;
+                        pState.invincibilityTimer = 0.2f;
+                        
+                        // Optional: Give the player a "bounce" feeling
+                        pState.isJumping = true;
+                        pState.jumpTime = 0.1f; // Short jump time to maintain control
+                        
+                        continue; // Skip other collision handling for this interaction
+                    }
+                    
                     // If enemy is above player:
                     if (enemyTrans.pos.y < pTrans.pos.y) {
                         if (playerOnGround) {
                             // Player is fixed on the ground; push enemy upward only.
                             enemyTrans.pos.y -= separation;
-                            enemyTrans.velocity.y = -bounceSpeed;
+                            enemyTrans.velocity.y = -enemyVerticalBounceSpeed;
                         } else {
                             // Normal resolution: enemy upward, player downward.
                             enemyTrans.pos.y -= separation;
                             pTrans.pos.y     += separation;
-                            enemyTrans.velocity.y = -bounceSpeed;
-                            pTrans.velocity.y     = bounceSpeed;
+                            enemyTrans.velocity.y = -enemyVerticalBounceSpeed;
+                            pTrans.velocity.y     = enemyVerticalBounceSpeed * 0.7f; // Reduce player's downward force
                         }
                     } else {
                         // Enemy is below player:
                         if (enemyOnGround) {
                             // Enemy is on ground; push player upward only.
                             pTrans.pos.y -= separation;
-                            pTrans.velocity.y = -bounceSpeed;
+                            pTrans.velocity.y = -playerVerticalBounceSpeed * 0.7f; // Gentler bounce
                         } else {
                             // Normal resolution: enemy downward, player upward.
                             enemyTrans.pos.y += separation;
                             pTrans.pos.y     -= separation;
-                            enemyTrans.velocity.y =  bounceSpeed;
-                            pTrans.velocity.y     = -bounceSpeed;
+                            enemyTrans.velocity.y = enemyVerticalBounceSpeed;
+                            pTrans.velocity.y     = -playerVerticalBounceSpeed * 0.7f; // Gentler bounce
                         }
                     }
                 }
@@ -784,7 +815,45 @@ void CollisionSystem::handleSwordCollisions() {
                 break; // Esci dal loop del giocatore
             }
         }
+    // Enemy sword vs other enemies
+    for (auto& otherEnemy : m_entityManager.getEntities("enemy")) {
+        if (!otherEnemy->has<CTransform>() || !otherEnemy->has<CBoundingBox>())
+            continue;
+        
+        auto& enemyTrans = otherEnemy->get<CTransform>();
+        auto& enemyBB = otherEnemy->get<CBoundingBox>();
+        sf::FloatRect enemyRect = enemyBB.getRect(enemyTrans.pos);
+        
+        if (swordRect.intersects(enemyRect)) {
+            // Get the enemy that created this sword
+            int creatorId = -1;
+            if (enemySword->has<CState>()) {
+                try {
+                    creatorId = std::stoi(enemySword->get<CState>().state);
+                } catch (...) {
+                    // Invalid ID format, continue
+                }
+            }
+            
+            // Don't let enemy's own sword hit itself
+            if (creatorId != otherEnemy->id()) {
+                std::cout << "[DEBUG] Enemy sword hit another enemy! Sword: " 
+                        << enemySword->id() << " Hit Enemy: " << otherEnemy->id() << "\n";
+                
+                // Apply damage if needed
+                if (otherEnemy->has<CHealth>() && enemySword->has<CEnemyAI>()) {
+                    auto& health = otherEnemy->get<CHealth>();
+                    auto& swordAI = enemySword->get<CEnemyAI>();
+                    health.takeDamage(swordAI.damage);
+                }
+                
+                // Destroy the sword after hitting another enemy
+                enemySword->destroy();
+                break; // Exit this enemy loop
+            }
+        }
     }
+}
 
     for (auto& empSword : m_entityManager.getEntities("EmperorSword")) {
         // Verifichiamo che abbia CTransform e CBoundingBox

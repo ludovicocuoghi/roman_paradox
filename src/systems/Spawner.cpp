@@ -31,6 +31,7 @@ std::shared_ptr<Entity> Spawner::spawnSword(std::shared_ptr<Entity> player) {
     }
     return sword;
 }
+
 std::shared_ptr<Entity> Spawner::spawnPlayerBullet(std::shared_ptr<Entity> player) {
     // 1) Create the bullet entity
     auto bullet = m_entityManager.addEntity("playerBullet");
@@ -55,18 +56,7 @@ std::shared_ptr<Entity> Spawner::spawnPlayerBullet(std::shared_ptr<Entity> playe
     float offsetY = PLAYER_BULLET_OFFSET_Y;
     Vec2<float> bulletPos = pTrans.pos + Vec2<float>(offsetX, offsetY);
 
-    // Generate a random angle variation between -10 and +10 degrees
-    float randomAngleVariation = -10.0f + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / 20.0f));
-    
-    // Convert degrees to radians for calculation
-    float angleRad = randomAngleVariation * 3.14159f / 180.0f;
-    
-    // Calculate velocity with the random angle
-    float speed = PLAYER_BULLET_SPEED;
-    Vec2<float> bulletVelocity(
-        facingDir * speed * std::cos(angleRad),
-        speed * std::sin(angleRad)
-    );
+    Vec2<float> bulletVelocity(facingDir * PLAYER_BULLET_SPEED, 0.f);
 
     // 4) Add components to the bullet
     bullet->add<CTransform>(bulletPos, bulletVelocity);
@@ -93,8 +83,7 @@ std::shared_ptr<Entity> Spawner::spawnPlayerBullet(std::shared_ptr<Entity> playe
     }
 
     std::cout << "[DEBUG] Spawned player bullet at (" 
-              << bulletPos.x << ", " << bulletPos.y 
-              << ") with angle variation: " << randomAngleVariation << " degrees\n";
+              << bulletPos.x << ", " << bulletPos.y << ")\n";
     return bullet;
 }
 

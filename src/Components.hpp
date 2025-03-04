@@ -98,8 +98,8 @@ public:
     float remainingTime;
     float totalTime;
 
-    CLifeSpan() : remainingTime(0.f), totalTime(0.f) {}
-    CLifeSpan(float time) : remainingTime(time), totalTime(time) {}
+    CLifeSpan(float duration = 1.0f) 
+        : remainingTime(duration), totalTime(duration) {}
 };
 
 class CInput : public Component {
