@@ -15,7 +15,7 @@ public:
     static constexpr float COLLISION_SEPARATION_FACTOR = 0.5f;
 
     // Player Sword vs Enemy
-    static constexpr int PLAYER_SWORD_DAMAGE = 10;
+    static constexpr int PLAYER_SWORD_DAMAGE = 5;
     static constexpr float PLAYER_SWORD_INVULNERABILITY_TIME = 0.1f;
     static constexpr int PLAYER_SWORD_KNOCKBACK_ROLL_MIN = 1;
     static constexpr int PLAYER_SWORD_KNOCKBACK_ROLL_MAX = 5;
@@ -30,7 +30,7 @@ public:
     // Enemy Sword vs Player
     static constexpr float ENEMY_SWORD_KNOCKBACK_STRENGTH = 1000.0f;
     static constexpr float EMPEROR_SWORD_KNOCKBACK_STRENGTH = 2000.0f;
-    static constexpr float PLAYER_HIT_INVULNERABILITY_TIME = 1.f;
+    static constexpr float PLAYER_HIT_INVULNERABILITY_TIME = 0.01f;
     static constexpr float PLAYER_KNOCKBACK_TIMER = 0.5f;
 
     // Collectibles
@@ -39,10 +39,6 @@ public:
     static constexpr int COLLECTIBLE_GOLD_COIN_POINTS = 99;
     static constexpr int COLLECTIBLE_SILVER_COIN_POINTS = 70;
     static constexpr int COLLECTIBLE_BRONZE_COIN_POINTS = 40;
-
-    static constexpr int BULLET_DAMAGE_NORMAL = 10;
-    static constexpr int BULLET_DAMAGE_STRONG = 20;
-    static constexpr int BULLET_DAMAGE_ELITE  = 30;
 
     void updateCollisions();
     void handlePlayerTileCollisions();

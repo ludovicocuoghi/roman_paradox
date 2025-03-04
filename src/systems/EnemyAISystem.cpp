@@ -101,6 +101,7 @@ void EnemyAISystem::update(float deltaTime)
         auto& enemyTrans = enemy->get<CTransform>();
         auto& enemyAI    = enemy->get<CEnemyAI>();
         auto& anim       = enemy->get<CAnimation>();
+        auto& enemyState     = enemy->get<CState>();
 
         // This flag allows movement but prevents attacking
         bool skipAttack = false;
@@ -570,7 +571,7 @@ void EnemyAISystem::update(float deltaTime)
                               << " uses SUPER MOVE!\n";
         
                     // Use superBulletCount from CEnemyAI instead of hardcoded value
-                    int superBullets = enemyAI.superBulletCount;
+                    int superBullets = enemyState.superBulletCount;
                     float angleRange = 30.f; // spread angle
         
                     for (int i = 0; i < superBullets; ++i) {
@@ -616,7 +617,7 @@ void EnemyAISystem::update(float deltaTime)
                     }
         
                     // Use bulletBurstCount from CEnemyAI instead of bulletCount
-                    if (enemyAI.bulletsShot >= enemyAI.bulletBurstCount) {
+                    if (enemyAI.bulletsShot >= enemyState.bulletBurstCount) {
                         enemyAI.inBurst = false;
                         std::cout << "[DEBUG] Burst finished for enemy "
                                   << enemy->id() << "\n";
@@ -656,7 +657,7 @@ void EnemyAISystem::update(float deltaTime)
     
             // (B) If reached limit -> forced cooldown
             // Use maxConsecutiveSwordAttacks from CEnemyAI
-            if (enemyAI.consecutiveAttacks >= enemyAI.maxConsecutiveSwordAttacks) {
+            if (enemyAI.consecutiveAttacks >= enemyState.maxConsecutiveSwordAttacks) {
                 enemyAI.isInForcedCooldown  = true;
                 enemyAI.forcedCooldownTimer = enemyAI.forcedCooldownDuration;
                 std::cout << "[DEBUG] Enemy " << enemy->id()

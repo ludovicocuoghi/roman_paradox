@@ -31,12 +31,16 @@ public:
     void sMovement(float deltaTime);
     void sCollision();
     void sAnimation(float deltaTime);
+    void sAmmoSystem(float deltaTime);
     void sDoAction(const Action& action) override;
     void update(float deltaTime) override;
+
+    std::shared_ptr<Entity> m_activeSword = nullptr;
 
     std::shared_ptr<Entity> spawnSword(std::shared_ptr<Entity> player);
     std::shared_ptr<Entity> spawnEnemySword(std::shared_ptr<Entity> enemy);
     std::shared_ptr<Entity> spawnItem(Vec2<float> position, const std::string& tileType);
+
 
     void applyKnockback(std::shared_ptr<Entity> entity, Vec2<float> hitDirection, float duration);
 
@@ -49,6 +53,7 @@ public:
     void showGameOverScreen();
     void restartLevel();
     void goToMenu();
+    void sUpdateSword();
     void sLifespan(float deltaTime);
     void sEnemyAI(float deltaTime);
     void selectBackgroundFromLevel(const std::string& levelPath);
@@ -59,6 +64,7 @@ public:
     std::string extractLevelName(const std::string& path);
     void removeTileByID(const std::string& tileID);
     void createTile(const std::string& tileType, int gridX, int gridY);
+    void updateBurstFire(float deltaTime);
 
     // --- Configuration Constants
     const float gravityVal = 1000.f;

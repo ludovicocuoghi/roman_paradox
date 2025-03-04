@@ -458,7 +458,7 @@ void CollisionSystem::handlePlayerBulletCollisions() {
         auto& bulletBB    = bullet->get<CBoundingBox>();
         sf::FloatRect bulletRect = bulletBB.getRect(bulletTrans.pos);
 
-        // 1) Distruggi bullet se tocca una tile
+        // 1) Destroy bullet if it hits a tile
         for (auto& tile : m_entityManager.getEntities("tile")) {
             if (!tile->has<CTransform>() || !tile->has<CBoundingBox>() || !tile->has<CAnimation>())
                 continue;
@@ -474,11 +474,11 @@ void CollisionSystem::handlePlayerBulletCollisions() {
             std::cout << "[DEBUG] Player bullet hit a tile! Destroying bullet.\n";
             bullet->destroy();
 
-            // Se la tile è "Box", distruggila
+            // If the tile is a "Box", destroy it
             std::string animName = tileAnim.getName();
             if (animName.find("Box") != std::string::npos) {
                 std::cout << "[DEBUG] Player bullet destroyed a box tile!\n";
-                // Se vuoi spawnare item o frammenti:
+                // If you want to spawn items or fragments:
                 m_spawner->createBlockFragments(tileTrans.pos, animName);
                 m_spawner->spawnItem(tileTrans.pos, animName);
                 tile->destroy();
@@ -486,7 +486,7 @@ void CollisionSystem::handlePlayerBulletCollisions() {
             break; // Stop checking after first tile collision
         }
 
-        // 2) Distruggi bullet se tocca un nemico
+        // 2) Destroy bullet if it hits an enemy
         for (auto& enemy : m_entityManager.getEntities("enemy")) {
             if (!enemy->has<CTransform>() || !enemy->has<CBoundingBox>())
                 continue;
@@ -501,15 +501,29 @@ void CollisionSystem::handlePlayerBulletCollisions() {
             std::cout << "[DEBUG] Player bullet hit an enemy! Destroying bullet.\n";
 
             if (enemy->has<CHealth>()) {
+                // Get bullet damage from player's CState
+                float bulletDamage = 5.0f; // Default damage if we can't find the player
+                
+                // Find the player and get their bullet damage
+                auto players = m_entityManager.getEntities("player");
+                if (!players.empty() && players.front()->has<CState>()) {
+                    bulletDamage = players.front()->get<CState>().bulletDamage;
+                }
+                
+                // Apply damage to enemy
                 auto& health = enemy->get<CHealth>();
-                const int PLAYER_BULLET_DAMAGE = 5; 
-                health.takeDamage(PLAYER_BULLET_DAMAGE);
+                int damageToApply = static_cast<int>(bulletDamage);
+                health.takeDamage(damageToApply);
+                
+                std::cout << "[DEBUG] Enemy hit by player bullet with damage: " << damageToApply << "\n";
             }
+            
             bullet->destroy();
             break; 
         }
     }
 }
+
 
 void CollisionSystem::handleBulletPlayerCollisions() {
     for (auto& bullet : m_entityManager.getEntities("enemyBullet")) {
@@ -562,28 +576,48 @@ void CollisionSystem::handleBulletPlayerCollisions() {
             // Altrimenti, se non è invincibile, subisce danno
             if (player->has<CHealth>()) {
                 auto& health = player->get<CHealth>();
-                std::cout << "[DEBUG] Player hit by bullet! Damage: 10\n";
                 if (health.invulnerabilityTimer <= 0.f) {
-                    int bulletDamage = BULLET_DAMAGE_NORMAL;
-                    if (bullet->has<CEnemyAI>()) {
-                        auto& bulletAI = bullet->get<CEnemyAI>();
-                        switch (bulletAI.enemyType) {
-                            case EnemyType::Elite:  bulletDamage = BULLET_DAMAGE_ELITE;   break;
-                            case EnemyType::Strong: bulletDamage = BULLET_DAMAGE_STRONG;  break;
-                            default:                bulletDamage = BULLET_DAMAGE_NORMAL;  break;
+                    // Default damage if we can't determine the source
+                    int bulletDamage = 10;
+                    
+                    // Get the enemy ID from the bullet's state
+                    if (bullet->has<CState>()) {
+                        std::string enemyIdStr = bullet->get<CState>().state;
+                        
+                        // Try to convert the string to a numeric ID
+                        try {
+                            int enemyId = std::stoi(enemyIdStr);
+                            
+                            // Find the enemy with this ID
+                            for (auto& enemy : m_entityManager.getEntities("enemy")) {
+                                if (enemy->id() == enemyId && enemy->has<CEnemyAI>()) {
+                                    // Get damage from the original enemy
+                                    bulletDamage = enemy->get<CState>().bulletDamage;
+                                    std::cout << "[DEBUG] Found source enemy (ID: " << enemyId 
+                                              << ") with damage: " << bulletDamage << "\n";
+                                    break;
+                                }
+                            }
+                        } catch (const std::exception& e) {
+                            // If the state isn't a valid number, use default damage
+                            std::cout << "[DEBUG] Couldn't parse enemy ID from bullet state: " 
+                                      << enemyIdStr << ". Using default damage.\n";
                         }
                     }
-                    // *** Verifica se il player NON ha la FutureArmor => +30% danno ***
+                    
+                    // Apply FutureArmor protection if relevant
                     bool hasFutureArmor = false;
                     if (player->has<CPlayerEquipment>()) {
                         hasFutureArmor = player->get<CPlayerEquipment>().hasFutureArmor;
                     }
+                    
                     if (!hasFutureArmor) {
                         bulletDamage = static_cast<int>(bulletDamage * 1.5f);
-                        std::cout << "[DEBUG] Player without FutureArmor => bulletDamage x1.3 => " 
+                        std::cout << "[DEBUG] Player without FutureArmor => bulletDamage x1.5 => " 
                                   << bulletDamage << "\n";
                     }
-
+                    
+                    // Apply the damage
                     health.takeDamage(bulletDamage);
                     health.invulnerabilityTimer = PLAYER_HIT_INVULNERABILITY_TIME;
                     std::cout << "[DEBUG] Player hit by bullet! Damage: " 

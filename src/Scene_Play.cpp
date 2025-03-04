@@ -140,6 +140,7 @@ void Scene_Play::init()
     registerAction(sf::Keyboard::M, "DEFENSE");
     registerAction(sf::Keyboard::G, "TOGGLE_GRID");
     registerAction(sf::Keyboard::B, "TOGGLE_BB");
+    registerAction(sf::Keyboard::Enter, "SUPERMOVE");
 
     std::cout << "[DEBUG] Scene_Play::init() - Loading level: " << m_levelPath << std::endl;
 
@@ -163,43 +164,41 @@ void Scene_Play::init()
 //
 // Main Update Function
 //
-void Scene_Play::update(float deltaTime) {
-    if (!m_gameOver) {
+void Scene_Play::update(float deltaTime)
+{
+    if (!m_gameOver)
+    {
+        // 1) Update your entity manager, states, collisions, etc.
         m_entityManager.update();
-        
+
         for (auto& entity : m_entityManager.getEntities()) {
             if (entity->has<CHealth>())
                 entity->get<CHealth>().update(deltaTime);
             if (entity->has<CState>())
                 entity->get<CState>().update(deltaTime);
-       
         }
-        
+
         sMovement(deltaTime);
         sEnemyAI(deltaTime);
-        sCollision();  // Calls updateCollisions() which now includes sword collisions.
+        sCollision();
         sAnimation(deltaTime);
         UpdateFragments(deltaTime);
-        m_spawner.updateGraves(deltaTime);  // ✅ Update falling graves
-        
-        // Update CLifeSpan for ephemeral entities AFTER collision processing.
-        for (auto& entity : m_entityManager.getEntities()) {
-            std::string tag = entity->tag();
-            if ((tag == "sword" || tag == "enemySword" || tag == "fragment") && entity->has<CLifeSpan>()) {
-                auto& lifespan = entity->get<CLifeSpan>();
-                lifespan.remainingTime -= deltaTime;
-                if (lifespan.remainingTime <= 0.f)
-                    entity->destroy();
-                    
-            }
-        }
-        
+        m_spawner.updateGraves(deltaTime);
+        sUpdateSword();
+        sAmmoSystem(deltaTime);
+        updateBurstFire(deltaTime);
+
+        // Then do ephemeral checks, life checks, etc.
         lifeCheckEnemyDeath();
         lifeCheckPlayerDeath();
-    } else {
+    }
+    else
+    {
         m_game.window().setView(m_game.window().getDefaultView());
         m_game.changeScene("GAMEOVER", std::make_shared<Scene_GameOver>(m_game));
     }
+
+    // 3) Finally, render
     sRender();
 }
 // Rendering
@@ -237,9 +236,8 @@ void Scene_Play::sCollision() {
     CollisionSystem collisionSystem(m_entityManager, m_game, &m_spawner, m_score);
     collisionSystem.updateCollisions(); // ✅ pass dt
 }
+// Action Processing (Input Handling)                        
 
-// Action Processing (Input Handling)                  
-//
 void Scene_Play::sDoAction(const Action& action)
 {
     auto playerEntities = m_entityManager.getEntities("player");
@@ -247,36 +245,45 @@ void Scene_Play::sDoAction(const Action& action)
 
     auto player = playerEntities[0];
     auto& PTrans   = player->get<CTransform>();
-    auto& vel = PTrans.velocity;  
-    auto& state = player->get<CState>();
+    auto& vel      = PTrans.velocity;  
+    auto& state    = player->get<CState>();
 
-    // Se siamo in difesa, ignoriamo gli input di movimento e salto (oppure li gestiamo separatamente)
     bool inDefense = (state.state == "defense");
+    bool hasFutureArmor = player->has<CPlayerEquipment>() && 
+                          player->get<CPlayerEquipment>().hasFutureArmor;
 
     static bool isMovingLeft  = false;
     static bool isMovingRight = false;
+    
 
-    if (action.type() == "START") {
-        if (!inDefense) { // Solo se non in difesa
+    if (action.type() == "START")
+    {
+        if (!inDefense)
+        {
             if (action.name() == "MOVE_LEFT") {
-                isMovingLeft = true;
-                isMovingRight = false;
+                isMovingLeft    = true;
+                isMovingRight   = false;
                 PTrans.facingDirection = -1.f;
                 vel.x = -xSpeed;
-                if (state.state != "air")
+                if (state.state != "air") {
                     state.state = "run";
+                }
             }
             else if (action.name() == "MOVE_RIGHT") {
-                isMovingRight = true;
-                isMovingLeft = false;
+                isMovingRight   = true;
+                isMovingLeft    = false;
                 PTrans.facingDirection = 1.f;
                 vel.x = xSpeed;
-                if (state.state != "air")
+                if (state.state != "air") {
                     state.state = "run";
+                }
             }
             else if (action.name() == "JUMP") {
-                // Solo se non in difesa
-                if (state.onGround && (state.state == "idle" || state.state == "run" || state.state == "attack")) {
+                if (state.onGround && 
+                   (state.state == "idle" || 
+                    state.state == "run" || 
+                    state.state == "attack"))
+                {
                     state.isJumping = true;
                     state.jumpTime  = 0.0f;
                     vel.y           = -ySpeed;
@@ -292,65 +299,292 @@ void Scene_Play::sDoAction(const Action& action)
             m_showBoundingBoxes = !m_showBoundingBoxes;
         }
         else if (action.name() == "ATTACK") {
-            // Gestione attacco
+            // Check cooldowns first
             if (state.bulletCooldown > 0.f) {
-                std::cout << "[DEBUG] Bullet on cooldown! " << state.bulletCooldown << "s left.\n";
+                std::cout << "[DEBUG] Attack on cooldown! " << state.bulletCooldown << "s left.\n";
                 return;
             }
+            
             if (state.attackCooldown <= 0.f) {
-                state.state        = "attack";
-                state.attackTime   = 0.5f;
+                state.state = "attack";
+                state.attackTime = 0.5f;
                 state.attackCooldown = 0.5f;
-
-                float armorBulletCooldown = 0.5f; // default
-                if (player->has<CPlayerEquipment>() && player->get<CPlayerEquipment>().hasFutureArmor) {
-                    armorBulletCooldown = 0.2f;
+                
+                if (hasFutureArmor) {
+                    // Check for ammo if the ammo system is enabled
+                    if (player->has<CAmmo>()) {
+                        auto& ammo = player->get<CAmmo>();
+                        if (ammo.currentBullets <= 0) {
+                            std::cout << "[DEBUG] Out of ammo! Cannot attack.\n";
+                            return;
+                        }
+                        // Consume a bullet
+                        ammo.currentBullets--;
+                        std::cout << "[DEBUG] Bullet fired. Ammo left: " << ammo.currentBullets << "\n";
+                    }
+                    
+                    // Fire a bullet immediately for feedback
                     m_spawner.spawnPlayerBullet(player);
-                } else {
-                    spawnSword(player);
+                    state.bulletCooldown = 0.2f;
+                    
+                    // Enable burst mode so we can keep firing
+                    state.inBurst        = true;
+                    state.burstTimer     = 0.f;
+                    state.burstFireTimer = 0.f;
+                    state.bulletsShot    = 1;
+                    std::cout << "[DEBUG] Burst started.\n";
                 }
-                state.bulletCooldown = armorBulletCooldown;
-                std::cout << "[DEBUG] Bullet fired/slash. bulletCooldown set to " << armorBulletCooldown << "\n";
+                else {
+                    // First, destroy any existing sword
+                    if (m_activeSword) {
+                        m_activeSword->destroy();
+                        m_activeSword = nullptr;
+                    }
+                    
+                    // Then spawn a new sword and store the reference
+                    m_activeSword = m_spawner.spawnSword(player);
+                    state.bulletCooldown = 0.5f;
+                    std::cout << "[DEBUG] Sword attack. Cooldown: 0.5s\n";
+                }
+            }
+        }
+        else if (action.name() == "SUPERMOVE") {
+            // Super move logic
+            if (state.bulletCooldown > 0.f) {
+                std::cout << "[DEBUG] Super Move on cooldown! " << state.bulletCooldown << "s left.\n";
+                return;
+            }
+            
+            // Add check for super move readiness
+            if (state.superBulletTimer <= 0.f && state.attackCooldown <= 0.f) {
+                if (hasFutureArmor) {
+                    state.state = "attack";
+                    state.attackTime = 0.5f;
+                    state.attackCooldown = 0.5f;
+        
+                    // Fire multiple bullets in a spread pattern
+                    int bulletCount = state.superBulletCount;
+                    float angleRange = 40.0f;
+                    for (int i = 0; i < bulletCount; i++) {
+                        auto bullet = m_spawner.spawnPlayerBullet(player);
+                        if (bullet && bullet->has<CTransform>()) {
+                            auto& bulletTrans = bullet->get<CTransform>();
+                            float step = angleRange / (bulletCount - 1);
+                            float angle = -angleRange * 0.5f + step * i;
+                            bulletTrans.rotate(angle);
+                        }
+                    }
+                    
+                    // Set both cooldowns
+                    state.bulletCooldown = 1.0f; // Normal cooldown for basic shots
+                    
+                    // THIS IS THE CRUCIAL PART: Reset the super move timer
+                    state.superBulletTimer = state.superBulletCooldown; // Reset super move cooldown
+                    state.superMoveReady = false; // No longer ready
+                    
+                    std::cout << "[DEBUG] Super Move! Fired " << bulletCount << " bullets. Super cooldown reset to " 
+                              << state.superBulletCooldown << "s\n";
+                } 
+                else {
+                    std::cout << "[DEBUG] No future armor, can't perform Super Move.\n";
+                }
+            } else if (state.superBulletTimer > 0.f) {
+                // Provide feedback that super move isn't ready yet
+                std::cout << "[DEBUG] Super Move not ready yet. Cooldown remaining: " 
+                          << state.superBulletTimer << "s\n";
             }
         }
         else if (action.name() == "DEFENSE") {
-            // Attiva la difesa solo se c'è ancora stamina
+            // Activate defense only if there's stamina left
             if (state.shieldStamina > 0.f && state.state != "defense") {
                 std::cout << "[DEBUG] Defense activated.\n";
                 state.state = "defense";
             }
         }
     }
-    else if (action.type() == "END") {
-        if (!inDefense) { // Solo se non in difesa, per evitare di sovrascrivere lo stato difesa
+    else if (action.type() == "END")
+    {
+        if (!inDefense) {
             if (action.name() == "MOVE_LEFT") {
                 isMovingLeft = false;
                 if (!isMovingRight) {
                     vel.x = 0.f;
-                    if (state.state != "air")
+                    if (state.state != "air") {
                         state.state = "idle";
+                    }
                 }
             }
             else if (action.name() == "MOVE_RIGHT") {
                 isMovingRight = false;
                 if (!isMovingLeft) {
                     vel.x = 0.f;
-                    if (state.state != "air")
+                    if (state.state != "air") {
                         state.state = "idle";
+                    }
                 }
             }
             else if (action.name() == "JUMP") {
                 state.isJumping = false;
             }
+            else if (action.name() == "ATTACK") 
+            {
+                // If user releases ATTACK during a burst, cancel it
+                if (state.inBurst) {
+                    state.inBurst        = false;
+                    state.burstTimer     = 0.f;
+                    state.burstFireTimer = 0.f;
+                    state.bulletsShot    = 0;
+                    std::cout << "[DEBUG] Burst ended by releasing ATTACK.\n";
+                }
+            }
         }
         else if (action.name() == "DEFENSE") {
-            // Se l'utente rilascia il tasto di difesa, termina la difesa
+            // End defense when defense key is released
             if (state.state == "defense") {
                 state.state = "idle";
             }
         }
     }
 }
+
+void Scene_Play::sLifespan(float deltaTime)
+{
+    // Loop through all entities with a CLifeSpan component
+    for (auto e : m_entityManager.getEntities())
+    {
+        if (e->has<CLifeSpan>())
+        {
+            // Decrease the remaining lifespan by the elapsed time
+            auto& lifespan = e->get<CLifeSpan>();
+            lifespan.remainingTime -= deltaTime;
+            
+            // If lifespan is over, destroy the entity
+            if (lifespan.remainingTime <= 0)
+            {
+                e->destroy();
+                
+                // If this is a sword, you might want to log it
+                if (e->tag() == "sword")
+                {
+                    std::cout << "[DEBUG] Sword despawned due to lifespan end.\n";
+                }
+            }
+        }
+    }
+}
+
+void Scene_Play::sUpdateSword()
+{
+    auto playerEntities = m_entityManager.getEntities("player");
+    if (playerEntities.empty() || !m_activeSword) return;
+
+    auto player = playerEntities[0];
+    auto& state = player->get<CState>();
+    
+    // If the attack animation is done or player state changed, destroy the sword
+    if (m_activeSword && (state.attackTime <= 0.f || state.state != "attack")) {
+        m_activeSword->destroy();
+        m_activeSword = nullptr;
+        std::cout << "[DEBUG] Sword removed after attack finished.\n";
+    }
+}
+
+void Scene_Play::sAmmoSystem(float dt)
+{
+    auto playerEntities = m_entityManager.getEntities("player");
+    if (playerEntities.empty()) return;
+    
+    auto player = playerEntities[0];
+    if (!player->has<CAmmo>()) return;
+    
+    // Only process if player has future armor
+    if (!player->has<CPlayerEquipment>() || !player->get<CPlayerEquipment>().hasFutureArmor) {
+        return;
+    }
+    
+    auto& ammo = player->get<CAmmo>();
+    
+    // Check if we need to start reloading
+    if (ammo.currentBullets <= 0 && !ammo.isReloading) {
+        ammo.isReloading = true;
+        ammo.currentReloadTime = 0.f;
+        ammo.reloadTime = 5.0f; // 5 seconds for reload
+        std::cout << "[DEBUG] Auto-reload started.\n";
+    }
+    
+    // Handle reloading process
+    if (ammo.isReloading) {
+        ammo.currentReloadTime += dt;
+        
+        // Reload complete
+        if (ammo.currentReloadTime >= ammo.reloadTime) {
+            ammo.currentBullets = ammo.maxBullets;
+            ammo.isReloading = false;
+            std::cout << "[DEBUG] Reload complete. Bullets: " << ammo.currentBullets << "\n";
+        }
+    }
+}
+
+void Scene_Play::updateBurstFire(float deltaTime)
+{
+    // Get the player
+    auto playerEntities = m_entityManager.getEntities("player");
+    if (playerEntities.empty()) return;
+    auto player = playerEntities[0];
+
+    auto& state = player->get<CState>();
+
+    // If not in a burst, do nothing
+    if (!state.inBurst) return;
+
+    // 1) Update timers
+    state.burstTimer     += deltaTime;
+    state.burstFireTimer += deltaTime;
+
+    // 2) If the total burst time exceeded
+    if (state.burstTimer >= state.burstDuration) {
+        // End the burst
+        state.inBurst        = false;
+        state.burstTimer     = 0.f;
+        state.burstFireTimer = 0.f;
+        state.bulletsShot    = 0;
+        std::cout << "[DEBUG] Burst ended (time limit reached).\n";
+        return;
+    }
+
+    // 3) Check if enough time has passed to fire again
+    if (state.burstFireTimer >= state.burstInterval) 
+    {
+        // Check if we have ammo, if ammo system is enabled
+        if (player->has<CAmmo>()) {
+            auto& ammo = player->get<CAmmo>();
+            if (ammo.currentBullets <= 0) {
+                // End the burst if out of ammo
+                state.inBurst = false;
+                std::cout << "[DEBUG] Burst ended - out of ammo.\n";
+                return;
+            }
+            
+            // Consume a bullet
+            ammo.currentBullets--;
+        }
+        
+        // Reset the interval timer
+        state.burstFireTimer = 0.f;
+        state.bulletsShot++;
+
+        // Spawn a bullet
+        m_spawner.spawnPlayerBullet(player);
+        
+        if (player->has<CAmmo>()) {
+            auto& ammo = player->get<CAmmo>();
+            std::cout << "[DEBUG] Burst bullet #" << state.bulletsShot << ", Ammo left: " << ammo.currentBullets << "\n";
+        } else {
+            std::cout << "[DEBUG] Burst bullet #" << state.bulletsShot << "\n";
+        }
+    }
+}
+
 // Wrapper: chiama il metodo updateFragments del Spawner
 void Scene_Play::UpdateFragments(float deltaTime) {
     m_spawner.updateFragments(deltaTime);

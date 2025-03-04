@@ -548,6 +548,141 @@ void PlayRenderer::render() {
                     m_game.window().draw(noStaminaText);
                 }
             }
+            if (player->has<CPlayerEquipment>() && 
+            player->get<CPlayerEquipment>().hasFutureArmor &&
+            player->has<CAmmo>()) {
+            
+            auto& ammo = player->get<CAmmo>();
+            
+            // Calcolo ratio Ammo
+            float currentAmmo = static_cast<float>(ammo.currentBullets);
+            float maxAmmo = static_cast<float>(ammo.maxBullets);
+            float ammoRatio = (maxAmmo > 0.f) ? (currentAmmo / maxAmmo) : 0.f;
+            ammoRatio = std::clamp(ammoRatio, 0.f, 1.f);
+            
+            // Dimensioni della barra ammo
+            float barWidth = 120.f;
+            float barHeight = 14.f;
+            float barSpacing = 12.f;
+            float rightX = windowSize.x - 10.f - barWidth;
+            float baseY = windowSize.y - hudHeight + 10.f;
+            
+            // Posizione della barra Ammo (sotto Stamina)
+            float ammoBarX = rightX;
+            float ammoBarY = baseY + (barHeight + barSpacing) * 2; // Sotto Health e Stamina
+            
+            // Sfondo Ammo
+            sf::RectangleShape ammoBg(sf::Vector2f(barWidth, barHeight));
+            ammoBg.setFillColor(sf::Color(50, 50, 50));
+            ammoBg.setPosition(ammoBarX, ammoBarY);
+            m_game.window().draw(ammoBg);
+            
+            // Riempimento Ammo (giallo/arancione)
+            sf::RectangleShape ammoRect(sf::Vector2f(barWidth * ammoRatio, barHeight));
+            ammoRect.setFillColor(sf::Color(255, 165, 0)); // Arancione
+            ammoRect.setPosition(ammoBarX, ammoBarY);
+            m_game.window().draw(ammoRect);
+            
+            // Etichetta "Ammo" a sinistra
+            {
+                sf::Text ammoLabel;
+                ammoLabel.setFont(m_game.assets().getFont("Menu"));
+                ammoLabel.setCharacterSize(16);
+                ammoLabel.setFillColor(sf::Color::White);
+                ammoLabel.setString("Ammo");
+                
+                sf::FloatRect lblRect = ammoLabel.getLocalBounds();
+                float offsetX = 15.f;
+                float offsetY = 8.f;
+                float labelX = ammoBarX - (lblRect.width + offsetX);
+                float labelY = ammoBarY + (barHeight - lblRect.height - offsetY) * 0.5f;
+                
+                ammoLabel.setPosition(labelX, labelY);
+                m_game.window().draw(ammoLabel);
+            }
+            
+            // Se l'ammo è esaurito, mostra "No ammo, reloading..."
+            if (ammo.currentBullets <= 0) {
+                sf::Text noAmmoText;
+                noAmmoText.setFont(m_game.assets().getFont("Menu"));
+                noAmmoText.setCharacterSize(11);
+                noAmmoText.setFillColor(sf::Color::White);
+                noAmmoText.setString("No ammo, reloading...");
+                sf::FloatRect textRect = noAmmoText.getLocalBounds();
+                
+                float textX = ammoBarX + (barWidth - textRect.width)/2.f;
+                float textY = ammoBarY + (barHeight - textRect.height)/2.f;
+                noAmmoText.setPosition(textX, textY);
+                m_game.window().draw(noAmmoText);
+            }
+            // ----- SUPER MOVE STATUS -----
+            if (player->has<CPlayerEquipment>() && 
+                player->get<CPlayerEquipment>().hasFutureArmor) {
+                
+                auto& state = player->get<CState>();
+                
+                // Use the existing variables with their correct names
+                float superMoveCooldown = state.superBulletTimer;
+                float maxSuperMoveCooldown = state.superBulletCooldown;
+                
+                // Determine SuperMove status based on its cooldown
+                std::string superMoveStatus;
+                sf::Color statusColor;
+                
+                if (superMoveCooldown <= 0.f) {
+                    superMoveStatus = "SUPER MOVE: READY";
+                    statusColor = sf::Color::Green;
+                } else {
+                    // Calculate percentage of cooldown remaining
+                    float cooldownPercent = (maxSuperMoveCooldown - superMoveCooldown) / maxSuperMoveCooldown * 100.f;
+                    // Make sure it's between 0-100%
+                    cooldownPercent = std::clamp(cooldownPercent, 0.f, 100.f);
+                    superMoveStatus = "SUPER MOVE: CHARGING " + std::to_string(static_cast<int>(cooldownPercent)) + "%";
+                    statusColor = sf::Color::Yellow;
+                }
+                
+                // Positioning to the left of Ammo bar
+                sf::Text superMoveText;
+                superMoveText.setFont(m_game.assets().getFont("Menu"));
+                superMoveText.setCharacterSize(16);
+                superMoveText.setFillColor(statusColor);
+                superMoveText.setString(superMoveStatus);
+                
+                // Use the same X position as the "Ammo" label but with adjusted Y
+                float superMoveX = ammoBarX - 300.f; // Position it to the left of the Ammo bar
+                float superMoveY = ammoBarY; // Same height as Ammo bar
+                
+                superMoveText.setPosition(superMoveX, superMoveY);
+                m_game.window().draw(superMoveText);
+            }
+            // Opzionale: mostra numerici (es. "3 / 6")
+            {
+                sf::Text ammoCountText;
+                ammoCountText.setFont(m_game.assets().getFont("Menu"));
+                ammoCountText.setCharacterSize(14);
+                ammoCountText.setFillColor(sf::Color::White);
+                ammoCountText.setString(std::to_string(ammo.currentBullets) + " / " + 
+                                    std::to_string(ammo.maxBullets));
+                
+                sf::FloatRect countRect = ammoCountText.getLocalBounds();
+                float textX = ammoBarX + barWidth + 10.f; // A destra della barra
+                float textY = ammoBarY + (barHeight - countRect.height)/2.f;
+                ammoCountText.setPosition(textX, textY);
+                m_game.window().draw(ammoCountText);
+            }
+            
+            // Se è in ricarica, mostra il progresso
+            if (ammo.isReloading) {
+                float reloadProgress = ammo.currentReloadTime / ammo.reloadTime;
+                
+                // Barra di progresso ricarica (sotto la barra principale)
+                float progressY = ammoBarY + barHeight + 2.f;
+                sf::RectangleShape reloadBar(sf::Vector2f(barWidth * reloadProgress, 3.f));
+                reloadBar.setFillColor(sf::Color::Yellow);
+                reloadBar.setPosition(ammoBarX, progressY);
+                m_game.window().draw(reloadBar);
+            }
+        }
         }
     }
     m_game.window().setView(m_cameraView);

@@ -154,9 +154,9 @@ void AnimationSystem::update(float deltaTime) {
 
         // Inside your AnimationSystem.cpp, in the enemy animation section
         if (enemy->has<CEnemyAI>() && enemy->get<CEnemyAI>().enemyType == EnemyType::Super) {
-            std::cout << "[DEBUG] Animation system processing Super enemy " << enemy->id()
-                    << " State: " << (int)ai.enemyState
-                    << " Animation: " << canim.animation.getName() << std::endl;
+            //std::cout << "[DEBUG] Animation system processing Super enemy " << enemy->id()
+            //        << " State: " << (int)ai.enemyState
+            //        << " Animation: " << canim.animation.getName() << std::endl;
                     // Only update the animation frames, don't change anything else
             canim.animation.update(deltaTime);
             continue;  // Skip to next entity

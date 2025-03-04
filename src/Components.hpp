@@ -80,6 +80,19 @@ public:
     }
 };
 
+class CAmmo : public Component {
+    public:
+        int maxBullets = 6;            // Maximum bullets the player can have
+        int currentBullets = 6;        // Current bullet count
+        float reloadTime = 2.0f;       // Time to reload all bullets
+        float currentReloadTime = 0.f; // Current reload timer
+        bool isReloading = false;      // Whether player is currently reloading
+        
+        CAmmo() {}
+        CAmmo(int max) : maxBullets(max), currentBullets(max) {}
+        CAmmo(int max, int current) : maxBullets(max), currentBullets(current) {}
+    };
+
 class CLifeSpan : public Component {
 public:
     float remainingTime;
@@ -138,25 +151,60 @@ class CTileTouched : public Component {
         explicit CTileTouched(bool inFront_ = false) 
             : inFront(inFront_) {}
 };
-
 class CState : public Component {
     public:
-        std::string state;  // "idle", "run", "attack", "defense", ecc.
-        bool isInvincible;
+        //====================================================
+        //  Original Fields
+        //====================================================
+        std::string state;           // "idle", "run", "attack", "defense", etc.
+        bool  isInvincible;
         float invincibilityTimer;
-        bool isJumping;
+        bool  isJumping;
         float jumpTime;
         float knockbackTimer;
-        bool onGround;
+        bool  onGround;
         float attackTime;
         float attackCooldown;
-        bool blockedHorizontally;
-        float bulletCooldown   = 0.f;  // Tempo corrente di cooldown del proiettile
-        float bulletCooldownMax= 0.5f;   // Cooldown di default se non hai armatura
-        float defenseTimer     = 0.f;   // Timer per la difesa
+        bool  blockedHorizontally;
+    
+        // Bullet-related cooldown (for ranged attacks)
+        float bulletCooldown    = 0.f; 
+        float bulletCooldownMax = 0.5f; 
+    
+        float defenseTimer      = 0.f;  // Timer per la difesa
         float shieldStamina;
         float maxshieldStamina;
     
+        // Sword and bullet parameters
+        int   maxConsecutiveSwordAttacks; // Numero massimo di attacchi consecutivi con spada
+        float bulletDamage;               // Danno dei proiettili
+        int   bulletBurstCount;           // Numero di proiettili sparati in un burst
+        int   superBulletCount;           // Numero di super proiettili sparati in un burst
+        float superBulletDamage;          // Danno dei super proiettili
+    
+        //====================================================
+        //  NEW: Sword Cooldown (Separate from bulletCooldown)
+        //====================================================
+        float swordCooldown    = 0.f;  // Tempo corrente di cooldown per la spada
+        float swordCooldownMax = 0.3f; // Valore di default (ad es. 0.3 secondi)
+    
+        //====================================================
+        //  NEW Fields for BURST + SUPER MOVE
+        //====================================================
+        bool  inBurst         = false; // True se il player spara in burst
+        float burstTimer      = 0.f;   // Timer che conta la durata del burst
+        float burstDuration   = 5.f;   // Durata massima del burst
+        float burstInterval   = 0.3f;  // Intervallo tra un proiettile e l'altro
+        float burstFireTimer  = 0.f;   // Timer dal precedente proiettile
+        int   bulletsShot     = 0;     // Contatore di quanti proiettili sparati
+    
+        float superBulletTimer   = 0.f;   // Timer per la super mossa
+        float superBulletCooldown= 6.f;   // Cooldown totale per la super mossa
+        bool  superMoveReady     = false; // Diventa true quando superBulletTimer >= superBulletCooldown
+    
+        //====================================================
+        //  Constructor
+        //====================================================
         CState(const std::string& s = "idle")
             : state(s),
               isInvincible(false),
@@ -169,38 +217,79 @@ class CState : public Component {
               attackCooldown(0.f),
               blockedHorizontally(false),
               shieldStamina(10.0f),
-              maxshieldStamina(10.0f)
-        {}
+              maxshieldStamina(10.0f),
+              maxConsecutiveSwordAttacks(3),
+              bulletDamage(5.f),
+              bulletBurstCount(3),
+              superBulletCount(4),
+              superBulletDamage(2.f)
+        {
+            // Optionally set any default you prefer for swordCooldownMax, bulletCooldownMax, etc.
+            // e.g., swordCooldownMax = 0.3f; bulletCooldownMax = 0.5f;
+        }
     
-        void update(float deltaTime) {
+        //====================================================
+        //  Update Function
+        //====================================================
+        void update(float deltaTime) 
+        {
+            //===============================
+            // Original Timers
+            //===============================
             if (isInvincible && invincibilityTimer > 0.f) {
                 invincibilityTimer -= deltaTime;
                 if (invincibilityTimer <= 0.f) {
                     isInvincible = false;
                 }
             }
+        
             if (attackCooldown > 0.f) {
                 attackCooldown -= deltaTime;
                 if (attackCooldown < 0.f) {
                     attackCooldown = 0.f;
                 }
             }
+        
             if (knockbackTimer > 0.f) {
                 knockbackTimer -= deltaTime;
                 if (knockbackTimer < 0.f) {
                     knockbackTimer = 0.f;
                 }
             }
+        
+            //===============================
+            // Ranged Bullet Cooldown
+            //===============================
             if (bulletCooldown > 0.f) {
                 bulletCooldown -= deltaTime;
-                if (bulletCooldown < 0.f) bulletCooldown = 0.f;
+                if (bulletCooldown < 0.f) {
+                    bulletCooldown = 0.f;
+                }
             }
-            // Aggiornamento del timer per l'attacco
+        
+            //===============================
+            // Sword Cooldown (NEW)
+            //===============================
+            if (swordCooldown > 0.f) {
+                swordCooldown -= deltaTime;
+                if (swordCooldown < 0.f) {
+                    swordCooldown = 0.f;
+                }
+            }
+        
+            //===============================
+            // Attack Animation Timer
+            //===============================
             if (attackTime > 0.f) {
                 attackTime -= deltaTime;
-                if (attackTime < 0.f) attackTime = 0.f;
+                if (attackTime < 0.f) {
+                    attackTime = 0.f;
+                }
             }
-            // Se siamo in stato defense, accumula il tempo d'uso e verifica se si è esaurito il tempo massimo (2 sec)
+        
+            //===============================
+            // Defense Logic
+            //===============================
             if (state == "defense") {
                 shieldStamina -= deltaTime;
                 if (shieldStamina <= 0.f) {
@@ -208,8 +297,35 @@ class CState : public Component {
                     state = "idle";
                 }
             }
+        
+            //===============================
+            //  SUPER MOVE Timer (OPPOSITE APPROACH)
+            //===============================
+            if (superBulletTimer > 0.f) {
+                superBulletTimer -= deltaTime;
+                if (superBulletTimer <= 0.f) {
+                    superBulletTimer = 0.f;
+                    superMoveReady = true;
+                }
+            }
+        
+            //===============================
+            //  BURST Logic
+            //===============================
+            if (inBurst) {
+                burstTimer     += deltaTime;
+                burstFireTimer += deltaTime;
+        
+                // End the burst if it exceeds burstDuration
+                if (burstTimer >= burstDuration) {
+                    inBurst        = false;
+                    burstTimer     = 0.f;
+                    burstFireTimer = 0.f;
+                    bulletsShot    = 0;
+                }
+            }
         }
-};
+    };
 
 class CShape : public Component {
 public:
@@ -272,12 +388,12 @@ enum class EnemyState {
     BlockedByTile
 };
 
+
 class CEnemyAI : public Component {
     public:
         // ------------------------------------------------------
         // 1) Proprietà di base e comportamento
         // ------------------------------------------------------
-        std::vector<Vec2<float>> patrolPoints; // Punti di pattugliamento (da dichiarare PRIMA di enemyState)
         EnemyType     enemyType;      // Tipo di nemico (Normal, Elite, ecc.)
         EnemyBehavior enemyBehavior;  // Comportamento (FollowOne, FollowTwo, ecc.)
         EnemyState    enemyState;     // Stato corrente (Idle, Attack, ecc.)
@@ -304,7 +420,7 @@ class CEnemyAI : public Component {
         float blockedHorizontallyTime; // Tempo bloccato orizzontalmente
     
         // ------------------------------------------------------
-        // 5) Gestione dell’attacco standard
+        // 5) Gestione dell'attacco standard
         // ------------------------------------------------------
         bool  swordSpawned;
         float attackCooldown;
@@ -324,11 +440,11 @@ class CEnemyAI : public Component {
         Vec2<float> lastSeenPlayerPos;// Ultima posizione vista del giocatore
     
         // ------------------------------------------------------
-        // 8) Timer di attacco “radiale” e “shooting”
+        // 8) Timer di attacco "radiale" e "shooting"
         // ------------------------------------------------------
         float radialAttackTimer;      // Timer per l'attacco radiale
         float horizontalShootTimer;   // Timer per l'attacco orizzontale
-        bool  TileInFront;            // Se c’è un tile di fronte (per logiche di salto/blocco)
+        bool  TileInFront;            // Se c'è un tile di fronte (per logiche di salto/blocco)
         float shootTimer;             // Timer per gli intervalli di tiro "normale"
     
         // ------------------------------------------------------
@@ -344,7 +460,7 @@ class CEnemyAI : public Component {
         bool  isInBurstMode;          // Se il nemico è in fase finale di burst
     
         // ------------------------------------------------------
-        // 10) Parametri per il “Bullet Burst” e la “Super Move”
+        // 10) Parametri per il "Bullet Burst" e la "Super Move"
         // ------------------------------------------------------
         bool  inBurst;          // True se sta sparando un burst di proiettili
         int   bulletsShot;      // Quanti proiettili sono stati sparati in questo burst
@@ -360,7 +476,7 @@ class CEnemyAI : public Component {
         // 11) Distanza di shooting e cooldown
         // ------------------------------------------------------
         float minShootDistance; // Distanza minima per sparare
-        float shootCooldown;    // Cooldown tra un colpo e l’altro
+        float shootCooldown;    // Cooldown tra un colpo e l'altro
     
         // ------------------------------------------------------
         // 12) Cooldown forzato dopo X attacchi consecutivi
@@ -380,102 +496,86 @@ class CEnemyAI : public Component {
         float stateChangeCooldown;
     
         // ------------------------------------------------------
-        // 14) Parametri per attacchi con spada e proiettili
-        // ------------------------------------------------------
-        int   maxConsecutiveSwordAttacks; // Numero massimo di attacchi consecutivi con spada
-        float bulletDamage;               // Danno dei proiettili
-        int   bulletBurstCount;           // Numero di proiettili sparati in un burst
-        int   superBulletCount;           // Numero di super proiettili sparati in un burst
-        float superBulletDamage;          // Danno dei super proiettili
-    
-        // ------------------------------------------------------
         // Costruttore
         // ------------------------------------------------------
         CEnemyAI(EnemyType type = EnemyType::Normal, EnemyBehavior behavior = EnemyBehavior::FollowOne)
-            : patrolPoints(),
-              enemyType(type),
-              enemyBehavior(behavior),
-              enemyState(EnemyState::Idle),
+            :   enemyType(type),
+                enemyBehavior(behavior),
+                enemyState(EnemyState::Idle),
     
-              // Movement & Combat
-              speedMultiplier(1.0f),
-              damage(1),
+                // Movement & Combat
+                speedMultiplier(1.0f),
+                damage(1),
     
-              // Vision & Attack
-              lineOfSightRange(200.f),
-              attackRadius(100.f),
+                // Vision & Attack
+                lineOfSightRange(200.f),
+                attackRadius(100.f),
     
-              // Jump & Movement
-              facingDirection(1.f),
-              jumpCooldown(0.5f),
-              isJumping(false),
-              jumpTimer(0.f),
-              blockedHorizontallyTime(0.f),
+                // Jump & Movement
+                facingDirection(1.f),
+                jumpCooldown(0.5f),
+                isJumping(false),
+                jumpTimer(0.f),
+                blockedHorizontallyTime(0.f),
     
-              // Attack Handling
-              swordSpawned(false),
-              attackCooldown(0.f),
-              attackTimer(0.f),
+                // Attack Handling
+                swordSpawned(false),
+                attackCooldown(0.f),
+                attackTimer(0.f),
     
-              // Knockback
-              knockbackTimer(0.f),
+                // Knockback
+                knockbackTimer(0.f),
     
-              // Recognition
-              recognitionTimer(0.f),
-              maxRecognitionTime(5.0f),
-              inRecognitionArea(false),
-              lastSeenPlayerPos(Vec2<float>(0.f, 0.f)),
+                // Recognition
+                recognitionTimer(0.f),
+                maxRecognitionTime(5.0f),
+                inRecognitionArea(false),
+                lastSeenPlayerPos(Vec2<float>(0.f, 0.f)),
     
-              // Attack Timers
-              radialAttackTimer(0.f),
-              horizontalShootTimer(0.f),
-              TileInFront(false),
-              shootTimer(0.f),
+                // Attack Timers
+                radialAttackTimer(0.f),
+                horizontalShootTimer(0.f),
+                TileInFront(false),
+                shootTimer(0.f),
     
-              // Emperor Attack Scaling
-              radialAttackMultiplier(1.0f),
-              radialAttackCooldown(5.0f),
-              radialAttackTimerSuper(5.0f),
-              finalBurstTimer(0.f),
-              burstCount(0),
-              burstCooldownActive(false),
-              burstCooldownTimer(0.f),
-              isInBurstMode(false),
+                // Emperor Attack Scaling
+                radialAttackMultiplier(1.0f),
+                radialAttackCooldown(5.0f),
+                radialAttackTimerSuper(5.0f),
+                finalBurstTimer(0.f),
+                burstCount(0),
+                burstCooldownActive(false),
+                burstCooldownTimer(0.f),
+                isInBurstMode(false),
     
-              // Bullet Burst & Super Move
-              inBurst(false),
-              bulletsShot(0),
-              burstInterval(0.1f),
-              burstTimer(0.f),
-              bulletCount(8),
-              superMoveReady(false),
-              superMoveTimer(0.f),
-              superMoveCooldown(5.f),
+                // Bullet Burst & Super Move
+                inBurst(false),
+                bulletsShot(0),
+                burstInterval(0.1f),
+                burstTimer(0.f),
+                bulletCount(8),
+                superMoveReady(false),
+                superMoveTimer(0.f),
+                superMoveCooldown(5.f),
     
-              // Shooting distance & cooldown
-              minShootDistance(100.f),
-              shootCooldown(1.f),
+                // Shooting distance & cooldown
+                minShootDistance(100.f),
+                shootCooldown(1.f),
     
-              // Forced cooldown
-              consecutiveAttacks(0),
-              maxAttacksBeforeCooldown(5),
-              forcedCooldownDuration(5.f),
-              forcedCooldownTimer(0.f),
-              isInForcedCooldown(false),
+                // Forced cooldown
+                consecutiveAttacks(0),
+                maxAttacksBeforeCooldown(5),
+                forcedCooldownDuration(5.f),
+                forcedCooldownTimer(0.f),
+                isInForcedCooldown(false),
     
-              // Additional parameters
-              tileDetected(false),
-              isAttackingTile(false),
-              canChangeState(true),
-              stateChangeCooldown(0.f),
-    
-              // Sword and bullet parameters
-              maxConsecutiveSwordAttacks(3),
-              bulletDamage(5.f),
-              bulletBurstCount(3),
-              superBulletCount(4),
-              superBulletDamage(2.f)
-        {}
+                // Additional parameters
+                tileDetected(false),
+                isAttackingTile(false),
+                canChangeState(true),
+                stateChangeCooldown(0.f)
+        {
+        }
     };
 
 class CPlayerEquipment : public Component {
