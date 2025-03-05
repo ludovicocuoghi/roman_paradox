@@ -181,6 +181,7 @@ Tile Ground 127 0
 Tile LevelDoor 124 5
 Tile Ground 59 8
 Tile Ground 67 8
+Player 1 1
 Dec BushTall2 0 4
 Dec BushTall2 3 4
 Dec BushSmall 32 1
@@ -207,4 +208,3 @@ Enemy EnemySuper 70 1
 Enemy EnemySuper 98 3
 Enemy EnemySuper 62 8
 Enemy EnemySuper 23 1
-Player 4 4

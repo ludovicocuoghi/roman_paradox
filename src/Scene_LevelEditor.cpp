@@ -42,6 +42,11 @@ Scene_LevelEditor::Scene_LevelEditor(GameEngine& game)
 
     registerAction(sf::Keyboard::Escape, "BACK");
 
+    loadBackground("src/images/Background/ancient_rome/ancient_rome_level_1_day.png");
+    
+    // Position camera at bottom left after loading background
+    setCameraToBottomLeft();
+
     loadTileOptions();
     loadDecOptions();
     loadEnemyOptions();
@@ -98,6 +103,8 @@ void Scene_LevelEditor::update(float deltaTime) {
         m_cameraView.setSize(newSize);
         m_game.window().setView(m_cameraView);
 
+        updateBackgroundPosition();
+
         m_entityManager.update();
 
         // Left mouse click handling
@@ -114,6 +121,8 @@ void Scene_LevelEditor::update(float deltaTime) {
                     placeDec(cellX, cellY);
                 else if (m_mode == 2)
                     placeEnemy(cellX, cellY);
+                else if (m_mode == 3)
+                    placePlayer(cellX, cellY);
                 mousePressed = true;
             }
         }
@@ -131,6 +140,8 @@ void Scene_LevelEditor::update(float deltaTime) {
                     removeDec(cellX, cellY);
                 else if (m_mode == 2)
                     removeEnemy(cellX, cellY);
+                else if (m_mode== 3)
+                    removePlayer(cellX, cellY);
                 mousePressed = true;
             }
         }
@@ -143,6 +154,12 @@ void Scene_LevelEditor::update(float deltaTime) {
 void Scene_LevelEditor::sRender() {
     m_game.window().clear(sf::Color(100, 100, 255));
     m_game.window().setView(m_cameraView);
+
+    // Draw background if it exists
+    if (m_backgroundTexture.getSize().x > 0) {
+        m_game.window().draw(m_backgroundSprite);
+    }
+    
     drawGrid();
 
     // Draw game entities
@@ -174,6 +191,104 @@ void Scene_LevelEditor::sDoAction(const Action& action) {
     }
 }
 
+void Scene_LevelEditor::loadBackground(const std::string& path) {
+    if (!m_backgroundTexture.loadFromFile(path)) {
+        std::cerr << "[ERROR] Could not load background image: " << path << std::endl;
+        return;
+    }
+    
+    m_backgroundTexture.setRepeated(true);
+    m_backgroundSprite.setTexture(m_backgroundTexture);
+    
+    // Set initial background scale and position
+    updateBackgroundPosition();
+    
+    std::cout << "[DEBUG] Background loaded: " << path << std::endl;
+}
+
+void Scene_LevelEditor::setCameraToBottomLeft() {
+    // Calculate the position for the bottom left corner of the world
+    float bottomLeftX = (tileSize * 2); // Small offset to show a bit of space
+    float bottomLeftY = (worldHeight * tileSize) - (m_cameraView.getSize().y / 2);
+    
+    // Set the camera position
+    m_cameraView.setCenter(bottomLeftX, bottomLeftY);
+    m_game.window().setView(m_cameraView);
+    
+    // Update the background to match the new camera position
+    updateBackgroundPosition();
+    
+    std::cout << "[DEBUG] Camera positioned at bottom left\n";
+}
+
+void Scene_LevelEditor::updateBackgroundPosition() {
+    if (m_backgroundTexture.getSize().x == 0 || m_backgroundTexture.getSize().y == 0) {
+        return; // No valid texture loaded
+    }
+    
+    // Get the current view bounds
+    sf::Vector2f viewCenter = m_cameraView.getCenter();
+    sf::Vector2f viewSize = m_cameraView.getSize();
+    
+    // Position the background so it's centered on the view
+    float bgX = viewCenter.x - (viewSize.x / 2);
+    float bgY = viewCenter.y - (viewSize.y / 2);
+    
+    // Set the position and scale of the background sprite
+    m_backgroundSprite.setPosition(bgX, bgY);
+    
+    // Calculate scale to cover the view area
+    float scaleX = viewSize.x / static_cast<float>(m_backgroundTexture.getSize().x);
+    float scaleY = viewSize.y / static_cast<float>(m_backgroundTexture.getSize().y);
+    
+    // Use the larger scale to ensure the background covers the entire view
+    float scale = std::max(scaleX, scaleY);
+    m_backgroundSprite.setScale(scale, scale);
+}
+
+
+void Scene_LevelEditor::placePlayer(int gridX, int gridY) {
+    float realX = gridX * tileSize;
+    float realY = gridY * tileSize;
+    
+    // First, check if a player already exists and remove it if it does
+    auto& players = m_entityManager.getEntities("player");
+    for (auto& player : players) {
+        player->destroy();
+        std::cout << "[DEBUG] Existing player removed\n";
+    }
+    
+    // Create new player at the specified position
+    auto player = m_entityManager.addEntity("player");
+    player->add<CTransform>(Vec2<float>(realX, realY));
+    
+    // Add the player animation
+    std::string fullName = "PlayerStand";
+    if (m_game.assets().hasAnimation(fullName)) {
+        player->add<CAnimation>(m_game.assets().getAnimation(fullName), true);
+        std::cout << "[DEBUG] Player posizionato in (" << gridX << ", " << gridY << ")\n";
+    }
+    else {
+        std::cerr << "[ERROR] Animazione mancante per: " << fullName << "\n";
+        // Fallback to a default player animation if the world-specific one doesn't exist
+        if (m_game.assets().hasAnimation("PlayerStand")) {
+            player->add<CAnimation>(m_game.assets().getAnimation("PlayerStand"), true);
+            std::cout << "[DEBUG] Player posizionato con animazione di fallback in (" << gridX << ", " << gridY << ")\n";
+        }
+    }
+}
+
+void Scene_LevelEditor::removePlayer(int gridX, int gridY) {
+    auto& players = m_entityManager.getEntities("player");
+    if (!players.empty()) {
+        for (auto& player : players) {
+            player->destroy();
+        }
+        std::cout << "[DEBUG] Player rimosso\n";
+    } else {
+        std::cout << "[DEBUG] Nessun player trovato da rimuovere.\n";
+    }
+}
 
 void Scene_LevelEditor::placeTile(int gridX, int gridY) {
     float realX = gridX * tileSize;
@@ -320,6 +435,8 @@ void Scene_LevelEditor::renderImGui() {
     ImGui::RadioButton("Decoration", &m_mode, 1);
     ImGui::SameLine();
     ImGui::RadioButton("Enemy", &m_mode, 2);
+    ImGui::SameLine();
+    ImGui::RadioButton("Player", &m_mode, 3);
 
     // Zoom slider
     ImGui::Text("Zoom:");
@@ -352,6 +469,10 @@ void Scene_LevelEditor::renderImGui() {
                 std::cout << "[DEBUG] Enemy selezionato: " << m_selectedEnemy << "\n";
             }
         }
+    }
+    else if (m_mode == 3) {
+        // Player mode has no selection, just instruction
+        ImGui::Text("Click to place player (only one player allowed)");
     }
 
     // Level file selection dropdown and load/save buttons
@@ -440,6 +561,18 @@ void Scene_LevelEditor::saveLevel(const std::string& filePath) {
 
         out << "Tile " << animName << " " << gridX << " " << savedGridY << "\n";
     }
+
+    // Save Player
+    auto& players = m_entityManager.getEntities("player");
+        if (!players.empty()) {
+            auto& player = players.front();
+            auto& transform = player->get<CTransform>();
+            int gridX = static_cast<int>(transform.pos.x / tileSize);
+            int gridY = static_cast<int>(transform.pos.y / tileSize);
+            int savedGridY = worldHeight - 1 - gridY;
+            
+            out << "Player " << gridX << " " << savedGridY << "\n";
+        }
     
     // ========================
     // ✅ Save Decorations
@@ -563,6 +696,24 @@ void Scene_LevelEditor::loadLevel(const std::string& filePath) {
                 std::cerr << "[ERROR] Missing animation for " << fullAsset << "\n";
             std::cout << "[DEBUG] Loaded Dec: " << fullAsset << " at (" << gridX << ", " << gridY << ")\n";
         }
+        else if (token == "Player") {
+            int fileGridX, fileGridY;
+            file >> fileGridX >> fileGridY;
+            int gridX = fileGridX;
+            int gridY = worldHeight - 1 - fileGridY;
+            auto entity = m_entityManager.addEntity("player");
+            entity->add<CTransform>(Vec2<float>(gridX * tileSize, gridY * tileSize));
+            
+            std::string standAnim = "PlayerStand";
+            if (m_game.assets().hasAnimation(standAnim)) {
+                entity->add<CAnimation>(m_game.assets().getAnimation(standAnim), true);
+            } else if (m_game.assets().hasAnimation("PlayerStand")) {
+                entity->add<CAnimation>(m_game.assets().getAnimation("PlayerStand"), true);
+            } else {
+                std::cerr << "[ERROR] Missing animation for player: " << standAnim << "\n";
+            }
+            std::cout << "[DEBUG] Loaded Player at (" << gridX << ", " << gridY << ")\n";
+        }
         else if (token == "Enemy") {
             std::string enemyType;
             int fileGridX, fileGridY;
@@ -590,6 +741,8 @@ void Scene_LevelEditor::loadLevel(const std::string& filePath) {
     m_entityManager.update();
     m_currentLevelPath = filePath;
     std::cout << "[DEBUG] Level loaded from " << filePath << "\n";
+
+    setCameraToBottomLeft();
 }
 
 void Scene_LevelEditor::printEntities() {

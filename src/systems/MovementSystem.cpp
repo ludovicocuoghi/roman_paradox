@@ -11,8 +11,6 @@ MovementSystem::MovementSystem(GameEngine& game,
       m_cameraView(cameraView),
       m_lastDirection(lastDirection)
 {
-    // Optionally, you can set m_currentZoom to something else here
-    // m_currentZoom = 1.5f;
 }
 
 void MovementSystem::updateCamera()

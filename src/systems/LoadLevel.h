@@ -27,6 +27,8 @@ public:
     static constexpr float PLAYER_ATTACK_COOLDOWN = 0.5f;
     static constexpr float PLAYER_BB_SIZE = 80.f;
 
+    static constexpr float PLAYER_SHIELD_STAMINA = 3.f;
+
     static constexpr int   PLAYER_MAX_CONSECUTIVE_SWORD_ATTACKS = 3;
 
     static constexpr int   PLAYER_BULLET_COUNT = 50;

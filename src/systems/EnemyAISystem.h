@@ -12,7 +12,7 @@ public:
     static constexpr float MAX_FALL_SPEED = 600.f;
     static constexpr float KNOCKBACK_DECAY_FACTOR = 0.99f;
     static constexpr float DEFAULT_GRAVITY = 800.f;
-    static constexpr float PLAYER_VISIBLE_DISTANCE = 600.f;
+    static constexpr float PLAYER_VISIBLE_DISTANCE = 800.f;
     static constexpr float ATTACK_RANGE = 100.f;
     static constexpr float EMPEROR_ATTACK_RANGE = 200.f;
 

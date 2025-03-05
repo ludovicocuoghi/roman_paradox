@@ -170,9 +170,9 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
                 state.attackTime = 1.0f;
                 state.attackCooldown = LoadLevel::PLAYER_ATTACK_COOLDOWN; 
                 state.defenseTimer = 3.0f;
-                state.shieldStamina = 5.0f;
-                state.maxshieldStamina = 5.0f;
-        
+                state.shieldStamina = LoadLevel::PLAYER_SHIELD_STAMINA;
+                state.maxshieldStamina = LoadLevel::PLAYER_SHIELD_STAMINA;
+                
                 // For the player's health
                 player->add<CHealth>(PLAYER_HEALTH, PLAYER_HEALTH);
                 playerSpawned = true;

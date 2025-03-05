@@ -26,11 +26,13 @@ public:
     void placeTile(int gridX, int gridY);
     void placeDec(int gridX, int gridY);
     void placeEnemy(int gridX, int gridY);
+    void placePlayer(int gridX, int gridY);
 
     // Funzioni per rimuovere gli entity
     void removeTile(int gridX, int gridY);
     void removeDec(int gridX, int gridY);
     void removeEnemy(int gridX, int gridY);
+    void removePlayer(int gridX, int gridY);
 
     // Disegna la griglia e il menu ImGui
     void drawGrid();
@@ -41,6 +43,10 @@ public:
     void loadDecOptions();
     void loadEnemyOptions();
     void loadLevelFiles();
+    void setCameraToBottomLeft();
+
+    void loadBackground(const std::string& path);
+    void updateBackgroundPosition();
 
     // Debug
     void printEntities();
@@ -57,6 +63,10 @@ private:
     int m_mode = 0;         // 0=Tile, 1=Decoration, 2=Enemy
     float m_zoom = 1.0f;
     bool mousePressed = false;
+
+    sf::Texture m_backgroundTexture;
+    sf::Sprite m_backgroundSprite;
+    sf::Vector2f m_backgroundScale;
     
     // Percorso del file del livello corrente
     std::string m_currentLevelPath;

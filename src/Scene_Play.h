@@ -75,6 +75,7 @@ public:
     const float ATTACK_DURATION = 0.1f;
     const float CAMERA_Y_OFFSET = 1300;
     const float MAX_DEFENSE_TIME = 2.0f;
+    const float CAMERA_ZOOM = 1.3f;
 
     bool m_firstCameraUpdate = true;
     void selectRandomBackground();

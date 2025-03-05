@@ -32,7 +32,7 @@ void Scene_Play::initializeCamera()
     float centerY = static_cast<float>(bgSize.y) / 2.f - CAMERA_Y_OFFSET;
     m_cameraView.setCenter(centerX, centerY);
 
-    m_cameraView.zoom(1.4f);
+    m_cameraView.zoom(Scene_Play::CAMERA_ZOOM);
 
     // 6) Apply the view to the window
     m_game.window().setView(m_cameraView);

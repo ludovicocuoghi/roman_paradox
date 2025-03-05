@@ -346,8 +346,9 @@ void EnemyAISystem::update(float deltaTime)
                                              playerTrans.pos,
                                              m_entityManager);
 
-        bool playerVisible       = (distance < PLAYER_VISIBLE_DISTANCE) || canSeePlayer;
-        bool playerVisible_elite = (distance < PLAYER_VISIBLE_DISTANCE * 3) || canSeePlayer;
+        bool playerVisible       = (distance < PLAYER_VISIBLE_DISTANCE) && canSeePlayer;
+        bool playerVisible_elite = (distance < PLAYER_VISIBLE_DISTANCE) || 
+                          (canSeePlayer && distance < PLAYER_VISIBLE_DISTANCE * 2);
 
         bool shouldFollow = false;
         switch (enemyAI.enemyBehavior) {
@@ -503,12 +504,20 @@ void EnemyAISystem::update(float deltaTime)
             }
             
             // Logica di movimento
+            // In part 6 where you set velocity in FOLLOW state
             if (std::abs(dx) > xThreshold) {
                 float followSpeed = (m_game.worldType == "Future")
                                     ? FOLLOW_MOVE_SPEED * 0.7f
                                     : FOLLOW_MOVE_SPEED;
+                
+                // Reduce speed if player is above enemy AND horizontally close
+                float horizontalProximity = 90.0f; // Adjust this value as needed
+                if (playerTrans.pos.y < enemyTrans.pos.y - 20.0f && std::abs(dx) < horizontalProximity) {
+                    followSpeed *= 0.7f; 
+                }
+                
                 enemyAI.facingDirection = (dx > 0.f) ? 1.f : -1.f;
-                enemyTrans.velocity.x   = enemyAI.facingDirection * followSpeed;
+                enemyTrans.velocity.x = enemyAI.facingDirection * followSpeed;
             } else {
                 enemyTrans.velocity.x = 0.f;
             }
