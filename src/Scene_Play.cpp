@@ -157,6 +157,8 @@ void Scene_Play::init()
     // ✅ Ensure entity manager is clean before loading
     m_entityManager = EntityManager();
 
+    m_game.setCurrentLevel(m_levelPath);
+
     std::cout << "[DEBUG] Scene_Play::init() - Calling m_levelLoader.load()\n";
     m_levelLoader.load(m_levelPath, m_entityManager);
     std::cout << "[DEBUG] Scene_Play::init() - Level loaded successfully!\n";
@@ -200,7 +202,9 @@ void Scene_Play::update(float deltaTime)
     else
     {
         m_game.window().setView(m_game.window().getDefaultView());
-        m_game.changeScene("GAMEOVER", std::make_shared<Scene_GameOver>(m_game));
+        std::cout << "[DEBUG] Transitioning to GameOver scene with level path: " << m_levelPath << std::endl;
+        m_game.changeScene("GAMEOVER", std::make_shared<Scene_GameOver>(m_game, m_levelPath));
+
     }
 
     // 3) Finally, render

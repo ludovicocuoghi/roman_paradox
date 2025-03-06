@@ -141,7 +141,7 @@ void Scene_LevelEditor::update(float deltaTime) {
                 else if (m_mode == 2)
                     removeEnemy(cellX, cellY);
                 else if (m_mode== 3)
-                    removePlayer(cellX, cellY);
+                    removePlayer();
                 mousePressed = true;
             }
         }
@@ -278,7 +278,7 @@ void Scene_LevelEditor::placePlayer(int gridX, int gridY) {
     }
 }
 
-void Scene_LevelEditor::removePlayer(int gridX, int gridY) {
+void Scene_LevelEditor::removePlayer() {
     auto& players = m_entityManager.getEntities("player");
     if (!players.empty()) {
         for (auto& player : players) {

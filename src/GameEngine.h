@@ -32,8 +32,11 @@ public:
     void update();
     void sUserInput();
     std::string worldType;
+    void restartLevel(const std::string& levelPath);
     
     void changeScene(const std::string& sceneName, std::shared_ptr<Scene> scene);
+    void setCurrentLevel(const std::string& levelPath);
+    const std::string& getCurrentLevel()const;
     void stop();
 
     sf::RenderWindow& window();

@@ -58,6 +58,17 @@ std::string GameEngine::getNextLevelPath() {
     return "./bin/levels/ancient_rome_level_1_day.txt"; // Default if unknown
 }
 
+void GameEngine::setCurrentLevel(const std::string& levelPath) {
+    if (!levelPath.empty()) {
+        m_currentLevel = levelPath;
+        std::cout << "[DEBUG] GameEngine current level set to: " << m_currentLevel << std::endl;
+    }
+}
+
+const std::string& GameEngine::getCurrentLevel() const {
+    return m_currentLevel;
+}
+
 // ✅ Load a new level and update the current level
 void GameEngine::loadLevel(const std::string& levelPath) {
     if (levelPath.empty()) {
@@ -156,6 +167,12 @@ void GameEngine::changeScene(const std::string& sceneName, std::shared_ptr<Scene
     if (!m_currentScene) {
         std::cerr << "[ERROR] m_currentScene is NULL after switching to: " << sceneName << std::endl;
     }
+}
+
+// Add this to GameEngine.h
+void GameEngine::restartLevel(const std::string& levelPath) {
+    std::cout << "[DEBUG] Restarting level: " << levelPath << std::endl;
+    changeScene("PLAY", std::make_shared<Scene_Play>(*this, levelPath));
 }
 
 // Stops the game engine properly

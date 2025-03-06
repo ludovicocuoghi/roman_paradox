@@ -1,14 +1,15 @@
-#ifndef SCENE_GAMEOVER_H
-#define SCENE_GAMEOVER_H
+#pragma once
 
 #include "Scene.h"
 #include <SFML/Graphics.hpp>
+#include <string>
 
 class Scene_GameOver : public Scene {
 private:
-    void renderGameOverText();
     std::string m_levelPath;
-    int m_selectedOption; // 0 = Restart Level, 1 = Return to Menu
+    int m_selectedOption;  // 0 = Restart, 1 = Level Selection
+
+    void renderGameOverText();
 
 public:
     Scene_GameOver(GameEngine& game, const std::string& levelPath = "");
@@ -18,5 +19,3 @@ public:
     void sRender() override;
     void sDoAction(const Action& action) override;
 };
-
-#endif // SCENE_GAMEOVER_H

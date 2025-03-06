@@ -2,14 +2,23 @@
 #include "Scene_Menu.h"
 #include "Scene_Play.h"
 #include "GameEngine.h"
+#include <iostream>
 
 Scene_GameOver::Scene_GameOver(GameEngine& game, const std::string& levelPath)
     : Scene(game), m_levelPath(levelPath), m_selectedOption(0)
 {
-    registerAction(sf::Keyboard::Enter, "SELECT");
-    registerAction(sf::Keyboard::Up, "UP");
-    registerAction(sf::Keyboard::Down, "DOWN");
-    registerAction(sf::Keyboard::Escape, "QUIT");
+    registerAction(sf::Keyboard::D, "SELECT");
+    registerAction(sf::Keyboard::W, "UP");
+    registerAction(sf::Keyboard::S, "DOWN");
+    registerAction(sf::Keyboard::Q, "QUIT");
+    
+    // If the provided level path is empty, use the one stored in GameEngine
+    if (m_levelPath.empty()) {
+        m_levelPath = game.getCurrentLevel();
+        std::cout << "[DEBUG] Updated level path from GameEngine: " << m_levelPath << std::endl;
+    }
+    
+    std::cout << "[DEBUG] Game Over scene created with level path: " << m_levelPath << std::endl;
 }
 
 Scene_GameOver::~Scene_GameOver() {}
@@ -29,10 +38,10 @@ void Scene_GameOver::renderGameOverText() {
 
     m_game.window().draw(gameOverText);
 
-    // Option 1: Restart Level
+    // Option 1: Restart Current Level
     sf::Text restartText;
     restartText.setFont(m_game.assets().getFont("Menu"));
-    restartText.setString("Restart Level");
+    restartText.setString("Restart Current Level");
     restartText.setCharacterSize(30);
     restartText.setFillColor(m_selectedOption == 0 ? sf::Color::Yellow : sf::Color::White);
 
@@ -42,10 +51,10 @@ void Scene_GameOver::renderGameOverText() {
 
     m_game.window().draw(restartText);
 
-    // Option 2: Return to Menu
+    // Option 2: Level Selection
     sf::Text menuText;
     menuText.setFont(m_game.assets().getFont("Menu"));
-    menuText.setString("Return to Menu");
+    menuText.setString("Level Selection");
     menuText.setCharacterSize(30);
     menuText.setFillColor(m_selectedOption == 1 ? sf::Color::Yellow : sf::Color::White);
 
@@ -86,23 +95,34 @@ void Scene_GameOver::update(float deltaTime) {
 void Scene_GameOver::sDoAction(const Action& action) {
     if (action.type() == "START") {
         if (action.name() == "UP") {
-            m_selectedOption = 0; // Select Restart Level
+            m_selectedOption = (m_selectedOption == 0) ? 1 : 0; // Toggle between 0 and 1
         } 
         else if (action.name() == "DOWN") {
-            m_selectedOption = 1; // Select Return to Menu
+            m_selectedOption = (m_selectedOption == 0) ? 1 : 0; // Toggle between 0 and 1
         }
         else if (action.name() == "SELECT") {
             if (m_selectedOption == 0) {
                 // Restart the current level
                 if (!m_levelPath.empty()) {
-                    m_game.changeScene("PLAY", std::make_shared<Scene_Play>(m_game, m_levelPath));
+                    std::cout << "[DEBUG] Restarting level: " << m_levelPath << std::endl;
+                    
+                    // Use the restartLevel method
+                    m_game.restartLevel(m_levelPath);
                 } else {
-                    // Fallback if level path is not available
-                    m_game.changeScene("MENU", std::make_shared<Scene_Menu>(m_game));
+                    // If we somehow still have an empty path, try one more time with GameEngine's current level
+                    std::string currentLevel = m_game.getCurrentLevel();
+                    if (!currentLevel.empty()) {
+                        std::cout << "[DEBUG] Using GameEngine's current level as fallback: " << currentLevel << std::endl;
+                        m_game.restartLevel(currentLevel);
+                    } else {
+                        std::cerr << "[ERROR] Cannot determine level path for restart. Going to menu." << std::endl;
+                        m_game.changeScene("MENU", std::make_shared<Scene_Menu>(m_game));
+                    }
                 }
             } 
             else if (m_selectedOption == 1) {
-                // Return to menu
+                // Go to level selection
+                std::cout << "[DEBUG] Going to level selection menu" << std::endl;
                 m_game.changeScene("MENU", std::make_shared<Scene_Menu>(m_game));
             }
         } 

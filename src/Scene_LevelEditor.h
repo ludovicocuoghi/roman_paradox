@@ -32,7 +32,7 @@ public:
     void removeTile(int gridX, int gridY);
     void removeDec(int gridX, int gridY);
     void removeEnemy(int gridX, int gridY);
-    void removePlayer(int gridX, int gridY);
+    void removePlayer();
 
     // Disegna la griglia e il menu ImGui
     void drawGrid();

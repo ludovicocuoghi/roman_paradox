@@ -621,7 +621,7 @@ void CollisionSystem::handleBulletPlayerCollisions() {
                             
                             // Find the enemy with this ID
                             for (auto& enemy : m_entityManager.getEntities("enemy")) {
-                                if (enemy->id() == enemyId && enemy->has<CEnemyAI>()) {
+                                if (enemy->id() == static_cast<size_t>(enemyId) && enemy->has<CEnemyAI>()) {
                                     // Get damage from the original enemy
                                     bulletDamage = enemy->get<CState>().bulletDamage;
                                     std::cout << "[DEBUG] Found source enemy (ID: " << enemyId 
@@ -836,7 +836,7 @@ void CollisionSystem::handleSwordCollisions() {
             }
             
             // Don't let enemy's own sword hit itself
-            if (creatorId != otherEnemy->id()) {
+            if (static_cast<size_t>(creatorId) != otherEnemy->id()) {
                 std::cout << "[DEBUG] Enemy sword hit another enemy! Sword: " 
                         << enemySword->id() << " Hit Enemy: " << otherEnemy->id() << "\n";
                 
