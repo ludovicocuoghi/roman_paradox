@@ -501,7 +501,7 @@ void Scene_LevelEditor::renderImGui() {
 }
 
 void Scene_LevelEditor::loadTileOptions() {
-    m_tileOptions = { "Ground", "Brick", "Box1", "Box2", "PipeTall", "Pipe", "PipeBroken", "Treasure",  "LevelDoor", "BlackHoleRedBig", "Armor" };
+    m_tileOptions = { "Ground", "Brick", "Box1", "Box2", "PipeTall", "Pipe", "PipeBroken", "Treasure",  "LevelDoor", "BlackHoleRedBig","GoldGround",  "Armor" };
     if (!m_tileOptions.empty()) {
         m_selectedTile = m_tileOptions[0];
     }

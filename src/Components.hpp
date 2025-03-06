@@ -385,7 +385,8 @@ enum class EnemyState {
     Attack,     // The enemy is attacking
     Knockback,   // The enemy is being pushed back,
     FinalAttack,
-    BlockedByTile
+    BlockedByTile,
+    Defeated
 };
 
 
@@ -453,6 +454,7 @@ class CEnemyAI : public Component {
         float radialAttackMultiplier; // Moltiplicatore per il numero di spade in attacco radiale
         float radialAttackCooldown;   // Cooldown tra un attacco radiale e l'altro
         float radialAttackTimerSuper; // Timer per super attacco radiale
+        float radialAttackDamage; // Timer per super attacco radiale
         float finalBurstTimer;        // Timer per la fase finale di burst
         int   burstCount;             // Quanti burst sono stati fatti nella fase finale
         bool  burstCooldownActive;    // Se il burst è in cooldown
@@ -542,6 +544,7 @@ class CEnemyAI : public Component {
                 radialAttackMultiplier(1.0f),
                 radialAttackCooldown(5.0f),
                 radialAttackTimerSuper(5.0f),
+                radialAttackDamage(1.0f),
                 finalBurstTimer(0.f),
                 burstCount(0),
                 burstCooldownActive(false),

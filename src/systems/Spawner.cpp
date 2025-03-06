@@ -2,8 +2,8 @@
 #include "SpriteUtils.h"
 #include <iostream>
 #include <random>
-#include <cstdlib> // For rand()
-#include <ctime>   // For seeding rand()
+#include <cstdlib> 
+#include <ctime>  
 
 Spawner::Spawner(GameEngine& game, EntityManager& entityManager)
     : m_game(game), m_entityManager(entityManager)
@@ -213,17 +213,17 @@ std::shared_ptr<Entity> Spawner::spawnEnemySword(std::shared_ptr<Entity> enemy) 
 
 // Esempio: spada con offset Y casuale (singola spada)
 std::shared_ptr<Entity> Spawner::spawnEmperorSwordOffset(std::shared_ptr<Entity> enemy) {
-    auto sword = m_entityManager.addEntity("enemySword");
+    auto sword = m_entityManager.addEntity("EmperorSword");
 
     auto& eTrans = enemy->get<CTransform>();
     auto& eAI    = enemy->get<CEnemyAI>();
 
     float dir = eAI.facingDirection;
     
-    // Offset X fisso (a destra o sinistra del nemico)
+    // Offset X fixed (left or right of enemy)
     float offsetX = (dir < 0) ? -EMPEROR_SWORD_OFFSET_X : EMPEROR_SWORD_OFFSET_X;
 
-    // Offset Y casuale tra 10 e 40
+    // Random Y offset between 0 and 80
     static std::random_device rd;
     static std::mt19937 gen(rd());
     std::uniform_real_distribution<float> distY(0.f, 80.f);
@@ -232,9 +232,11 @@ std::shared_ptr<Entity> Spawner::spawnEmperorSwordOffset(std::shared_ptr<Entity>
     Vec2<float> swordPos = eTrans.pos + Vec2<float>(offsetX, offsetY);
     sword->add<CTransform>(swordPos);
     sword->add<CLifeSpan>(ENEMY_SWORD_DURATION);
-    sword->add<CState>(std::to_string(enemy->id()));
+    
+    // Store the creator ID and sword type in the state component
+    sword->add<CState>(std::to_string(enemy->id()));  // Not setting "radial" flag means it's a regular sword
 
-    // Carica l’animazione (uguale a spawnEnemySword)
+    // Load animation
     if (m_game.assets().hasAnimation("EmperorSword")) {
         auto& swordAnim = m_game.assets().getAnimation("EmperorSword");
         sword->add<CAnimation>(swordAnim, false);
@@ -248,7 +250,7 @@ std::shared_ptr<Entity> Spawner::spawnEmperorSwordOffset(std::shared_ptr<Entity>
         std::cerr << "[ERROR] Missing enemy sword animation!\n";
     }
 
-    // Copia i dati di AI/danno dal nemico
+    // Copy AI/damage data from enemy
     if (enemy->has<CEnemyAI>()) {
         sword->add<CEnemyAI>(enemy->get<CEnemyAI>());
     }
@@ -259,18 +261,14 @@ std::shared_ptr<Entity> Spawner::spawnEmperorSwordOffset(std::shared_ptr<Entity>
     return sword;
 }
 
-// Esempio: spade “radiali” (più spade attorno all’Emperor)
-#include <cstdlib> // For rand()
-#include <ctime>   // For seeding rand()
-
 void Spawner::spawnEmperorSwordsRadial(std::shared_ptr<Entity> enemy, int swordCount, float radius, float swordSpeed) {
     auto& eTrans = enemy->get<CTransform>();
 
     float centerX = eTrans.pos.x;
     float centerY = eTrans.pos.y;
 
-    // Generate a random angle offset for this burst (between -15 and +15 degrees)
-    float randomAngleOffset = (std::rand() % 60 - 0); // Random number in range [-15, 15]
+    // Generate a random angle offset for this burst (between 0 and 60 degrees)
+    float randomAngleOffset = (std::rand() % 60); 
 
     for (int i = 0; i < swordCount; i++) {
         // Apply random offset to the base angle calculation
@@ -282,10 +280,15 @@ void Spawner::spawnEmperorSwordsRadial(std::shared_ptr<Entity> enemy, int swordC
         float offsetY = std::sin(angleRad) * radius;
         Vec2<float> spawnPos(centerX + offsetX, centerY + offsetY);
 
+        // Create EmperorSword entity but mark it as radial
         auto sword = m_entityManager.addEntity("EmperorSword");
         sword->add<CTransform>(spawnPos);
         sword->add<CLifeSpan>(EMPEROR_ROTATING_SWORD_DURATION);
-        sword->add<CState>(std::to_string(enemy->id()));
+        
+        // Store the creator ID and the "radial" flag in the state component
+        CState stateComponent(std::to_string(enemy->id()));
+        stateComponent.state = "radial";  // This flag identifies it as a radial sword
+        sword->add<CState>(stateComponent);
 
         // Load animation
         if (m_game.assets().hasAnimation("EmperorSword")) {
@@ -304,7 +307,7 @@ void Spawner::spawnEmperorSwordsRadial(std::shared_ptr<Entity> enemy, int swordC
             std::cerr << "[ERROR] Missing EmperorSword animation!\n";
         }
 
-        // Copy AI/Damage properties from enemy if needed
+        // Copy AI/Damage properties from enemy
         if (enemy->has<CEnemyAI>()) {
             sword->add<CEnemyAI>(enemy->get<CEnemyAI>());
         }

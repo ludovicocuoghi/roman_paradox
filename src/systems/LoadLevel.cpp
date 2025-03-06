@@ -171,7 +171,13 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
                 state.attackCooldown = LoadLevel::PLAYER_ATTACK_COOLDOWN; 
                 state.defenseTimer = 3.0f;
                 state.shieldStamina = LoadLevel::PLAYER_SHIELD_STAMINA;
-                state.maxshieldStamina = LoadLevel::PLAYER_SHIELD_STAMINA;
+
+                std::cout << levelPath << std::endl;
+                state.shieldStamina = (levelPath.find("ancient_rome_level_4_emperor_room") != std::string::npos) 
+                ? LoadLevel::PLAYER_SHIELD_STAMINA * 2 
+                : LoadLevel::PLAYER_SHIELD_STAMINA;
+
+                state.maxshieldStamina = state.shieldStamina;
                 
                 // For the player's health
                 player->add<CHealth>(PLAYER_HEALTH, PLAYER_HEALTH);
@@ -318,13 +324,14 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
             else if (enemyType == EnemyType::Emperor) {
                 enemy->get<CEnemyAI>().enemyType = EnemyType::Emperor;
                 enemy->get<CEnemyAI>().damage = LoadLevel::ENEMY_EMPEROR_DAMAGE;
+                enemy->get<CEnemyAI>().radialAttackDamage = LoadLevel::EMPEROR_RADIAL_SWORD_DAMAGE;
                 enemy->get<CState>().bulletDamage = LoadLevel::BULLET_DAMAGE_ENEMY_EMPEROR;
                 enemy->get<CEnemyAI>().speedMultiplier = LoadLevel::ENEMY_EMPEROR_SPEED_MULTIPLIER;
                 enemy->get<CState>().maxConsecutiveSwordAttacks = LoadLevel::ENEMY_EMPEROR_MAX_CONSECUTIVE_SWORD_ATTACKS;
                 enemy->get<CState>().bulletBurstCount = LoadLevel::ENEMY_EMPEROR_BULLET_BURST_COUNT;
                 enemy->get<CState>().superBulletCount = LoadLevel::ENEMY_EMPEROR_SUPER_BULLET_COUNT;
                 enemy->get<CState>().superBulletDamage = LoadLevel::ENEMY_EMPEROR_SUPER_BULLET_DAMAGE;
-                enemy->get<CEnemyAI>().enemyBehavior = EnemyBehavior::FollowThree;
+                enemy->get<CEnemyAI>().enemyBehavior = EnemyBehavior::FollowTwo;
                 enemy->get<CHealth>().maxHealth = LoadLevel::ENEMY_EMPEROR_HEALTH;
                 enemy->get<CHealth>().currentHealth = LoadLevel::ENEMY_EMPEROR_HEALTH;
             }
@@ -337,7 +344,7 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
                 enemy->get<CState>().bulletBurstCount = LoadLevel::ENEMY_SUPER_BULLET_BURST_COUNT;
                 enemy->get<CState>().superBulletCount = LoadLevel::ENEMY_SUPER_SUPER_BULLET_COUNT;
                 enemy->get<CState>().superBulletDamage = LoadLevel::ENEMY_SUPER_SUPER_BULLET_DAMAGE;
-                enemy->get<CEnemyAI>().enemyBehavior = EnemyBehavior::FollowThree;
+                enemy->get<CEnemyAI>().enemyBehavior = EnemyBehavior::FollowTwo;
                 enemy->get<CHealth>().maxHealth = LoadLevel::ENEMY_SUPER_HEALTH;
                 enemy->get<CHealth>().currentHealth = LoadLevel::ENEMY_SUPER_HEALTH;
             }

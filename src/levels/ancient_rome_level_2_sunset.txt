@@ -955,10 +955,10 @@ Tile Box2 146 4
 Tile Ground 110 21
 Tile Ground 110 20
 Tile Ground 110 19
-Tile Ground 10 16
 Tile Ground 15 15
 Tile Box1 128 4
 Tile Box2 140 4
+Tile Ground 9 15
 Player 1 16
 Dec BushTall 0 19
 Dec BushTall 2 19
@@ -1074,21 +1074,17 @@ Enemy EnemyNormal 32 21
 Enemy EnemyNormal 11 16
 Enemy EnemyFast 55 1
 Enemy EnemyFast 46 1
-Enemy EnemyFast 68 5
 Enemy EnemyFast 69 5
 Enemy EnemyFast 14 1
 Enemy EnemyNormal 36 21
 Enemy EnemyNormal 44 16
 Enemy EnemyFast 47 13
 Enemy EnemyFast 50 10
-Enemy EnemyFast 62 1
 Enemy EnemyFast 67 5
-Enemy EnemyFast 78 2
 Enemy EnemyNormal 82 2
 Enemy EnemyFast 103 22
 Enemy EnemyNormal 105 22
 Enemy EnemyNormal 111 16
 Enemy EnemyNormal 113 12
 Enemy EnemyNormal 119 6
-Enemy EnemyNormal 122 3
 Enemy EnemyNormal 128 2

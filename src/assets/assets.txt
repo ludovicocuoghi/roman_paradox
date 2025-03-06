@@ -76,6 +76,7 @@ Texture TexAncientAirEnemyNormal Enemy/ancient_rome/gold/air1002_gold.png
 Texture TexAncientHitEnemyNormal Enemy/ancient_rome/gold/hit100nosword_gold.png
 
 Texture TexAncientStandEmperor Enemy/ancient_rome/emperor/emperor.png
+Texture TexAncientStandEmperorDefeated Enemy/ancient_rome/emperor/emperor_defeated.png
 
 Texture TexFutureStandEmperor1 Enemy/future_rome/emperor/future_emperor_final_phase1.png
 Texture TexFutureStandEmperor2 Enemy/future_rome/emperor/future_emperor_final_phase2.png
@@ -308,6 +309,7 @@ Animation AncientHitEnemyNormal TexAncientHitEnemyNormal 100 100 1 0
 Animation AncientStandEmperor TexAncientStandEmperor 160 250 1 0
 Animation AncientRunEmperor TexAncientStandEmperor 160 250 1 0
 Animation AncientHitEmperor TexAncientStandEmperor 160 250 1 0
+Animation AncientStandEmperorDefeated TexAncientStandEmperorDefeated 160 250 1 0
 
 Animation FutureStandEmperor1 TexFutureStandEmperor1 160 250 1 0
 Animation FutureRunEmperor1 TexFutureStandEmperor1 160 250 1 0

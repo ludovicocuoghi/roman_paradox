@@ -101,10 +101,18 @@ void EnemyAISystem::update(float deltaTime)
         auto& enemyTrans = enemy->get<CTransform>();
         auto& enemyAI    = enemy->get<CEnemyAI>();
         auto& anim       = enemy->get<CAnimation>();
-        auto& enemyState     = enemy->get<CState>();
+        auto& enemyState = enemy->get<CState>();
 
         // This flag allows movement but prevents attacking
         bool skipAttack = false;
+
+        // Skip if enemy is in defeated state
+        if (enemyAI.enemyState == EnemyState::Defeated) {
+            // Keep the enemy in place and don't process any further AI logic
+            enemyTrans.velocity.x = 0.f;
+            enemyTrans.velocity.y = 0.f;
+            continue; // Skip to the next enemy
+        }
 
         // ----------------------------------------------------
         // 1) Forced Cooldown Check
@@ -169,13 +177,45 @@ void EnemyAISystem::update(float deltaTime)
                                                         EMPEROR_RADIAL_SWORDS_SPEED);
                     enemyAI.burstCount++;
                     std::cout << "[DEBUG] Emperor FINAL ATTACK: Burst #"
-                              << enemyAI.burstCount << "\n";
+                            << enemyAI.burstCount << "\n";
 
-                    if (enemyAI.burstCount >= 25) {
-                        std::cout << "[DEBUG] Emperor FINAL ATTACK FINISHED! No more attacks.\n";
+                    if (enemyAI.burstCount >= 12) {
+                        std::cout << "[DEBUG] Emperor FINAL ATTACK FINISHED! Showing defeated animation.\n";
                         auto enemySwords = m_entityManager.getEntities("EmperorSword");
                         for (auto& sword : enemySwords) {
                             sword->destroy();
+                        }
+                        
+                        // Set the Emperor's state to Defeated
+                        enemyAI.enemyState = EnemyState::Defeated;
+                        
+                        // Stop all movement
+                        enemyTrans.velocity.x = 0.f;
+                        enemyTrans.velocity.y = 0.f;
+                        
+                        // Change animation to defeated
+                        if (enemy->has<CAnimation>()) {
+                            // Follow the naming convention: worldType + "DefeatedEmperor"
+                            std::string defeatAnimName = m_game.worldType + "DefeatedEmperor";
+                            
+                            if (m_game.assets().hasAnimation(defeatAnimName)) {
+                                auto& anim = enemy->get<CAnimation>();
+                                anim.animation = m_game.assets().getAnimation(defeatAnimName);
+                                anim.repeat = false;
+                                std::cout << "[DEBUG] Setting Emperor defeated animation: " << defeatAnimName << std::endl;
+                            } else {
+                                // Try alternative naming convention if first attempt fails
+                                std::string altDefeatAnimName = m_game.worldType + "EmperorDefeated";
+                                if (m_game.assets().hasAnimation(altDefeatAnimName)) {
+                                    auto& anim = enemy->get<CAnimation>();
+                                    anim.animation = m_game.assets().getAnimation(altDefeatAnimName);
+                                    anim.repeat = false;
+                                    std::cout << "[DEBUG] Setting Emperor defeated animation (alt): " << altDefeatAnimName << std::endl;
+                                } else {
+                                    std::cout << "[DEBUG] ERROR: Emperor defeated animation not found: " 
+                                                << defeatAnimName << " or " << altDefeatAnimName << std::endl;
+                                }
+                            }
                         }
                         return; // Done with final attack
                     }
@@ -231,7 +271,7 @@ void EnemyAISystem::update(float deltaTime)
                             );
                             enemyAI.burstCount++;
                             // If enough bursts -> 5s cooldown
-                            if (enemyAI.burstCount >= 20) {
+                            if (enemyAI.burstCount >= 1) {
                                 enemyAI.burstCooldownActive = true;
                                 enemyAI.burstCooldownTimer  = 0.f;
                                 enemyAI.burstCount          = 0;
@@ -639,79 +679,78 @@ void EnemyAISystem::update(float deltaTime)
         // 8) Melee Attack (Non-Future)
         // ----------------------------------------------------
         float currentAttackRange =
-        (enemyAI.enemyType == EnemyType::Emperor)
-        ? EMPEROR_ATTACK_RANGE
-        : ATTACK_RANGE;
-    
-    bool shouldAttack = (shouldFollow && distance < currentAttackRange)
-               ||
-               (enemyAI.enemyType == EnemyType::Super && 
-                enemyAI.enemyState == EnemyState::BlockedByTile)
-               || 
-               (enemyAI.enemyType == EnemyType::Super && 
-                enemyAI.tileDetected);  // Add this condition
-    
-    // If skipAttack is true, we skip the logic below
-    if (!skipAttack)
-    {
-        if (shouldAttack &&
-            enemyAI.attackCooldown <= 0.f &&
-            enemyAI.enemyState != EnemyState::Attack)
-        {
-            // (A) Increase consecutiveAttacks
-            enemyAI.consecutiveAttacks++;
-            std::cout << "[DEBUG] Enemy " << enemy->id()
-                      << " consecutiveAttacks = "
-                      << enemyAI.consecutiveAttacks << "\n";
-    
-            // (B) If reached limit -> forced cooldown
-            // Use maxConsecutiveSwordAttacks from CEnemyAI
-            if (enemyAI.consecutiveAttacks >= enemyState.maxConsecutiveSwordAttacks) {
-                enemyAI.isInForcedCooldown  = true;
-                enemyAI.forcedCooldownTimer = enemyAI.forcedCooldownDuration;
+            (enemyAI.enemyType == EnemyType::Emperor)
+            ? EMPEROR_ATTACK_RANGE
+            : ATTACK_RANGE;
+        
+        bool shouldAttack = (shouldFollow && distance < currentAttackRange)
+                   ||
+                   (enemyAI.enemyType == EnemyType::Super && 
+                    enemyAI.enemyState == EnemyState::BlockedByTile)
+                   || 
+                   (enemyAI.enemyType == EnemyType::Super && 
+                    enemyAI.tileDetected);  // Add this condition
+        
+        // If skipAttack is true, we skip the logic below
+        if (!skipAttack) {
+            if (shouldAttack &&
+                enemyAI.attackCooldown <= 0.f &&
+                enemyAI.enemyState != EnemyState::Attack)
+            {
+                // (A) Increase consecutiveAttacks
+                enemyAI.consecutiveAttacks++;
                 std::cout << "[DEBUG] Enemy " << enemy->id()
-                          << " forced cooldown started after "
-                          << enemyAI.consecutiveAttacks << " attacks.\n";
-                // We let it move still
+                          << " consecutiveAttacks = "
+                          << enemyAI.consecutiveAttacks << "\n";
+        
+                // (B) If reached limit -> forced cooldown
+                // Use maxConsecutiveSwordAttacks from CEnemyAI
+                if (enemyAI.consecutiveAttacks >= enemyState.maxConsecutiveSwordAttacks) {
+                    enemyAI.isInForcedCooldown  = true;
+                    enemyAI.forcedCooldownTimer = enemyAI.forcedCooldownDuration;
+                    std::cout << "[DEBUG] Enemy " << enemy->id()
+                              << " forced cooldown started after "
+                              << enemyAI.consecutiveAttacks << " attacks.\n";
+                    // We let it move still
+                }
+                else {
+                    // (C) Normal sword attack
+                    if (m_game.worldType != "Future") {
+                        enemyAI.enemyState   = EnemyState::Attack;
+                        enemyAI.attackTimer  = ATTACK_TIMER_DEFAULT;
+                        enemyAI.swordSpawned = false;
+                        std::cout << "[DEBUG] Enemy " << enemy->id()
+                                  << " entering Attack state (cooldown="
+                                  << enemyAI.attackCooldown << ")\n";
+                    }
+                }
+            }
+            // If still following, ensure state = Follow
+            else if (shouldFollow &&
+                     enemyAI.enemyState != EnemyState::Attack)
+            {
+                enemyAI.enemyState = EnemyState::Follow;
             }
             else {
-                // (C) Normal sword attack
-                if (m_game.worldType != "Future") {
-                    enemyAI.enemyState   = EnemyState::Attack;
-                    enemyAI.attackTimer  = ATTACK_TIMER_DEFAULT;
-                    enemyAI.swordSpawned = false;
-                    std::cout << "[DEBUG] Enemy " << enemy->id()
-                              << " entering Attack state (cooldown="
-                              << enemyAI.attackCooldown << ")\n";
+                // If player not visible ->Idle
+                if (!playerVisible) {
+                    if (enemyAI.enemyState == EnemyState::Follow ||
+                        enemyAI.enemyState == EnemyState::Attack)
+                    {
+                        enemyAI.enemyState = EnemyState::Idle;
+                    }
                 }
             }
-        }
-        // If still following, ensure state = Follow
-        else if (shouldFollow &&
-                 enemyAI.enemyState != EnemyState::Attack)
-        {
-            enemyAI.enemyState = EnemyState::Follow;
         }
         else {
-            // If player not visible ->Idle
-            if (!playerVisible) {
-                if (enemyAI.enemyState == EnemyState::Follow ||
-                    enemyAI.enemyState == EnemyState::Attack)
-                {
-                    enemyAI.enemyState = EnemyState::Idle;
-                }
+            // If skipAttack == true, no attacking allowed,
+            // but we still set follow/idle
+            if (shouldFollow &&
+                enemyAI.enemyState != EnemyState::Attack)
+            {
+                enemyAI.enemyState = EnemyState::Follow;
             }
         }
-    }
-    else {
-        // If skipAttack == true, no attacking allowed,
-        // but we still set follow/idle
-        if (shouldFollow &&
-            enemyAI.enemyState != EnemyState::Attack)
-        {
-            enemyAI.enemyState = EnemyState::Follow;
-        }
-    }
 
         // ----------------------------------------------------
         // 9) Handling Attack State (Melee)

@@ -29,16 +29,19 @@ public:
 
     // Enemy Sword vs Player
     static constexpr float ENEMY_SWORD_KNOCKBACK_STRENGTH = 1000.0f;
-    static constexpr float EMPEROR_SWORD_KNOCKBACK_STRENGTH = 2000.0f;
     static constexpr float PLAYER_HIT_INVULNERABILITY_TIME = 0.01f;
     static constexpr float PLAYER_KNOCKBACK_TIMER = 0.5f;
 
     // Collectibles
     static constexpr int COLLECTIBLE_SMALL_GRAPE_POINTS = 25;
     static constexpr int COLLECTIBLE_BIG_GRAPE_HEAL = 60;
+
     static constexpr int COLLECTIBLE_GOLD_COIN_POINTS = 99;
     static constexpr int COLLECTIBLE_SILVER_COIN_POINTS = 70;
     static constexpr int COLLECTIBLE_BRONZE_COIN_POINTS = 40;
+
+    static constexpr float BIGCHICKEN_POINTS = 3.f;
+    static constexpr float SMALLCHICKEN_POINTS = 1.5f;
 
     void updateCollisions();
     void handlePlayerTileCollisions();

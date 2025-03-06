@@ -708,8 +708,21 @@ void CollisionSystem::handleSwordCollisions() {
         
             if (swordRect.intersects(enemyRect)) {
                 std::cout << "[DEBUG] Player sword hit enemy!\n";
-                // Applica il danno
-                if (enemy->has<CHealth>()) {
+                
+                // Check if enemy is Emperor in defeated state
+                bool isImmortal = false;
+                if (enemy->has<CEnemyAI>()) {
+                    auto& enemyAI = enemy->get<CEnemyAI>();
+                    if (enemyAI.enemyType == EnemyType::Emperor && 
+                        enemyAI.enemyState == EnemyState::Defeated) {
+                        // Emperor is defeated, should be immortal
+                        isImmortal = true;
+                        std::cout << "[DEBUG] Emperor is defeated and immortal - ignoring sword damage!\n";
+                    }
+                }
+                
+                // Applica il danno only if not immortal
+                if (!isImmortal && enemy->has<CHealth>()) {
                     auto& health = enemy->get<CHealth>();
                     int damage = PLAYER_SWORD_DAMAGE;
                     // Se il mondo corrente è "Future" e il giocatore NON ha FutureArmor, riduci il danno
@@ -731,20 +744,23 @@ void CollisionSystem::handleSwordCollisions() {
                     }
                 }
         
-                static std::random_device rd;
-                static std::mt19937 gen(rd());
-                std::uniform_int_distribution<int> dist(PLAYER_SWORD_KNOCKBACK_ROLL_MIN, PLAYER_SWORD_KNOCKBACK_ROLL_MAX);
-                int roll = dist(gen);
-                std::cout << "[DEBUG] roll = " << roll << "\n";
-        
-                if (roll == PLAYER_SWORD_KNOCKBACK_ROLL_TRIGGER) {
-                    float attackDirection = (swTrans.pos.x < enemyTrans.pos.x) ? 1.f : -1.f;
-                    Vec2<float> hitDirection = { attackDirection, PLAYER_SWORD_KNOCKBACK_Y_DIRECTION };
-        
-                    float finalKnockback = PLAYER_SWORD_KNOCKBACK_STRENGTH + (roll * 5.f);
-        
-                    // Applica il knockback
-                    Physics::Forces::ApplyKnockback(enemy, hitDirection, finalKnockback);
+                // Only apply knockback if not immortal
+                if (!isImmortal) {
+                    static std::random_device rd;
+                    static std::mt19937 gen(rd());
+                    std::uniform_int_distribution<int> dist(PLAYER_SWORD_KNOCKBACK_ROLL_MIN, PLAYER_SWORD_KNOCKBACK_ROLL_MAX);
+                    int roll = dist(gen);
+                    std::cout << "[DEBUG] roll = " << roll << "\n";
+            
+                    if (roll == PLAYER_SWORD_KNOCKBACK_ROLL_TRIGGER) {
+                        float attackDirection = (swTrans.pos.x < enemyTrans.pos.x) ? 1.f : -1.f;
+                        Vec2<float> hitDirection = { attackDirection, PLAYER_SWORD_KNOCKBACK_Y_DIRECTION };
+            
+                        float finalKnockback = PLAYER_SWORD_KNOCKBACK_STRENGTH + (roll * 5.f);
+            
+                        // Applica il knockback
+                        Physics::Forces::ApplyKnockback(enemy, hitDirection, finalKnockback);
+                    }
                 }
             }
         }
@@ -887,11 +903,6 @@ void CollisionSystem::handleSwordCollisions() {
                 }
             }
 
-            // Esempio di knockback orizzontale
-            float attackDirection = (swTrans.pos.x < pTrans.pos.x) ? 1.f : -1.f;
-            Vec2<float> hitDirection = { attackDirection, 0.f };
-            Physics::Forces::ApplyKnockback(player, hitDirection, EMPEROR_SWORD_KNOCKBACK_STRENGTH);
-
             // Danno al player
             if (player->has<CHealth>()) {
                 auto& health = player->get<CHealth>();
@@ -923,15 +934,77 @@ void CollisionSystem::handleSwordCollisions() {
             if (!swordRect.intersects(tileRect))
                 continue;
 
-            // Se vuoi distruggere la spada quando tocca un tile, fai:
             empSword->destroy();
 
-            // Oppure, se vuoi distruggere un tile "fragile" e la spada, fai:
-            // tile->destroy();
-            // empSword->destroy();
+            break; 
+        }
+    }
+    for (auto& empSword : m_entityManager.getEntities("EmperorSwordRadial")) {
+        // Verifichiamo che abbia CTransform e CBoundingBox
+        if (!empSword->has<CTransform>() || !empSword->has<CBoundingBox>())
+            continue;
 
-            //std::cout << "[DEBUG] Emperor sword destroyed on tile collision!\n";
-            break; // Esci dal loop tile
+        auto& swTrans = empSword->get<CTransform>();
+        auto& swBB    = empSword->get<CBoundingBox>();
+
+        sf::FloatRect swordRect = swBB.getRect(swTrans.pos);
+
+        // 3a) EmperorSword vs Player
+        for (auto& player : m_entityManager.getEntities("player")) {
+            if (!player->has<CTransform>() || !player->has<CBoundingBox>())
+                continue;
+
+            auto& pTrans = player->get<CTransform>();
+            auto& pBB    = player->get<CBoundingBox>();
+            sf::FloatRect playerRect = pBB.getRect(pTrans.pos);
+
+            if (!swordRect.intersects(playerRect))
+                continue;
+
+            // Se il giocatore è in difesa, ignora il danno
+            if (player->has<CState>()) {
+                auto& st = player->get<CState>();
+                if (st.state == "defense") {
+                    std::cout << "[DEBUG] Player in defense, ignoring Emperor sword damage.\n";
+                    // Se vuoi distruggere la spada comunque, empSword->destroy();
+                    break;
+                }
+            }
+
+            // Danno al player
+            if (player->has<CHealth>()) {
+                auto& health = player->get<CHealth>();
+                int empSwordDamage = 10; // default
+                if (empSword->has<CEnemyAI>()) {
+                    empSwordDamage = empSword->get<CEnemyAI>().radialAttackDamage;
+                }
+                health.takeDamage(empSwordDamage);
+                health.invulnerabilityTimer = PLAYER_HIT_INVULNERABILITY_TIME;
+                std::cout << "[DEBUG] Player hit by emperor sword! Damage: " 
+                        << empSwordDamage 
+                        << " Health: " << health.currentHealth << "\n";
+            }
+
+            // Se vuoi distruggere la spada all'impatto
+            empSword->destroy();
+            break; // Esci dal loop player
+        }
+
+        // 3b) EmperorSword vs tile
+        for (auto& tile : m_entityManager.getEntities("tile")) {
+            if (!tile->has<CTransform>() || !tile->has<CBoundingBox>())
+                continue;
+
+            auto& tileTransform = tile->get<CTransform>();
+            auto& tileBB        = tile->get<CBoundingBox>();
+            sf::FloatRect tileRect = tileBB.getRect(tileTransform.pos);
+
+            if (!swordRect.intersects(tileRect))
+                continue;
+
+            empSword->destroy();
+
+            break; 
         }
     }
 }
@@ -971,18 +1044,18 @@ void CollisionSystem::handlePlayerCollectibleCollisions() {
                         m_score += COLLECTIBLE_BRONZE_COIN_POINTS;
                     }
                 }
-                // AGGIUNGI QUESTO BLOCCO PER IL POLLO
+
                 else if (itemType.find("Chicken") != std::string::npos) {
                     auto& playerState = player->get<CState>();
                 
                     if (itemType.find("Small") != std::string::npos) {
                         // Aggiunge 5 secondi alla stamina dello scudo
-                        playerState.shieldStamina += 5.f;
+                        playerState.shieldStamina += CollisionSystem::SMALLCHICKEN_POINTS;
                         std::cout << "[DEBUG] Player picked up ChickenSmall: +5s shield stamina.\n";
                     } 
                     else if (itemType.find("Big") != std::string::npos) {
                         // Aggiunge 10 secondi alla stamina dello scudo
-                        playerState.shieldStamina += 10.f;
+                        playerState.shieldStamina += CollisionSystem::BIGCHICKEN_POINTS;
                         std::cout << "[DEBUG] Player picked up ChickenBig: +10s shield stamina.\n";
                     }
                 
