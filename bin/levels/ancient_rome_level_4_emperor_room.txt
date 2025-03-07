@@ -179,7 +179,16 @@ Tile Treasure 12 13
 Tile Treasure 23 13
 Tile Treasure 27 13
 Tile Treasure 30 13
-Player 2 2
+Tile GoldGround 19 16
+Tile Treasure 30 11
+Tile Treasure 28 11
+Tile Treasure 27 11
+Tile Treasure 31 11
+Tile Treasure 26 11
+Tile Treasure 25 11
+Tile Treasure 23 11
+Tile Treasure 32 11
+Player 1 2
 Dec GoldPipeTall 0 5
 Dec GoldPipeTall 1 5
 Dec GoldPipeTall 2 5

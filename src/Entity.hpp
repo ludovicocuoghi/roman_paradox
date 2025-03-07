@@ -22,7 +22,8 @@ using ComponentTuple = std::tuple<
     CUniqueID,
     CPlayerEquipment,
     CTileTouched,
-    CAmmo
+    CAmmo,
+    CStopAfterTime
 >;
 
 class Entity {
@@ -50,6 +51,11 @@ public:
     void add(Args&&... args) {
         static_assert(tuple_has_type<T, ComponentTuple>::value, "Component not found in tuple!");
         std::get<T>(m_components) = T(std::forward<Args>(args)...);
+    }
+    template <typename T>
+    void remove() {
+        static_assert(tuple_has_type<T, ComponentTuple>::value, "Component not found in tuple!");
+        std::get<T>(m_components) = T{};  // Reassign component to a default-constructed state
     }
 
     template <typename T>

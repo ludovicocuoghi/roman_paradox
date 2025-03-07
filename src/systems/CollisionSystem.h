@@ -15,8 +15,8 @@ public:
     static constexpr float COLLISION_SEPARATION_FACTOR = 0.5f;
 
     // Player Sword vs Enemy
-    static constexpr int PLAYER_SWORD_DAMAGE = 5;
-    static constexpr float PLAYER_SWORD_INVULNERABILITY_TIME = 0.1f;
+    static constexpr int PLAYER_SWORD_DAMAGE = 10;
+    static constexpr float PLAYER_SWORD_INVULNERABILITY_TIME = 0.2f;
     static constexpr int PLAYER_SWORD_KNOCKBACK_ROLL_MIN = 1;
     static constexpr int PLAYER_SWORD_KNOCKBACK_ROLL_MAX = 5;
     static constexpr int PLAYER_SWORD_KNOCKBACK_ROLL_TRIGGER = 1;
@@ -33,15 +33,15 @@ public:
     static constexpr float PLAYER_KNOCKBACK_TIMER = 0.5f;
 
     // Collectibles
-    static constexpr int COLLECTIBLE_SMALL_GRAPE_POINTS = 25;
-    static constexpr int COLLECTIBLE_BIG_GRAPE_HEAL = 60;
+    static constexpr int COLLECTIBLE_SMALL_GRAPE_POINTS = 50;
+    static constexpr int COLLECTIBLE_BIG_GRAPE_HEAL = 80;
 
     static constexpr int COLLECTIBLE_GOLD_COIN_POINTS = 99;
     static constexpr int COLLECTIBLE_SILVER_COIN_POINTS = 70;
     static constexpr int COLLECTIBLE_BRONZE_COIN_POINTS = 40;
 
-    static constexpr float BIGCHICKEN_POINTS = 3.f;
-    static constexpr float SMALLCHICKEN_POINTS = 1.5f;
+    static constexpr float BIGCHICKEN_POINTS = 7.f;
+    static constexpr float SMALLCHICKEN_POINTS = 3.f;
 
     void updateCollisions();
     void handlePlayerTileCollisions();
@@ -52,6 +52,7 @@ public:
     void handleEnemyEnemyCollisions();
     void handleBulletPlayerCollisions();
     void handlePlayerBulletCollisions();
+
 
 private:
     EntityManager& m_entityManager;

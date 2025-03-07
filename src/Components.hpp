@@ -51,6 +51,7 @@ public:
     CHealth(int current, int max) : currentHealth(current), maxHealth(max), invulnerabilityTimer(0.f) {}
 
     void takeDamage(int damage) {
+        
         if (invulnerabilityTimer <= 0.f) {
             currentHealth -= damage;
             if (currentHealth < 0) {
@@ -151,6 +152,17 @@ class CTileTouched : public Component {
         explicit CTileTouched(bool inFront_ = false) 
             : inFront(inFront_) {}
 };
+
+class CStopAfterTime : public Component {
+    public:
+        float timer = -1.f;  // Default is negative, meaning "inactive"
+    
+        CStopAfterTime() = default; 
+    
+        explicit CStopAfterTime(float timeToStop)
+            : timer(timeToStop) {}
+};
+
 class CState : public Component {
     public:
         //====================================================
@@ -374,13 +386,12 @@ enum class EnemyType {
 enum class EnemyBehavior {
     FollowOne,  // Only follows when player is in line-of-sight
     FollowTwo,   // Keeps following once the player is spotted
-    FollowThree  // Super always follows (ignores distance checks)
+    FollowThree,  // Super always follows (ignores distance checks)
+    FollowFour
 };
 
 enum class EnemyState {
     Idle,
-    Recognition,
-    Patrol,
     Follow,     // The enemy is following the player
     Attack,     // The enemy is attacking
     Knockback,   // The enemy is being pushed back,
@@ -444,6 +455,8 @@ class CEnemyAI : public Component {
         // 8) Timer di attacco "radiale" e "shooting"
         // ------------------------------------------------------
         float radialAttackTimer;      // Timer per l'attacco radiale
+        float protectionPulseTimer = 0.f;
+        bool protectionSwordsActive = false;
         float horizontalShootTimer;   // Timer per l'attacco orizzontale
         bool  TileInFront;            // Se c'è un tile di fronte (per logiche di salto/blocco)
         float shootTimer;             // Timer per gli intervalli di tiro "normale"
@@ -460,6 +473,7 @@ class CEnemyAI : public Component {
         bool  burstCooldownActive;    // Se il burst è in cooldown
         float burstCooldownTimer;     // Timer per il cooldown del burst
         bool  isInBurstMode;          // Se il nemico è in fase finale di burst
+
     
         // ------------------------------------------------------
         // 10) Parametri per il "Bullet Burst" e la "Super Move"
@@ -536,6 +550,8 @@ class CEnemyAI : public Component {
     
                 // Attack Timers
                 radialAttackTimer(0.f),
+                protectionPulseTimer(0.f),
+                protectionSwordsActive(false),
                 horizontalShootTimer(0.f),
                 TileInFront(false),
                 shootTimer(0.f),

@@ -77,6 +77,8 @@ public:
     void updateGraves(float deltaTime);
     void updateFragments(float deltaTime);
     void createBlockFragments(const Vec2<float>& position, const std::string & blockType);
+    void spawnEmperorSwordsStatic(std::shared_ptr<Entity> emperor,int swordCount,float radius,float speed);
+    void spawnEmperorSwordArmorRadial(std::shared_ptr<Entity> emperor, int swordCount, float radius, float swordSpeed, float baseStopTime, float stopTimeIncrement);
 
 private:
     GameEngine& m_game;

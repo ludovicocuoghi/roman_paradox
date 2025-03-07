@@ -194,13 +194,6 @@ for (auto& enemy : m_entityManager.getEntities("enemy")) {
             sf::Color(50, 220, 50)     // Top bar - green (Normal Radial)
         };
         
-        // Phase labels with attack types
-        std::string phaseLabels[3] = {
-            "Burst Phase (50-10%)",
-            "Enhanced Radial (70-50%)",
-            "Normal Radial (100-70%)"
-        };
-        
         // Base position for the bars
         float baseX = eTrans.pos.x - (barWidth / 2.f);
         float baseY = eTrans.pos.y - offsetY;
@@ -269,23 +262,6 @@ for (auto& enemy : m_entityManager.getEntities("enemy")) {
                 m_game.window().draw(line, 2, sf::Lines);
             }
             
-            // Add phase label
-            if (m_game.assets().hasFont("Menu")) {
-                sf::Text phaseText;
-                phaseText.setFont(m_game.assets().getFont("Menu"));
-                phaseText.setString(phaseLabels[i]);
-                phaseText.setCharacterSize(10);
-                phaseText.setFillColor(sf::Color::White);
-                
-                // Position label to the left of the bar
-                sf::FloatRect textBounds = phaseText.getLocalBounds();
-                phaseText.setPosition(
-                    barX - textBounds.width - 5.f,
-                    barY + (barHeight / 2.f) - (textBounds.height / 2.f)
-                );
-                
-                m_game.window().draw(phaseText);
-            }
         }
         
         // Add special indicator for "Final Attack" phase (below 10%)
@@ -330,33 +306,6 @@ for (auto& enemy : m_entityManager.getEntities("enemy")) {
             );
             
             m_game.window().draw(healthText);
-            
-            // Add current attack phase text
-            std::string currentPhaseText;
-            if (healthRatio > phase1Threshold) {
-                currentPhaseText = "Normal Radial Attack";
-            } else if (healthRatio > phase2Threshold) {
-                currentPhaseText = "Enhanced Radial Attack";
-            } else if (healthRatio > phase3Threshold) {
-                currentPhaseText = "Final Burst Phase";
-            } else {
-                currentPhaseText = "FINAL ATTACK PHASE";
-            }
-            
-            sf::Text phaseIndicator;
-            phaseIndicator.setFont(m_game.assets().getFont("Menu"));
-            phaseIndicator.setString("Current: " + currentPhaseText);
-            phaseIndicator.setCharacterSize(12);
-            phaseIndicator.setFillColor(sf::Color::White);
-            
-            // Position below health percentage
-            sf::FloatRect phaseTextBounds = phaseIndicator.getLocalBounds();
-            phaseIndicator.setPosition(
-                baseX + (barWidth / 2.f) - (phaseTextBounds.width / 2.f),
-                baseY - 5.f
-            );
-            
-            m_game.window().draw(phaseIndicator);
         }
     } else {
         // Regular enemy health bar code (unchanged)
@@ -400,13 +349,53 @@ for (auto& enemy : m_entityManager.getEntities("enemy")) {
     }
 
         // Render enemy sprite
+        // Render enemy sprite
         if (enemy->has<CAnimation>()) {
             auto& animation = enemy->get<CAnimation>();
-            sf::Sprite sprite = animation.animation.getSprite();
-            sprite.setPosition(eTrans.pos.x, eTrans.pos.y);
-            sprite.setOrigin(animation.animation.getSize().x / 2.f,
-                            animation.animation.getSize().y / 2.f);
-            m_game.window().draw(sprite);
+            auto& enemyAI   = enemy->get<CEnemyAI>();
+            //std::cout << "[DEBUG] Enemy " << enemy->id() 
+            //<< " State=" << static_cast<int>(enemyAI.enemyState) << std::endl;
+
+            // If Emperor is defeated, forcibly set "AncientStandEmperorDefeated" animation
+            if (enemyAI.enemyType == EnemyType::Emperor &&
+                enemyAI.enemyState == EnemyState::Defeated)
+            {
+                std::string defAnimName = "AncientStandEmperorDefeated";
+                if (animation.animation.getName() != defAnimName) {
+                    const Animation& defeatAnim = m_game.assets().getAnimation(defAnimName);
+                    animation.animation = defeatAnim;
+                    animation.animation.reset();
+                }
+                sf::Sprite sprite = animation.animation.getSprite();
+                float scaleX = (enemyAI.facingDirection < 0.f) ? -1.f : 1.f;
+                sprite.setScale(scaleX, 1.f);
+                sprite.setPosition(eTrans.pos.x, eTrans.pos.y);
+                sprite.setOrigin(animation.animation.getSize().x * 0.5f,
+                                animation.animation.getSize().y * 0.5f);
+                m_game.window().draw(sprite);
+            }
+            else
+            {
+                // Check if enemy is invulnerable
+                bool shouldDraw = true;
+                if (enemy->has<CHealth>()) {
+                    auto& health = enemy->get<CHealth>();
+                    if (health.invulnerabilityTimer) {
+                        // Blink effect - show sprite every other 0.1 seconds
+                        shouldDraw = static_cast<int>(health.invulnerabilityTimer * 13) % 2 == 0;
+                    }
+                }
+                
+                if (shouldDraw) {
+                    // Continue with your normal sprite drawing code
+                    sf::Sprite sprite = animation.animation.getSprite();
+                    // Set position, scale, etc.
+                    sprite.setPosition(eTrans.pos.x, eTrans.pos.y);
+                    sprite.setOrigin(animation.animation.getSize().x * 0.5f,
+                                    animation.animation.getSize().y * 0.5f);
+                    m_game.window().draw(sprite);
+                }
+            }
         }
         
         // Debug bounding box
@@ -498,6 +487,33 @@ for (auto& enemy : m_entityManager.getEntities("enemy")) {
         }
     }
 
+    // Render enemy swords
+    for (auto& esword : m_entityManager.getEntities("EmperorSwordArmor")) {
+        if (!esword->has<CTransform>()) continue;
+        auto& esTrans = esword->get<CTransform>();
+        //std::cout << "Rendering enemy sword at " << esTrans.pos.x << "," << esTrans.pos.y << "\n";
+        if (esword->has<CAnimation>()) {
+            //std::cout << "Rendering enemy sword\n";
+            auto& anim = esword->get<CAnimation>();
+            sf::Sprite sprite = anim.animation.getSprite();
+            sprite.setPosition(esTrans.pos.x, esTrans.pos.y);
+            sprite.setOrigin(anim.animation.getSize().x / 2.f,
+                                anim.animation.getSize().y / 2.f);
+            m_game.window().draw(sprite);
+        }
+        if (m_showBoundingBoxes && esword->has<CBoundingBox>()) {
+            //std::cout << "Rendering enemy sword bounding box\n";
+            auto& bbox = esword->get<CBoundingBox>();
+            debugBox.setSize(sf::Vector2f(bbox.size.x, bbox.size.y));
+            float dir = (esTrans.pos.x < 0) ? -1.f : 1.f;
+            debugBox.setOrigin((dir < 0) ? bbox.size.x : bbox.halfSize.x, bbox.halfSize.y);
+            debugBox.setPosition(esTrans.pos.x, esTrans.pos.y);
+            debugBox.setFillColor(sf::Color::Transparent);
+            debugBox.setOutlineColor(sf::Color::Yellow);
+            debugBox.setOutlineThickness(2.f);
+            m_game.window().draw(debugBox);
+        }
+    }
     
     // Render enemy grave
     for (auto& egrave : m_entityManager.getEntities("enemyGrave")) {

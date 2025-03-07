@@ -103,6 +103,7 @@ void EnemyAISystem::update(float deltaTime)
         auto& anim       = enemy->get<CAnimation>();
         auto& enemyState = enemy->get<CState>();
 
+
         // This flag allows movement but prevents attacking
         bool skipAttack = false;
 
@@ -139,98 +140,74 @@ void EnemyAISystem::update(float deltaTime)
         // ----------------------------------------------------
         if (enemyAI.enemyType == EnemyType::Emperor)
         {
-            float dx       = playerTrans.pos.x - enemyTrans.pos.x;
-            float dy       = playerTrans.pos.y - enemyTrans.pos.y;
+            float dx = playerTrans.pos.x - enemyTrans.pos.x;
+            float dy = playerTrans.pos.y - enemyTrans.pos.y;
             float distance = std::sqrt(dx*dx + dy*dy);
-
-            // (A) Fetch Emperor's Health Percentage
+        
             float healthPercentage = 1.f;
             if (enemy->has<CHealth>()) {
                 auto& health = enemy->get<CHealth>();
-                healthPercentage = static_cast<float>(health.currentHealth)
-                                 / static_cast<float>(health.maxHealth);
+                healthPercentage = static_cast<float>(health.currentHealth) / static_cast<float>(health.maxHealth);
             }
-            std::cout << "[DEBUG] Emperor Health: "
-                      << healthPercentage << "\n";
-
-            // (B) Final Burst If HP <= 10%
+        
             if (healthPercentage <= 0.1f) {
                 if (enemyAI.enemyState != EnemyState::FinalAttack) {
-                    std::cout << "[DEBUG] Emperor entering FINAL ATTACK mode!\n";
-                    enemyAI.enemyState    = EnemyState::FinalAttack;
+                    enemyAI.enemyState = EnemyState::FinalAttack;
                     enemyAI.finalBurstTimer = 0.f;
                     enemyAI.burstCount = 0;
                 }
-
-                // Stop movement & run final burst logic
+        
                 enemyTrans.velocity.x = 0.f;
                 enemyTrans.velocity.y = 0.f;
-
+        
                 enemyAI.finalBurstTimer += deltaTime;
                 if (enemyAI.finalBurstTimer >= 0.2f) {
                     enemyAI.finalBurstTimer = 0.f;
-                    std::cout << "[DEBUG] Emperor FINAL ATTACK: 8x Radial Swords!\n";
-
+        
                     m_spawner->spawnEmperorSwordsRadial(enemy,
                                                         EMPEROR_RADIAL_SWORDS_COUNT * 2,
                                                         EMPEROR_RADIAL_SWORDS_RADIUS,
                                                         EMPEROR_RADIAL_SWORDS_SPEED);
                     enemyAI.burstCount++;
-                    std::cout << "[DEBUG] Emperor FINAL ATTACK: Burst #"
-                            << enemyAI.burstCount << "\n";
-
+                    
                     if (enemyAI.burstCount >= 12) {
-                        std::cout << "[DEBUG] Emperor FINAL ATTACK FINISHED! Showing defeated animation.\n";
                         auto enemySwords = m_entityManager.getEntities("EmperorSword");
                         for (auto& sword : enemySwords) {
                             sword->destroy();
                         }
                         
-                        // Set the Emperor's state to Defeated
-                        enemyAI.enemyState = EnemyState::Defeated;
+                        float tileSize = 96;
+                        enemyTrans.pos.x -= enemyAI.facingDirection * 4 * tileSize;
+        
+                        const int swordsPerBurst = 200;
+                        const float radius = 100.f;
+                        const float swordSpeed = 500.f;
+                        const float baseStopTime = 0.1f;
+        
+                        for (int burst = 0; burst < 15; ++burst) {
+                            float stopTimeIncrement = 0.1f + 0.1f * burst;
+                            m_spawner->spawnEmperorSwordArmorRadial(enemy, swordsPerBurst, radius, swordSpeed, baseStopTime, stopTimeIncrement);
+                        }
                         
-                        // Stop all movement
+                        if (enemy->has<CHealth>()) {
+                            auto& health = enemy->get<CHealth>();
+                            health.currentHealth = 0;
+                        }
+                        
+                        enemyAI.enemyState = EnemyState::Defeated;
                         enemyTrans.velocity.x = 0.f;
                         enemyTrans.velocity.y = 0.f;
-                        
-                        // Change animation to defeated
-                        if (enemy->has<CAnimation>()) {
-                            // Follow the naming convention: worldType + "DefeatedEmperor"
-                            std::string defeatAnimName = m_game.worldType + "DefeatedEmperor";
-                            
-                            if (m_game.assets().hasAnimation(defeatAnimName)) {
-                                auto& anim = enemy->get<CAnimation>();
-                                anim.animation = m_game.assets().getAnimation(defeatAnimName);
-                                anim.repeat = false;
-                                std::cout << "[DEBUG] Setting Emperor defeated animation: " << defeatAnimName << std::endl;
-                            } else {
-                                // Try alternative naming convention if first attempt fails
-                                std::string altDefeatAnimName = m_game.worldType + "EmperorDefeated";
-                                if (m_game.assets().hasAnimation(altDefeatAnimName)) {
-                                    auto& anim = enemy->get<CAnimation>();
-                                    anim.animation = m_game.assets().getAnimation(altDefeatAnimName);
-                                    anim.repeat = false;
-                                    std::cout << "[DEBUG] Setting Emperor defeated animation (alt): " << altDefeatAnimName << std::endl;
-                                } else {
-                                    std::cout << "[DEBUG] ERROR: Emperor defeated animation not found: " 
-                                                << defeatAnimName << " or " << altDefeatAnimName << std::endl;
-                                }
-                            }
-                        }
-                        return; // Done with final attack
+                        return;
                     }
                 }
-                return; // Skip other logic in final attack mode
+                return;
             }
-
-            // (C) Normal Attack Phases (Above 10% HP)
-            // ---- Radial Attack ( > 70% HP)
+        
             if (enemyAI.enemyState != EnemyState::FinalAttack) {
                 if (healthPercentage > 0.7f) {
                     enemyAI.radialAttackTimer += deltaTime;
                     if (enemyAI.radialAttackTimer >= 4.f) {
                         enemyAI.radialAttackTimer = 0.f;
-                        std::cout << "[DEBUG] Emperor Attack: Radial Swords\n";
                         m_spawner->spawnEmperorSwordsRadial(
                             enemy,
                             EMPEROR_RADIAL_SWORDS_COUNT,
@@ -239,14 +216,10 @@ void EnemyAISystem::update(float deltaTime)
                         );
                     }
                 }
-                // ---- Enhanced Radial Attack (70% > HP > 50%)
-                else if (healthPercentage <= 0.7f &&
-                         healthPercentage > 0.5f)
-                {
+                else if (healthPercentage <= 0.7f && healthPercentage > 0.5f) {
                     enemyAI.radialAttackTimer += deltaTime;
                     if (enemyAI.radialAttackTimer >= 3.f) {
                         enemyAI.radialAttackTimer = 0.f;
-                        std::cout << "[DEBUG] Emperor Attack: DOUBLE Radial Swords\n";
                         m_spawner->spawnEmperorSwordsRadial(
                             enemy,
                             EMPEROR_RADIAL_SWORDS_COUNT * 2,
@@ -255,14 +228,19 @@ void EnemyAISystem::update(float deltaTime)
                         );
                     }
                 }
-                // ---- Final Burst Phase (50% > HP > 10%)
-                else if (healthPercentage <= 0.5f) {
+                else if (healthPercentage <= 50.f) {
                     if (!enemyAI.burstCooldownActive) {
-                        // Quick radial bursts
+                        float attackInterval = 3.0f; // Default attack interval
+                        
+                        if (distance > 600.f) {
+                            attackInterval = 0.8f; // Fast attacks when player is far away
+                        } else if (distance > 50.f && distance < 600.f) {
+                            attackInterval = 2.5f; // Medium speed attacks at medium distance
+                        }
+                        
                         enemyAI.radialAttackTimer += deltaTime;
-                        if (enemyAI.radialAttackTimer >= 0.2f) {
+                        if (enemyAI.radialAttackTimer >= attackInterval) {
                             enemyAI.radialAttackTimer = 0.f;
-                            std::cout << "[DEBUG] Emperor Attack: QUADRUPLE Radial Swords\n";
                             m_spawner->spawnEmperorSwordsRadial(
                                 enemy,
                                 EMPEROR_RADIAL_SWORDS_COUNT,
@@ -270,33 +248,17 @@ void EnemyAISystem::update(float deltaTime)
                                 EMPEROR_RADIAL_SWORDS_SPEED
                             );
                             enemyAI.burstCount++;
-                            // If enough bursts -> 5s cooldown
-                            if (enemyAI.burstCount >= 1) {
-                                enemyAI.burstCooldownActive = true;
-                                enemyAI.burstCooldownTimer  = 0.f;
-                                enemyAI.burstCount          = 0;
-
-                                auto enemySwords = m_entityManager.getEntities("EmperorSword");
-                                for (auto& sword : enemySwords) {
-                                    sword->destroy();
-                                }
-                                std::cout << "[DEBUG] Emperor: 5s COOLDOWN STARTED\n";
-                            }
                         }
                     }
                     else {
-                        // In cooldown
                         enemyAI.burstCooldownTimer += deltaTime;
                         if (enemyAI.burstCooldownTimer >= 5.f) {
                             enemyAI.burstCooldownActive = false;
-                            std::cout << "[DEBUG] Emperor COOLDOWN ENDED\n";
                         }
                     }
                 }
-
-                // (D) Close-range attack
+        
                 if (distance < 100.f && !enemyAI.swordSpawned) {
-                    std::cout << "[DEBUG] Emperor spawns static swords (Close-range)\n";
                     for (int i = 0; i < 3; ++i) {
                         m_spawner->spawnEmperorSwordOffset(enemy);
                     }
@@ -389,6 +351,7 @@ void EnemyAISystem::update(float deltaTime)
         bool playerVisible       = (distance < PLAYER_VISIBLE_DISTANCE) && canSeePlayer;
         bool playerVisible_elite = (distance < PLAYER_VISIBLE_DISTANCE) || 
                           (canSeePlayer && distance < PLAYER_VISIBLE_DISTANCE * 2);
+        bool playerVisible_emperor = (distance < PLAYER_VISIBLE_DISTANCE * 100);
 
         bool shouldFollow = false;
         switch (enemyAI.enemyBehavior) {
@@ -398,8 +361,11 @@ void EnemyAISystem::update(float deltaTime)
             case EnemyBehavior::FollowTwo:
                 shouldFollow = playerVisible_elite;
                 break;
-                case EnemyBehavior::FollowThree:
+            case EnemyBehavior::FollowThree:
                 shouldFollow = true;  // Always follow, regardless of distance
+                break;
+            case EnemyBehavior::FollowFour:
+                shouldFollow = playerVisible_emperor;
                 break;
         }
 
@@ -773,9 +739,9 @@ void EnemyAISystem::update(float deltaTime)
             // Attack animation
             std::string attackAnimName = m_game.worldType + "Hit" + baseAnimName;
             if (anim.animation.getName() != attackAnimName) {
-                std::cout << "[DEBUG] Enemy " << enemy->id()
-                          << " entering Attack animation: "
-                          << attackAnimName << "\n";
+                // std::cout << "[DEBUG] Enemy " << enemy->id()
+                //           << " entering Attack animation: "
+                //           << attackAnimName << "\n";
                 anim.animation = m_game.assets().getAnimation(attackAnimName);
                 anim.animation.reset();
                 anim.repeat = false;

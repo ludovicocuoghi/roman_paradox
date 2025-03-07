@@ -179,11 +179,6 @@ void Scene_Play::update(float deltaTime)
             if (entity->has<CState>())
                 entity->get<CState>().update(deltaTime);
         }
-        auto allEntities = m_entityManager.getEntities();
-        auto players = m_entityManager.getEntities("player");
-        std::cout << "[DEBUG] Total entities: " << allEntities.size() 
-                  << ", Players: " << players.size() << std::endl;
-
         sMovement(deltaTime);
         sEnemyAI(deltaTime);
         sCollision();
@@ -472,8 +467,8 @@ void Scene_Play::sLifespan(float deltaTime)
                 
                 if (lifespan.remainingTime <= 0)
                 {
-                    std::cout << "[DEBUG] Entity '" << e->tag() << "' #" << e->id() 
-                              << " destroyed by lifespan system\n";
+                    //std::cout << "[DEBUG] Entity '" << e->tag() << "' #" << e->id() 
+                    //          << " destroyed by lifespan system\n";
                     e->destroy();
                 }
             }
@@ -494,7 +489,6 @@ void Scene_Play::sUpdateSword()
     if (m_activeSword && (state.attackTime <= 0.f || state.state != "attack")) {
         m_activeSword->destroy();
         m_activeSword = nullptr;
-        std::cout << "[DEBUG] Sword removed after attack finished.\n";
     }
 }
 
@@ -646,11 +640,20 @@ void Scene_Play::lifeCheckEnemyDeath() {
     for (auto& enemy : enemies) {
         if (!enemy->has<CHealth>()) continue;
 
-        const auto& transform = enemy->get<CTransform>();
+        auto& transform = enemy->get<CTransform>();
         const auto& health    = enemy->get<CHealth>();
+        const auto& enemyAI = enemy->get<CEnemyAI>();
 
         bool isOutOfBounds = (transform.pos.y > 1800);
         bool isDead        = (health.currentHealth <= 0);
+
+        // Skip if enemy is in defeated state
+            if (enemyAI.enemyState == EnemyState::Defeated) {
+                // Keep the bounding box, keep it on screen
+                transform.velocity.x = 0.f;
+                transform.velocity.y = 0.f;
+                continue;
+            }
 
         if (isOutOfBounds || isDead) {
             bool isEmperor = (enemy->has<CEnemyAI>() && enemy->get<CEnemyAI>().enemyType == EnemyType::Emperor);

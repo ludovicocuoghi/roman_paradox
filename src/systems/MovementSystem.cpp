@@ -180,21 +180,41 @@ void MovementSystem::update(float deltaTime)
         }
     }
 
-    // ... Resto del codice per spade dei nemici, proiettili, ecc.
     auto enemySwords = m_entityManager.getEntities("EmperorSword");
     for (auto& eSword : enemySwords) {
         if (!eSword->has<CTransform>()) continue;
         auto& swTrans = eSword->get<CTransform>();
-
-        swTrans.pos += swTrans.velocity * deltaTime;
-        if (eSword->has<CAnimation>()) {
-            auto& swordAnim = eSword->get<CAnimation>();
-            if (swTrans.velocity.x < 0.f) {
-                flipSpriteLeft(swordAnim.animation.getMutableSprite());
-            } else {
-                flipSpriteRight(swordAnim.animation.getMutableSprite());
+    
+        // Only swords with active stop timers (timer > 0) should count down
+        if (eSword->has<CStopAfterTime>()) {
+            auto& stopTimer = eSword->get<CStopAfterTime>();
+    
+            if (stopTimer.timer > 0.f) {
+                stopTimer.timer -= deltaTime;
+                if (stopTimer.timer <= 0.f) {
+                    swTrans.velocity = Vec2(0.f, 0.f);
+                    stopTimer.timer = 0.f; // Mark as "stopped"
+                }
             }
         }
+    
+        swTrans.pos += swTrans.velocity * deltaTime;
+
+    }
+    
+    auto armorSwords = m_entityManager.getEntities("EmperorSwordArmor");
+    for (auto& sword : armorSwords) {
+        auto& trans = sword->get<CTransform>();
+
+        if (sword->has<CStopAfterTime>()) {
+            auto& stopTimer = sword->get<CStopAfterTime>();
+            stopTimer.timer -= deltaTime;
+
+            if (stopTimer.timer <= 0.f) {
+                trans.velocity = Vec2<float>(0.f, 0.f);
+            }
+        }
+        trans.pos += trans.velocity * deltaTime;
     }
 
     for (auto& bullet : m_entityManager.getEntities("enemyBullet")) {

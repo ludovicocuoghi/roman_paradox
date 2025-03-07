@@ -363,32 +363,40 @@ void CollisionSystem::handleEnemyEnemyCollisions() {
 }
 void CollisionSystem::handlePlayerEnemyCollisions() {
     for (auto& enemy : m_entityManager.getEntities("enemy")) {
-        // Skip enemy if in attack state.
+        // Skip if missing required components
+        if (!enemy->has<CTransform>() || !enemy->has<CBoundingBox>())
+            continue;
+
+        // Skip enemy if in attack state
         if (enemy->has<CEnemyAI>()) {
             auto& enemyAI = enemy->get<CEnemyAI>();
             if (enemyAI.enemyState == EnemyState::Attack)
                 continue;
         }
+
         auto& enemyTrans = enemy->get<CTransform>();
         auto& enemyBB    = enemy->get<CBoundingBox>();
         sf::FloatRect enemyRect = enemyBB.getRect(enemyTrans.pos);
 
-        // Check enemy on-ground state.
+        // Check enemy on-ground state
         bool enemyOnGround = false;
         if (enemy->has<CState>())
             enemyOnGround = enemy->get<CState>().onGround;
 
         for (auto& player : m_entityManager.getEntities("player")) {
+            if (!player->has<CTransform>() || !player->has<CBoundingBox>() || !player->has<CState>())
+                continue;
+                
             auto& pTrans = player->get<CTransform>();
             auto& pBB    = player->get<CBoundingBox>();
             auto& pState = player->get<CState>();
             sf::FloatRect playerRect = pBB.getRect(pTrans.pos);
 
-            // Check player on-ground state.
+            // Check player on-ground state
             bool playerOnGround = pState.onGround;
-
+            
             if (enemyRect.intersects(playerRect)) {
-                // Compute overlaps along X and Y.
+                // Compute overlaps along X and Y
                 float overlapX = std::min(enemyRect.left + enemyRect.width, playerRect.left + playerRect.width)
                                  - std::max(enemyRect.left, playerRect.left);
                 float overlapY = std::min(enemyRect.top + enemyRect.height, playerRect.top + playerRect.height)
@@ -399,80 +407,49 @@ void CollisionSystem::handlePlayerEnemyCollisions() {
                 
                 // Adjusted bounce speeds
                 const float horizontalBounceSpeed = 100.f;
-                const float enemyVerticalBounceSpeed = 60.f; // Reduce enemy bounce
-                const float playerVerticalBounceSpeed = 250.f; // More controlled player bounce when landing on enemy
+                const float enemyVerticalBounceSpeed = 60.f;
+                const float playerVerticalBounceSpeed = 250.f;
                 
                 // Check if player is moving downward (falling or jumping down)
                 bool playerFalling = pTrans.velocity.y > 0;
 
-                if (overlapX < overlapY) {
-                    // Horizontal collision resolution (unchanged)
-                    if (enemyTrans.pos.x < pTrans.pos.x) {
-                        enemyTrans.pos.x -= overlapX * COLLISION_SEPARATION_FACTOR;
-                        pTrans.pos.x     += overlapX * COLLISION_SEPARATION_FACTOR;
-                        enemyTrans.velocity.x = -std::max(std::abs(enemyTrans.velocity.x), horizontalBounceSpeed);
-                        pTrans.velocity.x     = std::max(std::abs(pTrans.velocity.x), horizontalBounceSpeed);
-                    } else {
-                        enemyTrans.pos.x += overlapX * COLLISION_SEPARATION_FACTOR;
-                        pTrans.pos.x     -= overlapX * COLLISION_SEPARATION_FACTOR;
-                        enemyTrans.velocity.x = std::max(std::abs(enemyTrans.velocity.x), horizontalBounceSpeed);
-                        pTrans.velocity.x     = -std::max(std::abs(pTrans.velocity.x), horizontalBounceSpeed);
-                    }
-                } else {
-                    // Vertical collision resolution.
-                    // If player is above enemy (landing on enemy's head)
-                    if (playerFalling && pTrans.pos.y < enemyTrans.pos.y) {
-                        // Player is landing on enemy from above
-                        pTrans.pos.y -= separation;
-                        pTrans.velocity.y = -playerVerticalBounceSpeed; // Controlled upward bounce for player
-                        
-                        // Optionally apply damage or affect enemy
-                        if (enemy->has<CHealth>()) {
-                            auto& health = enemy->get<CHealth>();
-                            health.takeDamage(2); // Damage when jumped on
-                            std::cout << "[DEBUG] Player jumped on enemy. Damage: 2\n";
-                        }
-                        
-                        // Push enemy down slightly
-                        enemyTrans.velocity.y = enemyVerticalBounceSpeed;
-                        
-                        // Set a small invincibility period for the player
-                        pState.isInvincible = true;
-                        pState.invincibilityTimer = 0.2f;
-                        
-                        // Optional: Give the player a "bounce" feeling
-                        pState.isJumping = true;
-                        pState.jumpTime = 0.1f; // Short jump time to maintain control
-                        
-                        continue; // Skip other collision handling for this interaction
-                    }
+                // If player is jumping on enemy from above
+                if (playerFalling && pTrans.pos.y < enemyTrans.pos.y && overlapY < overlapX) {
+                    // Player is landing on enemy from above
+                    pTrans.pos.y -= separation;
+                    pTrans.velocity.y = -playerVerticalBounceSpeed; // Controlled upward bounce for player
                     
-                    // If enemy is above player:
+                    // Set a small invincibility period for the player
+                    pState.isInvincible = true;
+                    pState.invincibilityTimer = 0.2f;
+                    
+                    // Optional: Give the player a "bounce" feeling
+                    pState.isJumping = true;
+                    pState.jumpTime = 0.1f; // Short jump time to maintain control
+                    
+                    continue; // Skip other collision handling for this interaction
+                }
+                
+                // Horizontal collision - prevent player from going through
+                if (overlapX <= overlapY) {
+                    // Make player back away by 20 pixels
+                    float backDirection = (enemyTrans.pos.x < pTrans.pos.x) ? 1.0f : -1.0f;
+                    pTrans.pos.x += 20.0f * backDirection;
+                    
+                    // Stop player horizontal movement to prevent going through
+                    pTrans.velocity.x = 0;
+                } 
+                // Other vertical collision cases
+                else {
+                    // If enemy is above player
                     if (enemyTrans.pos.y < pTrans.pos.y) {
-                        if (playerOnGround) {
-                            // Player is fixed on the ground; push enemy upward only.
-                            enemyTrans.pos.y -= separation;
-                            enemyTrans.velocity.y = -enemyVerticalBounceSpeed;
-                        } else {
-                            // Normal resolution: enemy upward, player downward.
-                            enemyTrans.pos.y -= separation;
-                            pTrans.pos.y     += separation;
-                            enemyTrans.velocity.y = -enemyVerticalBounceSpeed;
-                            pTrans.velocity.y     = enemyVerticalBounceSpeed * 0.7f; // Reduce player's downward force
-                        }
-                    } else {
-                        // Enemy is below player:
-                        if (enemyOnGround) {
-                            // Enemy is on ground; push player upward only.
-                            pTrans.pos.y -= separation;
-                            pTrans.velocity.y = -playerVerticalBounceSpeed * 0.7f; // Gentler bounce
-                        } else {
-                            // Normal resolution: enemy downward, player upward.
-                            enemyTrans.pos.y += separation;
-                            pTrans.pos.y     -= separation;
-                            enemyTrans.velocity.y = enemyVerticalBounceSpeed;
-                            pTrans.velocity.y     = -playerVerticalBounceSpeed * 0.7f; // Gentler bounce
-                        }
+                        pTrans.pos.y = enemyRect.top + enemyRect.height + 1.0f;
+                        pTrans.velocity.y = 0;
+                    } 
+                    // Enemy is below player
+                    else {
+                        pTrans.pos.y = enemyRect.top - pBB.halfSize.y - 1.0f;
+                        pTrans.velocity.y = 0;
                     }
                 }
             }
@@ -597,7 +574,7 @@ void CollisionSystem::handleBulletPlayerCollisions() {
             if (player->has<CState>()) {
                 auto& st = player->get<CState>();
                 if (st.state == "defense") {
-                    std::cout << "[DEBUG] Player in defense, ignoring bullet damage.\n";
+                    //std::cout << "[DEBUG] Player in defense, ignoring bullet damage.\n";
                     // Distruggi comunque il proiettile
                     bullet->destroy();
                     break;
@@ -664,7 +641,6 @@ void CollisionSystem::handleBulletPlayerCollisions() {
         }
     }
 }
-
 void CollisionSystem::handleSwordCollisions() {
     // Player sword
     for (auto& sword : m_entityManager.getEntities("sword")) {
@@ -709,62 +685,51 @@ void CollisionSystem::handleSwordCollisions() {
             if (swordRect.intersects(enemyRect)) {
                 std::cout << "[DEBUG] Player sword hit enemy!\n";
                 
-                // Check if enemy is Emperor in defeated state
-                bool isImmortal = false;
-                if (enemy->has<CEnemyAI>()) {
-                    auto& enemyAI = enemy->get<CEnemyAI>();
-                    if (enemyAI.enemyType == EnemyType::Emperor && 
-                        enemyAI.enemyState == EnemyState::Defeated) {
-                        // Emperor is defeated, should be immortal
-                        isImmortal = true;
-                        std::cout << "[DEBUG] Emperor is defeated and immortal - ignoring sword damage!\n";
-                    }
-                }
+                // Direct check for Emperor
+                bool isEmperor = enemy->has<CEnemyAI>() && 
+                                enemy->get<CEnemyAI>().enemyType == EnemyType::Emperor;
+                //std::cout << "Is emperor value: "<<isEmperor << std::endl;
                 
-                // Applica il danno only if not immortal
-                if (!isImmortal && enemy->has<CHealth>()) {
+                // Apply damage with protection for Emperor
+                if (enemy->has<CHealth>()) {
                     auto& health = enemy->get<CHealth>();
+                    if (health.invulnerabilityTimer > 0.f) {
+                        continue; // Skip damage if currently invincible
+                    }
                     int damage = PLAYER_SWORD_DAMAGE;
-                    // Se il mondo corrente è "Future" e il giocatore NON ha FutureArmor, riduci il danno
+                    
+                    // Reduce damage in Future world without FutureArmor
                     if (m_game.worldType == "Future") {
                         auto players = m_entityManager.getEntities("player");
                         if (!players.empty() && players.front()->has<CPlayerEquipment>()) {
                             if (!players.front()->get<CPlayerEquipment>().hasFutureArmor) {
                                 damage = static_cast<int>(damage / 1.5f);
                                 std::cout << "[DEBUG] Future world + no FutureArmor: sword damage reduced to " 
-                                          << damage << "\n";
+                                        << damage << "\n";
                             }
                         }
                     }
-                    health.takeDamage(damage);
-                    health.invulnerabilityTimer = PLAYER_SWORD_INVULNERABILITY_TIME;
-                    if (!health.isAlive()) {
-                        enemy->destroy();
-                        continue;
-                    }
-                }
-        
-                // Only apply knockback if not immortal
-                if (!isImmortal) {
-                    static std::random_device rd;
-                    static std::mt19937 gen(rd());
-                    std::uniform_int_distribution<int> dist(PLAYER_SWORD_KNOCKBACK_ROLL_MIN, PLAYER_SWORD_KNOCKBACK_ROLL_MAX);
-                    int roll = dist(gen);
-                    std::cout << "[DEBUG] roll = " << roll << "\n";
-            
-                    if (roll == PLAYER_SWORD_KNOCKBACK_ROLL_TRIGGER) {
-                        float attackDirection = (swTrans.pos.x < enemyTrans.pos.x) ? 1.f : -1.f;
-                        Vec2<float> hitDirection = { attackDirection, PLAYER_SWORD_KNOCKBACK_Y_DIRECTION };
-            
-                        float finalKnockback = PLAYER_SWORD_KNOCKBACK_STRENGTH + (roll * 5.f);
-            
-                        // Applica il knockback
-                        Physics::Forces::ApplyKnockback(enemy, hitDirection, finalKnockback);
+                    
+                    // For Emperor, ensure health never goes below 1
+                    // 🔽 APPLY damage and invincibility differently if Emperor
+                    if (isEmperor) {
+                        int newHealth = health.currentHealth - damage;
+                        if (newHealth < 1) newHealth = 1;
+                        health.currentHealth = newHealth;
+                        health.invulnerabilityTimer = 1.f; // 🔥 Short invincibility
+                        std::cout << "[DEBUG] Emperor took damage. New Health: " << health.currentHealth << "\n";
+                    } else {
+                        health.takeDamage(damage);
+                        health.invulnerabilityTimer = PLAYER_SWORD_INVULNERABILITY_TIME;
+                        if (!health.isAlive()) {
+                            enemy->destroy();
+                        }
                     }
                 }
             }
         }
     }
+    
     // Enemy sword collisions
     for (auto& enemySword : m_entityManager.getEntities("enemySword")) {
         if (!enemySword->has<CTransform>() || !enemySword->has<CBoundingBox>())
@@ -802,16 +767,17 @@ void CollisionSystem::handleSwordCollisions() {
             }
 
             if (shouldDestroyTile) {
-                // ✅ Create block fragments & spawn item
+                // Create block fragments & spawn item
                 std::cout << "[DEBUG] Spawning black hole!!!\n";
                 m_spawner->spawnBlackHoleAfterTileDestruction(tileTransform.pos);
 
-                tile->destroy();  // ✅ Destroy tile
+                tile->destroy();  // Destroy tile
             }
 
-            enemySword->destroy(); // ✅ Destroy the sword on impact
+            enemySword->destroy(); // Destroy the sword on impact
             break; // Exit loop after handling collision
         }
+        
         //Collisions with Player
         for (auto& player : m_entityManager.getEntities("player")) {
             if (!player->has<CTransform>() || !player->has<CBoundingBox>())
@@ -820,59 +786,88 @@ void CollisionSystem::handleSwordCollisions() {
             auto& playerTrans = player->get<CTransform>();
             auto& playerBB    = player->get<CBoundingBox>();
             sf::FloatRect playerRect = playerBB.getRect(playerTrans.pos);
-            
+
+            // If player is defending, ignore damage
+            if (player->has<CState>()) {
+                auto& st = player->get<CState>();
+                if (st.state == "defense") {
+                    //std::cout << "[DEBUG] Player in defense, ignoring Emperor sword damage.\n";
+                    break;
+                }
+            }
             if (swordRect.intersects(playerRect)) {
                 if (player->has<CHealth>()) {
                     auto& health = player->get<CHealth>();
                     health.takeDamage(enemySword->get<CEnemyAI>().damage);
                     std::cout << "[DEBUG] Enemy sword hit player! Damage: " << enemySword->get<CEnemyAI>().damage << "\n";
                 }
-                enemySword->destroy(); // Distruggi la spada dopo il colpo
-                break; // Esci dal loop del giocatore
+                enemySword->destroy(); // Destroy sword after hit
+                break; // Exit player loop
             }
         }
-    // Enemy sword vs other enemies
-    for (auto& otherEnemy : m_entityManager.getEntities("enemy")) {
-        if (!otherEnemy->has<CTransform>() || !otherEnemy->has<CBoundingBox>())
-            continue;
         
-        auto& enemyTrans = otherEnemy->get<CTransform>();
-        auto& enemyBB = otherEnemy->get<CBoundingBox>();
-        sf::FloatRect enemyRect = enemyBB.getRect(enemyTrans.pos);
-        
-        if (swordRect.intersects(enemyRect)) {
-            // Get the enemy that created this sword
-            int creatorId = -1;
-            if (enemySword->has<CState>()) {
-                try {
-                    creatorId = std::stoi(enemySword->get<CState>().state);
-                } catch (...) {
-                    // Invalid ID format, continue
-                }
-            }
+        // Enemy sword vs other enemies
+        for (auto& otherEnemy : m_entityManager.getEntities("enemy")) {
+            if (!otherEnemy->has<CTransform>() || !otherEnemy->has<CBoundingBox>())
+                continue;
             
-            // Don't let enemy's own sword hit itself
-            if (static_cast<size_t>(creatorId) != otherEnemy->id()) {
-                std::cout << "[DEBUG] Enemy sword hit another enemy! Sword: " 
-                        << enemySword->id() << " Hit Enemy: " << otherEnemy->id() << "\n";
+            auto& enemyTrans = otherEnemy->get<CTransform>();
+            auto& enemyBB = otherEnemy->get<CBoundingBox>();
+            sf::FloatRect enemyRect = enemyBB.getRect(enemyTrans.pos);
+            
+            if (swordRect.intersects(enemyRect)) {
+                // Direct check for Emperor
+                bool isEmperor = otherEnemy->has<CEnemyAI>() && 
+                                otherEnemy->get<CEnemyAI>().enemyType == EnemyType::Emperor;
                 
-                // Apply damage if needed
-                if (otherEnemy->has<CHealth>() && enemySword->has<CEnemyAI>()) {
-                    auto& health = otherEnemy->get<CHealth>();
-                    auto& swordAI = enemySword->get<CEnemyAI>();
-                    health.takeDamage(swordAI.damage);
+                if (isEmperor) {
+                    std::cout << "[DEBUG] Emperor is immortal - limiting sword damage!\n";
+                }
+
+                // Get the enemy that created this sword
+                int creatorId = -1;
+                if (enemySword->has<CState>()) {
+                    try {
+                        creatorId = std::stoi(enemySword->get<CState>().state);
+                    } catch (...) {
+                        // Invalid ID format, continue
+                    }
                 }
                 
-                // Destroy the sword after hitting another enemy
-                enemySword->destroy();
-                break; // Exit this enemy loop
+                // Don't let enemy's own sword hit itself
+                if (static_cast<size_t>(creatorId) != otherEnemy->id()) {
+                    std::cout << "[DEBUG] Enemy sword hit another enemy! Sword: " 
+                            << enemySword->id() << " Hit Enemy: " << otherEnemy->id() << "\n";
+                    
+                    // Apply damage if needed
+                    if (otherEnemy->has<CHealth>() && enemySword->has<CEnemyAI>()) {
+                        auto& health = otherEnemy->get<CHealth>();
+                        auto& swordAI = enemySword->get<CEnemyAI>();
+                        
+                        // Check if Emperor and protect health
+                        if (isEmperor) {
+                            int newHealth = health.currentHealth - swordAI.damage;
+                            if (newHealth < 1) newHealth = 1;
+                            health.currentHealth = newHealth;
+                        } else {
+                            health.takeDamage(swordAI.damage);
+                            if (!health.isAlive()) {
+                                otherEnemy->destroy();
+                            }
+                        }
+                    }
+                    
+                    // Destroy the sword after hitting another enemy
+                    enemySword->destroy();
+                    break; // Exit this enemy loop
+                }
             }
         }
     }
-}
 
+    // Emperor sword collisions
     for (auto& empSword : m_entityManager.getEntities("EmperorSword")) {
-        // Verifichiamo che abbia CTransform e CBoundingBox
+        // Check for required components
         if (!empSword->has<CTransform>() || !empSword->has<CBoundingBox>())
             continue;
 
@@ -881,7 +876,7 @@ void CollisionSystem::handleSwordCollisions() {
 
         sf::FloatRect swordRect = swBB.getRect(swTrans.pos);
 
-        // 3a) EmperorSword vs Player
+        // EmperorSword vs Player
         for (auto& player : m_entityManager.getEntities("player")) {
             if (!player->has<CTransform>() || !player->has<CBoundingBox>())
                 continue;
@@ -893,17 +888,16 @@ void CollisionSystem::handleSwordCollisions() {
             if (!swordRect.intersects(playerRect))
                 continue;
 
-            // Se il giocatore è in difesa, ignora il danno
+            // If player is defending, ignore damage
             if (player->has<CState>()) {
                 auto& st = player->get<CState>();
                 if (st.state == "defense") {
-                    std::cout << "[DEBUG] Player in defense, ignoring Emperor sword damage.\n";
-                    // Se vuoi distruggere la spada comunque, empSword->destroy();
+                    //std::cout << "[DEBUG] Player in defense, ignoring Emperor sword damage.\n";
                     break;
                 }
             }
 
-            // Danno al player
+            // Damage to player
             if (player->has<CHealth>()) {
                 auto& health = player->get<CHealth>();
                 int empSwordDamage = 10; // default
@@ -917,12 +911,12 @@ void CollisionSystem::handleSwordCollisions() {
                         << " Health: " << health.currentHealth << "\n";
             }
 
-            // Se vuoi distruggere la spada all'impatto
+            // Destroy sword on impact
             empSword->destroy();
-            break; // Esci dal loop player
+            break; // Exit player loop
         }
 
-        // 3b) EmperorSword vs tile
+        // EmperorSword vs tile
         for (auto& tile : m_entityManager.getEntities("tile")) {
             if (!tile->has<CTransform>() || !tile->has<CBoundingBox>())
                 continue;
@@ -935,12 +929,13 @@ void CollisionSystem::handleSwordCollisions() {
                 continue;
 
             empSword->destroy();
-
             break; 
         }
     }
-    for (auto& empSword : m_entityManager.getEntities("EmperorSwordRadial")) {
-        // Verifichiamo che abbia CTransform e CBoundingBox
+
+    // Radial Emperor Armor sword collisions 
+    for (auto& empSword : m_entityManager.getEntities("EmperorSwordArmor")) {
+        // Check for required components
         if (!empSword->has<CTransform>() || !empSword->has<CBoundingBox>())
             continue;
 
@@ -948,8 +943,7 @@ void CollisionSystem::handleSwordCollisions() {
         auto& swBB    = empSword->get<CBoundingBox>();
 
         sf::FloatRect swordRect = swBB.getRect(swTrans.pos);
-
-        // 3a) EmperorSword vs Player
+        // EmperorArmorSwordRadial vs Player
         for (auto& player : m_entityManager.getEntities("player")) {
             if (!player->has<CTransform>() || !player->has<CBoundingBox>())
                 continue;
@@ -961,17 +955,61 @@ void CollisionSystem::handleSwordCollisions() {
             if (!swordRect.intersects(playerRect))
                 continue;
 
-            // Se il giocatore è in difesa, ignora il danno
+            // If player is defending, ignore damage
             if (player->has<CState>()) {
                 auto& st = player->get<CState>();
                 if (st.state == "defense") {
-                    std::cout << "[DEBUG] Player in defense, ignoring Emperor sword damage.\n";
-                    // Se vuoi distruggere la spada comunque, empSword->destroy();
+                    //std::cout << "[DEBUG] Player in defense, ignoring Emperor sword damage.\n";
                     break;
                 }
             }
 
-            // Danno al player
+            // Damage to player
+            if (player->has<CHealth>()) {
+                auto& health = player->get<CHealth>();
+                int empSwordDamage = 1; // default
+                health.takeDamage(empSwordDamage);
+                health.invulnerabilityTimer = PLAYER_HIT_INVULNERABILITY_TIME;
+                std::cout << "[DEBUG] Player hit by emperor sword! Damage: " 
+                        << empSwordDamage 
+                        << " Health: " << health.currentHealth << "\n";
+            }
+        }
+    }
+    
+    // Radial Emperor sword collisions 
+    for (auto& empSword : m_entityManager.getEntities("EmperorSwordRadial")) {
+        // Check for required components
+        if (!empSword->has<CTransform>() || !empSword->has<CBoundingBox>())
+            continue;
+
+        auto& swTrans = empSword->get<CTransform>();
+        auto& swBB    = empSword->get<CBoundingBox>();
+
+        sf::FloatRect swordRect = swBB.getRect(swTrans.pos);
+
+        // EmperorSwordRadial vs Player
+        for (auto& player : m_entityManager.getEntities("player")) {
+            if (!player->has<CTransform>() || !player->has<CBoundingBox>())
+                continue;
+
+            auto& pTrans = player->get<CTransform>();
+            auto& pBB    = player->get<CBoundingBox>();
+            sf::FloatRect playerRect = pBB.getRect(pTrans.pos);
+
+            if (!swordRect.intersects(playerRect))
+                continue;
+
+            // If player is defending, ignore damage
+            if (player->has<CState>()) {
+                auto& st = player->get<CState>();
+                if (st.state == "defense") {
+                    //std::cout << "[DEBUG] Player in defense, ignoring Emperor sword damage.\n";
+                    break;
+                }
+            }
+
+            // Damage to player
             if (player->has<CHealth>()) {
                 auto& health = player->get<CHealth>();
                 int empSwordDamage = 10; // default
@@ -985,12 +1023,12 @@ void CollisionSystem::handleSwordCollisions() {
                         << " Health: " << health.currentHealth << "\n";
             }
 
-            // Se vuoi distruggere la spada all'impatto
+            // Destroy sword on impact
             empSword->destroy();
-            break; // Esci dal loop player
+            break; // Exit player loop
         }
 
-        // 3b) EmperorSword vs tile
+        // EmperorSwordRadial vs tile
         for (auto& tile : m_entityManager.getEntities("tile")) {
             if (!tile->has<CTransform>() || !tile->has<CBoundingBox>())
                 continue;
@@ -1003,7 +1041,6 @@ void CollisionSystem::handleSwordCollisions() {
                 continue;
 
             empSword->destroy();
-
             break; 
         }
     }

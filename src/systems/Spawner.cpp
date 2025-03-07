@@ -317,11 +317,33 @@ void Spawner::spawnEmperorSwordsRadial(std::shared_ptr<Entity> enemy, int swordC
         float vy = std::sin(angleRad) * swordSpeed;
         sword->get<CTransform>().velocity = Vec2<float>(vx, vy);
 
-        std::cout << "[DEBUG] Spawned Emperor radial sword " << i 
-                  << " angle=" << angleDeg 
-                  << " deg (random offset=" << randomAngleOffset << ")"
-                  << " pos(" << spawnPos.x << "," << spawnPos.y 
-                  << ") velocity(" << vx << "," << vy << ")\n";
+        // std::cout << "[DEBUG] Spawned Emperor radial sword " << i 
+        //           << " angle=" << angleDeg 
+        //           << " deg (random offset=" << randomAngleOffset << ")"
+        //           << " pos(" << spawnPos.x << "," << spawnPos.y 
+        //           << ") velocity(" << vx << "," << vy << ")\n";
+    }
+}
+
+void Spawner::spawnEmperorSwordsStatic(std::shared_ptr<Entity> emperor, int swordCount, float radius,float speed)
+{
+    auto& emperorTrans = emperor->get<CTransform>();
+
+    for (int i = 0; i < swordCount; ++i)
+    {
+        float angle = (360.f / swordCount) * i;
+        float radians = angle * (3.14159265f / 180.f);
+
+        Vec2 direction = Vec2(std::cos(radians), std::sin(radians));
+        Vec2 spawnPos  = emperorTrans.pos + direction * radius;
+
+        auto sword = m_entityManager.addEntity("EmperorSword");
+        sword->add<CTransform>(spawnPos, direction * speed);
+        sword->add<CAnimation>(m_game.assets().getAnimation("EmperorSword"), true);
+        
+        // Sword moves only for 1 second, then stops forever
+        sword->add<CLifeSpan>(9999.f); // long lifespan
+        sword->add<CStopAfterTime>(3.f); // custom component to stop after 1s
     }
 }
 
@@ -349,6 +371,67 @@ void Spawner::spawnEnemyGrave(const Vec2<float>& position, bool isEmperor) {
 
     std::cout << "[DEBUG] Spawned " << (isEmperor ? "Emperor" : "Enemy") 
               << " grave at (" << spawnPos.x << ", " << spawnPos.y << "), affected by gravity.\n";
+}
+
+void Spawner::spawnEmperorSwordArmorRadial(std::shared_ptr<Entity> enemy, int swordCount, float radius, float swordSpeed, float initialStopTime, float stopTimeIncrement)
+{
+    auto& eTrans = enemy->get<CTransform>();
+    float centerX = eTrans.pos.x;
+    float centerY = eTrans.pos.y;
+
+    // Generate random angle offset for visual variety
+    float randomAngleOffset = (std::rand() % 60);
+
+    for (int i = 0; i < swordCount; i++) {
+        float angleDeg = (360.f / swordCount) * i + randomAngleOffset;
+        float angleRad = angleDeg * 3.1415926535f / 180.f;
+
+        float offsetX = std::cos(angleRad) * radius;
+        float offsetY = std::sin(angleRad) * radius;
+        Vec2<float> spawnPos(centerX + offsetX, centerY + offsetY);
+
+        auto sword = m_entityManager.addEntity("EmperorSwordArmor");
+        sword->add<CTransform>(spawnPos);
+        sword->add<CLifeSpan>(EMPEROR_ROTATING_SWORD_DURATION);
+
+        CState stateComponent(std::to_string(enemy->id()));
+        stateComponent.state = "radialArmor";
+        sword->add<CState>(stateComponent);
+
+        // Animation setup
+        if (m_game.assets().hasAnimation("EmperorSword")) {
+            auto& swordAnim = m_game.assets().getAnimation("EmperorSword");
+            sword->add<CAnimation>(swordAnim, false);
+
+            sf::Vector2i animSize = swordAnim.getSize();
+            Vec2<float> boxSize(animSize.x, animSize.y);
+            Vec2<float> halfSize(boxSize.x * 0.5f, boxSize.y * 0.5f);
+            sword->add<CBoundingBox>(boxSize, halfSize);
+
+            // Set rotation pointing outward
+            auto& sprite = sword->get<CAnimation>().animation.getMutableSprite();
+            sprite.setRotation(angleDeg);
+        } else {
+            std::cerr << "[ERROR] Missing EmperorSword animation!\n";
+        }
+
+        // Copy Enemy AI properties
+        if (enemy->has<CEnemyAI>()) {
+            sword->add<CEnemyAI>(enemy->get<CEnemyAI>());
+        }
+
+        // Assign velocity
+        float vx = std::cos(angleRad) * swordSpeed;
+        float vy = std::sin(angleRad) * swordSpeed;
+        sword->get<CTransform>().velocity = Vec2<float>(vx, vy);
+
+        // Gradual stop logic (incremental timing for fan-out effect)
+        sword->add<CStopAfterTime>(initialStopTime + stopTimeIncrement);
+
+        // std::cout << "[DEBUG] Spawned Armor sword angle=" << angleDeg 
+        //           << " stopTimer=" << (initialStopTime + stopTimeIncrement)
+        //           << " velocity=(" << vx << ", " << vy << ")\n";
+    }
 }
 
 // Spawn degli item
