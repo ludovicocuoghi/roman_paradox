@@ -691,9 +691,19 @@ for (auto& enemy : m_entityManager.getEntities("enemy")) {
                 healthBg.setPosition(barX, barY);
                 m_game.window().draw(healthBg);
 
+                // Determine color based on health percentage
+                sf::Color healthColor;
+                if (healthRatio > 0.6f) {
+                    healthColor = sf::Color::Green;
+                } else if (healthRatio > 0.3f) {
+                    healthColor = sf::Color(255, 165, 0); // Orange
+                } else {
+                    healthColor = sf::Color::Red;
+                }
+
                 // Riempimento (colore in base a ratio)
                 sf::RectangleShape healthRect(sf::Vector2f(barWidth * healthRatio, barHeight));
-                healthRect.setFillColor(sf::Color::Green);
+                healthRect.setFillColor(healthColor);
                 healthRect.setPosition(barX, barY);
                 m_game.window().draw(healthRect);
 
@@ -718,7 +728,6 @@ for (auto& enemy : m_entityManager.getEntities("enemy")) {
                     healthLabel.setPosition(labelX, labelY);
                     m_game.window().draw(healthLabel);
                 }
-
                 //---------------------------------------
                 // 2) BARRA STAMINA (facoltativo)
                 //---------------------------------------
@@ -802,7 +811,7 @@ for (auto& enemy : m_entityManager.getEntities("enemy")) {
             
             // Riempimento Ammo (giallo/arancione)
             sf::RectangleShape ammoRect(sf::Vector2f(barWidth * ammoRatio, barHeight));
-            ammoRect.setFillColor(sf::Color(255, 165, 0)); // Arancione
+            ammoRect.setFillColor(sf::Color(142, 68, 173)); 
             ammoRect.setPosition(ammoBarX, ammoBarY);
             m_game.window().draw(ammoRect);
             

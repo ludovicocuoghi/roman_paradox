@@ -101,9 +101,17 @@ void CollisionSystem::handlePlayerTileCollisions() {
             // 2) If tile is FutureArmor, mark it for destruction AFTER overlap resolution
             if (animName == "FutureArmor") {
                 std::cout << "[DEBUG] Player picked up Future Armor!\n";
+                
                 if (player->has<CPlayerEquipment>()) {
                     player->get<CPlayerEquipment>().hasFutureArmor = true;
                 }
+                
+                if (player->has<CHealth>()) {
+                    // Heal player to max health
+                    auto& health = player->get<CHealth>();
+                    health.heal(health.maxHealth);  // This will heal by the maximum health amount
+                }
+                
                 pickedUpArmor = true;
                 tileToDestroy = tile;  // We'll destroy it after we do overlap resolution
             }

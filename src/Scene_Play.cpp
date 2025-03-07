@@ -109,6 +109,9 @@ void Scene_Play::selectBackgroundFromLevel(const std::string& levelPath) {
     } else if (levelName == "ancient_rome_level_4_emperor_room.txt") {
         m_backgroundPath = "src/images/Background/ancient_rome/ancient_rome_level_4_emperor_room.png";
         m_timeofday = "EMPEROR ROOM";
+    } else if (levelName == "ancient_rome_level_5_day_v2.txt") {
+        m_backgroundPath = "src/images/Background/ancient_rome/ancient_rome_level_1_day.png";
+        m_timeofday = "ANCIENT ROME (DAY 2)";
     } else if (levelName == "future_rome_level_1.txt") {
         m_backgroundPath = "src/images/Background/future_rome/rome2.png";
         m_timeofday = "FUTURE ROME (DAY)";
@@ -648,12 +651,14 @@ void Scene_Play::lifeCheckEnemyDeath() {
         bool isDead        = (health.currentHealth <= 0);
 
         // Skip if enemy is in defeated state
-            if (enemyAI.enemyState == EnemyState::Defeated) {
-                // Keep the bounding box, keep it on screen
-                transform.velocity.x = 0.f;
-                transform.velocity.y = 0.f;
-                continue;
-            }
+        if (enemyAI.enemyState == EnemyState::Defeated) {
+            // Keep the bounding box, keep it on screen
+            transform.velocity.x = 0.f;
+            transform.velocity.y = 0.f;
+            std::cout << "[DEBUG] (Level4) Emperor health critical, removing pipe...\n";
+            removeTileByID("PipeTall_152");
+            continue;
+        }
 
         if (isOutOfBounds || isDead) {
             bool isEmperor = (enemy->has<CEnemyAI>() && enemy->get<CEnemyAI>().enemyType == EnemyType::Emperor);
@@ -682,12 +687,6 @@ void Scene_Play::lifeCheckEnemyDeath() {
                     if (uniqueID.id == "EnemyStrong_12") {
                         std::cout << "[DEBUG] Removing tile PipeTall_900\n";
                         removeTileByID("PipeTall_900");
-                    }
-                }
-                else if (levelName == "ancient_rome_level_4_emperor_room.txt") {
-                    if (uniqueID.id == "Emperor_1") {
-                        std::cout << "[DEBUG] (Level2) Emperor defeated...\n";
-                        removeTileByID("PipeTall_209");
                     }
                 }
             }

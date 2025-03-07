@@ -150,7 +150,6 @@ Tile Treasure 23 16
 Tile Treasure 27 16
 Tile Treasure 30 16
 Tile PipeTall 46 5
-Tile BlackHoleRedBig 69 4
 Tile GoldGround 1 7
 Tile Treasure 4 10
 Tile Treasure 1 10

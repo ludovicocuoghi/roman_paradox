@@ -77,7 +77,8 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
                 }
                 else if (assetType == "BlackHoleRedBig")
                 {
-                    realY += LoadLevel::GRID_SIZE * LoadLevel::BLACKHOLE_OFFSET_MULTIPLIER;
+                    //realY += LoadLevel::GRID_SIZE * LoadLevel::BLACKHOLE_OFFSET_MULTIPLIER;
+                    //realX += LoadLevel::GRID_SIZE * LoadLevel::BLACKHOLE_OFFSET_MULTIPLIER;
                     Vec2<float> bboxSize(150.f, 150.f);
                     Vec2<float> bboxOffset = bboxSize * 0.5f;
                     tile->add<CBoundingBox>(bboxSize, bboxOffset);
@@ -114,6 +115,13 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
                 realY += LoadLevel::GRID_SIZE * LoadLevel::PIPETALL_REALY_OFFSET_MULTIPLIER;
             if (assetType == "EnemyGrave" || assetType == "EmperorGrave")
                 realY += +10;
+            if (assetType == "LevelDoor")
+            {
+                realY += LoadLevel::GRID_SIZE * LoadLevel::LEVELDOOR_REALY_OFFSET_MULTIPLIER;
+                Vec2<float> bboxSize(96.f, 192.f);
+                Vec2<float> bboxOffset = bboxSize * 0.5f;
+                bboxOffset.y -= 96.f;
+            }
             std::string fullAssetName =  m_game.worldType + assetType;
             if (m_game.assets().hasAnimation(fullAssetName))
             {

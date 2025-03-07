@@ -396,12 +396,16 @@ Tile Treasure 118 8
 Tile BlackHoleRedBig 0 15
 Tile Ground 111 1
 Tile Ground 111 0
-Tile Armor 11 3
 Tile Armor 63 4
 Tile Ground 62 3
 Tile Ground 61 2
 Tile PipeTall 82 5
 Tile PipeTall 86 5
+Tile Treasure 84 8
+Tile Box1 100 3
+Tile Box1 99 3
+Tile Armor 6 2
+Player 2 10
 Dec BushTall 2 5
 Dec BushTall 0 5
 Dec BushSmall 21 2
@@ -431,4 +435,3 @@ Enemy EnemyNormal 84 6
 Enemy EnemyNormal 95 2
 Enemy EnemyNormal 136 2
 Enemy EnemyNormal 138 2
-Player 2 4

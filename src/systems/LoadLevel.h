@@ -86,7 +86,7 @@ public:
     static constexpr int   ENEMY_EMPEROR_DAMAGE = 10;
     static constexpr float EMPEROR_BB_WIDTH = 160.f;
     static constexpr float EMPEROR_BB_HEIGHT = 250.f;
-    static constexpr float EMPEROR_RADIAL_SWORD_DAMAGE = 1.f;
+    static constexpr float EMPEROR_RADIAL_SWORD_DAMAGE = 0.5f;
 
     // =======================================
     // Enemy bullet damage
