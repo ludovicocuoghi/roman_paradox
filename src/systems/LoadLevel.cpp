@@ -111,23 +111,20 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
             float realY = windowHeight - (y * LoadLevel::GRID_SIZE) - LoadLevel::HALF_GRID;
             auto decor = entityManager.addEntity("decoration");
             decor->add<CUniqueID>(decID);
-            if (assetType == "GoldPipeTall")
+            if (assetType == "GoldPipeTall" || "PipeTall")
                 realY += LoadLevel::GRID_SIZE * LoadLevel::PIPETALL_REALY_OFFSET_MULTIPLIER;
             if (assetType == "EnemyGrave" || assetType == "EmperorGrave")
-                realY += +10;
+                realY -= 96.f * 1.5 - 13;
             if (assetType == "LevelDoor")
             {
-                realY += LoadLevel::GRID_SIZE * LoadLevel::LEVELDOOR_REALY_OFFSET_MULTIPLIER;
-                Vec2<float> bboxSize(96.f, 192.f);
-                Vec2<float> bboxOffset = bboxSize * 0.5f;
-                bboxOffset.y -= 96.f;
+                realY += LoadLevel::GRID_SIZE * 0.5;
             }
             std::string fullAssetName =  m_game.worldType + assetType;
             if (m_game.assets().hasAnimation(fullAssetName))
             {
                 const Animation& anim = m_game.assets().getAnimation(fullAssetName);
-                if (assetType.find("BushTall") != std::string::npos)
-                    realY += LoadLevel::GRID_SIZE * 1.5f;
+                //if (assetType.find("BushTall") != std::string::npos)
+                //    realY += LoadLevel::GRID_SIZE * 1.5f;
                 decor->add<CAnimation>(anim, true);
                 decor->add<CTransform>(Vec2<float>(realX, realY));
                 std::cout << "[DEBUG] Loaded Decoration: " << assetType

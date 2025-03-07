@@ -1,5 +1,3 @@
-Tile Ground 0 0
-Tile Ground 1 0
 Tile Ground 2 0
 Tile Ground 3 0
 Tile Ground 4 0
@@ -12,8 +10,6 @@ Tile Ground 4 1
 Tile Ground 9 1
 Tile Ground 10 1
 Tile Ground 11 1
-Tile Ground 1 1
-Tile Ground 0 1
 Tile Ground 32 4
 Tile Ground 33 4
 Tile Ground 34 4
@@ -185,7 +181,6 @@ Tile Pipe 63 3
 Tile Ground 67 2
 Tile Ground 67 3
 Tile Ground 73 23
-Tile BlackHoleRedBig 2 15
 Tile Box2 43 2
 Tile Box2 44 2
 Tile Brick 73 5
@@ -295,7 +290,8 @@ Tile Ground 105 5
 Tile Ground 105 6
 Tile Ground 97 5
 Tile Ground 96 5
-Player 2 2
+Tile BlackHoleRedBig 2 13
+Player 4 8
 Dec CloudBig 1 10
 Dec CloudSmall 10 9
 Dec CloudBig 22 11
@@ -316,12 +312,12 @@ Dec BushTall 49 5
 Dec BushTall 51 5
 Dec BushTall 65 5
 Dec BushTall 64 5
-Dec BushTall 1 5
 Dec BushTall 3 5
 Dec BushTall 108 5
 Dec BushTall 105 10
 Dec BushTall 90 6
 Dec BushTall 93 6
+Dec BushTall 5 5
 Enemy EnemyNormal 56 2
 Enemy EnemyNormal 84 2
 Enemy EnemyNormal 34 5
