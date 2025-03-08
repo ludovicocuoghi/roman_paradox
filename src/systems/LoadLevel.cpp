@@ -305,6 +305,7 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
                 enemy->get<CEnemyAI>().damage = LoadLevel::ENEMY_STRONG_DAMAGE;
                 enemy->get<CState>().bulletDamage = LoadLevel::BULLET_DAMAGE_ENEMY_STRONG;
                 enemy->get<CEnemyAI>().speedMultiplier = LoadLevel::ENEMY_STRONG_SPEED_MULTIPLIER;
+                enemy->get<CEnemyAI>().forcedCooldownDuration = 3.f;
                 enemy->get<CState>().maxConsecutiveSwordAttacks = LoadLevel::ENEMY_STRONG_MAX_CONSECUTIVE_SWORD_ATTACKS;
                 enemy->get<CState>().bulletBurstCount = LoadLevel::ENEMY_STRONG_BULLET_BURST_COUNT;
                 enemy->get<CState>().superBulletCount = LoadLevel::ENEMY_STRONG_SUPER_BULLET_COUNT;

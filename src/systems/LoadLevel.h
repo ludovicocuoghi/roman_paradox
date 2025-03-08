@@ -117,15 +117,15 @@ public:
     
     // Strong enemy attack params
     static constexpr int   ENEMY_STRONG_MAX_CONSECUTIVE_SWORD_ATTACKS = 6;
-    static constexpr int   ENEMY_STRONG_BULLET_BURST_COUNT = 7;
+    static constexpr int   ENEMY_STRONG_BULLET_BURST_COUNT = 8;
     static constexpr int   ENEMY_STRONG_SUPER_BULLET_COUNT = 8;
-    static constexpr float ENEMY_STRONG_SUPER_BULLET_DAMAGE = 10.f;
+    static constexpr float ENEMY_STRONG_SUPER_BULLET_DAMAGE = 8.f;
     
     // Elite enemy attack params
     static constexpr int   ENEMY_ELITE_MAX_CONSECUTIVE_SWORD_ATTACKS = 7;
-    static constexpr int   ENEMY_ELITE_BULLET_BURST_COUNT = 15;
+    static constexpr int   ENEMY_ELITE_BULLET_BURST_COUNT = 10;
     static constexpr int   ENEMY_ELITE_SUPER_BULLET_COUNT = 8;
-    static constexpr float ENEMY_ELITE_SUPER_BULLET_DAMAGE = 15.f;
+    static constexpr float ENEMY_ELITE_SUPER_BULLET_DAMAGE = 8.f;
     
     // Super enemy attack params
     static constexpr int   ENEMY_SUPER_MAX_CONSECUTIVE_SWORD_ATTACKS = 10;
@@ -137,7 +137,7 @@ public:
     static constexpr int   ENEMY_EMPEROR_MAX_CONSECUTIVE_SWORD_ATTACKS = 15;
     static constexpr int   ENEMY_EMPEROR_BULLET_BURST_COUNT = 6;
     static constexpr int   ENEMY_EMPEROR_SUPER_BULLET_COUNT = 3;
-    static constexpr float ENEMY_EMPEROR_SUPER_BULLET_DAMAGE = 100.f;
+    static constexpr float ENEMY_EMPEROR_SUPER_BULLET_DAMAGE = 8.f;
 
     // Constructor and methods
     LoadLevel(GameEngine& game);

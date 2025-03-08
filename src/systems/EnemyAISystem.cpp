@@ -562,83 +562,116 @@ void EnemyAISystem::update(float deltaTime)
         // ----------------------------------------------------
         // 7) FUTURE-WORLD Ranged Attacks (Bullets)
         // ----------------------------------------------------
+        // In the Future-world ranged attacks section (section 7), replace with:
+
         if (m_game.worldType == "Future") {
-            enemyAI.shootTimer     += deltaTime;
+            enemyAI.shootTimer += deltaTime;
             enemyAI.superMoveTimer += deltaTime; // track super move timer
-        
+
             // (A) Check super move cooldown
             if (enemyAI.superMoveTimer >= enemyAI.superMoveCooldown) {
                 enemyAI.superMoveTimer = 0.f;
                 enemyAI.superMoveReady = true;
             }
-        
-            // (B) If not bursting
-            if (!enemyAI.inBurst) {
-                bool canShoot = checkLineOfSight(enemyTrans.pos,
-                                                 playerTrans.pos,
-                                                 m_entityManager)
-                                && (distance >= enemyAI.minShootDistance);
-        
-                // If super move ready + can shoot
-                if (enemyAI.superMoveReady && canShoot) {
-                    enemyAI.superMoveReady = false;
+
+            // Check if we're in burst cooldown
+            bool skipShooting = false;
+            if (enemyAI.burstCooldownActive) {
+                enemyAI.burstCooldownTimer += deltaTime;
+                
+                // Fixed cooldown of 2.5 seconds after each burst
+                const float POST_BURST_COOLDOWN = 1.0f;
+                
+                if (enemyAI.burstCooldownTimer >= POST_BURST_COOLDOWN) {
+                    enemyAI.burstCooldownActive = false;
+                    enemyAI.burstCooldownTimer = 0.0f;
                     std::cout << "[DEBUG] Enemy " << enemy->id()
-                              << " uses SUPER MOVE!\n";
-        
-                    // Use superBulletCount from CEnemyAI instead of hardcoded value
-                    int superBullets = enemyState.superBulletCount;
-                    float angleRange = 30.f; // spread angle
-        
-                    for (int i = 0; i < superBullets; ++i) {
+                            << " post-burst cooldown ended.\n";
+                } else {
+                    // Skip shooting logic while in cooldown, but don't skip movement
+                    skipShooting = true;
+                }
+            }
+
+            // Only process shooting if we're not in cooldown
+            if (!skipShooting) {
+                // (B) If not bursting
+                if (!enemyAI.inBurst) {
+                    bool canShoot = checkLineOfSight(enemyTrans.pos,
+                                                    playerTrans.pos,
+                                                    m_entityManager)
+                                    && (distance >= enemyAI.minShootDistance);
+
+                    // If super move ready + can shoot
+                    if (enemyAI.superMoveReady && canShoot) {
+                        enemyAI.superMoveReady = false;
+                        std::cout << "[DEBUG] Enemy " << enemy->id()
+                                << " uses SUPER MOVE!\n";
+
+                        // Use superBulletCount from CEnemyAI instead of hardcoded value
+                        int superBullets = enemyState.superBulletCount;
+                        float angleRange = 30.f; // spread angle
+
+                        for (int i = 0; i < superBullets; ++i) {
+                            auto bullet = m_spawner->spawnEnemyBullet(enemy);
+                            if (bullet && bullet->has<CTransform>()) {
+                                auto& bulletTrans = bullet->get<CTransform>();
+                                float step  = angleRange / (superBullets - 1);
+                                float angle = -angleRange * 0.5f + step * i;
+                                bulletTrans.rotate(angle);
+                            }
+                        }
+                        
+                        // Activate cooldown after super move too
+                        enemyAI.burstCooldownActive = true;
+                        enemyAI.burstCooldownTimer = 0.0f;
+                    }
+                    // Otherwise do normal burst
+                    else if (canShoot &&
+                            enemyAI.shootTimer >= enemyAI.shootCooldown)
+                    {
+                        enemyAI.shootTimer  = 0.f;
+                        enemyAI.inBurst     = true;
+                        enemyAI.bulletsShot = 0;
+                        enemyAI.burstTimer  = 0.f;
+
+                        std::cout << "[DEBUG] Enemy " << enemy->id()
+                                << " starts bullet burst (one at a time).\n";
+                    }
+                }
+                // (C) If already bursting
+                else {
+                    enemyAI.burstTimer += deltaTime;
+                    if (enemyAI.burstTimer >= enemyAI.burstInterval) {
+                        enemyAI.burstTimer = 0.f;
+                        enemyAI.bulletsShot++;
+
                         auto bullet = m_spawner->spawnEnemyBullet(enemy);
+                        
+                        std::cout << "[DEBUG] Enemy " << enemy->id()
+                                << " fires bullet #" << enemyAI.bulletsShot << "\n";
+
+                        // Slight random angle
                         if (bullet && bullet->has<CTransform>()) {
                             auto& bulletTrans = bullet->get<CTransform>();
-                            float step  = angleRange / (superBullets - 1);
-                            float angle = -angleRange * 0.5f + step * i;
-                            bulletTrans.rotate(angle);
+                            float angleOffset = -3.f + static_cast<float>(rand() % 6);
+                            bulletTrans.rotate(angleOffset);
+                        }
+
+                        // Use bulletBurstCount from CEnemyAI instead of bulletCount
+                        if (enemyAI.bulletsShot >= enemyState.bulletBurstCount) {
+                            enemyAI.inBurst = false;
+                            
+                            // Activate post-burst cooldown
+                            enemyAI.burstCooldownActive = true;
+                            enemyAI.burstCooldownTimer = 0.0f;
+                            
+                            std::cout << "[DEBUG] Burst finished for enemy "
+                                    << enemy->id() << ". Starting post-burst cooldown.\n";
                         }
                     }
                 }
-                // Otherwise do normal burst
-                else if (canShoot &&
-                         enemyAI.shootTimer >= enemyAI.shootCooldown)
-                {
-                    enemyAI.shootTimer  = 0.f;
-                    enemyAI.inBurst     = true;
-                    enemyAI.bulletsShot = 0;
-                    enemyAI.burstTimer  = 0.f;
-        
-                    std::cout << "[DEBUG] Enemy " << enemy->id()
-                              << " starts bullet burst (one at a time).\n";
-                }
-            }
-            // (C) If already bursting
-            else {
-                enemyAI.burstTimer += deltaTime;
-                if (enemyAI.burstTimer >= enemyAI.burstInterval) {
-                    enemyAI.burstTimer = 0.f;
-                    enemyAI.bulletsShot++;
-        
-                    auto bullet = m_spawner->spawnEnemyBullet(enemy);
-                    
-                    std::cout << "[DEBUG] Enemy " << enemy->id()
-                              << " fires bullet #" << enemyAI.bulletsShot << "\n";
-        
-                    // Slight random angle
-                    if (bullet && bullet->has<CTransform>()) {
-                        auto& bulletTrans = bullet->get<CTransform>();
-                        float angleOffset = -3.f + static_cast<float>(rand() % 6);
-                        bulletTrans.rotate(angleOffset);
-                    }
-        
-                    // Use bulletBurstCount from CEnemyAI instead of bulletCount
-                    if (enemyAI.bulletsShot >= enemyState.bulletBurstCount) {
-                        enemyAI.inBurst = false;
-                        std::cout << "[DEBUG] Burst finished for enemy "
-                                  << enemy->id() << "\n";
-                    }
-                }
-            }
+            } // end of shooting logic
         }
 
         // ----------------------------------------------------

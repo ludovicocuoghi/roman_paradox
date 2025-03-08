@@ -19,7 +19,7 @@ Texture TexFutureAir Player/future_rome/jump.png
 Texture TexFutureHit Player/future_rome/hit.png
 Texture TexFutureDefense Player/future_rome/defense.png
 Animation FuturePlayerStand TexFutureStand 100 100 5 8
-Animation FuturePlayerRun TexFutureRun 100 100 4 8
+Animation FuturePlayerRun TexFutureRun 100 100 4 7
 Animation FuturePlayerAir TexFutureAir 100 130 1 0
 Animation FuturePlayerAttack TexFutureHit 100 100 1 0
 Animation FuturePlayerDefense TexFutureDefense 100 100 1 0

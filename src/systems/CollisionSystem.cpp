@@ -414,8 +414,6 @@ void CollisionSystem::handlePlayerEnemyCollisions() {
                 float separation = std::max(overlapY * COLLISION_SEPARATION_FACTOR, MIN_VERTICAL_SEPARATION);
                 
                 // Adjusted bounce speeds
-                const float horizontalBounceSpeed = 100.f;
-                const float enemyVerticalBounceSpeed = 60.f;
                 const float playerVerticalBounceSpeed = 250.f;
                 
                 // Check if player is moving downward (falling or jumping down)
@@ -441,9 +439,11 @@ void CollisionSystem::handlePlayerEnemyCollisions() {
                 // Horizontal collision - prevent player from going through
                 if (overlapX <= overlapY) {
                     // Make player back away by 20 pixels
-                    float backDirection = (enemyTrans.pos.x < pTrans.pos.x) ? 1.0f : -1.0f;
-                    pTrans.pos.x += 20.0f * backDirection;
-                    
+                    auto& enemyAI = enemy->get<CEnemyAI>();
+                    if (enemyAI.enemyType == EnemyType::Emperor) {
+                        float backDirection = (enemyTrans.pos.x < pTrans.pos.x) ? 1.0f : -1.0f;
+                        pTrans.pos.x += 20.0f * backDirection;
+                    }
                     // Stop player horizontal movement to prevent going through
                     pTrans.velocity.x = 0;
                 } 
