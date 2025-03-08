@@ -56,24 +56,24 @@ public:
     // =======================================
     
     // Normal enemy
-    static constexpr float ENEMY_NORMAL_SPEED_MULTIPLIER = 1.0f;
-    static constexpr int   ENEMY_NORMAL_HEALTH = 20;
-    static constexpr int   ENEMY_NORMAL_DAMAGE = 8;
+    static constexpr float ENEMY_NORMAL_SPEED_MULTIPLIER = 1.5f;
+    static constexpr int   ENEMY_NORMAL_HEALTH = 40;
+    static constexpr int   ENEMY_NORMAL_DAMAGE = 10;
     
     // Fast enemy
-    static constexpr float ENEMY_FAST_SPEED_MULTIPLIER = 1.8f;
-    static constexpr int   ENEMY_FAST_HEALTH = 20;
-    static constexpr int   ENEMY_FAST_DAMAGE = 5;
+    static constexpr float ENEMY_FAST_SPEED_MULTIPLIER = 2.f;
+    static constexpr int   ENEMY_FAST_HEALTH = 30;
+    static constexpr int   ENEMY_FAST_DAMAGE = 8;
     
     // Strong enemy
     static constexpr float ENEMY_STRONG_SPEED_MULTIPLIER = 1.3f;
-    static constexpr int   ENEMY_STRONG_HEALTH = 30;
+    static constexpr int   ENEMY_STRONG_HEALTH = 50;
     static constexpr int   ENEMY_STRONG_DAMAGE = 15;
     
     // Elite enemy
     static constexpr float ENEMY_ELITE_SPEED_MULTIPLIER = 1.8f;
-    static constexpr int   ENEMY_ELITE_HEALTH = 40;
-    static constexpr int   ENEMY_ELITE_DAMAGE = 15;
+    static constexpr int   ENEMY_ELITE_HEALTH = 50;
+    static constexpr int   ENEMY_ELITE_DAMAGE = 20;
     
     // Super enemy
     static constexpr float ENEMY_SUPER_SPEED_MULTIPLIER = 2.0f;
@@ -81,7 +81,7 @@ public:
     static constexpr int   ENEMY_SUPER_DAMAGE = 20;
     
     // Emperor enemy
-    static constexpr float ENEMY_EMPEROR_SPEED_MULTIPLIER = 1.0f;
+    static constexpr float ENEMY_EMPEROR_SPEED_MULTIPLIER = 0.6f;
     static constexpr int   ENEMY_EMPEROR_HEALTH = 100;
     static constexpr int   ENEMY_EMPEROR_DAMAGE = 10;
     static constexpr float EMPEROR_BB_WIDTH = 160.f;

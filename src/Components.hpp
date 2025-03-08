@@ -397,7 +397,10 @@ enum class EnemyState {
     Knockback,   // The enemy is being pushed back,
     FinalAttack,
     BlockedByTile,
-    Defeated
+    Defeated,
+    Phase1,
+    Phase2,
+    Phase3
 };
 
 

@@ -119,12 +119,13 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
             {
                 realY += LoadLevel::GRID_SIZE * 0.5;
             }
+
             std::string fullAssetName =  m_game.worldType + assetType;
             if (m_game.assets().hasAnimation(fullAssetName))
             {
                 const Animation& anim = m_game.assets().getAnimation(fullAssetName);
-                //if (assetType.find("BushTall") != std::string::npos)
-                //    realY += LoadLevel::GRID_SIZE * 1.5f;
+                if (assetType.find("BushSmall") != std::string::npos)
+                    realY += LoadLevel::GRID_SIZE * 1.5f;
                 decor->add<CAnimation>(anim, true);
                 decor->add<CTransform>(Vec2<float>(realX, realY));
                 std::cout << "[DEBUG] Loaded Decoration: " << assetType
@@ -353,6 +354,10 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
                 enemy->get<CEnemyAI>().enemyBehavior = EnemyBehavior::FollowTwo;
                 enemy->get<CHealth>().maxHealth = LoadLevel::ENEMY_SUPER_HEALTH;
                 enemy->get<CHealth>().currentHealth = LoadLevel::ENEMY_SUPER_HEALTH;
+            }
+
+            if (m_game.worldType == "Future") {
+                enemy->get<CEnemyAI>().speedMultiplier = enemy->get<CEnemyAI>().speedMultiplier * 0.5;
             }
             
             std::string runAnimName, standAnimName;

@@ -8,7 +8,7 @@
 
 // Constructor
 GameEngine::GameEngine(const std::string& path) {
-    m_window.create(sf::VideoMode(1280, 980), "Game Window");
+    m_window.create(sf::VideoMode(1920, 1080), "Game Window");
     m_window.setFramerateLimit(100);
 
     // Load assets globally
@@ -28,7 +28,7 @@ GameEngine::GameEngine(const std::string& path) {
         {"ancient_rome_level_5_day_v2.txt", "future_rome_level_1.txt"},
         {"future_rome_level_1.txt", "future_rome_level_2.txt"},
         {"future_rome_level_2.txt", "future_rome_level_3.txt"},
-        {"future_rome_level_3.txt", "future_rome_level_emperor_room.txt.txt"},
+        {"future_rome_level_3.txt", "future_rome_level_emperor_room.txt"},
 
     };
 
