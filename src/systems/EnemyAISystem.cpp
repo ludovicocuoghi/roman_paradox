@@ -134,7 +134,6 @@ void EnemyAISystem::update(float deltaTime)
                 skipAttack = true;
             }
         }
-
         // ----------------------------------------------------
         // 2) Emperor-Specific Logic
         // ----------------------------------------------------
@@ -143,50 +142,213 @@ void EnemyAISystem::update(float deltaTime)
             float dx = playerTrans.pos.x - enemyTrans.pos.x;
             float dy = playerTrans.pos.y - enemyTrans.pos.y;
             float distance = std::sqrt(dx*dx + dy*dy);
-        
+
             float healthPercentage = 1.f;
             if (enemy->has<CHealth>()) {
                 auto& health = enemy->get<CHealth>();
                 healthPercentage = static_cast<float>(health.currentHealth) / static_cast<float>(health.maxHealth);
             }
-        
+
+            // Always update facing direction first (unless in final attack)
+            if (enemyAI.enemyState != EnemyState::FinalAttack) {
+                enemyAI.facingDirection = (dx < 0) ? -1.0f : 1.0f;
+            }
+
+            // Simple movement logic - approach if too far, back away if too close
+            if (enemyAI.enemyState != EnemyState::FinalAttack && 
+                enemyAI.enemyState != EnemyState::Defeated) {
+                
+                const float MIN_DISTANCE = 350.f;
+                const float MAX_DISTANCE = 500.f;
+                const float MOVEMENT_SPEED = 100.f;
+                
+                // Move based on distance
+                if (distance < MIN_DISTANCE) {
+                    // Too close - back away
+                    enemyTrans.velocity.x = -enemyAI.facingDirection * MOVEMENT_SPEED;
+                    enemyTrans.velocity.y = 0.f;
+                    
+                    // Use Run animation
+                    if (enemy->has<CAnimation>()) {
+                        auto& animation = enemy->get<CAnimation>();
+                        std::string runAnim;
+                        
+                        if (m_game.worldType == "Future") {
+                            if (healthPercentage > 0.7f) {
+                                runAnim = "FutureRunEmperor";
+                            } else if (healthPercentage <= 0.7f && healthPercentage > 0.3f) {
+                                runAnim = "FutureRunEmperor2";
+                            } else {
+                                runAnim = "FutureRunEmperor3";
+                            }
+                            
+                            if (m_game.assets().hasAnimation(runAnim)) {
+                                animation.animation = m_game.assets().getAnimation(runAnim);
+                            }
+                        }
+                    }
+                }
+                else if (distance > MAX_DISTANCE) {
+                    // Too far - move closer
+                    enemyTrans.velocity.x = enemyAI.facingDirection * MOVEMENT_SPEED;
+                    enemyTrans.velocity.y = 0.f;
+                    
+                    // Use Run animation
+                    if (enemy->has<CAnimation>()) {
+                        auto& animation = enemy->get<CAnimation>();
+                        std::string runAnim;
+                        
+                        if (m_game.worldType == "Future") {
+                            if (healthPercentage > 0.7f) {
+                                runAnim = "FutureRunEmperor";
+                            } else if (healthPercentage <= 0.7f && healthPercentage > 0.3f) {
+                                runAnim = "FutureRunEmperor2";
+                            } else {
+                                runAnim = "FutureRunEmperor3";
+                            }
+                            
+                            if (m_game.assets().hasAnimation(runAnim)) {
+                                animation.animation = m_game.assets().getAnimation(runAnim);
+                            }
+                        }
+                    }
+                }
+                else {
+                    // At proper distance - stand still
+                    enemyTrans.velocity.x = 0.f;
+                    enemyTrans.velocity.y = 0.f;
+                    
+                    // Use Stand animation when not moving
+                    if (enemy->has<CAnimation>() && std::abs(enemyTrans.velocity.x) < 0.1f) {
+                        auto& animation = enemy->get<CAnimation>();
+                        std::string standAnim;
+                        
+                        if (m_game.worldType == "Future") {
+                            if (healthPercentage > 0.7f) {
+                                standAnim = "FutureStandEmperor";
+                            } else if (healthPercentage <= 0.7f && healthPercentage > 0.3f) {
+                                standAnim = "FutureStandEmperor2";
+                            } else {
+                                standAnim = "FutureStandEmperor3";
+                            }
+                            
+                            if (m_game.assets().hasAnimation(standAnim)) {
+                                animation.animation = m_game.assets().getAnimation(standAnim);
+                            }
+                        }
+                    }
+                }
+                // Update phase based on healthPercentage (only for Future world)
+                if (m_game.worldType == "Future" && enemy->has<CBossPhase>()) {
+                    auto& bossPhase = enemy->get<CBossPhase>().phase;
+                    if (healthPercentage > 0.7f && bossPhase != BossPhase::Phase1) {
+                        bossPhase = BossPhase::Phase1;
+                    } else if (healthPercentage <= 0.7f && healthPercentage > 0.3f && bossPhase != BossPhase::Phase2) {
+                        bossPhase = BossPhase::Phase2;
+                    } else if (healthPercentage <= 0.3f && healthPercentage > 0.1f && bossPhase != BossPhase::Phase3) {
+                        bossPhase = BossPhase::Phase3;
+                    }
+                }
+            }
+
+            // ATTACK LOGIC - No changes to your existing attack code
             if (healthPercentage <= 0.1f) {
                 if (enemyAI.enemyState != EnemyState::FinalAttack) {
                     enemyAI.enemyState = EnemyState::FinalAttack;
                     enemyAI.finalBurstTimer = 0.f;
                     enemyAI.burstCount = 0;
                 }
-        
+
                 enemyTrans.velocity.x = 0.f;
                 enemyTrans.velocity.y = 0.f;
-        
+
                 enemyAI.finalBurstTimer += deltaTime;
                 if (enemyAI.finalBurstTimer >= 0.2f) {
                     enemyAI.finalBurstTimer = 0.f;
-        
-                    m_spawner->spawnEmperorSwordsRadial(enemy,
-                                                        EMPEROR_RADIAL_SWORDS_COUNT * 2,
-                                                        EMPEROR_RADIAL_SWORDS_RADIUS,
-                                                        EMPEROR_RADIAL_SWORDS_SPEED);
+
+                    // Choose appropriate attack based on world type
+                    if (m_game.worldType == "Future") {
+                        // Future Emperor uses bullets - mixed types for final attack
+                        std::string bulletType;
+                        switch (enemyAI.burstCount % 4) {
+                            case 0: bulletType = "Elite"; break;  // Black
+                            case 1: bulletType = "Strong"; break; // Red
+                            case 2: bulletType = "Fast"; break;   // Blue
+                            case 3: bulletType = "Normal"; break; // Gold
+                        }
+                        
+                        m_spawner->spawnEmperorBulletsRadial(
+                            enemy,
+                            EMPEROR_RADIAL_BULLETS_COUNT * 2, // Double bullets for final attack
+                            EMPEROR_RADIAL_BULLETS_RADIUS,
+                            EMPEROR_RADIAL_BULLETS_SPEED,
+                            bulletType
+                        );
+                    } else {
+                        // Ancient Emperor uses swords
+                        m_spawner->spawnEmperorSwordsRadial(
+                            enemy,
+                            EMPEROR_RADIAL_SWORDS_COUNT * 2,
+                            EMPEROR_RADIAL_SWORDS_RADIUS,
+                            EMPEROR_RADIAL_SWORDS_SPEED
+                        );
+                    }
                     enemyAI.burstCount++;
                     
                     if (enemyAI.burstCount >= 12) {
-                        auto enemySwords = m_entityManager.getEntities("EmperorSword");
-                        for (auto& sword : enemySwords) {
-                            sword->destroy();
+                        // Clear all projectiles
+                        if (m_game.worldType == "Future") {
+                            auto enemyBullets = m_entityManager.getEntities("enemyBullet");
+                            for (auto& bullet : enemyBullets) {
+                                bullet->destroy();
+                            }
+                        } else {
+                            auto enemySwords = m_entityManager.getEntities("EmperorSword");
+                            for (auto& sword : enemySwords) {
+                                sword->destroy();
+                            }
                         }
                         
                         float tileSize = 96;
                         enemyTrans.pos.x -= enemyAI.facingDirection * 4 * tileSize;
-        
-                        const int swordsPerBurst = 200;
+
+                        // Final attack is different based on world type
+                        const int projectilesPerBurst = EMPEROR_RADIAL_BULLETS_COUNT * 16; // Scale up for final attack
                         const float radius = 100.f;
-                        const float swordSpeed = 500.f;
+                        const float speed = 500.f;
                         const float baseStopTime = 0.1f;
-        
+
                         for (int burst = 0; burst < 15; ++burst) {
                             float stopTimeIncrement = 0.1f + 0.1f * burst;
-                            m_spawner->spawnEmperorSwordArmorRadial(enemy, swordsPerBurst, radius, swordSpeed, baseStopTime, stopTimeIncrement);
+                            
+                            if (m_game.worldType == "Future") {
+                                // Future Emperor uses massive bullet bursts with color cycling
+                                std::string bulletType;
+                                switch (burst % 4) {
+                                    case 0: bulletType = "Elite"; break;  // Black
+                                    case 1: bulletType = "Strong"; break; // Red
+                                    case 2: bulletType = "Fast"; break;   // Blue
+                                    case 3: bulletType = "Normal"; break; // Gold
+                                }
+                                
+                                m_spawner->spawnEmperorBulletsRadial(
+                                    enemy, 
+                                    projectilesPerBurst / 10, // Fewer bullets but more bursts
+                                    radius, 
+                                    speed,
+                                    bulletType
+                                );
+                            } else {
+                                // Ancient Emperor uses sword armor
+                                m_spawner->spawnEmperorSwordArmorRadial(
+                                    enemy, 
+                                    projectilesPerBurst, 
+                                    radius, 
+                                    speed, 
+                                    baseStopTime, 
+                                    stopTimeIncrement
+                                );
+                            }
                         }
                         
                         if (enemy->has<CHealth>()) {
@@ -202,44 +364,159 @@ void EnemyAISystem::update(float deltaTime)
                 }
                 return;
             }
-        
+
             if (enemyAI.enemyState != EnemyState::FinalAttack) {
-                if (healthPercentage > 0.7f) {
-                    enemyAI.radialAttackTimer += deltaTime;
-                    if (enemyAI.radialAttackTimer >= 4.f) {
-                        enemyAI.radialAttackTimer = 0.f;
-                        m_spawner->spawnEmperorSwordsRadial(
-                            enemy,
-                            EMPEROR_RADIAL_SWORDS_COUNT,
-                            EMPEROR_RADIAL_SWORDS_RADIUS,
-                            EMPEROR_RADIAL_SWORDS_SPEED
-                        );
-                    }
-                }
-                else if (healthPercentage <= 0.7f && healthPercentage > 0.5f) {
-                    enemyAI.radialAttackTimer += deltaTime;
-                    if (enemyAI.radialAttackTimer >= 3.f) {
-                        enemyAI.radialAttackTimer = 0.f;
-                        m_spawner->spawnEmperorSwordsRadial(
-                            enemy,
-                            EMPEROR_RADIAL_SWORDS_COUNT * 2,
-                            EMPEROR_RADIAL_SWORDS_RADIUS,
-                            EMPEROR_RADIAL_SWORDS_SPEED
-                        );
-                    }
-                }
-                else if (healthPercentage <= 50.f) {
-                    if (!enemyAI.burstCooldownActive) {
-                        float attackInterval = 3.0f; // Default attack interval
-                        
-                        if (distance > 600.f) {
-                            attackInterval = 0.8f; // Fast attacks when player is far away
-                        } else if (distance > 50.f && distance < 600.f) {
-                            attackInterval = 2.5f; // Medium speed attacks at medium distance
+                // Normal attacks based on health percentage
+                if (m_game.worldType == "Future") {
+                    // FUTURE EMPEROR ATTACKS
+                    if (healthPercentage > 0.7f) {
+                        // Phase 1: Low damage bullets (Blue = Fast type)
+                        if (!enemyAI.burstCooldownActive) {
+                            enemyAI.radialAttackTimer += deltaTime;
+                            
+                            // Track consecutive bursts in this attack sequence
+                            if (enemyAI.radialAttackTimer >= 0.25f) { // Short delay between bursts in same attack
+                                enemyAI.radialAttackTimer = 0.f;
+                                
+                                // Phase 1: Blue bullets only - low damage
+                                m_spawner->spawnEmperorBulletsRadial(
+                                    enemy,
+                                    EMPEROR_RADIAL_BULLETS_COUNT,
+                                    EMPEROR_RADIAL_BULLETS_RADIUS,
+                                    EMPEROR_RADIAL_BULLETS_SPEED,
+                                    "Fast" // Blue bullets
+                                );
+                                
+                                enemyAI.burstCount++;
+                                
+                                // After 3 bursts, activate cooldown
+                                if (enemyAI.burstCount >= 3) {
+                                    enemyAI.burstCount = 0;
+                                    enemyAI.burstCooldownActive = true;
+                                    enemyAI.burstCooldownTimer = 0.f;
+                                }
+                            }
+                        } else {
+                            // Cooldown between attack sequences
+                            enemyAI.burstCooldownTimer += deltaTime;
+                            if (enemyAI.burstCooldownTimer >= 4.f) {
+                                enemyAI.burstCooldownActive = false;
+                            }
                         }
-                        
+                    }
+                    else if (healthPercentage <= 0.7f && healthPercentage > 0.5f) {
+                        // Phase 2: Medium damage bullets (Red = Strong type)
+                        if (!enemyAI.burstCooldownActive) {
+                            enemyAI.radialAttackTimer += deltaTime;
+                            
+                            if (enemyAI.radialAttackTimer >= 0.2f) { // Faster consecutive bursts
+                                enemyAI.radialAttackTimer = 0.f;
+                                
+                                m_spawner->spawnEmperorBulletsRadial(
+                                    enemy,
+                                    EMPEROR_RADIAL_BULLETS_COUNT * 2,
+                                    EMPEROR_RADIAL_BULLETS_RADIUS,
+                                    EMPEROR_RADIAL_BULLETS_SPEED,
+                                    "Strong" // Red bullets
+                                );
+                                
+                                enemyAI.burstCount++;
+                                
+                                // After 4 bursts, activate cooldown
+                                if (enemyAI.burstCount >= 4) {
+                                    enemyAI.burstCount = 0;
+                                    enemyAI.burstCooldownActive = true;
+                                    enemyAI.burstCooldownTimer = 0.f;
+                                }
+                            }
+                        } else {
+                            // Cooldown between attack sequences
+                            enemyAI.burstCooldownTimer += deltaTime;
+                            if (enemyAI.burstCooldownTimer >= 3.5f) {
+                                enemyAI.burstCooldownActive = false;
+                            }
+                        }
+                    }
+                    else if (healthPercentage <= 0.5f && healthPercentage > 0.3f) {
+                        // Phase 3: High damage bullets (Black = Elite type)
+                        if (!enemyAI.burstCooldownActive) {
+                            enemyAI.radialAttackTimer += deltaTime;
+                            
+                            if (enemyAI.radialAttackTimer >= 0.15f) { // Even faster consecutive bursts
+                                enemyAI.radialAttackTimer = 0.f;
+                                
+                                m_spawner->spawnEmperorBulletsRadial(
+                                    enemy,
+                                    EMPEROR_RADIAL_BULLETS_COUNT * 2,
+                                    EMPEROR_RADIAL_BULLETS_RADIUS,
+                                    EMPEROR_RADIAL_BULLETS_SPEED * 1.2f,
+                                    "Elite" // Black bullets
+                                );
+                                
+                                enemyAI.burstCount++;
+                                
+                                // After 5 bursts, activate cooldown
+                                if (enemyAI.burstCount >= 5) {
+                                    enemyAI.burstCount = 0;
+                                    enemyAI.burstCooldownActive = true;
+                                    enemyAI.burstCooldownTimer = 0.f;
+                                }
+                            }
+                        } else {
+                            // Cooldown between attack sequences
+                            enemyAI.burstCooldownTimer += deltaTime;
+                            if (enemyAI.burstCooldownTimer >= 3.0f) {
+                                enemyAI.burstCooldownActive = false;
+                            }
+                        }
+                    }
+                    else if (healthPercentage <= 0.3f) {
+                        // Phase 4: Mixed bullets (all types in rapid succession)
+                        if (!enemyAI.burstCooldownActive) {
+                            enemyAI.radialAttackTimer += deltaTime;
+                            
+                            if (enemyAI.radialAttackTimer >= 0.1f) { // Extremely fast consecutive bursts
+                                enemyAI.radialAttackTimer = 0.f;
+                                
+                                // Determine which bullet type based on burst count
+                                std::string bulletType;
+                                switch (enemyAI.burstCount % 4) {
+                                    case 0: bulletType = "Elite"; break;  // Black
+                                    case 1: bulletType = "Strong"; break; // Red
+                                    case 2: bulletType = "Fast"; break;   // Blue
+                                    case 3: bulletType = "Normal"; break; // Gold
+                                }
+                                
+                                m_spawner->spawnEmperorBulletsRadial(
+                                    enemy,
+                                    EMPEROR_RADIAL_BULLETS_COUNT * 2,
+                                    EMPEROR_RADIAL_BULLETS_RADIUS,
+                                    EMPEROR_RADIAL_BULLETS_SPEED * 1.3f,
+                                    bulletType
+                                );
+                                
+                                enemyAI.burstCount++;
+                                
+                                // After 6 bursts, activate cooldown
+                                if (enemyAI.burstCount >= 6) {
+                                    enemyAI.burstCount = 0;
+                                    enemyAI.burstCooldownActive = true;
+                                    enemyAI.burstCooldownTimer = 0.f;
+                                }
+                            }
+                        } else {
+                            // Shorter cooldown between attack sequences
+                            enemyAI.burstCooldownTimer += deltaTime;
+                            if (enemyAI.burstCooldownTimer >= 2.f) {
+                                enemyAI.burstCooldownActive = false;
+                            }
+                        }
+                    }
+                } else {
+                    // ANCIENT EMPEROR ATTACKS
+                    if (healthPercentage > 0.7f) {
                         enemyAI.radialAttackTimer += deltaTime;
-                        if (enemyAI.radialAttackTimer >= attackInterval) {
+                        if (enemyAI.radialAttackTimer >= 4.f) {
                             enemyAI.radialAttackTimer = 0.f;
                             m_spawner->spawnEmperorSwordsRadial(
                                 enemy,
@@ -247,26 +524,68 @@ void EnemyAISystem::update(float deltaTime)
                                 EMPEROR_RADIAL_SWORDS_RADIUS,
                                 EMPEROR_RADIAL_SWORDS_SPEED
                             );
-                            enemyAI.burstCount++;
                         }
                     }
-                    else {
-                        enemyAI.burstCooldownTimer += deltaTime;
-                        if (enemyAI.burstCooldownTimer >= 5.f) {
-                            enemyAI.burstCooldownActive = false;
+                    else if (healthPercentage <= 0.7f && healthPercentage > 0.5f) {
+                        enemyAI.radialAttackTimer += deltaTime;
+                        if (enemyAI.radialAttackTimer >= 3.f) {
+                            enemyAI.radialAttackTimer = 0.f;
+                            m_spawner->spawnEmperorSwordsRadial(
+                                enemy,
+                                EMPEROR_RADIAL_SWORDS_COUNT * 2,
+                                EMPEROR_RADIAL_SWORDS_RADIUS,
+                                EMPEROR_RADIAL_SWORDS_SPEED
+                            );
+                        }
+                    }
+                    else if (healthPercentage <= 0.5f) {
+                        if (!enemyAI.burstCooldownActive) {
+                            float attackInterval = 3.0f; // Default attack interval
+                            
+                            if (distance > 600.f) {
+                                attackInterval = 0.8f; // Fast attacks when player is far away
+                            } else if (distance > 50.f && distance < 600.f) {
+                                attackInterval = 2.5f; // Medium speed attacks at medium distance
+                            }
+                            
+                            enemyAI.radialAttackTimer += deltaTime;
+                            if (enemyAI.radialAttackTimer >= attackInterval) {
+                                enemyAI.radialAttackTimer = 0.f;
+                                m_spawner->spawnEmperorSwordsRadial(
+                                    enemy,
+                                    EMPEROR_RADIAL_SWORDS_COUNT,
+                                    EMPEROR_RADIAL_SWORDS_RADIUS,
+                                    EMPEROR_RADIAL_SWORDS_SPEED
+                                );
+                                enemyAI.burstCount++;
+                            }
+                        }
+                        else {
+                            enemyAI.burstCooldownTimer += deltaTime;
+                            if (enemyAI.burstCooldownTimer >= 5.f) {
+                                enemyAI.burstCooldownActive = false;
+                            }
                         }
                     }
                 }
-        
+
+                // Handle melee attack for both emperor types
                 if (distance < 100.f && !enemyAI.swordSpawned) {
-                    for (int i = 0; i < 3; ++i) {
-                        m_spawner->spawnEmperorSwordOffset(enemy);
+                    if (m_game.worldType == "Future") {
+                        // Future Emperor shoots regular bullets at close range
+                        for (int i = 0; i < 3; ++i) {
+                            m_spawner->spawnEnemyBullet(enemy);
+                        }
+                    } else {
+                        // Ancient Emperor spawns swords
+                        for (int i = 0; i < 3; ++i) {
+                            m_spawner->spawnEmperorSwordOffset(enemy);
+                        }
                     }
                     enemyAI.swordSpawned = true;
                 }
             }
         }
-
         // ----------------------------------------------------
         // 3) Knockback Handling
         // ----------------------------------------------------
@@ -599,31 +918,62 @@ void EnemyAISystem::update(float deltaTime)
         // ----------------------------------------------------
         // (Animation) Running State
         // ----------------------------------------------------
-        std::string runAnimName;
-        switch (enemyAI.enemyType) {
-            case EnemyType::Fast:
-                runAnimName = m_game.worldType + "RunEnemyFast";
-                break;
-            case EnemyType::Strong:
-                runAnimName = m_game.worldType + "RunEnemyStrong";
-                break;
-            case EnemyType::Elite:
-                runAnimName = m_game.worldType + "RunEnemyElite";
-                break;
-            case EnemyType::Normal:
-                runAnimName = m_game.worldType + "RunEnemyNormal";
-                break;
-            case EnemyType::Super:
-                runAnimName = m_game.worldType + "RunEnemySuper";
-                break;
-            case EnemyType::Emperor:
-                runAnimName = m_game.worldType + "RunEmperor";
-                break;
+       
+        float healthPercentage = 1.f;
+        if (enemy->has<CHealth>()) {
+            auto& health = enemy->get<CHealth>();
+            healthPercentage = static_cast<float>(health.currentHealth) / static_cast<float>(health.maxHealth);
         }
+        
+        std::string runAnimName;
+        if (enemyAI.enemyType == EnemyType::Emperor && m_game.worldType == "Future") {
+            // Determine run animation based on enemy state (phase)
+            auto& bossPhase = enemy->get<CBossPhase>().phase;
+            std::string desiredAnimName;
+            switch (bossPhase) {
+                case BossPhase::Phase1:
+                    desiredAnimName = "FutureStandEmperor";
+                    break;
+                case BossPhase::Phase2:
+                    desiredAnimName = "FutureStandEmperor2";
+                    break;
+                case BossPhase::Phase3:
+                    desiredAnimName = "FutureStandEmperor3";
+                    break;
+                default:
+                    desiredAnimName = "FutureStandEmperor";
+                    break;
+            }
+        } else {
+            switch (enemyAI.enemyType) {
+                case EnemyType::Fast:
+                    runAnimName = m_game.worldType + "RunEnemyFast";
+                    break;
+                case EnemyType::Strong:
+                    runAnimName = m_game.worldType + "RunEnemyStrong";
+                    break;
+                case EnemyType::Elite:
+                    runAnimName = m_game.worldType + "RunEnemyElite";
+                    break;
+                case EnemyType::Normal:
+                    runAnimName = m_game.worldType + "RunEnemyNormal";
+                    break;
+                case EnemyType::Super:
+                    runAnimName = m_game.worldType + "RunEnemySuper";
+                    break;
+                // Emperor is handled above.
+            }
+        }
+        
         if (anim.animation.getName() != runAnimName) {
-            const Animation& runAnim = m_game.assets().getAnimation(runAnimName);
-            anim.animation           = runAnim;
-            anim.animation.reset();
+            if (m_game.assets().hasAnimation(runAnimName)) {
+                std::cout << "Setting run anim: " << runAnimName << std::endl;
+                const Animation& runAnim = m_game.assets().getAnimation(runAnimName);
+                anim.animation = runAnim;
+                anim.animation.reset();
+            } else {
+                std::cout << "[ERROR] Missing animation: " << runAnimName << " for Emperor enemy!\n";
+            }
         }
 
         // ----------------------------------------------------

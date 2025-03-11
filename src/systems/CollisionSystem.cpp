@@ -560,7 +560,7 @@ void CollisionSystem::handleBulletPlayerCollisions() {
             sf::FloatRect tileRect = tileBB.getRect(tileTrans.pos);
 
             if (bulletRect.intersects(tileRect)) {
-                std::cout << "[DEBUG] Bullet hit a tile! Destroying bullet.\n";
+                //std::cout << "[DEBUG] Bullet hit a tile! Destroying bullet.\n";
                 bullet->destroy();
                 break;
             }

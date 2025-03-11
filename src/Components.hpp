@@ -397,12 +397,21 @@ enum class EnemyState {
     Knockback,   // The enemy is being pushed back,
     FinalAttack,
     BlockedByTile,
-    Defeated,
+    Defeated
+};
+
+enum class BossPhase {
     Phase1,
     Phase2,
     Phase3
 };
 
+class CBossPhase : public Component {
+    public:
+        BossPhase phase;
+        CBossPhase(BossPhase initialPhase = BossPhase::Phase1)
+            : phase(initialPhase) {}
+    };
 
 class CEnemyAI : public Component {
     public:

@@ -65,6 +65,10 @@ public:
     static constexpr float BULLET_RED_DAMAGE = 3.0f;    // Phase 2 - Strong bullet
     static constexpr float BULLET_BLACK_DAMAGE = 5.0f;  // Phase 3 - Most powerful bullet
 
+    static constexpr float EMPEROR_RADIAL_BULLETS_SPEED = 800;
+    static constexpr float EMPEROR_RADIAL_BULLETS_RADIUS = 100;
+    static constexpr float EMPEROR_RADIAL_BULLETS_COUNT = 100;
+
     // Bullet speeds for different colors
     static constexpr float BULLET_BLUE_SPEED = 300.0f;
     static constexpr float BULLET_GOLD_SPEED = 350.0f;
@@ -99,6 +103,14 @@ public:
     void spawnEmperorSwordsStatic(std::shared_ptr<Entity> emperor,int swordCount,float radius,float speed);
     void spawnEmperorSwordArmorRadial(std::shared_ptr<Entity> emperor, int swordCount, float radius, float swordSpeed, float baseStopTime, float stopTimeIncrement);
     std::shared_ptr<Entity> spawnBulletOffset(std::shared_ptr<Entity> source);
+    void spawnEmperorBulletsRadial(std::shared_ptr<Entity> enemy, int bulletCount, 
+        float radius, float bulletSpeed, 
+        const std::string& bulletType);
+
+    // Original overload for backward compatibility
+    void spawnEmperorBulletsRadial(std::shared_ptr<Entity> enemy, int bulletCount, 
+        float radius, float bulletSpeed);
+
 private:
     GameEngine& m_game;
     EntityManager& m_entityManager;

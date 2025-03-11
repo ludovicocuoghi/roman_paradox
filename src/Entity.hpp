@@ -23,7 +23,8 @@ using ComponentTuple = std::tuple<
     CPlayerEquipment,
     CTileTouched,
     CAmmo,
-    CStopAfterTime
+    CStopAfterTime,
+    CBossPhase
     >;
 
 class Entity {

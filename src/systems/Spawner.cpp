@@ -130,18 +130,17 @@ std::shared_ptr<Entity> Spawner::spawnEnemyBullet(std::shared_ptr<Entity> enemy)
     // Pick bullet animation based on enemy type
     std::string animationName;
     switch (enemyAI.enemyType) {
+        case EnemyType::Emperor: animationName = "FutureRedBullet"; break; // Add this line
         case EnemyType::Elite:   animationName = "FutureBlackBullet"; break;
         case EnemyType::Strong:  animationName = "FutureRedBullet";  break;
         case EnemyType::Fast:    animationName = "FutureBlueBullet";  break;
         case EnemyType::Normal:  animationName = "FutureGoldBullet"; break;
         case EnemyType::Super:   animationName = "FutureSilverBullet"; break;  
-        case EnemyType::Emperor: animationName = "FutureEmperorBullet"; break; 
         default:
             std::cerr << "[WARNING] Unhandled EnemyType in Spawner! Defaulting to FutureRedBullet.\n";
             animationName = "FutureRedBullet"; // Default case for safety
             break;
     }
-
     // Load bullet animation
     if (m_game.assets().hasAnimation(animationName)) {
         auto& bulletAnim = m_game.assets().getAnimation(animationName);
@@ -324,7 +323,6 @@ void Spawner::spawnEmperorSwordsRadial(std::shared_ptr<Entity> enemy, int swordC
         //           << ") velocity(" << vx << "," << vy << ")\n";
     }
 }
-
 
 void Spawner::spawnEnemyGrave(const Vec2<float>& position, bool isEmperor) {
     auto grave = m_entityManager.addEntity("enemyGrave");
@@ -614,3 +612,100 @@ void Spawner::createBlockFragments(const Vec2<float>& position, const std::strin
     }
 }
 
+// Add this to your Spawner.cpp file
+
+// Spawns bullets in a radial pattern around the Emperor
+void Spawner::spawnEmperorBulletsRadial(std::shared_ptr<Entity> enemy, int bulletCount, 
+                                     float radius, float bulletSpeed, const std::string& bulletType) {
+    auto& eTrans = enemy->get<CTransform>();
+
+    float centerX = eTrans.pos.x;
+    float centerY = eTrans.pos.y;
+
+    // Generate a random angle offset for this burst (between 0 and 60 degrees)
+    float randomAngleOffset = (std::rand() % 60); 
+
+    for (int i = 0; i < bulletCount; i++) {
+        // Apply random offset to the base angle calculation
+        float angleDeg = (360.f / bulletCount) * i + randomAngleOffset;
+        float angleRad = angleDeg * 3.1415926535f / 180.f;
+
+        // Calculate radial position
+        float offsetX = std::cos(angleRad) * radius;
+        float offsetY = std::sin(angleRad) * radius;
+        Vec2<float> spawnPos(centerX + offsetX, centerY + offsetY);
+
+        // Create enemyBullet entity
+        auto bullet = m_entityManager.addEntity("enemyBullet");
+        bullet->add<CTransform>(spawnPos);
+        bullet->add<CLifeSpan>(3.0f); // Bullet lifespan
+        
+        // Store the creator ID in the state component
+        CState stateComponent(std::to_string(enemy->id()));
+        bullet->add<CState>(stateComponent);
+
+        // Determine which bullet animation to use based on provided type or phase
+        std::string animName;
+        
+        if (bulletType == "Random") {
+            // Random bullets for final phase or mixed attacks
+            int randType = std::rand() % 4; // 0-3: Normal, Fast, Strong, Elite
+            switch (randType) {
+                case 0: animName = "FutureGoldBullet"; break;  // Normal
+                case 1: animName = "FutureBlueBullet"; break;  // Fast
+                case 2: animName = "FutureRedBullet"; break;   // Strong
+                case 3: animName = "FutureBlackBullet"; break; // Elite
+                default: animName = "FutureGoldBullet"; break;
+            }
+        } else if (bulletType == "Normal") {
+            animName = "FutureGoldBullet";  // Gold bullets
+        } else if (bulletType == "Fast") {
+            animName = "FutureBlueBullet";  // Blue bullets
+        } else if (bulletType == "Strong") {
+            animName = "FutureRedBullet";   // Red bullets
+        } else if (bulletType == "Elite") {
+            animName = "FutureBlackBullet"; // Black bullets
+        } else if (bulletType == "Emperor") {
+            animName = "FutureRedBullet";   // Default Emperor bullet (red)
+        } else {
+            // Default to Emperor bullet type (red) if no valid type specified
+            animName = "FutureRedBullet";
+        }
+        
+        // Load animation
+        if (m_game.assets().hasAnimation(animName)) {
+            auto& bulletAnim = m_game.assets().getAnimation(animName);
+            bullet->add<CAnimation>(bulletAnim, true);
+
+            sf::Vector2i animSize = bulletAnim.getSize();
+            Vec2<float> boxSize(animSize.x, animSize.y);
+            Vec2<float> halfSize(boxSize.x * 0.5f, boxSize.y * 0.5f);
+            bullet->add<CBoundingBox>(boxSize, halfSize);
+
+            // Rotate sprite to point outward
+            auto& sprite = bullet->get<CAnimation>().animation.getMutableSprite();
+            sprite.setRotation(angleDeg);
+        } else {
+            std::cerr << "[ERROR] Missing " << animName << " animation!\n";
+        }
+
+        // Assign velocity to CTransform
+        float vx = std::cos(angleRad) * bulletSpeed;
+        float vy = std::sin(angleRad) * bulletSpeed;
+        bullet->get<CTransform>().velocity = Vec2<float>(vx, vy);
+
+        // std::cout << "[DEBUG] Spawned Emperor radial bullet " << i 
+        //           << " anim=" << animName
+        //           << " angle=" << angleDeg 
+        //           << " deg (random offset=" << randomAngleOffset << ")"
+        //           << " pos(" << spawnPos.x << "," << spawnPos.y 
+        //           << ") velocity(" << vx << "," << vy << ")\n";
+    }
+}
+
+// Overload without bulletType for backward compatibility
+void Spawner::spawnEmperorBulletsRadial(std::shared_ptr<Entity> enemy, int bulletCount, 
+                                      float radius, float bulletSpeed) {
+    // Default to random bullets if no type specified
+    spawnEmperorBulletsRadial(enemy, bulletCount, radius, bulletSpeed, "Random");
+}

@@ -357,6 +357,7 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
 
             if (m_game.worldType == "Future") {
                 enemy->get<CEnemyAI>().speedMultiplier = enemy->get<CEnemyAI>().speedMultiplier * 0.5;
+                enemy->add<CBossPhase>();
             }
             
             std::string runAnimName, standAnimName;

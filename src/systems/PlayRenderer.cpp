@@ -154,251 +154,248 @@ void PlayRenderer::render() {
             m_game.window().draw(debugBox);
         }
     }
-// Render enemies
-for (auto& enemy : m_entityManager.getEntities("enemy")) {
-    if (!enemy->has<CTransform>() || !enemy->has<CHealth>()) continue;
+    // Render enemies
+    for (auto& enemy : m_entityManager.getEntities("enemy")) {
+        if (!enemy->has<CTransform>() || !enemy->has<CHealth>())
+            continue;
 
-    auto& eTrans  = enemy->get<CTransform>();
-    auto& eHealth = enemy->get<CHealth>();
+        auto& eTrans  = enemy->get<CTransform>();
+        auto& eHealth = enemy->get<CHealth>();
 
-    // Check if this is an Emperor
-    bool isEmperor = false;
-    if (enemy->has<CEnemyAI>()) {
-        auto& enemyAI = enemy->get<CEnemyAI>();
-        isEmperor = enemyAI.enemyType == EnemyType::Emperor;
-    }
+        // Determine if this enemy is an Emperor
+        bool isEmperor = false;
+        if (enemy->has<CEnemyAI>()) {
+            auto& enemyAI = enemy->get<CEnemyAI>();
+            isEmperor = (enemyAI.enemyType == EnemyType::Emperor);
+        }
 
-    if (isEmperor) {
-        // Emperor health bar settings
-        float barWidth = 120.f;
-        float barHeight = 10.f;
-        float offsetY = 140.f;
-        float spacing = 15.f; // Space between bars
-        
-        // Calculate health ratio
-        float currentHealth = eHealth.currentHealth;
-        float maxHealth = eHealth.maxHealth;
-        float healthRatio = (maxHealth > 0.f) ? (currentHealth / maxHealth) : 0.f;
-        healthRatio = std::max(0.f, std::min(1.f, healthRatio));
-        
-        // Define phase thresholds based on the attack logic
-        const float phase1Threshold = 0.7f;  // > 70% HP (Radial Attack)
-        const float phase2Threshold = 0.5f;  // 70-50% HP (Enhanced Radial Attack)
-        const float phase3Threshold = 0.1f;  // 50-10% HP (Final Burst Phase)
-        // Below 10% would be Final Attack phase (not shown in the code snippet)
-        
-        // Bar colors for different phases
-        sf::Color barColors[3] = {
-            sf::Color(220, 50, 50),    // Bottom bar - red (Final Burst Phase)
-            sf::Color(220, 220, 50),   // Middle bar - yellow (Enhanced Radial)
-            sf::Color(50, 220, 50)     // Top bar - green (Normal Radial)
-        };
-        
-        // Base position for the bars
-        float baseX = eTrans.pos.x - (barWidth / 2.f);
-        float baseY = eTrans.pos.y - offsetY;
-        
-        // Draw all three phase bars
-        for (int i = 0; i < 3; i++) {
-            // Calculate position for this bar (stacked from top to bottom)
-            float barX = baseX;
-            float barY = baseY + (2-i) * (barHeight + spacing);
-            
-            // Background
+        // ----- Draw Health Bars -----
+        if (isEmperor) {
+            // Emperor health bar settings
+            float barWidth = 120.f;
+            float barHeight = 10.f;
+            float offsetY = 140.f;
+            float spacing = 15.f;
+
+            float currentHealth = eHealth.currentHealth;
+            float maxHealth = eHealth.maxHealth;
+            float healthRatio = (maxHealth > 0.f) ? (currentHealth / maxHealth) : 0.f;
+            healthRatio = std::clamp(healthRatio, 0.f, 1.f);
+
+            // Define phase thresholds
+            const float phase1Threshold = 0.7f; // > 70% HP (Phase 1)
+            const float phase2Threshold = 0.5f; // 70%-50% HP (Phase 2)
+            const float phase3Threshold = 0.1f; // 50%-10% HP (Phase 3)
+
+            // Bar colors for each phase (top: normal, middle: enhanced, bottom: final burst)
+            sf::Color barColors[3] = {
+                sf::Color(220, 50, 50),    // Bottom bar (Phase 3)
+                sf::Color(220, 220, 50),   // Middle bar (Phase 2)
+                sf::Color(50, 220, 50)     // Top bar (Phase 1)
+            };
+
+            float baseX = eTrans.pos.x - (barWidth / 2.f);
+            float baseY = eTrans.pos.y - offsetY;
+
+            // Draw three stacked bars (top to bottom)
+            for (int i = 0; i < 3; i++) {
+                float barX = baseX;
+                float barY = baseY + (2 - i) * (barHeight + spacing);
+
+                // Background
+                sf::RectangleShape healthBg(sf::Vector2f(barWidth, barHeight));
+                healthBg.setFillColor(sf::Color(50, 50, 50));
+                healthBg.setPosition(barX, barY);
+                m_game.window().draw(healthBg);
+
+                // Calculate fill ratio per bar
+                float fillRatio = 0.f;
+                if (i == 2) { // Top bar (Phase 1: 100%-70%)
+                    if (healthRatio > phase1Threshold)
+                        fillRatio = (healthRatio - phase1Threshold) / (1.f - phase1Threshold);
+                } else if (i == 1) { // Middle bar (Phase 2: 70%-50%)
+                    if (healthRatio > phase2Threshold && healthRatio <= phase1Threshold)
+                        fillRatio = (healthRatio - phase2Threshold) / (phase1Threshold - phase2Threshold);
+                    else if (healthRatio > phase1Threshold)
+                        fillRatio = 1.f;
+                } else if (i == 0) { // Bottom bar (Phase 3: 50%-10%)
+                    if (healthRatio > phase3Threshold && healthRatio <= phase2Threshold)
+                        fillRatio = (healthRatio - phase3Threshold) / (phase2Threshold - phase3Threshold);
+                    else if (healthRatio > phase2Threshold)
+                        fillRatio = 1.f;
+                }
+
+                // Filled portion
+                sf::RectangleShape healthRect(sf::Vector2f(barWidth * fillRatio, barHeight));
+                healthRect.setFillColor(barColors[i]);
+                healthRect.setPosition(barX, barY);
+                m_game.window().draw(healthRect);
+
+                // Border
+                sf::RectangleShape borderRect(sf::Vector2f(barWidth, barHeight));
+                borderRect.setFillColor(sf::Color::Transparent);
+                borderRect.setOutlineColor(sf::Color::White);
+                borderRect.setOutlineThickness(1.f);
+                borderRect.setPosition(barX, barY);
+                m_game.window().draw(borderRect);
+
+                // Division markers
+                int divisions = (i == 0) ? 4 : (i == 1) ? 2 : 3;
+                for (int j = 1; j < divisions; j++) {
+                    float markerX = barX + (barWidth * j / divisions);
+                    sf::Vertex line[] = {
+                        sf::Vertex(sf::Vector2f(markerX, barY), sf::Color::White),
+                        sf::Vertex(sf::Vector2f(markerX, barY + barHeight), sf::Color::White)
+                    };
+                    m_game.window().draw(line, 2, sf::Lines);
+                }
+            }
+
+            // Final Attack indicator if health is below phase3 threshold
+            if (healthRatio <= phase3Threshold) {
+                sf::RectangleShape finalPhaseBar(sf::Vector2f(barWidth, barHeight));
+                finalPhaseBar.setFillColor(sf::Color(150, 0, 0));
+                finalPhaseBar.setPosition(baseX, baseY + 3 * (barHeight + spacing));
+                m_game.window().draw(finalPhaseBar);
+
+                if (m_game.assets().hasFont("Menu")) {
+                    sf::Text finalText;
+                    finalText.setFont(m_game.assets().getFont("Menu"));
+                    finalText.setString("FINAL ATTACK (<10%)");
+                    finalText.setCharacterSize(12);
+                    finalText.setFillColor(sf::Color::Red);
+                    sf::FloatRect textBounds = finalText.getLocalBounds();
+                    finalText.setPosition(baseX - textBounds.width - 5.f,
+                        baseY + 3 * (barHeight + spacing) + (barHeight / 2.f) - (textBounds.height / 2.f));
+                    m_game.window().draw(finalText);
+                }
+            }
+
+            // Draw overall health percentage text above the bars
+            if (m_game.assets().hasFont("Menu")) {
+                sf::Text healthText;
+                healthText.setFont(m_game.assets().getFont("Menu"));
+                healthText.setString(std::to_string(static_cast<int>(healthRatio * 100)) + "%");
+                healthText.setCharacterSize(14);
+                healthText.setFillColor(sf::Color::White);
+                sf::FloatRect textBounds = healthText.getLocalBounds();
+                healthText.setPosition(baseX + (barWidth / 2.f) - (textBounds.width / 2.f), baseY - 25.f);
+                m_game.window().draw(healthText);
+            }
+        } else {
+            // Regular enemy health bar
+            float barWidth = 40.f;
+            float barHeight = 5.f;
+            float offsetY = 60.f;
+            float currentHealth = eHealth.currentHealth;
+            float maxHealth = eHealth.maxHealth;
+            float healthRatio = (maxHealth > 0.f) ? (currentHealth / maxHealth) : 0.f;
+            healthRatio = std::clamp(healthRatio, 0.f, 1.f);
+            float barX = eTrans.pos.x - (barWidth / 2.f);
+            float barY = eTrans.pos.y - offsetY;
             sf::RectangleShape healthBg(sf::Vector2f(barWidth, barHeight));
             healthBg.setFillColor(sf::Color(50, 50, 50));
             healthBg.setPosition(barX, barY);
             m_game.window().draw(healthBg);
-            
-            // Calculate fill amount for each bar based on current health
-            float fillRatio = 0.0f;
-            
-            if (i == 2) { // Top bar (Phase 1: 100-70%)
-                if (healthRatio > phase1Threshold) {
-                    fillRatio = (healthRatio - phase1Threshold) / (1.0f - phase1Threshold);
-                }
-            }
-            else if (i == 1) { // Middle bar (Phase 2: 70-50%)
-                if (healthRatio > phase2Threshold && healthRatio <= phase1Threshold) {
-                    fillRatio = (healthRatio - phase2Threshold) / (phase1Threshold - phase2Threshold);
-                }
-                else if (healthRatio > phase1Threshold) {
-                    fillRatio = 1.0f;
-                }
-            }
-            else if (i == 0) { // Bottom bar (Phase 3: 50-10%)
-                if (healthRatio > phase3Threshold && healthRatio <= phase2Threshold) {
-                    fillRatio = (healthRatio - phase3Threshold) / (phase2Threshold - phase3Threshold);
-                }
-                else if (healthRatio > phase2Threshold) {
-                    fillRatio = 1.0f;
-                }
-            }
-            
-            // Draw filled portion of bar
-            sf::RectangleShape healthRect(sf::Vector2f(barWidth * fillRatio, barHeight));
-            healthRect.setFillColor(barColors[i]);
+            sf::Color healthColor = (healthRatio > 0.7f) ? sf::Color::Green :
+                                    (healthRatio > 0.3f) ? sf::Color::Yellow :
+                                    sf::Color::Red;
+            sf::RectangleShape healthRect(sf::Vector2f(barWidth * healthRatio, barHeight));
+            healthRect.setFillColor(healthColor);
             healthRect.setPosition(barX, barY);
             m_game.window().draw(healthRect);
-            
-            // Border
-            sf::RectangleShape borderRect(sf::Vector2f(barWidth, barHeight));
-            borderRect.setFillColor(sf::Color::Transparent);
-            borderRect.setOutlineColor(sf::Color::White);
-            borderRect.setOutlineThickness(1.f);
-            borderRect.setPosition(barX, barY);
-            m_game.window().draw(borderRect);
-            
-            // Draw division markers at 10% intervals
-            int divisions = (i == 0) ? 4 : (i == 1) ? 2 : 3; // Number of divisions based on phase width
-            for (int j = 1; j < divisions; j++) {
-                float markerX = barX + (barWidth * j / divisions);
-                
-                sf::Vertex line[] = {
-                    sf::Vertex(sf::Vector2f(markerX, barY), sf::Color::White),
-                    sf::Vertex(sf::Vector2f(markerX, barY + barHeight), sf::Color::White)
-                };
-                
-                m_game.window().draw(line, 2, sf::Lines);
-            }
-            
         }
-        
-        // Add special indicator for "Final Attack" phase (below 10%)
-        if (healthRatio <= phase3Threshold) {
-            sf::RectangleShape finalPhaseBar(sf::Vector2f(barWidth, barHeight));
-            finalPhaseBar.setFillColor(sf::Color(150, 0, 0));
-            finalPhaseBar.setPosition(baseX, baseY + 3 * (barHeight + spacing));
-            m_game.window().draw(finalPhaseBar);
-            
-            // Add "FINAL ATTACK" text
-            if (m_game.assets().hasFont("Menu")) {
-                sf::Text finalText;
-                finalText.setFont(m_game.assets().getFont("Menu"));
-                finalText.setString("FINAL ATTACK (<10%)");
-                finalText.setCharacterSize(12);
-                finalText.setFillColor(sf::Color::Red);
-                
-                // Position label to the left of the bar
-                sf::FloatRect textBounds = finalText.getLocalBounds();
-                finalText.setPosition(
-                    baseX - textBounds.width - 5.f,
-                    baseY + 3 * (barHeight + spacing) + (barHeight / 2.f) - (textBounds.height / 2.f)
-                );
-                
-                m_game.window().draw(finalText);
-            }
-        }
-        
-        // Add overall health percentage text
-        if (m_game.assets().hasFont("Menu")) {
-            sf::Text healthText;
-            healthText.setFont(m_game.assets().getFont("Menu"));
-            healthText.setString(std::to_string(static_cast<int>(healthRatio * 100)) + "%");
-            healthText.setCharacterSize(14);
-            healthText.setFillColor(sf::Color::White);
-            
-            // Center the text above all bars
-            sf::FloatRect textBounds = healthText.getLocalBounds();
-            healthText.setPosition(
-                baseX + (barWidth / 2.f) - (textBounds.width / 2.f),
-                baseY - 25.f
-            );
-            
-            m_game.window().draw(healthText);
-        }
-    } else {
-        // Regular enemy health bar code (unchanged)
-        float barWidth = 40.f;
-        float barHeight = 5.f;
-        float offsetY = 60.f;
-        
-        // Calculate health ratio
-        float currentHealth = eHealth.currentHealth;
-        float maxHealth = eHealth.maxHealth;
-        float healthRatio = (maxHealth > 0.f) ? (currentHealth / maxHealth) : 0.f;
-        healthRatio = std::max(0.f, std::min(1.f, healthRatio));
-        
-        // Base position for the bar
-        float barX = eTrans.pos.x - (barWidth / 2.f);
-        float barY = eTrans.pos.y - offsetY;
-        
-        // Background
-        sf::RectangleShape healthBg(sf::Vector2f(barWidth, barHeight));
-        healthBg.setFillColor(sf::Color(50, 50, 50));
-        healthBg.setPosition(barX, barY);
-        
-        // Health bar color based on health percentage
-        sf::Color healthColor;
-        if (healthRatio > 0.7f) {
-            healthColor = sf::Color::Green;
-        } else if (healthRatio > 0.3f) {
-            healthColor = sf::Color::Yellow;
-        } else {
-            healthColor = sf::Color::Red;
-        }
-        
-        // Health bar
-        sf::RectangleShape healthRect(sf::Vector2f(barWidth * healthRatio, barHeight));
-        healthRect.setFillColor(healthColor);
-        healthRect.setPosition(barX, barY);
-        
-        // Draw background and health bar
-        m_game.window().draw(healthBg);
-        m_game.window().draw(healthRect);
-    }
 
-        // Render enemy sprite
-        // Render enemy sprite
         if (enemy->has<CAnimation>()) {
             auto& animation = enemy->get<CAnimation>();
-            auto& enemyAI   = enemy->get<CEnemyAI>();
-            //std::cout << "[DEBUG] Enemy " << enemy->id() 
-            //<< " State=" << static_cast<int>(enemyAI.enemyState) << std::endl;
-
-            // If Emperor is defeated, forcibly set "AncientStandEmperorDefeated" animation
-            if (enemyAI.enemyType == EnemyType::Emperor &&
-                enemyAI.enemyState == EnemyState::Defeated)
-            {
-                std::string defAnimName = "AncientStandEmperorDefeated";
-                if (animation.animation.getName() != defAnimName) {
-                    const Animation& defeatAnim = m_game.assets().getAnimation(defAnimName);
-                    animation.animation = defeatAnim;
-                    animation.animation.reset();
+            if (isEmperor) {
+                auto& enemyAI = enemy->get<CEnemyAI>();
+                BossPhase bossPhase = BossPhase::Phase1;  // Default initialization
+        
+                if (enemy->has<CBossPhase>()) {
+                    bossPhase = enemy->get<CBossPhase>().phase;
                 }
-                sf::Sprite sprite = animation.animation.getSprite();
-                float scaleX = (enemyAI.facingDirection < 0.f) ? -1.f : 1.f;
-                sprite.setScale(scaleX, 1.f);
-                sprite.setPosition(eTrans.pos.x, eTrans.pos.y);
-                sprite.setOrigin(animation.animation.getSize().x * 0.5f,
-                                animation.animation.getSize().y * 0.5f);
-                m_game.window().draw(sprite);
-            }
-            else
-            {
-                // Check if enemy is invulnerable
+        
+                // If defeated, force defeat animation (Ancient Emperor only)
+                if (enemyAI.enemyState == EnemyState::Defeated) {
+                    if (m_game.worldType == "Ancient") {
+                        std::string defeatAnimName = "AncientStandEmperorDefeated";
+                        if (animation.animation.getName() != defeatAnimName) {
+                            animation.animation = m_game.assets().getAnimation(defeatAnimName);
+                            animation.animation.reset();
+                        }
+                    }
+                }
+                // Future Emperor uses CBossPhase instead of EnemyState
+                else if (m_game.worldType == "Future" && enemy->has<CBossPhase>()) {
+                    std::string desiredAnimName;
+        
+                    switch (bossPhase) {
+                        case BossPhase::Phase1: desiredAnimName = "FutureStandEmperor"; break;
+                        case BossPhase::Phase2: desiredAnimName = "FutureStandEmperor2"; break;
+                        case BossPhase::Phase3: desiredAnimName = "FutureStandEmperor3"; break;
+                        default: desiredAnimName = "FutureStandEmperor"; break;
+                    }
+        
+                    std::string currentAnimName = animation.animation.getName();
+                    if (currentAnimName.find("Run") != std::string::npos)
+                        desiredAnimName += "Run";
+                    else if (currentAnimName.find("Hit") != std::string::npos)
+                        desiredAnimName += "Hit";
+                    else if (currentAnimName.find("Attack") != std::string::npos)
+                        desiredAnimName += "Attack";
+        
+                    if (desiredAnimName != currentAnimName) {
+                        if (m_game.assets().hasAnimation(desiredAnimName)) {
+                            animation.animation = m_game.assets().getAnimation(desiredAnimName);
+                            animation.animation.reset();
+                            std::cout << "[DEBUG] Emperor animation updated to: " << desiredAnimName << std::endl;
+                        } else {
+                            std::cerr << "[ERROR] Missing animation: " << desiredAnimName << " for Emperor enemy!\n";
+                        }
+                    }
+                }
+        
+                // Apply blink effect if invulnerable
                 bool shouldDraw = true;
                 if (enemy->has<CHealth>()) {
                     auto& health = enemy->get<CHealth>();
-                    if (health.invulnerabilityTimer) {
-                        // Blink effect - show sprite every other 0.1 seconds
-                        shouldDraw = static_cast<int>(health.invulnerabilityTimer * 13) % 2 == 0;
+                    if (health.invulnerabilityTimer > 0) {
+                        shouldDraw = static_cast<int>(health.invulnerabilityTimer * 10) % 2 == 0;
                     }
                 }
-                
+        
                 if (shouldDraw) {
-                    // Continue with your normal sprite drawing code
+                    float scaleX = (enemyAI.facingDirection < 0.f) ? -1.f : 1.f;
                     sf::Sprite sprite = animation.animation.getSprite();
-                    // Set position, scale, etc.
+                    sprite.setScale(scaleX, 1.f);
                     sprite.setPosition(eTrans.pos.x, eTrans.pos.y);
-                    sprite.setOrigin(animation.animation.getSize().x * 0.5f,
-                                    animation.animation.getSize().y * 0.5f);
+                    sprite.setOrigin(animation.animation.getSize().x * 0.5f, animation.animation.getSize().y * 0.5f);
+                    m_game.window().draw(sprite);
+                }
+        
+                std::cout << "[DEBUG] Emperor state: " << static_cast<int>(bossPhase)
+                          << " | Current Animation: " << animation.animation.getName() << std::endl;
+            } else {
+                // Non-Emperor enemies remain unchanged
+                bool shouldDraw = true;
+                if (enemy->has<CHealth>()) {
+                    auto& health = enemy->get<CHealth>();
+                    if (health.invulnerabilityTimer > 0) {
+                        shouldDraw = static_cast<int>(health.invulnerabilityTimer * 10) % 2 == 0;
+                    }
+                }
+        
+                if (shouldDraw) {
+                    sf::Sprite sprite = animation.animation.getSprite();
+                    sprite.setPosition(eTrans.pos);
+                    sprite.setOrigin(animation.animation.getSize().x * 0.5f, animation.animation.getSize().y * 0.5f);
                     m_game.window().draw(sprite);
                 }
             }
         }
-        
-        // Debug bounding box
+
+        // Draw enemy bounding box if enabled
         if (m_showBoundingBoxes && enemy->has<CBoundingBox>()) {
             auto& bbox = enemy->get<CBoundingBox>();
             debugBox.setSize(sf::Vector2f(bbox.size.x, bbox.size.y));
