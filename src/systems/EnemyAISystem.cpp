@@ -430,7 +430,7 @@ void EnemyAISystem::update(float deltaTime)
         // ----------------------------------------------------
         if (enemyAI.enemyState == EnemyState::Follow) {
             const float xThreshold = 5.0f; // Previene flip ripetuti
-        
+
             // Esegue il rilevamento dei tile solo se il giocatore è entro 1000 pixel
             if (distance <= 100.f) {
                 enemyAI.tileDetected = false; // Reset del flag
@@ -463,17 +463,17 @@ void EnemyAISystem::update(float deltaTime)
                 
                     bool isInFront =
                         (enemyAI.facingDirection > 0.f &&
-                         tileRect.left <= enemyFrontX &&
-                         tileRect.left > enemyRect.left)
+                        tileRect.left <= enemyFrontX &&
+                        tileRect.left > enemyRect.left)
                         ||
                         (enemyAI.facingDirection < 0.f &&
-                         tileRect.left + tileRect.width >= enemyFrontX &&
-                         tileRect.left < enemyRect.left);
+                        tileRect.left + tileRect.width >= enemyFrontX &&
+                        tileRect.left < enemyRect.left);
                 
                     if (isHorizontallyAligned && isInFront) {
                         enemyAI.tileDetected = true;
                         std::cout << "[DEBUG] Enemy " << enemy->id()
-                                  << " detected tile in front!\n";
+                                << " detected tile in front!\n";
                         break;
                     }
                 }
@@ -485,7 +485,7 @@ void EnemyAISystem::update(float deltaTime)
                 (enemyAI.enemyState == EnemyState::Follow || enemyAI.enemyState == EnemyState::Idle))
             {
                 std::cout << "[DEBUG] EnemySuper " << enemy->id()
-                          << " switching to Attack state.\n";
+                        << " switching to Attack state.\n";
                 enemyAI.enemyState = EnemyState::Attack;
                 // Imposta l'animazione di attacco, resetta la velocità, ecc.
                 if (enemy->has<CAnimation>()) {
@@ -509,23 +509,90 @@ void EnemyAISystem::update(float deltaTime)
                 enemyAI.swordSpawned = false;
             }
             
-            // Logica di movimento
-            // In part 6 where you set velocity in FOLLOW state
-            if (std::abs(dx) > xThreshold) {
-                float followSpeed = (m_game.worldType == "Future")
-                                    ? FOLLOW_MOVE_SPEED * 0.7f
-                                    : FOLLOW_MOVE_SPEED;
+            // Logica di movimento - Special logic for Future enemies
+            if (m_game.worldType == "Future") {
+                // Define optimal shooting range
+                const float OPTIMAL_MIN_DISTANCE = 350.0f;
+                const float OPTIMAL_MAX_DISTANCE = 550.0f;
+                const float TOO_CLOSE_DISTANCE = 200.0f;
                 
-                // Reduce speed if player is above enemy AND horizontally close
-                float horizontalProximity = 90.0f; // Adjust this value as needed
-                if (playerTrans.pos.y < enemyTrans.pos.y - 20.0f && std::abs(dx) < horizontalProximity) {
-                    followSpeed *= 0.7f; 
+                if (std::abs(dx) > xThreshold) {
+                    // Always face the player
+                    enemyAI.facingDirection = (dx > 0.f) ? 1.f : -1.f;
+                    
+                    // Check if we can see the player (for ranged attacks)
+                    bool hasLineOfSight = checkLineOfSight(enemyTrans.pos, 
+                                                        playerTrans.pos, 
+                                                        m_entityManager);
+                    
+                    // Decide how to move based on distance
+                    if (distance < TOO_CLOSE_DISTANCE) {
+                        // Too close - back up!
+                        enemyTrans.velocity.x = -enemyAI.facingDirection * FOLLOW_MOVE_SPEED * 0.8f;
+                        std::cout << "[DEBUG] Future enemy " << enemy->id() 
+                                << " backing away (too close: " << distance << ")\n";
+                    }
+                    else if (distance < OPTIMAL_MIN_DISTANCE && hasLineOfSight) {
+                        // A bit too close but has line of sight - back up slightly
+                        enemyTrans.velocity.x = -enemyAI.facingDirection * FOLLOW_MOVE_SPEED * 0.5f;
+                        std::cout << "[DEBUG] Future enemy " << enemy->id() 
+                                << " backing to optimal range (distance: " << distance << ")\n";
+                    }
+                    else if (distance > OPTIMAL_MAX_DISTANCE || !hasLineOfSight) {
+                        // Too far or no line of sight - approach slowly
+                        enemyTrans.velocity.x = enemyAI.facingDirection * FOLLOW_MOVE_SPEED * 0.6f;
+                        std::cout << "[DEBUG] Future enemy " << enemy->id() 
+                                << " approaching (distance: " << distance 
+                                << ", LOS: " << (hasLineOfSight ? "yes" : "no") << ")\n";
+                    }
+                    else {
+                        // In optimal range and has line of sight - stop moving and shoot
+                        enemyTrans.velocity.x = 0.f;
+                        
+                        // Set animation to idle or attack animation for Future world
+                        std::string idleAnimName;
+                        switch (enemyAI.enemyType) {
+                            case EnemyType::Fast:    idleAnimName = "FutureStandEnemyFast"; break;
+                            case EnemyType::Strong:  idleAnimName = "FutureStandEnemyStrong"; break;
+                            case EnemyType::Elite:   idleAnimName = "FutureStandEnemyElite"; break;
+                            case EnemyType::Normal:  idleAnimName = "FutureStandEnemyNormal"; break;
+                            case EnemyType::Super:   idleAnimName = "FutureStandEnemySuper"; break;
+                            case EnemyType::Emperor: idleAnimName = "FutureStandEmperor"; break;
+                        }
+                        
+                        if (m_game.assets().hasAnimation(idleAnimName) && 
+                            anim.animation.getName() != idleAnimName) {
+                            anim.animation = m_game.assets().getAnimation(idleAnimName);
+                            if (enemyAI.facingDirection < 0) {
+                                flipSpriteLeft(anim.animation.getMutableSprite());
+                            } else {
+                                flipSpriteRight(anim.animation.getMutableSprite());
+                            }
+                        }
+                        
+                        std::cout << "[DEBUG] Future enemy " << enemy->id() 
+                                << " at optimal shooting range (distance: " << distance << ")\n";
+                    }
+                } else {
+                    enemyTrans.velocity.x = 0.f;
                 }
-                
-                enemyAI.facingDirection = (dx > 0.f) ? 1.f : -1.f;
-                enemyTrans.velocity.x = enemyAI.facingDirection * followSpeed;
-            } else {
-                enemyTrans.velocity.x = 0.f;
+            }
+            // Original movement logic for non-Future enemies
+            else {
+                if (std::abs(dx) > xThreshold) {
+                    float followSpeed = FOLLOW_MOVE_SPEED;
+                    
+                    // Reduce speed if player is above enemy AND horizontally close
+                    float horizontalProximity = 90.0f; // Adjust this value as needed
+                    if (playerTrans.pos.y < enemyTrans.pos.y - 20.0f && std::abs(dx) < horizontalProximity) {
+                        followSpeed *= 0.7f; 
+                    }
+                    
+                    enemyAI.facingDirection = (dx > 0.f) ? 1.f : -1.f;
+                    enemyTrans.velocity.x = enemyAI.facingDirection * followSpeed;
+                } else {
+                    enemyTrans.velocity.x = 0.f;
+                }
             }
         }
 

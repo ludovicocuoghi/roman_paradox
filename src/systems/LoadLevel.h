@@ -119,13 +119,13 @@ public:
     static constexpr int   ENEMY_STRONG_MAX_CONSECUTIVE_SWORD_ATTACKS = 6;
     static constexpr int   ENEMY_STRONG_BULLET_BURST_COUNT = 8;
     static constexpr int   ENEMY_STRONG_SUPER_BULLET_COUNT = 8;
-    static constexpr float ENEMY_STRONG_SUPER_BULLET_DAMAGE = 8.f;
+    static constexpr float ENEMY_STRONG_SUPER_BULLET_DAMAGE = 6.f;
     
     // Elite enemy attack params
     static constexpr int   ENEMY_ELITE_MAX_CONSECUTIVE_SWORD_ATTACKS = 7;
-    static constexpr int   ENEMY_ELITE_BULLET_BURST_COUNT = 10;
+    static constexpr int   ENEMY_ELITE_BULLET_BURST_COUNT = 8;
     static constexpr int   ENEMY_ELITE_SUPER_BULLET_COUNT = 8;
-    static constexpr float ENEMY_ELITE_SUPER_BULLET_DAMAGE = 8.f;
+    static constexpr float ENEMY_ELITE_SUPER_BULLET_DAMAGE = 7.f;
     
     // Super enemy attack params
     static constexpr int   ENEMY_SUPER_MAX_CONSECUTIVE_SWORD_ATTACKS = 10;
@@ -134,10 +134,38 @@ public:
     static constexpr float ENEMY_SUPER_SUPER_BULLET_DAMAGE = 25.f;
     
     // Emperor enemy attack params
+
+    // Emperor enemy attack params
+    static constexpr int   EMPEROR_RADIAL_BULLETS_COUNT = 8;  // Number of bullets in a radial pattern
+    static constexpr float EMPEROR_RADIAL_BULLETS_RADIUS = 50.f;  // Spawn radius for bullets
+    static constexpr float EMPEROR_RADIAL_BULLETS_SPEED = 350.f;  // Speed of radial bullets
+    static constexpr float BULLET_DURATION = 3.0f;  // Lifetime of bullets
+
+    // Existing emperor params
     static constexpr int   ENEMY_EMPEROR_MAX_CONSECUTIVE_SWORD_ATTACKS = 15;
     static constexpr int   ENEMY_EMPEROR_BULLET_BURST_COUNT = 6;
     static constexpr int   ENEMY_EMPEROR_SUPER_BULLET_COUNT = 3;
     static constexpr float ENEMY_EMPEROR_SUPER_BULLET_DAMAGE = 8.f;
+
+    // Future Emperor phase thresholds
+    static constexpr float FUTURE_EMPEROR_PHASE1_THRESHOLD = 0.6f;
+    static constexpr float FUTURE_EMPEROR_PHASE2_THRESHOLD = 0.3f;
+
+    // Future Emperor bullet parameters
+    static constexpr float FUTURE_EMPEROR_BULLET_BASE_SPEED = 300.0f;
+
+    // Future Emperor bullet counts for different phases
+    static constexpr int FUTURE_EMPEROR_PHASE1_BULLET_COUNT = 8;
+    static constexpr int FUTURE_EMPEROR_PHASE2_BULLET_COUNT = 12;
+    static constexpr int FUTURE_EMPEROR_PHASE3_BULLET_COUNT = 16;
+
+    // Future Emperor attack intervals for different phases
+    static constexpr float FUTURE_EMPEROR_PHASE1_ATTACK_INTERVAL = 2.5f;
+    static constexpr float FUTURE_EMPEROR_PHASE2_ATTACK_INTERVAL = 1.8f;
+    static constexpr float FUTURE_EMPEROR_PHASE3_ATTACK_INTERVAL = 1.2f;
+
+    // Future Emperor teleport cooldown (for phases 2 and 3)
+    static constexpr float FUTURE_EMPEROR_TELEPORT_COOLDOWN = 5.0f;
 
     // Constructor and methods
     LoadLevel(GameEngine& game);

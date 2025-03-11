@@ -24,7 +24,7 @@ using ComponentTuple = std::tuple<
     CTileTouched,
     CAmmo,
     CStopAfterTime
->;
+    >;
 
 class Entity {
 private:

@@ -534,6 +534,8 @@ void Scene_Play::sAmmoSystem(float dt)
     }
 }
 
+// Update the updateBurstFire function in Scene_Play.cpp
+
 void Scene_Play::updateBurstFire(float deltaTime)
 {
     // Get the player
@@ -546,6 +548,13 @@ void Scene_Play::updateBurstFire(float deltaTime)
     // If not in a burst, do nothing
     if (!state.inBurst) return;
 
+    // IMPORTANT FIX: Make sure player stays in attack state during burst
+    if (state.state != "attack") {
+        state.state = "attack";
+        state.attackTime = 0.1f; // Small value to keep animation running
+        std::cout << "[DEBUG] Restored attack state during burst fire" << std::endl;
+    }
+
     // 1) Update timers
     state.burstTimer     += deltaTime;
     state.burstFireTimer += deltaTime;
@@ -557,6 +566,7 @@ void Scene_Play::updateBurstFire(float deltaTime)
         state.burstTimer     = 0.f;
         state.burstFireTimer = 0.f;
         state.bulletsShot    = 0;
+        // Let the animation system handle transitioning back to idle/run
         std::cout << "[DEBUG] Burst ended (time limit reached).\n";
         return;
     }
@@ -581,6 +591,9 @@ void Scene_Play::updateBurstFire(float deltaTime)
         // Reset the interval timer
         state.burstFireTimer = 0.f;
         state.bulletsShot++;
+
+        // Keep the attack animation active
+        state.attackTime = 0.1f;
 
         // Spawn a bullet
         m_spawner.spawnPlayerBullet(player);

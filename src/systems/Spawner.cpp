@@ -325,27 +325,6 @@ void Spawner::spawnEmperorSwordsRadial(std::shared_ptr<Entity> enemy, int swordC
     }
 }
 
-void Spawner::spawnEmperorSwordsStatic(std::shared_ptr<Entity> emperor, int swordCount, float radius,float speed)
-{
-    auto& emperorTrans = emperor->get<CTransform>();
-
-    for (int i = 0; i < swordCount; ++i)
-    {
-        float angle = (360.f / swordCount) * i;
-        float radians = angle * (3.14159265f / 180.f);
-
-        Vec2 direction = Vec2(std::cos(radians), std::sin(radians));
-        Vec2 spawnPos  = emperorTrans.pos + direction * radius;
-
-        auto sword = m_entityManager.addEntity("EmperorSword");
-        sword->add<CTransform>(spawnPos, direction * speed);
-        sword->add<CAnimation>(m_game.assets().getAnimation("EmperorSword"), true);
-        
-        // Sword moves only for 1 second, then stops forever
-        sword->add<CLifeSpan>(9999.f); // long lifespan
-        sword->add<CStopAfterTime>(3.f); // custom component to stop after 1s
-    }
-}
 
 void Spawner::spawnEnemyGrave(const Vec2<float>& position, bool isEmperor) {
     auto grave = m_entityManager.addEntity("enemyGrave");
@@ -433,7 +412,6 @@ void Spawner::spawnEmperorSwordArmorRadial(std::shared_ptr<Entity> enemy, int sw
         //           << " velocity=(" << vx << ", " << vy << ")\n";
     }
 }
-
 // Spawn degli item
 std::shared_ptr<Entity> Spawner::spawnItem(const Vec2<float>& position, const std::string& tileType) {
     static std::random_device rd;

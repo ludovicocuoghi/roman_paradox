@@ -17,10 +17,8 @@ void AnimationSystem::update(float deltaTime) {
         auto& canim = entity->get<CAnimation>();
         auto& st    = entity->get<CState>();
         auto& trans = entity->get<CTransform>();
-
-        //std::cout << "Current state in AnimSystem" << st.state << std::endl;
     
-        // 1) Check if the player has FutureArmor
+        // Check if the player has FutureArmor
         bool hasFutureArmor = false;
         if (entity->has<CPlayerEquipment>()) {
             hasFutureArmor = entity->get<CPlayerEquipment>().hasFutureArmor;
@@ -29,11 +27,11 @@ void AnimationSystem::update(float deltaTime) {
         // Decide animation prefix: "Player" vs. "Future"
         std::string prefix = hasFutureArmor ? "Future" : "";
     
-        if (st.state == "attack") {
+        if (st.state == "attack" || st.inBurst) {
             // Attack logic
             st.attackTime -= deltaTime;
     
-            // e.g., "PlayerAttack" or "FutureAttack"
+            // Choose attack animation based on armor type
             std::string attackAnim = prefix + "PlayerAttack";
     
             if (m_game.assets().hasAnimation(attackAnim)) {
@@ -48,8 +46,9 @@ void AnimationSystem::update(float deltaTime) {
                         flipSpriteRight(canim.animation.getMutableSprite());
                 }
             }
-            // Once attackTime is done, revert to run/idle
-            if (st.attackTime <= 0.f) {
+            
+            // Once attackTime is done, revert to run/idle ONLY if not in burst
+            if (st.attackTime <= 0.f && !st.inBurst) {
                 if (std::abs(trans.velocity.x) > 1.f)
                     st.state = "run";
                 else
@@ -154,10 +153,6 @@ void AnimationSystem::update(float deltaTime) {
 
         // Inside your AnimationSystem.cpp, in the enemy animation section
         if (enemy->has<CEnemyAI>() && enemy->get<CEnemyAI>().enemyType == EnemyType::Super) {
-            //std::cout << "[DEBUG] Animation system processing Super enemy " << enemy->id()
-            //        << " State: " << (int)ai.enemyState
-            //        << " Animation: " << canim.animation.getName() << std::endl;
-                    // Only update the animation frames, don't change anything else
             canim.animation.update(deltaTime);
             continue;  // Skip to next entity
         }

@@ -59,6 +59,25 @@ public:
     static constexpr float PLAYER_BULLET_OFFSET_X   = 30.f;   // X offset from player
     static constexpr float PLAYER_BULLET_OFFSET_Y   = 5.f;   // Y offset from player
 
+    // Bullet types and damage values
+    static constexpr float BULLET_BLUE_DAMAGE = 1.0f;   // Phase 1 - Basic bullet
+    static constexpr float BULLET_GOLD_DAMAGE = 2.0f;   // Phase 2 - Medium bullet
+    static constexpr float BULLET_RED_DAMAGE = 3.0f;    // Phase 2 - Strong bullet
+    static constexpr float BULLET_BLACK_DAMAGE = 5.0f;  // Phase 3 - Most powerful bullet
+
+    // Bullet speeds for different colors
+    static constexpr float BULLET_BLUE_SPEED = 300.0f;
+    static constexpr float BULLET_GOLD_SPEED = 350.0f;
+    static constexpr float BULLET_RED_SPEED = 400.0f;
+    static constexpr float BULLET_BLACK_SPEED = 450.0f;
+
+    // Bullet visuals (if needed)
+    static constexpr float BULLET_BLUE_SCALE = 1.0f;
+    static constexpr float BULLET_GOLD_SCALE = 1.1f;
+    static constexpr float BULLET_RED_SCALE = 1.2f;
+    static constexpr float BULLET_BLACK_SCALE = 1.3f;
+    static constexpr float BULLET_DURATION= 10.f;
+
     Spawner(GameEngine& game, EntityManager& entityManager);
 
     // Funzioni di spawn
@@ -79,7 +98,7 @@ public:
     void createBlockFragments(const Vec2<float>& position, const std::string & blockType);
     void spawnEmperorSwordsStatic(std::shared_ptr<Entity> emperor,int swordCount,float radius,float speed);
     void spawnEmperorSwordArmorRadial(std::shared_ptr<Entity> emperor, int swordCount, float radius, float swordSpeed, float baseStopTime, float stopTimeIncrement);
-
+    std::shared_ptr<Entity> spawnBulletOffset(std::shared_ptr<Entity> source);
 private:
     GameEngine& m_game;
     EntityManager& m_entityManager;
