@@ -58,7 +58,7 @@ void MovementSystem::updateCamera()
 
     // Check for Emperor boss with low health to trigger zoom out
     float targetZoomStrength = ZOOM_STRENGTH; // Default zoom level
-    
+
     // Find Emperor boss and check health
     for (auto& enemy : m_entityManager.getEntities("enemy")) {
         if (enemy->has<CEnemyAI>() && enemy->has<CHealth>()) {
