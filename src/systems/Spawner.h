@@ -111,6 +111,9 @@ public:
     void spawnEmperorBulletsRadial(std::shared_ptr<Entity> enemy, int bulletCount, 
         float radius, float bulletSpeed);
 
+    void spawnEmperorBlackHoles(std::shared_ptr<Entity> enemy, int blackHoleCount, 
+        float radius, float blackHoleSpeed);
+
 private:
     GameEngine& m_game;
     EntityManager& m_entityManager;

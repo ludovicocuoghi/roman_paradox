@@ -12,7 +12,6 @@ MovementSystem::MovementSystem(GameEngine& game,
       m_lastDirection(lastDirection)
 {
 }
-
 void MovementSystem::updateCamera()
 {
     auto players = m_entityManager.getEntities("player");
@@ -57,11 +56,35 @@ void MovementSystem::updateCamera()
     // Set the camera center
     m_cameraView.setCenter(desiredCenter);
 
-    // Example: One-time zoom to ZOOM_STRENGTH
-    if (m_currentZoom != ZOOM_STRENGTH) {
-        float zoomFactor = ZOOM_STRENGTH / m_currentZoom;
+    // Check for Emperor boss with low health to trigger zoom out
+    float targetZoomStrength = ZOOM_STRENGTH; // Default zoom level
+    
+    // Find Emperor boss and check health
+    for (auto& enemy : m_entityManager.getEntities("enemy")) {
+        if (enemy->has<CEnemyAI>() && enemy->has<CHealth>()) {
+            auto& enemyAI = enemy->get<CEnemyAI>();
+            auto& health = enemy->get<CHealth>();
+            
+            // Check if this is the Emperor and health is below 30%
+            if (enemyAI.enemyType == EnemyType::Emperor) {
+                float healthPercentage = static_cast<float>(health.currentHealth) / static_cast<float>(health.maxHealth);
+                
+                if (healthPercentage <= 0.3f) {
+                    // Zoom out to 2.0 for final phase
+                    targetZoomStrength = 3.0f;
+                    //std::cout << "[DEBUG] Emperor health below 30%, zooming out camera.\n";
+                }
+                
+                break; // No need to check other enemies once we found the Emperor
+            }
+        }
+    }
+
+    // Apply zoom if it changed
+    if (m_currentZoom != targetZoomStrength) {
+        float zoomFactor = targetZoomStrength / m_currentZoom;
         m_cameraView.zoom(zoomFactor);
-        m_currentZoom = ZOOM_STRENGTH;
+        m_currentZoom = targetZoomStrength;
 
         // Debug prints:
         std::cout << "Current zoom factor: " << m_currentZoom << "\n";
@@ -188,6 +211,27 @@ void MovementSystem::update(float deltaTime)
         // Only swords with active stop timers (timer > 0) should count down
         if (eSword->has<CStopAfterTime>()) {
             auto& stopTimer = eSword->get<CStopAfterTime>();
+    
+            if (stopTimer.timer > 0.f) {
+                stopTimer.timer -= deltaTime;
+                if (stopTimer.timer <= 0.f) {
+                    swTrans.velocity = Vec2(0.f, 0.f);
+                    stopTimer.timer = 0.f; // Mark as "stopped"
+                }
+            }
+        }
+    
+        swTrans.pos += swTrans.velocity * deltaTime;
+
+    }
+
+    for (auto& blackHole : m_entityManager.getEntities("emperorBlackHole")) {
+        if (!blackHole->has<CTransform>()) continue;
+        auto& swTrans = blackHole->get<CTransform>();
+    
+        // Only swords with active stop timers (timer > 0) should count down
+        if (blackHole->has<CStopAfterTime>()) {
+            auto& stopTimer = blackHole->get<CStopAfterTime>();
     
             if (stopTimer.timer > 0.f) {
                 stopTimer.timer -= deltaTime;

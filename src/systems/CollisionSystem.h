@@ -52,6 +52,8 @@ public:
     void handleEnemyEnemyCollisions();
     void handleBulletPlayerCollisions();
     void handlePlayerBulletCollisions();
+    void handleBlackHoleTileCollisions();
+    void handleMassiveBlackHoleCollisions();
 
 
 private:

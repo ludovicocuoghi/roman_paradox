@@ -22,6 +22,8 @@ void CollisionSystem::updateCollisions() {
     handlePlayerEnemyCollisions();
     handleEnemyEnemyCollisions();
     handleSwordCollisions();
+    handleBlackHoleTileCollisions();
+    handleMassiveBlackHoleCollisions();
     handleBulletPlayerCollisions();
     handlePlayerBulletCollisions();
     handlePlayerCollectibleCollisions();
@@ -198,6 +200,50 @@ void CollisionSystem::handlePlayerTileCollisions() {
                               ? "run" : "idle";
             } else {
                 state.state = "air";
+            }
+        }
+    }
+}
+
+void CollisionSystem::handleMassiveBlackHoleCollisions() {
+    for (auto& massiveBlackHole : m_entityManager.getEntities("emperorMassiveBlackHole")) {
+        if (!massiveBlackHole->has<CTransform>() || !massiveBlackHole->has<CBoundingBox>()) 
+            continue;
+
+        auto& blackHoleTrans = massiveBlackHole->get<CTransform>();
+        auto& blackHoleBB = massiveBlackHole->get<CBoundingBox>();
+        sf::FloatRect blackHoleRect = blackHoleBB.getRect(blackHoleTrans.pos);
+
+        // Mass destruction - destroy ALL tiles it passes through
+        for (auto& tile : m_entityManager.getEntities("tile")) {
+            if (!tile->has<CTransform>() || !tile->has<CBoundingBox>())
+                continue;
+
+            auto& tileTrans = tile->get<CTransform>();
+            auto& tileBB = tile->get<CBoundingBox>();
+            sf::FloatRect tileRect = tileBB.getRect(tileTrans.pos);
+
+            // Using regular collision for simplicity
+            if (blackHoleRect.intersects(tileRect)) {
+                tile->destroy();
+            }
+        }
+        
+        // Instant death on player contact
+        for (auto& player : m_entityManager.getEntities("player")) {
+            if (!player->has<CTransform>() || !player->has<CBoundingBox>())
+                continue;
+
+            auto& playerTrans = player->get<CTransform>();
+            auto& playerBB = player->get<CBoundingBox>();
+            sf::FloatRect playerRect = playerBB.getRect(playerTrans.pos);
+
+            if (blackHoleRect.intersects(playerRect)) {
+                // Instant kill
+                if (player->has<CHealth>()) {
+                    player->get<CHealth>().currentHealth = 0;
+                    std::cout << "[DEBUG] Player consumed by massive black hole! GAME OVER.\n";
+                }
             }
         }
     }
@@ -600,27 +646,26 @@ void CollisionSystem::handleBulletPlayerCollisions() {
                     if (bullet->has<CState>()) {
                         std::string enemyIdStr = bullet->get<CState>().state;
                         
-                        // Try to convert the string to a numeric ID
-                        try {
-                            int enemyId = std::stoi(enemyIdStr);
-                            
-                            // Find the enemy with this ID
-                            for (auto& enemy : m_entityManager.getEntities("enemy")) {
-                                if (enemy->id() == static_cast<size_t>(enemyId) && enemy->has<CEnemyAI>()) {
-                                    // Get damage from the original enemy
-                                    bulletDamage = enemy->get<CState>().bulletDamage;
-                                    std::cout << "[DEBUG] Found source enemy (ID: " << enemyId 
-                                              << ") with damage: " << bulletDamage << "\n";
-                                    break;
-                                }
-                            }
-                        } catch (const std::exception& e) {
-                            // If the state isn't a valid number, use default damage
-                            std::cout << "[DEBUG] Couldn't parse enemy ID from bullet state: " 
-                                      << enemyIdStr << ". Using default damage.\n";
+                    // Try to convert the string to a numeric ID
+                    int enemyId = std::stoi(enemyIdStr);
+                    
+                    // Find the enemy with this ID
+                    for (auto& enemy : m_entityManager.getEntities("enemy")) {
+                        if (enemy->id() == static_cast<size_t>(enemyId) && enemy->has<CEnemyAI>()) {
+                            // Get damage from the original enemy
+                            bulletDamage = enemy->get<CState>().bulletDamage;
+
+                        // Apply 0.6 multiplier if the enemy is Emperor
+                        if (enemy->get<CEnemyAI>().enemyType == EnemyType::Emperor) {
+                            bulletDamage = static_cast<int>(bulletDamage * 0.6f);
+                            std::cout << "[DEBUG] Emperor bullet damage reduced (x0.6): " << bulletDamage << "\n";
+                        }
+                            std::cout << "[DEBUG] Found source enemy (ID: " << enemyId 
+                                        << ") with damage: " << bulletDamage << "\n";
+                            break;
                         }
                     }
-                    
+                    }
                     // Apply FutureArmor protection if relevant
                     bool hasFutureArmor = false;
                     if (player->has<CPlayerEquipment>()) {
@@ -649,6 +694,66 @@ void CollisionSystem::handleBulletPlayerCollisions() {
         }
     }
 }
+void CollisionSystem::handleBlackHoleTileCollisions() {
+    for (auto& blackHole : m_entityManager.getEntities("emperorBlackHole")) {
+        if (!blackHole->has<CTransform>() || !blackHole->has<CBoundingBox>()) 
+            continue;
+
+        auto& blackHoleTrans = blackHole->get<CTransform>();
+        auto& blackHoleBB = blackHole->get<CBoundingBox>();
+        sf::FloatRect blackHoleRect = blackHoleBB.getRect(blackHoleTrans.pos);
+
+        // Check for collisions with tiles
+        for (auto& tile : m_entityManager.getEntities("tile")) {
+            if (!tile->has<CTransform>() || !tile->has<CBoundingBox>())
+                continue;
+
+            auto& tileTrans = tile->get<CTransform>();
+            auto& tileBB = tile->get<CBoundingBox>();
+            sf::FloatRect tileRect = tileBB.getRect(tileTrans.pos);
+
+            if (blackHoleRect.intersects(tileRect)) {
+                // Optional: Play a sound effect
+                // Destroy the tile
+                std::cout << "[DEBUG] Black hole destroyed a tile at position (" 
+                          << tileTrans.pos.x << "," << tileTrans.pos.y << ")\n";
+                
+                tile->destroy();
+                
+                // Unlike regular bullets, black holes don't get destroyed upon hitting a tile
+                // This makes them more destructive as they continue through multiple tiles
+                
+                break; // Move to the next black hole after handling one tile collision
+            }
+        }
+        // Also check for player collision
+        for (auto& player : m_entityManager.getEntities("player")) {
+            if (!player->has<CTransform>() || !player->has<CBoundingBox>())
+                continue;
+
+            auto& playerTrans = player->get<CTransform>();
+            auto& playerBB = player->get<CBoundingBox>();
+            sf::FloatRect playerRect = playerBB.getRect(playerTrans.pos);
+
+            if (blackHoleRect.intersects(playerRect)) {
+                // When player collides with black hole, instant death
+                if (player->has<CHealth>()) {
+                    auto& health = player->get<CHealth>();
+                    
+                    // Force health to 0 for instant death
+                    health.currentHealth = 0;
+                    
+                    std::cout << "[DEBUG] Player hit by black hole! INSTANT DEATH.\n";
+                }
+
+                // Destroy the black hole after hitting player
+                blackHole->destroy();
+                break;
+            }
+        }
+    }
+}
+
 void CollisionSystem::handleSwordCollisions() {
     // Player sword
     for (auto& sword : m_entityManager.getEntities("sword")) {

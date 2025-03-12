@@ -342,8 +342,8 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
                 // In the Emperor's initialization section or where you set up its health:
                 if (m_game.worldType == "Future") {
                     // Future Emperor has 3x health
-                    enemy->get<CHealth>().maxHealth = LoadLevel::ENEMY_EMPEROR_HEALTH * 3;
-                    enemy->get<CHealth>().currentHealth = LoadLevel::ENEMY_EMPEROR_HEALTH * 3;
+                    enemy->get<CHealth>().maxHealth = LoadLevel::ENEMY_EMPEROR_HEALTH * 2;
+                    enemy->get<CHealth>().currentHealth = LoadLevel::ENEMY_EMPEROR_HEALTH * 2;
                 } else {
                     // Normal health for other worlds
                     enemy->get<CHealth>().maxHealth = LoadLevel::ENEMY_EMPEROR_HEALTH;

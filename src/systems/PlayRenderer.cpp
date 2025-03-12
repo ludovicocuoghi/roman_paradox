@@ -361,7 +361,7 @@ void PlayRenderer::render() {
                         if (m_game.assets().hasAnimation(desiredAnimName)) {
                             animation.animation = m_game.assets().getAnimation(desiredAnimName);
                             animation.animation.reset();
-                            std::cout << "[DEBUG] Emperor animation updated to: " << desiredAnimName << std::endl;
+                            //std::cout << "[DEBUG] Emperor animation updated to: " << desiredAnimName << std::endl;
                         } else {
                             std::cerr << "[ERROR] Missing animation: " << desiredAnimName << " for Emperor enemy!" << std::endl;
                             
@@ -370,7 +370,7 @@ void PlayRenderer::render() {
                             if (m_game.assets().hasAnimation(fallbackAnim)) {
                                 animation.animation = m_game.assets().getAnimation(fallbackAnim);
                                 animation.animation.reset();
-                                std::cout << "[DEBUG] Using fallback animation: " << fallbackAnim << std::endl;
+                                //std::cout << "[DEBUG] Using fallback animation: " << fallbackAnim << std::endl;
                             }
                         }
                     }
@@ -499,6 +499,34 @@ void PlayRenderer::render() {
             debugBox.setPosition(esTrans.pos.x, esTrans.pos.y);
             debugBox.setFillColor(sf::Color::Transparent);
             debugBox.setOutlineColor(sf::Color::Yellow);
+            debugBox.setOutlineThickness(2.f);
+            m_game.window().draw(debugBox);
+        }
+    }
+    
+    // Render emperor black holes
+    for (auto& blackHole : m_entityManager.getEntities("emperorBlackHole")) {
+        if (!blackHole->has<CTransform>()) continue;
+        
+        auto& blackHoleTrans = blackHole->get<CTransform>();
+        
+        if (blackHole->has<CAnimation>()) {
+            auto& anim = blackHole->get<CAnimation>();
+            sf::Sprite sprite = anim.animation.getSprite();
+            sprite.setPosition(blackHoleTrans.pos.x, blackHoleTrans.pos.y);
+            sprite.setOrigin(anim.animation.getSize().x / 2.f,
+                            anim.animation.getSize().y / 2.f);
+            m_game.window().draw(sprite);
+        }
+        
+        if (m_showBoundingBoxes && blackHole->has<CBoundingBox>()) {
+            auto& bbox = blackHole->get<CBoundingBox>();
+            debugBox.setSize(sf::Vector2f(bbox.size.x, bbox.size.y));
+            float dir = (blackHoleTrans.pos.x < 0) ? -1.f : 1.f;
+            debugBox.setOrigin((dir < 0) ? bbox.size.x : bbox.halfSize.x, bbox.halfSize.y);
+            debugBox.setPosition(blackHoleTrans.pos.x, blackHoleTrans.pos.y);
+            debugBox.setFillColor(sf::Color::Transparent);
+            debugBox.setOutlineColor(sf::Color::Magenta); // Different color to distinguish black holes
             debugBox.setOutlineThickness(2.f);
             m_game.window().draw(debugBox);
         }

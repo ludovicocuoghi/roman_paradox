@@ -523,6 +523,7 @@ class CEnemyAI : public Component {
         bool canChangeState;
         float stateChangeCooldown;
         float phaseTimer;
+        float blackHoleTimer;
     
         // ------------------------------------------------------
         // Costruttore
@@ -606,7 +607,8 @@ class CEnemyAI : public Component {
                 isAttackingTile(false),
                 canChangeState(true),
                 stateChangeCooldown(0.f),
-                phaseTimer(0.0f)
+                phaseTimer(0.0f),
+                blackHoleTimer(0.0f)
         {
         }
     };

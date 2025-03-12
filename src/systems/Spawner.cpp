@@ -666,7 +666,7 @@ void Spawner::spawnEmperorBulletsRadial(std::shared_ptr<Entity> enemy, int bulle
         } else if (bulletType == "Elite") {
             animName = "FutureBlackBullet"; // Black bullets
         } else if (bulletType == "Emperor") {
-            animName = "FutureRedBullet";   // Default Emperor bullet (red)
+            animName = "FuturePurpleBullet";   // Default Emperor bullet (red)
         } else {
             // Default to Emperor bullet type (red) if no valid type specified
             animName = "FutureRedBullet";
@@ -693,13 +693,63 @@ void Spawner::spawnEmperorBulletsRadial(std::shared_ptr<Entity> enemy, int bulle
         float vx = std::cos(angleRad) * bulletSpeed;
         float vy = std::sin(angleRad) * bulletSpeed;
         bullet->get<CTransform>().velocity = Vec2<float>(vx, vy);
+    }
+}
+// Spawns black holes in multiple directions that destroy tiles on impact
+void Spawner::spawnEmperorBlackHoles(std::shared_ptr<Entity> enemy, int blackHoleCount, 
+                                     float radius, float blackHoleSpeed) {
+    auto& eTrans = enemy->get<CTransform>();
 
-        // std::cout << "[DEBUG] Spawned Emperor radial bullet " << i 
-        //           << " anim=" << animName
-        //           << " angle=" << angleDeg 
-        //           << " deg (random offset=" << randomAngleOffset << ")"
-        //           << " pos(" << spawnPos.x << "," << spawnPos.y 
-        //           << ") velocity(" << vx << "," << vy << ")\n";
+    float centerX = eTrans.pos.x;
+    float centerY = eTrans.pos.y;
+
+    // Generate a random angle offset for this burst (between 0 and 36 degrees)
+    float randomAngleOffset = (std::rand() % 36); 
+
+    for (int i = 0; i < blackHoleCount; i++) {
+        // Apply random offset to the base angle calculation
+        float angleDeg = (360.f / blackHoleCount) * i + randomAngleOffset;
+        float angleRad = angleDeg * 3.1415926535f / 180.f;
+
+        // Calculate radial position
+        float offsetX = std::cos(angleRad) * radius;
+        float offsetY = std::sin(angleRad) * radius;
+        Vec2<float> spawnPos(centerX + offsetX, centerY + offsetY);
+
+        // Create blackHole entity
+        auto blackHole = m_entityManager.addEntity("emperorBlackHole");
+        blackHole->add<CTransform>(spawnPos);
+        blackHole->add<CLifeSpan>(5.0f); // Black hole lifespan - longer than bullets
+        
+        // Store the creator ID in the state component
+        blackHole->add<CState>(std::to_string(enemy->id()));
+
+        // Set animation for black hole
+        std::string animName = "AlienBlackHoleAttack";
+        
+        // Load animation
+        if (m_game.assets().hasAnimation(animName)) {
+            auto& blackHoleAnim = m_game.assets().getAnimation(animName);
+            blackHole->add<CAnimation>(blackHoleAnim, true);
+
+            sf::Vector2i animSize = blackHoleAnim.getSize();
+            Vec2<float> boxSize(animSize.x, animSize.y);
+            Vec2<float> halfSize(boxSize.x * 0.5f, boxSize.y * 0.5f);
+            blackHole->add<CBoundingBox>(boxSize, halfSize);
+        } else {
+            std::cerr << "[ERROR] Missing " << animName << " animation!\n";
+        }
+
+        // Assign velocity to CTransform
+        float vx = std::cos(angleRad) * blackHoleSpeed;
+        float vy = std::sin(angleRad) * blackHoleSpeed;
+        blackHole->get<CTransform>().velocity = Vec2<float>(vx, vy);
+
+        std::cout << "[DEBUG] Spawned Emperor black hole " << i 
+                  << " angle=" << angleDeg 
+                  << " deg (random offset=" << randomAngleOffset << ")"
+                  << " pos(" << spawnPos.x << "," << spawnPos.y 
+                  << ") velocity(" << vx << "," << vy << ")\n";
     }
 }
 

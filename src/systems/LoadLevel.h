@@ -82,7 +82,7 @@ public:
     
     // Emperor enemy
     static constexpr float ENEMY_EMPEROR_SPEED_MULTIPLIER = 0.6f;
-    static constexpr int   ENEMY_EMPEROR_HEALTH = 100;
+    static constexpr int   ENEMY_EMPEROR_HEALTH = 50;
     static constexpr int   ENEMY_EMPEROR_DAMAGE = 10;
     static constexpr float EMPEROR_BB_WIDTH = 160.f;
     static constexpr float EMPEROR_BB_HEIGHT = 250.f;
