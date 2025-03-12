@@ -339,8 +339,16 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
                 enemy->get<CState>().superBulletCount = LoadLevel::ENEMY_EMPEROR_SUPER_BULLET_COUNT;
                 enemy->get<CState>().superBulletDamage = LoadLevel::ENEMY_EMPEROR_SUPER_BULLET_DAMAGE;
                 enemy->get<CEnemyAI>().enemyBehavior = EnemyBehavior::FollowFour;
-                enemy->get<CHealth>().maxHealth = LoadLevel::ENEMY_EMPEROR_HEALTH;
-                enemy->get<CHealth>().currentHealth = LoadLevel::ENEMY_EMPEROR_HEALTH;
+                // In the Emperor's initialization section or where you set up its health:
+                if (m_game.worldType == "Future") {
+                    // Future Emperor has 3x health
+                    enemy->get<CHealth>().maxHealth = LoadLevel::ENEMY_EMPEROR_HEALTH * 3;
+                    enemy->get<CHealth>().currentHealth = LoadLevel::ENEMY_EMPEROR_HEALTH * 3;
+                } else {
+                    // Normal health for other worlds
+                    enemy->get<CHealth>().maxHealth = LoadLevel::ENEMY_EMPEROR_HEALTH;
+                    enemy->get<CHealth>().currentHealth = LoadLevel::ENEMY_EMPEROR_HEALTH;
+                }
             } else if (enemyType == EnemyType::Super) {
                 enemy->get<CEnemyAI>().enemyType = EnemyType::Super;
                 enemy->get<CEnemyAI>().damage = LoadLevel::ENEMY_SUPER_DAMAGE;

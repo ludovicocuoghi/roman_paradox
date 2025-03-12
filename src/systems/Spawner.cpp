@@ -526,8 +526,8 @@ std::shared_ptr<Entity> Spawner::spawnBlackHoleAfterTileDestruction(const Vec2<f
     blackHoleTile->add<CTransform>(position);
 
     // Load black hole tile animation
-    if (m_game.assets().hasAnimation("AlienBlackHoleVanish")) {
-        auto& tileAnim = m_game.assets().getAnimation("AlienBlackHoleVanish");
+    if (m_game.assets().hasAnimation("AlienBlackHoleAttack")) {
+        auto& tileAnim = m_game.assets().getAnimation("AlienBlackHoleAttack");
         blackHoleTile->add<CAnimation>(tileAnim, true); // loop
         sf::Vector2i animSize = tileAnim.getSize();
         Vec2<float> boxSize(animSize.x, animSize.y);

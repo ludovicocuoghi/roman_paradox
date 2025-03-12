@@ -67,7 +67,7 @@ void CollisionSystem::handlePlayerTileCollisions() {
                 continue;
 
             std::string animName = tileAnim.getName();
-            if (animName == "AlienBlackHoleVanish") {
+            if (animName == "AlienBlackHoleAttack") {
                 if (player->has<CHealth>()) {
                     auto& health = player->get<CHealth>();
             

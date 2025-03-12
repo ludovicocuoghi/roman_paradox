@@ -156,10 +156,13 @@ Animation AncientBlackHoleBlueBig TexAncientBlackHoleBlueBig 1050 1050 10 14
 Texture TexAlienBlackHoleRedBig Tile/alien_rome/blackhole_reds_big.png
 Texture TexAlienBlackHoleRedSmall Tile/alien_rome/blackhole_reds_small.png
 Texture TexAlienBlackHoleVanish Tile/alien_rome/vanish_black_hole.png
+Texture TexAlienBlackHoleAttack Tile/alien_rome/blackholeattack.png
+
 Animation AlienBlackHoleRedBig TexAlienBlackHoleRedBig 500 500 10 14
 Animation AlienBlackHoleRedSmall TexAlienBlackHoleRedSmall 75 75 10 14
 Animation AlienBlackHoleVanish TexAlienBlackHoleVanish 50 50 4 10
 Animation FutureBlackHoleRedBig TexAlienBlackHoleRedBig 500 500 10 14
+Animation AlienBlackHoleAttack TexAlienBlackHoleAttack 81 41 8 22
 
 Texture TexAncientStandEnemyFast Enemy/ancient_rome/silver/stand1002_silver.png
 Texture TexAncientRunEnemyFast Enemy/ancient_rome/silver/run1004_silver.png

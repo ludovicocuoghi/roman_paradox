@@ -249,9 +249,18 @@ void EnemyAISystem::update(float deltaTime)
                         bossPhase = BossPhase::Phase3;
                     }
                 }
+                if (m_game.worldType == "Future" && enemyAI.enemyType == EnemyType::Emperor) {
+                    std::cout << "[DEBUG EMPEROR] Enemy ID: " << enemy->id()
+                              << " | Health %: " << healthPercentage
+                              << " | State: " << static_cast<int>(enemyAI.enemyState)
+                              << " | Burst active: " << (enemyAI.burstCooldownActive ? "YES" : "NO") 
+                              << " | Burst timer: " << enemyAI.burstCooldownTimer
+                              << " | Radial timer: " << enemyAI.radialAttackTimer
+                              << " | Burst count: " << enemyAI.burstCount << std::endl;
+                }
             }
 
-            // ATTACK LOGIC - No changes to your existing attack code
+            // ATTACK LOGIC
             if (healthPercentage <= 0.1f) {
                 if (enemyAI.enemyState != EnemyState::FinalAttack) {
                     enemyAI.enemyState = EnemyState::FinalAttack;
@@ -369,16 +378,20 @@ void EnemyAISystem::update(float deltaTime)
                 // Normal attacks based on health percentage
                 if (m_game.worldType == "Future") {
                     // FUTURE EMPEROR ATTACKS
+                    // Phase 1: Continuous firing for 3 seconds, then 10-second cooldown
                     if (healthPercentage > 0.7f) {
-                        // Phase 1: Low damage bullets (Blue = Fast type)
+                        // Track total time in current state (either firing or cooldown)
+                        enemyAI.phaseTimer += deltaTime;
+                        
                         if (!enemyAI.burstCooldownActive) {
-                            enemyAI.radialAttackTimer += deltaTime;
+                            // FIRING PHASE - lasts for 3 seconds
                             
-                            // Track consecutive bursts in this attack sequence
-                            if (enemyAI.radialAttackTimer >= 0.25f) { // Short delay between bursts in same attack
+                            // Fire a radial burst every 0.2 seconds
+                            enemyAI.radialAttackTimer += deltaTime;
+                            if (enemyAI.radialAttackTimer >= 0.2f) {
                                 enemyAI.radialAttackTimer = 0.f;
                                 
-                                // Phase 1: Blue bullets only - low damage
+                                // Spawn a single radial burst
                                 m_spawner->spawnEmperorBulletsRadial(
                                     enemy,
                                     EMPEROR_RADIAL_BULLETS_COUNT,
@@ -386,132 +399,164 @@ void EnemyAISystem::update(float deltaTime)
                                     EMPEROR_RADIAL_BULLETS_SPEED,
                                     "Fast" // Blue bullets
                                 );
-                                
-                                enemyAI.burstCount++;
-                                
-                                // After 3 bursts, activate cooldown
-                                if (enemyAI.burstCount >= 3) {
-                                    enemyAI.burstCount = 0;
-                                    enemyAI.burstCooldownActive = true;
-                                    enemyAI.burstCooldownTimer = 0.f;
-                                }
                             }
-                        } else {
-                            // Cooldown between attack sequences
-                            enemyAI.burstCooldownTimer += deltaTime;
-                            if (enemyAI.burstCooldownTimer >= 4.f) {
-                                enemyAI.burstCooldownActive = false;
-                            }
-                        }
-                    }
-                    else if (healthPercentage <= 0.7f && healthPercentage > 0.5f) {
-                        // Phase 2: Medium damage bullets (Red = Strong type)
-                        if (!enemyAI.burstCooldownActive) {
-                            enemyAI.radialAttackTimer += deltaTime;
                             
-                            if (enemyAI.radialAttackTimer >= 0.2f) { // Faster consecutive bursts
-                                enemyAI.radialAttackTimer = 0.f;
-                                
-                                m_spawner->spawnEmperorBulletsRadial(
-                                    enemy,
-                                    EMPEROR_RADIAL_BULLETS_COUNT * 2,
-                                    EMPEROR_RADIAL_BULLETS_RADIUS,
-                                    EMPEROR_RADIAL_BULLETS_SPEED,
-                                    "Strong" // Red bullets
-                                );
-                                
-                                enemyAI.burstCount++;
-                                
-                                // After 4 bursts, activate cooldown
-                                if (enemyAI.burstCount >= 4) {
-                                    enemyAI.burstCount = 0;
-                                    enemyAI.burstCooldownActive = true;
-                                    enemyAI.burstCooldownTimer = 0.f;
-                                }
+                            // After 3 seconds of firing, switch to cooldown mode
+                            if (enemyAI.phaseTimer >= 3.0f) {
+                                enemyAI.phaseTimer = 0.f;
+                                enemyAI.burstCooldownActive = true;
+                                enemyAI.radialAttackTimer = 0.f; // Reset the attack timer
+                                std::cout << "[DEBUG] Emperor Phase 1: 3-second firing complete, entering cooldown\n";
                             }
                         } else {
-                            // Cooldown between attack sequences
-                            enemyAI.burstCooldownTimer += deltaTime;
-                            if (enemyAI.burstCooldownTimer >= 3.5f) {
-                                enemyAI.burstCooldownActive = false;
-                            }
-                        }
-                    }
-                    else if (healthPercentage <= 0.5f && healthPercentage > 0.3f) {
-                        // Phase 3: High damage bullets (Black = Elite type)
-                        if (!enemyAI.burstCooldownActive) {
-                            enemyAI.radialAttackTimer += deltaTime;
+                            // COOLDOWN PHASE - lasts for 10 seconds
                             
-                            if (enemyAI.radialAttackTimer >= 0.15f) { // Even faster consecutive bursts
-                                enemyAI.radialAttackTimer = 0.f;
-                                
-                                m_spawner->spawnEmperorBulletsRadial(
-                                    enemy,
-                                    EMPEROR_RADIAL_BULLETS_COUNT * 2,
-                                    EMPEROR_RADIAL_BULLETS_RADIUS,
-                                    EMPEROR_RADIAL_BULLETS_SPEED * 1.2f,
-                                    "Elite" // Black bullets
-                                );
-                                
-                                enemyAI.burstCount++;
-                                
-                                // After 5 bursts, activate cooldown
-                                if (enemyAI.burstCount >= 5) {
-                                    enemyAI.burstCount = 0;
-                                    enemyAI.burstCooldownActive = true;
-                                    enemyAI.burstCooldownTimer = 0.f;
-                                }
-                            }
-                        } else {
-                            // Cooldown between attack sequences
-                            enemyAI.burstCooldownTimer += deltaTime;
-                            if (enemyAI.burstCooldownTimer >= 3.0f) {
+                            // After 10 seconds of cooldown, switch back to firing mode
+                            if (enemyAI.phaseTimer >= 10.0f) {
+                                enemyAI.phaseTimer = 0.f;
                                 enemyAI.burstCooldownActive = false;
+                                std::cout << "[DEBUG] Emperor Phase 1: 10-second cooldown ended, resuming firing\n";
                             }
                         }
                     }
-                    else if (healthPercentage <= 0.3f) {
-                        // Phase 4: Mixed bullets (all types in rapid succession)
-                        if (!enemyAI.burstCooldownActive) {
-                            enemyAI.radialAttackTimer += deltaTime;
+                // Phase 2: Stronger bullets with longer firing period and shorter cooldown (70-50% health)
+                else if (healthPercentage <= 0.7f && healthPercentage > 0.5f) {
+                    // Track total time in current state
+                    enemyAI.phaseTimer += deltaTime;
+                    
+                    if (!enemyAI.burstCooldownActive) {
+                        // FIRING PHASE - lasts for 4 seconds
+                        
+                        // Fire a radial burst every 0.3 seconds
+                        enemyAI.radialAttackTimer += deltaTime;
+                        if (enemyAI.radialAttackTimer >= 0.3f) {
+                            enemyAI.radialAttackTimer = 0.f;
                             
-                            if (enemyAI.radialAttackTimer >= 0.1f) { // Extremely fast consecutive bursts
-                                enemyAI.radialAttackTimer = 0.f;
-                                
-                                // Determine which bullet type based on burst count
-                                std::string bulletType;
-                                switch (enemyAI.burstCount % 4) {
-                                    case 0: bulletType = "Elite"; break;  // Black
-                                    case 1: bulletType = "Strong"; break; // Red
-                                    case 2: bulletType = "Fast"; break;   // Blue
-                                    case 3: bulletType = "Normal"; break; // Gold
-                                }
-                                
-                                m_spawner->spawnEmperorBulletsRadial(
-                                    enemy,
-                                    EMPEROR_RADIAL_BULLETS_COUNT * 2,
-                                    EMPEROR_RADIAL_BULLETS_RADIUS,
-                                    EMPEROR_RADIAL_BULLETS_SPEED * 1.3f,
-                                    bulletType
-                                );
-                                
-                                enemyAI.burstCount++;
-                                
-                                // After 6 bursts, activate cooldown
-                                if (enemyAI.burstCount >= 6) {
-                                    enemyAI.burstCount = 0;
-                                    enemyAI.burstCooldownActive = true;
-                                    enemyAI.burstCooldownTimer = 0.f;
-                                }
-                            }
-                        } else {
-                            // Shorter cooldown between attack sequences
-                            enemyAI.burstCooldownTimer += deltaTime;
-                            if (enemyAI.burstCooldownTimer >= 2.f) {
-                                enemyAI.burstCooldownActive = false;
-                            }
+                            // Spawn a radial burst with more bullets
+                            m_spawner->spawnEmperorBulletsRadial(
+                                enemy,
+                                EMPEROR_RADIAL_BULLETS_COUNT * 1.5, // 50% more bullets
+                                EMPEROR_RADIAL_BULLETS_RADIUS,
+                                EMPEROR_RADIAL_BULLETS_SPEED,
+                                "Strong" // Red bullets
+                            );
+                        }
+                        
+                        // After 4 seconds of firing, switch to cooldown mode
+                        if (enemyAI.phaseTimer >= 4.0f) {
+                            enemyAI.phaseTimer = 0.f;
+                            enemyAI.burstCooldownActive = true;
+                            enemyAI.radialAttackTimer = 0.f;
+                            std::cout << "[DEBUG] Emperor Phase 2: 4-second firing complete, entering cooldown\n";
+                        }
+                    } else {
+                        // COOLDOWN PHASE - lasts for 8 seconds
+                        
+                        // After 8 seconds of cooldown, switch back to firing mode
+                        if (enemyAI.phaseTimer >= 8.0f) {
+                            enemyAI.phaseTimer = 0.f;
+                            enemyAI.burstCooldownActive = false;
+                            std::cout << "[DEBUG] Emperor Phase 2: 8-second cooldown ended, resuming firing\n";
                         }
                     }
+                }
+
+                // Phase 3: Alternating bullet types with increased firing rate (50-30% health)
+                else if (healthPercentage <= 0.5f && healthPercentage > 0.3f) {
+                    // Track total time in current state
+                    enemyAI.phaseTimer += deltaTime;
+                    
+                    if (!enemyAI.burstCooldownActive) {
+                        // FIRING PHASE - lasts for 5 seconds
+                        
+                        // Fire a radial burst every 0.25 seconds
+                        enemyAI.radialAttackTimer += deltaTime;
+                        if (enemyAI.radialAttackTimer >= 0.25f) {
+                            enemyAI.radialAttackTimer = 0.f;
+                            
+                            // Alternate between Elite (black) and Strong (red) bullets
+                            std::string bulletType = (enemyAI.burstCount % 2 == 0) ? "Elite" : "Strong";
+                            enemyAI.burstCount++; // Just used for alternating bullet types
+                            
+                            m_spawner->spawnEmperorBulletsRadial(
+                                enemy,
+                                EMPEROR_RADIAL_BULLETS_COUNT * 1.8, // 80% more bullets
+                                EMPEROR_RADIAL_BULLETS_RADIUS,
+                                EMPEROR_RADIAL_BULLETS_SPEED * 1.1f, // 10% faster bullets
+                                bulletType
+                            );
+                        }
+                        
+                        // After 5 seconds of firing, switch to cooldown mode
+                        if (enemyAI.phaseTimer >= 5.0f) {
+                            enemyAI.phaseTimer = 0.f;
+                            enemyAI.burstCooldownActive = true;
+                            enemyAI.radialAttackTimer = 0.f;
+                            // Keep burstCount as is (don't reset) to maintain bullet type alternation
+                            std::cout << "[DEBUG] Emperor Phase 3: 5-second firing complete, entering cooldown\n";
+                        }
+                    } else {
+                        // COOLDOWN PHASE - lasts for 6 seconds
+                        
+                        // After 6 seconds of cooldown, switch back to firing mode
+                        if (enemyAI.phaseTimer >= 6.0f) {
+                            enemyAI.phaseTimer = 0.f;
+                            enemyAI.burstCooldownActive = false;
+                            std::cout << "[DEBUG] Emperor Phase 3: 6-second cooldown ended, resuming firing\n";
+                        }
+                    }
+                }
+
+                // Phase 4: Intense mixed bullet types with very short cooldown (30-10% health)
+                else if (healthPercentage <= 0.3f && healthPercentage > 0.1f) {
+                    // Track total time in current state
+                    enemyAI.phaseTimer += deltaTime;
+                    
+                    if (!enemyAI.burstCooldownActive) {
+                        // FIRING PHASE - lasts for 6 seconds
+                        
+                        // Fire a radial burst every 0.15 seconds
+                        enemyAI.radialAttackTimer += deltaTime;
+                        if (enemyAI.radialAttackTimer >= 0.15f) {
+                            enemyAI.radialAttackTimer = 0.f;
+                            
+                            // Rotate through all bullet types
+                            std::string bulletType;
+                            switch (enemyAI.burstCount % 4) {
+                                case 0: bulletType = "Elite"; break;  // Black
+                                case 1: bulletType = "Strong"; break; // Red
+                                case 2: bulletType = "Fast"; break;   // Blue
+                                case 3: bulletType = "Normal"; break; // Gold
+                            }
+                            enemyAI.burstCount++;
+                            
+                            m_spawner->spawnEmperorBulletsRadial(
+                                enemy,
+                                EMPEROR_RADIAL_BULLETS_COUNT * 2, // Double the bullets
+                                EMPEROR_RADIAL_BULLETS_RADIUS,
+                                EMPEROR_RADIAL_BULLETS_SPEED * 1.2f, // 20% faster bullets
+                                bulletType
+                            );
+                        }
+                        
+                        // After 6 seconds of firing, switch to cooldown mode
+                        if (enemyAI.phaseTimer >= 6.0f) {
+                            enemyAI.phaseTimer = 0.f;
+                            enemyAI.burstCooldownActive = true;
+                            enemyAI.radialAttackTimer = 0.f;
+                            std::cout << "[DEBUG] Emperor Phase 4: 6-second firing complete, entering cooldown\n";
+                        }
+                    } else {
+                        // COOLDOWN PHASE - lasts for 4 seconds
+                        
+                        // After 4 seconds of cooldown, switch back to firing mode
+                        if (enemyAI.phaseTimer >= 4.0f) {
+                            enemyAI.phaseTimer = 0.f;
+                            enemyAI.burstCooldownActive = false;
+                            std::cout << "[DEBUG] Emperor Phase 4: 4-second cooldown ended, resuming firing\n";
+                        }
+                    }
+                }
                 } else {
                     // ANCIENT EMPEROR ATTACKS
                     if (healthPercentage > 0.7f) {
@@ -719,7 +764,7 @@ void EnemyAISystem::update(float deltaTime)
         
                 // Skip black hole
                 std::string animName = tileAnim.getName();
-                if (animName.find("AlienBlackHoleVanish") != std::string::npos)
+                if (animName.find("AlienBlackHoleAttack") != std::string::npos)
                     continue;
         
                 bool isHorizontallyAligned =
@@ -773,7 +818,7 @@ void EnemyAISystem::update(float deltaTime)
                 
                     // Salta il buco nero
                     std::string animName = tileAnim.getName();
-                    if (animName.find("AlienBlackHoleVanish") != std::string::npos)
+                    if (animName.find("AlienBlackHoleAttack") != std::string::npos)
                         continue;
                 
                     bool isHorizontallyAligned =
