@@ -328,30 +328,50 @@ void PlayRenderer::render() {
                 }
                 // Future Emperor uses CBossPhase instead of EnemyState
                 else if (m_game.worldType == "Future" && enemy->has<CBossPhase>()) {
-                    std::string desiredAnimName;
-        
+                    std::string phaseNumber = "";
+                    std::string actionPrefix = "";
+                    
+                    // Determine phase number suffix based on boss phase
                     switch (bossPhase) {
-                        case BossPhase::Phase1: desiredAnimName = "FutureStandEmperor"; break;
-                        case BossPhase::Phase2: desiredAnimName = "FutureStandEmperor2"; break;
-                        case BossPhase::Phase3: desiredAnimName = "FutureStandEmperor3"; break;
-                        default: desiredAnimName = "FutureStandEmperor"; break;
+                        case BossPhase::Phase1: phaseNumber = ""; break;    // No suffix for Phase 1
+                        case BossPhase::Phase2: phaseNumber = "2"; break;   // "2" suffix for Phase 2
+                        case BossPhase::Phase3: phaseNumber = "3"; break;   // "3" suffix for Phase 3
+                        default: phaseNumber = ""; break;
                     }
-        
+                    
+                    // Determine action prefix based on current animation or enemy state
                     std::string currentAnimName = animation.animation.getName();
-                    if (currentAnimName.find("Run") != std::string::npos)
-                        desiredAnimName += "Run";
-                    else if (currentAnimName.find("Hit") != std::string::npos)
-                        desiredAnimName += "Hit";
-                    else if (currentAnimName.find("Attack") != std::string::npos)
-                        desiredAnimName += "Attack";
-        
+                    
+                    // Check what kind of animation is currently playing
+                    if (currentAnimName.find("Run") != std::string::npos) {
+                        actionPrefix = "FutureRun";
+                    } else if (currentAnimName.find("Hit") != std::string::npos) {
+                        actionPrefix = "FutureHit";
+                    } else if (currentAnimName.find("Attack") != std::string::npos) {
+                        actionPrefix = "FutureAttack";
+                    } else {
+                        actionPrefix = "FutureStand";  // Default to Stand
+                    }
+                    
+                    // Construct the full animation name: [ActionPrefix]Emperor[PhaseNumber]
+                    std::string desiredAnimName = actionPrefix + "Emperor" + phaseNumber;
+                    
+                    // Update animation if needed and it exists
                     if (desiredAnimName != currentAnimName) {
                         if (m_game.assets().hasAnimation(desiredAnimName)) {
                             animation.animation = m_game.assets().getAnimation(desiredAnimName);
                             animation.animation.reset();
                             std::cout << "[DEBUG] Emperor animation updated to: " << desiredAnimName << std::endl;
                         } else {
-                            std::cerr << "[ERROR] Missing animation: " << desiredAnimName << " for Emperor enemy!\n";
+                            std::cerr << "[ERROR] Missing animation: " << desiredAnimName << " for Emperor enemy!" << std::endl;
+                            
+                            // Fallback to the stand animation for this phase if available
+                            std::string fallbackAnim = "FutureStandEmperor" + phaseNumber;
+                            if (m_game.assets().hasAnimation(fallbackAnim)) {
+                                animation.animation = m_game.assets().getAnimation(fallbackAnim);
+                                animation.animation.reset();
+                                std::cout << "[DEBUG] Using fallback animation: " << fallbackAnim << std::endl;
+                            }
                         }
                     }
                 }
