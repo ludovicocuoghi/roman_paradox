@@ -69,9 +69,15 @@ void MovementSystem::updateCamera()
             if (enemyAI.enemyType == EnemyType::Emperor) {
                 float healthPercentage = static_cast<float>(health.currentHealth) / static_cast<float>(health.maxHealth);
                 
-                if (healthPercentage <= 0.3f) {
+                if (healthPercentage <= 0.5f) {
                     // Zoom out to 2.0 for final phase
                     targetZoomStrength = 3.0f;
+                    //std::cout << "[DEBUG] Emperor health below 30%, zooming out camera.\n";
+                }
+
+                if (healthPercentage <= 0.3f) {
+                    // Zoom out to 2.0 for final phase
+                    targetZoomStrength = 5.0f;
                     //std::cout << "[DEBUG] Emperor health below 30%, zooming out camera.\n";
                 }
                 

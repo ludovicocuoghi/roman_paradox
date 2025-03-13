@@ -394,8 +394,8 @@ void PlayRenderer::render() {
                     m_game.window().draw(sprite);
                 }
         
-                std::cout << "[DEBUG] Emperor state: " << static_cast<int>(bossPhase)
-                          << " | Current Animation: " << animation.animation.getName() << std::endl;
+                // std::cout << "[DEBUG] Emperor state: " << static_cast<int>(bossPhase)
+                //           << " | Current Animation: " << animation.animation.getName() << std::endl;
             } else {
                 // Non-Emperor enemies remain unchanged
                 bool shouldDraw = true;
