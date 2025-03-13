@@ -233,12 +233,12 @@ void EnemyAISystem::update(float deltaTime)
                         }
                         
                         // Spawn central black hole
-                        std::string animName = "AlienBlackHoleAttack";
+                        std::string animName = "AlienBlackHoleRedBig";
                         if (m_game.assets().hasAnimation(animName)) {
                             // Create massive black hole
                             auto massiveBlackHole = m_entityManager.addEntity("emperorBlackHole");
                             massiveBlackHole->add<CTransform>(enemyTrans.pos);
-                            massiveBlackHole->add<CLifeSpan>(10.0f);
+                            massiveBlackHole->add<CLifeSpan>(30.0f);
                             massiveBlackHole->add<CState>(std::to_string(enemy->id()));
                             
                             // Animation setup
@@ -247,17 +247,17 @@ void EnemyAISystem::update(float deltaTime)
                             
                             // Configure size
                             sf::Vector2i animSize = blackHoleAnim.getSize();
-                            Vec2<float> boxSize(animSize.x * 40, animSize.y * 80);
+                            Vec2<float> boxSize(animSize.x * 3.1, animSize.y * 3.1);
                             Vec2<float> halfSize(boxSize.x * 0.5f, boxSize.y * 0.5f);
                             
                             // Scale the sprite - increase size for final attack
                             auto& sprite = massiveBlackHole->get<CAnimation>().animation.getMutableSprite();
-                            float scale_int = 100.f;
+                            float scale_int = 8.5f;
                             sprite.setScale(scale_int, scale_int);
                             massiveBlackHole->add<CBoundingBox>(boxSize, halfSize);
                             
                             // Set velocity
-                            float blackHoleSpeed = EMPEROR_RADIAL_BULLETS_SPEED * 0.4f;
+                            float blackHoleSpeed = EMPEROR_RADIAL_BULLETS_SPEED * 0.5f;
                             massiveBlackHole->get<CTransform>().velocity = Vec2<float>(
                                 direction.x * blackHoleSpeed,
                                 direction.y * blackHoleSpeed
@@ -538,7 +538,7 @@ void EnemyAISystem::update(float deltaTime)
                                     EMPEROR_RADIAL_BULLETS_COUNT * 1.5, // 50% more bullets
                                     EMPEROR_RADIAL_BULLETS_RADIUS,
                                     EMPEROR_RADIAL_BULLETS_SPEED,
-                                    "Purple" 
+                                    "Emperor" 
                                 );
                             }
                             
@@ -569,7 +569,7 @@ void EnemyAISystem::update(float deltaTime)
                             float centerX = eTrans.pos.x;
                             float centerY = eTrans.pos.y;
                             float radius = EMPEROR_RADIAL_BULLETS_RADIUS * 0.8f;
-                            float blackHoleSpeed = EMPEROR_RADIAL_BULLETS_SPEED * 0.6f;
+                            float blackHoleSpeed = EMPEROR_RADIAL_BULLETS_SPEED * 0.3f;
                             
                             // Spawn black hole at 0 degrees (right)
                             {
@@ -690,7 +690,7 @@ void EnemyAISystem::update(float deltaTime)
                             float centerY = eTrans.pos.y;
                             float radius = EMPEROR_RADIAL_BULLETS_RADIUS * 0.8f;
                             float blackHoleSpeed = EMPEROR_RADIAL_BULLETS_SPEED * 0.4f;
-                            int blackHoleCount = 6;
+                            int blackHoleCount = 4;
                             
                             // Generate a random angle offset for this burst (between 0 and 36 degrees)
                             float randomAngleOffset = (std::rand() % 36);
@@ -787,7 +787,7 @@ void EnemyAISystem::update(float deltaTime)
                                 massiveBlackHole->add<CBoundingBox>(boxSize, halfSize);
                                 
                                 // Set velocity - slow but steady towards player
-                                float blackHoleSpeed = EMPEROR_RADIAL_BULLETS_SPEED * 0.35f;
+                                float blackHoleSpeed = EMPEROR_RADIAL_BULLETS_SPEED * 0.3f;
                                 massiveBlackHole->get<CTransform>().velocity = Vec2<float>(
                                     direction.x * blackHoleSpeed,
                                     direction.y * blackHoleSpeed

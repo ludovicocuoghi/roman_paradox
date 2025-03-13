@@ -42,16 +42,14 @@ std::shared_ptr<Entity> Spawner::spawnPlayerBullet(std::shared_ptr<Entity> playe
     }
     auto& pTrans = player->get<CTransform>();
 
-    // (Optional) If you track facing direction in a component (e.g., CState or CTransform),
-    // retrieve it here. For simplicity, we assume positive X is facing right, negative X is left.
-    float facingDir = 1.f; // default right
-    if (player->has<CState>()) {
-        // Suppose your CState has a float 'facingDirection'
-        facingDir = pTrans.facingDirection;
-    }
+    // FIXED: Get the facing direction DIRECTLY from the transform where it's maintained
+    float facingDir = pTrans.facingDirection;
+    
+    // Log the facing direction to debug
+    std::cout << "[DEBUG] Player facing direction: " << facingDir << "\n";
 
     // 3) Calculate bullet spawn position & velocity
-    float offsetX = (facingDir < 0) ? -PLAYER_BULLET_OFFSET_X : PLAYER_BULLET_OFFSET_X;
+    float offsetX = facingDir * PLAYER_BULLET_OFFSET_X; // Simplified offset calculation
     float offsetY = PLAYER_BULLET_OFFSET_Y;
     Vec2<float> bulletPos = pTrans.pos + Vec2<float>(offsetX, offsetY);
 
@@ -60,15 +58,27 @@ std::shared_ptr<Entity> Spawner::spawnPlayerBullet(std::shared_ptr<Entity> playe
     float randomAngleRange = 0.12f; // approx 15 degrees in radians
     float randomAngle = ((static_cast<float>(rand()) / static_cast<float>(RAND_MAX)) * 2.0f - 1.0f) * randomAngleRange;
     
-    // Calculate the new velocity vector based on the random angle
-    float speed = PLAYER_BULLET_SPEED;
+    // FIXED: Simplified angle calculation to avoid potential errors
     float baseAngle = (facingDir < 0) ? M_PI : 0.0f; // Base angle depending on facing direction
     float finalAngle = baseAngle + randomAngle;
     
-    Vec2<float> bulletVelocity(
-        speed * std::cos(finalAngle),
-        speed * std::sin(finalAngle)
-    );
+    // FIXED: Add a sanity check to ensure valid facing direction
+    if (facingDir == 0.0f) {
+        std::cout << "[WARNING] Zero facing direction detected, defaulting to right.\n";
+        facingDir = 1.0f; // Default to facing right if somehow facingDir is 0
+    }
+    
+    // Calculate velocity - simpler approach
+    Vec2<float> bulletVelocity;
+    if (facingDir > 0) {
+        // Facing right
+        bulletVelocity.x = PLAYER_BULLET_SPEED * std::cos(randomAngle);
+        bulletVelocity.y = PLAYER_BULLET_SPEED * std::sin(randomAngle);
+    } else {
+        // Facing left
+        bulletVelocity.x = -PLAYER_BULLET_SPEED * std::cos(randomAngle);
+        bulletVelocity.y = PLAYER_BULLET_SPEED * std::sin(randomAngle);
+    }
 
     // 4) Add components to the bullet
     bullet->add<CTransform>(bulletPos, bulletVelocity);
@@ -95,8 +105,8 @@ std::shared_ptr<Entity> Spawner::spawnPlayerBullet(std::shared_ptr<Entity> playe
     }
 
     std::cout << "[DEBUG] Spawned player bullet at (" 
-              << bulletPos.x << ", " << bulletPos.y << ") with angle " 
-              << finalAngle * (180.0f / M_PI) << " degrees\n";
+              << bulletPos.x << ", " << bulletPos.y << ") with velocity (" 
+              << bulletVelocity.x << ", " << bulletVelocity.y << ")\n";
     return bullet;
 }
 
@@ -669,7 +679,7 @@ void Spawner::spawnEmperorBulletsRadial(std::shared_ptr<Entity> enemy, int bulle
             animName = "FuturePurpleBullet";   // Default Emperor bullet (red)
         } else {
             // Default to Emperor bullet type (red) if no valid type specified
-            animName = "FutureRedBullet";
+            animName = "FuturePurpleBullet";
         }
         
         // Load animation

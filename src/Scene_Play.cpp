@@ -315,10 +315,15 @@ void Scene_Play::sDoAction(const Action& action)
                 return;
             }
             
-            if (state.attackCooldown <= 0.f) {
+            // For gun attacks, we don't use the attack cooldown anymore (as requested)
+            if ((hasFutureArmor || state.attackCooldown <= 0.f)) {
                 state.state = "attack";
                 state.attackTime = 0.5f;
-                state.attackCooldown = 0.5f;
+                
+                // Only set attack cooldown for melee weapons
+                if (!hasFutureArmor) {
+                    state.attackCooldown = 0.5f;
+                }
                 
                 if (hasFutureArmor) {
                     // Check for ammo if the ammo system is enabled
@@ -388,7 +393,7 @@ void Scene_Play::sDoAction(const Action& action)
                     // Set both cooldowns
                     state.bulletCooldown = 1.0f; // Normal cooldown for basic shots
                     
-                    // THIS IS THE CRUCIAL PART: Reset the super move timer
+                    // Reset the super move timer
                     state.superBulletTimer = state.superBulletCooldown; // Reset super move cooldown
                     state.superMoveReady = false; // No longer ready
                     
@@ -405,6 +410,15 @@ void Scene_Play::sDoAction(const Action& action)
             }
         }
         else if (action.name() == "DEFENSE") {
+            // Cancel burst mode if active
+            if (state.inBurst) {
+                state.inBurst = false;
+                state.burstTimer = 0.f;
+                state.burstFireTimer = 0.f;
+                state.bulletsShot = 0;
+                std::cout << "[DEBUG] Burst canceled by DEFENSE.\n";
+            }
+            
             // Activate defense only if there's stamina left
             if (state.shieldStamina > 0.f && state.state != "defense") {
                 std::cout << "[DEBUG] Defense activated.\n";
