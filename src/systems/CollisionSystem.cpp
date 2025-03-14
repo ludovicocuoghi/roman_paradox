@@ -704,6 +704,7 @@ void CollisionSystem::handleBlackHoleTileCollisions() {
         sf::FloatRect blackHoleRect = blackHoleBB.getRect(blackHoleTrans.pos);
 
         // Check for collisions with tiles
+        // Check for collisions with tiles
         for (auto& tile : m_entityManager.getEntities("tile")) {
             if (!tile->has<CTransform>() || !tile->has<CBoundingBox>())
                 continue;
@@ -713,6 +714,14 @@ void CollisionSystem::handleBlackHoleTileCollisions() {
             sf::FloatRect tileRect = tileBB.getRect(tileTrans.pos);
 
             if (blackHoleRect.intersects(tileRect)) {
+                // Check if the tile is beyond the x-coordinate limit
+                if (tileTrans.pos.x > 3744) {
+                    // Skip destruction for tiles beyond x=3744
+                    std::cout << "[DEBUG] Black hole hit a protected tile at position (" 
+                              << tileTrans.pos.x << "," << tileTrans.pos.y << ") - not destroyed\n";
+                    continue;
+                }
+                
                 // Optional: Play a sound effect
                 // Destroy the tile
                 std::cout << "[DEBUG] Black hole destroyed a tile at position (" 

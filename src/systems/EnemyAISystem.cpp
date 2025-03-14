@@ -175,7 +175,6 @@ void EnemyAISystem::update(float deltaTime)
                     
                     std::cout << "[DEBUG] Emperor entering final attack state! Health: " << healthPercentage << "\n";
                 }
-
                 // Future Emperor final attack logic
                 if (m_game.worldType == "Future" && enemyAI.enemyState == EnemyState::FinalAttack) {
                     // Always stop movement during final attack
@@ -193,7 +192,6 @@ void EnemyAISystem::update(float deltaTime)
 
                         std::cout << screenWidth << screenHeight << std::endl;
                         
-                        // Position in center of screen
                         enemyTrans.pos = Vec2<float>(5000, -1000);
                         enemyAI.burstCount = 1; // Mark teleport as complete
                         
@@ -252,7 +250,7 @@ void EnemyAISystem::update(float deltaTime)
                             
                             // Scale the sprite - increase size for final attack
                             auto& sprite = massiveBlackHole->get<CAnimation>().animation.getMutableSprite();
-                            float scale_int = 8.5f;
+                            float scale_int = 8.0f;
                             sprite.setScale(scale_int, scale_int);
                             massiveBlackHole->add<CBoundingBox>(boxSize, halfSize);
                             
@@ -268,16 +266,34 @@ void EnemyAISystem::update(float deltaTime)
                             std::cout << "[ERROR] Missing animation: " << animName << " for black hole!\n";
                         }
                     }
-                    else if (enemyAI.burstCount == 2 && enemyAI.phaseTimer >= 4.0f) {
-                        // Phase 2: Kill the Emperor after waiting period
-                        if (enemy->has<CHealth>()) {
-                            auto& health = enemy->get<CHealth>();
-                            health.currentHealth = 0;
+                    else if (enemyAI.burstCount == 2 && enemyAI.phaseTimer >= 10.0f) {
+                        // Phase 3: Teleport to final position after 10 seconds
+                        enemyTrans.pos = Vec2<float>(3777, 500);
+                        enemyAI.burstCount = 3; // Mark teleport as complete
+                        
+                        // Stop all movement
+                        enemyTrans.velocity.x = 0.f;
+                        enemyTrans.velocity.y = 0.f;
+                        
+                        // Update animation if needed
+                        if (enemy->has<CAnimation>()) {
+                            auto& animation = enemy->get<CAnimation>();
+                            std::string standAnim = "FutureStandEmperor3";
+                            if (m_game.assets().hasAnimation(standAnim)) {
+                                animation.animation = m_game.assets().getAnimation(standAnim);
+                            }
                         }
                         
-                        enemyAI.enemyState = EnemyState::Defeated;
+                        std::cout << "[DEBUG] FINAL TELEPORT: Emperor teleported to final position at (3777, 0)\n";
+                    }
+                    else if (enemyAI.burstCount == 3) {
+                        // Phase 4: Stay at final position until defeated
+                        // Reset velocities to ensure the emperor stays still
+                        enemyTrans.velocity.x = 0.f;
+                        enemyTrans.velocity.y = 0.f;
                         
-                        std::cout << "[DEBUG] DEATH PHASE: Emperor defeated after final attack!\n";
+                        // Enemy can now be defeated, but we don't automatically kill it
+                        // The player must defeat it through regular combat
                     }
                     
                     // Skip the rest of the logic when in final attack mode

@@ -65,20 +65,29 @@ void MovementSystem::updateCamera()
             auto& enemyAI = enemy->get<CEnemyAI>();
             auto& health = enemy->get<CHealth>();
             
-            // Check if this is the Emperor and health is below 30%
-            if (enemyAI.enemyType == EnemyType::Emperor) {
+            // Only apply special zoom for Future Emperor
+            if (enemyAI.enemyType == EnemyType::Emperor && m_game.worldType == "Future") {
                 float healthPercentage = static_cast<float>(health.currentHealth) / static_cast<float>(health.maxHealth);
                 
-                if (healthPercentage <= 0.5f) {
-                    // Zoom out to 2.0 for final phase
-                    targetZoomStrength = 3.0f;
-                    //std::cout << "[DEBUG] Emperor health below 30%, zooming out camera.\n";
+                // Check if the Emperor is in the final teleported position (Phase 4)
+                if (enemy->has<CTransform>()) {
+                    auto& transform = enemy->get<CTransform>();
+                    
+                    // If Emperor is at the final position (around x=3777)
+                    if (std::abs(transform.pos.x - 3777) < 50) {
+                        // Set zoom for final battle phase after teleport
+                        targetZoomStrength = 1.5f;
+                        break;
+                    }
                 }
-
+                
+                // Otherwise use health-based zoom levels
                 if (healthPercentage <= 0.3f) {
-                    // Zoom out to 2.0 for final phase
+                    // Zoom out more for final attack phase
                     targetZoomStrength = 5.0f;
-                    //std::cout << "[DEBUG] Emperor health below 30%, zooming out camera.\n";
+                } else if (healthPercentage <= 0.5f) {
+                    // Medium zoom out for phase 2
+                    targetZoomStrength = 3.0f;
                 }
                 
                 break; // No need to check other enemies once we found the Emperor

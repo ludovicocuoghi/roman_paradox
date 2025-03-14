@@ -97,6 +97,8 @@ Texture TexFutureTreasureHit Tile/future_rome/treasure_hit.png
 Texture TexFutureLevelDoor Tile/future_rome/leveldoor.png
 Texture TexFutureArmor Tile/future_rome/armor.png
 Texture TexFutureEnemyGrave Tile/future_rome/grave_enemy.png
+Texture TexFutureEmperorGrave Tile/future_rome/grave_emperor_future.png
+
 Animation FutureGround TexFutureGround 96 96 4 12
 Animation FutureBrick TexFutureBrick 96 96 11 7
 Animation FutureBox1 TexFutureBox1 96 96 1 0
@@ -106,6 +108,7 @@ Animation FutureTreasureHit TexFutureTreasureHit 96 96 1 0
 Animation FutureLevelDoor TexFutureLevelDoor 348 480 1 0
 Animation FutureArmor TexFutureArmor 100 100 16 10
 Animation FutureEnemyGrave TexFutureEnemyGrave 55 65 25 15
+Animation FutureEmperorGrave TexFutureEmperorGrave 203 264 27 16
 
 Texture TexAlienGround Tile/alien_rome/ground.png
 Texture TexAlienBrick Tile/alien_rome/brick.png

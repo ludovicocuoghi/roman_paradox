@@ -65,6 +65,7 @@ public:
     void removeTileByID(const std::string& tileID);
     void createTile(const std::string& tileType, int gridX, int gridY);
     void updateBurstFire(float deltaTime);
+    void handleEmperorDeath(std::shared_ptr<Entity> emperor);
 
     // --- Configuration Constants
     const float gravityVal = 1000.f;

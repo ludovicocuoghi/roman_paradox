@@ -314,6 +314,23 @@ Tile Ground 8 4
 Tile Ground 13 6
 Tile Ground 24 6
 Tile Ground 29 5
+Tile Ground 0 -1
+Tile Ground 0 -2
+Tile Ground 0 -3
+Tile Treasure 4 16
+Tile Treasure 1 16
+Tile Ground 10 19
+Tile Ground 20 19
+Tile Ground 27 19
+Tile Ground 32 19
+Tile Ground 37 19
+Tile Ground 15 19
+Tile Ground 4 19
+Tile Ground 2 7
+Tile Ground 5 7
+Tile Ground 10 7
+Tile Ground 11 7
+Tile Ground -1 7
 Player 1 2
 Dec PipeTall 0 5
 Dec PipeTall 1 5

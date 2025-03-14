@@ -340,7 +340,7 @@ void Scene_Play::sDoAction(const Action& action)
                     
                     // Fire a bullet immediately for feedback
                     m_spawner.spawnPlayerBullet(player);
-                    state.bulletCooldown = 0.2f;
+                    //state.bulletCooldown = 0.2f;
                     
                     // Enable burst mode so we can keep firing
                     state.inBurst        = true;
@@ -668,6 +668,56 @@ void Scene_Play::removeTileByID(const std::string& tileID) {
     }
 }
 
+// Add this function to your Scene_Play class declaration in Scene_Play.h
+void handleEmperorDeath(std::shared_ptr<Entity> emperor);
+
+// Add this implementation to Scene_Play.cpp
+void Scene_Play::handleEmperorDeath(std::shared_ptr<Entity> emperor) {
+    // Check if the emperor entity exists and has the required components
+    if (!emperor || !emperor->has<CEnemyAI>() || !emperor->has<CTransform>() || !emperor->has<CHealth>()) {
+        return;
+    }
+    
+    auto& enemyAI = emperor->get<CEnemyAI>();
+    auto& enemyTrans = emperor->get<CTransform>();
+    auto& health = emperor->get<CHealth>();
+    
+    // Only proceed if this is actually the Emperor and is dead
+    if (health.currentHealth <= 0 && enemyAI.enemyType == EnemyType::Emperor) {
+        // Set state to defeated if not already
+        if (enemyAI.enemyState != EnemyState::Defeated) {
+            enemyAI.enemyState = EnemyState::Defeated;
+            
+            // Get the position where the emperor died
+            Vec2<float> deathPosition = enemyTrans.pos;
+            
+            // Spawn the emperor's grave at the same position
+            m_spawner.spawnEnemyGrave(deathPosition, true); // true = isEmperor
+            
+            std::cout << "[DEBUG] Emperor defeated. Grave spawned at position (" 
+                      << deathPosition.x << "," << deathPosition.y << ")\n";
+            
+            // If we're in level 4, remove the pipe
+            std::string levelName = extractLevelName(m_levelPath);
+            if (levelName.find("emperor_room") != std::string::npos) {
+                // This is specific to emperor room levels
+                std::cout << "[DEBUG] Emperor defeated in throne room, removing exit pipe...\n";
+                
+                // Check world type to find the appropriate pipe ID
+                if (m_game.worldType == "Future") {
+                    removeTileByID("PipeTall_152"); // Future emperor room pipe
+                } else {
+                    removeTileByID("PipeTall_150"); // Ancient emperor room pipe
+                }
+            }
+            
+            // Destroy the emperor entity
+            emperor->destroy();
+        }
+    }
+}
+
+
 void Scene_Play::lifeCheckEnemyDeath() {
     auto enemies = m_entityManager.getEntities("enemy");
     for (auto& enemy : enemies) {
@@ -700,30 +750,35 @@ void Scene_Play::lifeCheckEnemyDeath() {
             // ✅ Spawn the correct grave type
             m_spawner.spawnEnemyGrave(transform.pos, isEmperor);
 
-            // Handle unique enemy ID logic (e.g., tile removal)
-            if (enemy->has<CUniqueID>()) {
-                auto& uniqueID = enemy->get<CUniqueID>();
-                std::string levelName = extractLevelName(m_levelPath);
+            if (isEmperor) {
+                // Use the specialized emperor death handler
+                handleEmperorDeath(enemy);
+            } else {
+                // Handle unique enemy ID logic (e.g., tile removal)
+                if (enemy->has<CUniqueID>()) {
+                    auto& uniqueID = enemy->get<CUniqueID>();
+                    std::string levelName = extractLevelName(m_levelPath);
 
-                std::cout << "[DEBUG] Checking tile removal for enemy ID: " << uniqueID.id << "\n";
-                
-                if (levelName == "ancient_rome_level_1_day.txt") {
-                    if (uniqueID.id == "EnemyFast_4") {
-                        std::cout << "[DEBUG] Removing tile PipeTall_275\n";
-                        removeTileByID("PipeTall_275");
+                    std::cout << "[DEBUG] Checking tile removal for enemy ID: " << uniqueID.id << "\n";
+                    
+                    if (levelName == "ancient_rome_level_1_day.txt") {
+                        if (uniqueID.id == "EnemyFast_4") {
+                            std::cout << "[DEBUG] Removing tile PipeTall_275\n";
+                            removeTileByID("PipeTall_275");
+                        }
+                    }
+                    else if (levelName == "ancient_rome_level_2_sunset.txt") {
+                        if (uniqueID.id == "EnemyStrong_12") {
+                            std::cout << "[DEBUG] Removing tile PipeTall_900\n";
+                            removeTileByID("PipeTall_900");
+                        }
                     }
                 }
-                else if (levelName == "ancient_rome_level_2_sunset.txt") {
-                    if (uniqueID.id == "EnemyStrong_12") {
-                        std::cout << "[DEBUG] Removing tile PipeTall_900\n";
-                        removeTileByID("PipeTall_900");
-                    }
-                }
+
+                // Destroy the enemy
+                enemy->destroy();
+                std::cout << "[DEBUG] Enemy destroyed: ID = " << enemy->id() << "\n";
             }
-
-            // Destroy the enemy
-            enemy->destroy();
-            std::cout << "[DEBUG] Enemy destroyed: ID = " << enemy->id() << "\n";
         }
     }
 }

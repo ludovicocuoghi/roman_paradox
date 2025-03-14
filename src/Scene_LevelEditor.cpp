@@ -448,7 +448,7 @@ void Scene_LevelEditor::renderImGui() {
         for (const auto& tile : m_tileOptions) {
             if (ImGui::Selectable(tile.c_str(), m_selectedTile == tile)) {
                 m_selectedTile = tile;
-                std::cout << "[DEBUG] Tile selezionata: " << m_selectedTile << "\n";
+                std::cout << "[DEBUG] Selected Tile: " << m_selectedTile << "\n";
             }
         }
     }
@@ -457,7 +457,7 @@ void Scene_LevelEditor::renderImGui() {
         for (const auto& dec : m_decOptions) {
             if (ImGui::Selectable(dec.c_str(), m_selectedDec == dec)) {
                 m_selectedDec = dec;
-                std::cout << "[DEBUG] Decoration selezionata: " << m_selectedDec << "\n";
+                std::cout << "[DEBUG] Selected Decoration: " << m_selectedDec << "\n";
             }
         }
     }
@@ -466,7 +466,7 @@ void Scene_LevelEditor::renderImGui() {
         for (const auto& enemy : m_enemyOptions) {
             if (ImGui::Selectable(enemy.c_str(), m_selectedEnemy == enemy)) {
                 m_selectedEnemy = enemy;
-                std::cout << "[DEBUG] Enemy selezionato: " << m_selectedEnemy << "\n";
+                std::cout << "[DEBUG] Selected Enemy: " << m_selectedEnemy << "\n";
             }
         }
     }
@@ -476,23 +476,23 @@ void Scene_LevelEditor::renderImGui() {
     }
 
     // Level file selection dropdown and load/save buttons
-    ImGui::Text("Seleziona un file livello:");
+    ImGui::Text("Select a level file:");
     if (!levelFiles.empty()) {
         if (ImGui::Combo("##levelSelect", &selectedLevelIndex, levelFileNames.data(), static_cast<int>(levelFileNames.size()))) {
-            std::cout << "[DEBUG] File livello selezionato: " << levelFiles[selectedLevelIndex] << "\n";
+            std::cout << "[DEBUG] level file selected: " << levelFiles[selectedLevelIndex] << "\n";
         }
     } else {
         ImGui::Text("[ERROR] No level files found.");
     }
 
-    if (ImGui::Button("Carica")) {
+    if (ImGui::Button("Load")) {
         if (!levelFiles.empty()) {
             std::string filePath = "src/levels/" + levelFiles[selectedLevelIndex];
             loadLevel(filePath);
         }
     }
     ImGui::SameLine();
-    if (ImGui::Button("Salva")) {
+    if (ImGui::Button("Save")) {
         std::string filePath = m_currentLevelPath.empty() ? "src/levels/level_save.txt" : m_currentLevelPath;
         saveLevel(filePath);
     }
