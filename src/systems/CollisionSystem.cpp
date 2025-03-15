@@ -263,6 +263,12 @@ void CollisionSystem::handleEnemyTileCollisions() {
             enemy->get<CState>().onGround = false;
         }
 
+        // Check if enemy is a citizen
+        bool isCitizen = false;
+        if (enemy->has<CEnemyAI>()) {
+            isCitizen = enemy->get<CEnemyAI>().enemyType == EnemyType::Citizen;
+        }
+
         // NEW: Detect if an `EnemySuper` has a tile in front
         bool tileInFront = false;
 
@@ -279,8 +285,24 @@ void CollisionSystem::handleEnemyTileCollisions() {
 
             std::string animName = tileAnim.getName();
 
-            // (1) If tile is a black hole, let the enemy pass
-            if (animName.find("BlackHole") != std::string::npos) continue;
+            // NEW: If tile is a black hole and enemy is a citizen, kill the citizen
+            if (animName.find("BlackHole") != std::string::npos) {
+                if (isCitizen) {
+                    // Kill the citizen if it touches a black hole
+                    if (enemy->has<CHealth>()) {
+                        enemy->get<CHealth>().currentHealth = 0;
+                        std::cout << "[DEBUG] Citizen killed by Black Hole!\n";
+                    } else {
+                        // If no health component, just destroy the entity
+                        enemy->destroy();
+                        std::cout << "[DEBUG] Citizen destroyed by Black Hole!\n";
+                    }
+                    break; // Stop checking other tiles for this enemy
+                }
+                
+                // For non-citizens, let them pass through black holes
+                continue;
+            }
 
             // (2) Check if tile is in front of EnemySuper (not just intersecting)
             if (enemy->has<CEnemyAI>()) {
@@ -425,6 +447,8 @@ void CollisionSystem::handlePlayerEnemyCollisions() {
         if (enemy->has<CEnemyAI>()) {
             auto& enemyAI = enemy->get<CEnemyAI>();
             if (enemyAI.enemyState == EnemyState::Attack)
+                continue;
+            if (enemyAI.enemyType == EnemyType::Citizen)
                 continue;
         }
 

@@ -77,8 +77,8 @@ public:
     
     // Super enemy
     static constexpr float ENEMY_SUPER_SPEED_MULTIPLIER = 2.0f;
-    static constexpr int   ENEMY_SUPER_HEALTH = 50;
-    static constexpr int   ENEMY_SUPER_DAMAGE = 20;
+    static constexpr int   ENEMY_SUPER_HEALTH = 9999999;
+    static constexpr int   ENEMY_SUPER_DAMAGE = 9999999;
     
     // Emperor enemy
     static constexpr float ENEMY_EMPEROR_SPEED_MULTIPLIER = 0.6f;

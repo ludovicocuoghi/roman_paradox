@@ -31,6 +31,8 @@ public:
     static constexpr float ATTACK_COOLDOWN = 0.3f;
     static constexpr float FOLLOW_MOVE_SPEED = 290.f;
     void update(float deltaTime);
+    void updateCitizens(float deltaTime, const CTransform& playerTrans);
+    void processSuperEnemies(float deltaTime);
 
 private:
     EntityManager& m_entityManager;

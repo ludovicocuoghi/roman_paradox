@@ -86,6 +86,10 @@ void EnemyAISystem::update(float deltaTime)
     auto& player      = players[0];
     auto& playerTrans = player->get<CTransform>();
 
+
+    updateCitizens(deltaTime, playerTrans);
+
+
     // ============================================================
     // Loop Through All Enemies
     // ============================================================
@@ -104,9 +108,86 @@ void EnemyAISystem::update(float deltaTime)
         auto& anim       = enemy->get<CAnimation>();
         auto& enemyState = enemy->get<CState>();
 
+        // Skip citizen enemies - they are handled separately
+        if (enemyAI.enemyType == EnemyType::Citizen) {
+            continue;
+        }
 
+        // Special handling for Super enemies to attack citizens
+        if (enemyAI.enemyType == EnemyType::Super) {
+            // Check for nearby citizens
+            if (enemy->has<CBoundingBox>()) {
+                auto& superBB = enemy->get<CBoundingBox>();
+                sf::FloatRect superRect = superBB.getRect(enemyTrans.pos);
+                float attackRange = 100.0f; // Super enemy attack range
+                
+                // Extend the attack rectangle in the direction the super enemy is facing
+                sf::FloatRect attackRect = superRect;
+                if (enemyAI.facingDirection > 0) {
+                    attackRect.width += attackRange;
+                } else {
+                    attackRect.left -= attackRange;
+                    attackRect.width += attackRange;
+                }
+                
+                // Find citizens in attack range
+                for (auto& citizen : m_entityManager.getEntities("enemy")) {
+                    if (!citizen->has<CEnemyAI>() || 
+                        citizen->get<CEnemyAI>().enemyType != EnemyType::Citizen) {
+                        continue;
+                    }
+                    
+                    if (citizen->has<CTransform>() && citizen->has<CBoundingBox>()) {
+                        auto& citizenTrans = citizen->get<CTransform>();
+                        auto& citizenBB = citizen->get<CBoundingBox>();
+                        sf::FloatRect citizenRect = citizenBB.getRect(citizenTrans.pos);
+                        
+                        // If citizen is in attack range
+                        if (attackRect.intersects(citizenRect)) {
+                            // Super enemy should attack
+                            if (enemyAI.enemyState != EnemyState::Attack && 
+                                enemyAI.attackCooldown <= 0.f) {
+                                
+                                enemyAI.enemyState = EnemyState::Attack;
+                                enemyAI.attackTimer = ATTACK_TIMER_DEFAULT;
+                                enemyAI.swordSpawned = false;
+                                
+                                // Set facing direction toward citizen
+                                float dx = citizenTrans.pos.x - enemyTrans.pos.x;
+                                enemyAI.facingDirection = (dx > 0.f) ? 1.f : -1.f;
+                                
+                                std::cout << "[DEBUG] Super enemy attacking citizen!\n";
+                            }
+                            
+                            // If already attacking and at sword spawn threshold
+                            if (enemyAI.enemyState == EnemyState::Attack && 
+                                !enemyAI.swordSpawned && 
+                                enemyAI.attackTimer <= SWORD_SPAWN_THRESHOLD) {
+                                
+                                m_spawner->spawnEnemySword(enemy);
+                                enemyAI.swordSpawned = true;
+                                
+                                // Handle citizen damage/death
+                                if (citizen->has<CHealth>()) {
+                                    auto& health = citizen->get<CHealth>();
+                                    health.currentHealth = 0; // Kill the citizen
+                                    std::cout << "[DEBUG] Citizen killed by Super enemy's sword!\n";
+                                } else {
+                                    // If no health component, just destroy the entity
+                                    citizen->destroy();
+                                }
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        
         // This flag allows movement but prevents attacking
         bool skipAttack = false;
+
 
         // Skip if enemy is in defeated state
         if (enemyAI.enemyState == EnemyState::Defeated) {
@@ -1051,93 +1132,6 @@ void EnemyAISystem::update(float deltaTime)
                 }
             }
         }
-        // Citizen behavior - always flee to the left (absolute priority)
-        // Citizen behavior - always flee to the left, slower speed, no attacking
-        if (enemyAI.enemyType == EnemyType::Citizen) {
-            // Always face left
-            enemyAI.facingDirection = -1.0f;
-
-            enemyAI.enemyState = EnemyState::Flee;
-
-            // Set velocity to left, at slower speed
-            enemyTrans.velocity.x = -FOLLOW_MOVE_SPEED * 0.8f;
-
-            // Set appropriate running animation, facing left
-            if (enemy->has<CAnimation>()) {
-                auto& animation = enemy->get<CAnimation>();
-                std::string runAnim = m_game.worldType + "RunCitizen";
-
-                if (m_game.assets().hasAnimation(runAnim)) {
-                    animation.animation = m_game.assets().getAnimation(runAnim);
-                    flipSpriteLeft(animation.animation.getMutableSprite());
-                }
-            }
-
-            // Ensure Citizen never attacks or interacts
-            skipAttack = true;
-        }
-
-        // Super enemy logic - chase Citizens with priority
-        if (enemyAI.enemyType == EnemyType::Super) {
-            auto enemies = m_entityManager.getEntities("enemy");
-            std::shared_ptr<Entity> closestCitizen = nullptr;
-            float closestDistance = std::numeric_limits<float>::max();
-        
-            for (auto& otherEnemy : enemies) {
-                if (!otherEnemy->has<CTransform>() || !otherEnemy->has<CEnemyAI>()) continue;
-                
-                auto& otherEnemyAI = otherEnemy->get<CEnemyAI>();
-                
-                // Skip if not a Citizen or is the same entity
-                if (otherEnemyAI.enemyType != EnemyType::Citizen || otherEnemy->id() == enemy->id()) continue;
-                
-                auto& citizenTrans = otherEnemy->get<CTransform>();
-                
-                float dx = citizenTrans.pos.x - enemyTrans.pos.x;
-                float dy = citizenTrans.pos.y - enemyTrans.pos.y;
-                float citizenDistance = std::sqrt(dx*dx + dy*dy);
-                
-                // Check line of sight to citizen
-                bool canSeeCitizen = checkLineOfSight(enemyTrans.pos, 
-                                                    citizenTrans.pos, 
-                                                    m_entityManager);
-                
-                if (canSeeCitizen && citizenDistance < closestDistance) {
-                    closestDistance = citizenDistance;
-                    closestCitizen = otherEnemy;
-                }
-            }
-            
-            // If there's a citizen nearby, prioritize chasing the citizen
-            if (closestCitizen != nullptr && closestDistance < 600.f) {
-                auto& closestCitizenTrans = closestCitizen->get<CTransform>();
-                
-                // Calculate direction to citizen
-                float dx = closestCitizenTrans.pos.x - enemyTrans.pos.x;
-                
-                // Update facing direction
-                enemyAI.facingDirection = (dx < 0) ? -1.0f : 1.0f;
-                
-                // Set to follow state to pursue citizen
-                if (enemyAI.enemyState != EnemyState::Attack) {
-                    enemyAI.enemyState = EnemyState::Follow;
-                }
-                
-                // Always follow citizens
-                shouldFollow = true;
-                
-                // If close enough, attack the citizen
-                if (closestDistance < ATTACK_RANGE && enemyAI.attackCooldown <= 0.f && !skipAttack) {
-                    enemyAI.enemyState = EnemyState::Attack;
-                    enemyAI.attackTimer = ATTACK_TIMER_DEFAULT;
-                    enemyAI.swordSpawned = false;
-                    
-                    std::cout << "[DEBUG] Super Enemy " << enemy->id()
-                            << " attacking Citizen " << closestCitizen->id() << "\n";
-                }
-            }
-        }
-
         // ----------------------------------------------------
         // 6) FOLLOW State
         // ----------------------------------------------------
@@ -1663,4 +1657,145 @@ void EnemyAISystem::update(float deltaTime)
             flipSpriteRight(anim.animation.getMutableSprite());
         }
     } // End for (enemies)
+}
+void EnemyAISystem::updateCitizens(float deltaTime, const CTransform& playerTrans)
+{
+    auto enemies = m_entityManager.getEntities("enemy");
+    auto superEnemies = m_entityManager.getEntities("superEnemy");
+    
+    // Constants specifically for citizen behavior
+    const float FLEE_DISTANCE = 1000.f; // Changed from 500.f to 900.f
+    const float CITIZEN_SPEED_FACTOR = 0.7f;
+    
+    for (auto& enemy : enemies) {
+        // Skip if missing required components
+        if (!enemy->has<CTransform>() ||
+            !enemy->has<CEnemyAI>() ||
+            !enemy->has<CAnimation>()) {
+            continue;
+        }
+        
+        auto& enemyAI = enemy->get<CEnemyAI>();
+        
+        // Skip if not a citizen
+        if (enemyAI.enemyType != EnemyType::Citizen) {
+            continue;
+        }
+        
+        auto& enemyTrans = enemy->get<CTransform>();
+        auto& anim = enemy->get<CAnimation>();
+        
+        // Calculate distance to player
+        float dx = playerTrans.pos.x - enemyTrans.pos.x;
+        float dy = playerTrans.pos.y - enemyTrans.pos.y;
+        float distanceToPlayer = std::sqrt(dx * dx + dy * dy);
+        
+        // Check for collision with Super enemies
+        bool collidesWithSuperEnemy = false;
+        if (enemy->has<CBoundingBox>()) {
+            auto& citizenBB = enemy->get<CBoundingBox>();
+            sf::FloatRect citizenRect = citizenBB.getRect(enemyTrans.pos);
+            
+            // Check collisions with super enemies
+            for (auto& superEnemy : m_entityManager.getEntities("enemy")) {
+                // Only consider Super type enemies
+                if (!superEnemy->has<CEnemyAI>() || 
+                    superEnemy->get<CEnemyAI>().enemyType != EnemyType::Super) {
+                    continue;
+                }
+                
+                if (superEnemy->has<CTransform>() && superEnemy->has<CBoundingBox>()) {
+                    auto& superTrans = superEnemy->get<CTransform>();
+                    auto& superBB = superEnemy->get<CBoundingBox>();
+                    sf::FloatRect superRect = superBB.getRect(superTrans.pos);
+                    
+                    if (citizenRect.intersects(superRect)) {
+                        collidesWithSuperEnemy = true;
+                        
+                        // Handle citizen death if colliding with super enemy
+                        if (enemy->has<CHealth>()) {
+                            auto& health = enemy->get<CHealth>();
+                            health.currentHealth = 0; // Kill the citizen
+                            std::cout << "[DEBUG] Citizen killed by Super enemy!\n";
+                        } else {
+                            // If no health component, just destroy the entity
+                            enemy->destroy();
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+        
+        // Skip further processing if citizen is dead or being destroyed
+        if (collidesWithSuperEnemy) {
+            continue;
+        }
+        
+        // Handle gravity & ground check
+        bool isOnGround = false;
+        if (enemy->has<CBoundingBox>()) {
+            auto& bb = enemy->get<CBoundingBox>();
+            sf::FloatRect enemyRect = bb.getRect(enemyTrans.pos);
+
+            for (auto& tile : m_entityManager.getEntities("tile")) {
+                if (!tile->has<CTransform>() || !tile->has<CBoundingBox>()) continue;
+                auto& tileTrans = tile->get<CTransform>();
+                auto& tileBB = tile->get<CBoundingBox>();
+
+                sf::FloatRect tileRect = tileBB.getRect(tileTrans.pos);
+                if (enemyRect.intersects(tileRect)) {
+                    isOnGround = true;
+                    break;
+                }
+            }
+        }
+        
+        if (!isOnGround) {
+            float grav = enemy->has<CGravity>()
+                       ? enemy->get<CGravity>().gravity
+                       : DEFAULT_GRAVITY;
+            enemyTrans.velocity.y += grav * deltaTime;
+            enemyTrans.velocity.y =
+                std::clamp(enemyTrans.velocity.y,
+                           -MAX_FALL_SPEED,
+                            MAX_FALL_SPEED);
+        } else {
+            enemyTrans.velocity.y = 0.f;
+        }
+        
+        // Determine citizen state based on player distance
+        if (distanceToPlayer <= FLEE_DISTANCE) {
+            // Player is close - flee to the LEFT (FIXED DIRECTION)
+            enemyAI.enemyBehavior = EnemyBehavior::Flee;
+            enemyAI.enemyState = EnemyState::Flee;
+            enemyAI.facingDirection = -1.0f; // Always face left when fleeing
+            enemyTrans.velocity.x = -FOLLOW_MOVE_SPEED * CITIZEN_SPEED_FACTOR; // NEGATIVE for LEFT movement
+            
+            // Set running animation facing left
+            std::string runAnim = m_game.worldType + "RunEnemyCitizen";
+            if (m_game.assets().hasAnimation(runAnim) && anim.animation.getName() != runAnim) {
+                anim.animation = m_game.assets().getAnimation(runAnim);
+                anim.repeat = true; // Ensure animation repeats
+                flipSpriteLeft(anim.animation.getMutableSprite()); // Explicitly flip sprite LEFT
+            }
+        } else {
+            // Player is far - remain idle
+            enemyAI.enemyBehavior = EnemyBehavior::Flee; // Still maintain flee behavior type
+            enemyAI.enemyState = EnemyState::Idle;
+            enemyTrans.velocity.x = 0.f;
+
+            // Set idle animation facing left
+            std::string idleAnim = m_game.worldType + "StandEnemyCitizen";
+            if (m_game.assets().hasAnimation(idleAnim) && anim.animation.getName() != idleAnim) {
+                anim.animation = m_game.assets().getAnimation(idleAnim);
+                anim.repeat = true; // Ensure animation repeats
+                flipSpriteLeft(anim.animation.getMutableSprite()); // Explicitly flip sprite LEFT
+            }
+        }
+        
+        // Update position
+        enemyTrans.pos.x += enemyTrans.velocity.x * deltaTime;
+        enemyTrans.pos.y += enemyTrans.velocity.y * deltaTime;
+    }
 }
