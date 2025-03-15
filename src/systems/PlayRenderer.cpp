@@ -1,15 +1,16 @@
 #include "PlayRenderer.h"
 #include "Animation.hpp"
+#include "DialogueSystem.h"
 #include <iostream>
 #include <cmath>
 #include "SpriteUtils.h"
 
 PlayRenderer::PlayRenderer(GameEngine& game,
-                           EntityManager& entityManager,
-                           sf::Sprite& backgroundSprite,
-                           sf::Texture& backgroundTexture,
-                           sf::View& cameraView,
-                           int& score)
+                       EntityManager& entityManager,
+                       sf::Sprite& backgroundSprite,
+                       sf::Texture& backgroundTexture,
+                       sf::View& cameraView,
+                       int& score)
     : m_game(game),
       m_entityManager(entityManager),
       m_backgroundSprite(backgroundSprite),
@@ -17,8 +18,9 @@ PlayRenderer::PlayRenderer(GameEngine& game,
       m_cameraView(cameraView),
       m_showGrid(false),
       m_showBoundingBoxes(false),
-      m_score(score),         // assign reference
-      m_timeofday("Day")
+      m_score(score),
+      m_timeofday("day"),
+      m_dialogueSystem(nullptr)
 {
 }
 
@@ -36,6 +38,82 @@ void PlayRenderer::setScore(int score) {
 
 void PlayRenderer::setTimeOfDay(const std::string& tod) {
     m_timeofday = tod;
+}
+
+void PlayRenderer::renderDialogue(DialogueSystem* dialogueSystem)
+{
+    if (!dialogueSystem || !dialogueSystem->isDialogueActive()) {
+        return;
+    }
+
+    sf::View currentView = m_game.window().getView();
+    m_game.window().setView(m_game.window().getDefaultView());
+
+    const DialogueMessage* message = dialogueSystem->getCurrentMessage();
+    if (!message) {
+        m_game.window().setView(currentView);
+        return;
+    }
+
+    // Use custom dimensions from the message
+    float boxWidth = message->boxWidth;
+    float boxHeight = message->boxHeight;
+    float boxX = message->dialogueBoxPosition.x;
+    float boxY = message->dialogueBoxPosition.y;
+
+    dialogueSystem->dialogueBox.setSize({boxWidth, boxHeight});
+    dialogueSystem->dialogueBox.setPosition(boxX, boxY);
+
+    float portraitSize = 120.f;
+    float portraitX = message->portraitOnLeft ? boxX + 15.f : boxX + boxWidth - portraitSize - 15.f;
+
+    dialogueSystem->portraitSprite.setTexture(dialogueSystem->getPortraitTexture(), true);
+    float scaleX = portraitSize / dialogueSystem->getPortraitTexture().getSize().x;
+    float scaleY = portraitSize / dialogueSystem->getPortraitTexture().getSize().y;
+    dialogueSystem->portraitSprite.setScale(scaleX, scaleY);
+    dialogueSystem->portraitSprite.setPosition(portraitX, boxY + 15.f);
+
+    float textX = message->portraitOnLeft ? portraitX + portraitSize + 15.f : boxX + 15.f;
+    // Calculate max text width to avoid overlapping with portrait
+    float maxTextWidth = message->portraitOnLeft ? 
+                         boxWidth - (portraitSize + 30.f) : 
+                         boxWidth - portraitSize - 30.f;
+
+    dialogueSystem->speakerText.setFont(m_game.assets().getFont("Menu"));
+    dialogueSystem->speakerText.setCharacterSize(24);  // Keep standard size for speaker name
+    dialogueSystem->speakerText.setFillColor(message->speakerColor);
+    dialogueSystem->speakerText.setString(message->speaker);
+    dialogueSystem->speakerText.setPosition(textX, boxY + 15.f);
+
+    dialogueSystem->messageText.setFont(m_game.assets().getFont("Menu"));
+    dialogueSystem->messageText.setCharacterSize(message->messageFontSize);  // Use custom font size only for message
+    dialogueSystem->messageText.setFillColor(message->messageColor);
+    dialogueSystem->messageText.setString(dialogueSystem->getDisplayedText());
+    dialogueSystem->messageText.setPosition(textX, boxY + 50.f);
+
+    if (!dialogueSystem->isTyping()) {
+        dialogueSystem->continueText.setFont(m_game.assets().getFont("Menu"));
+        dialogueSystem->continueText.setCharacterSize(16);
+        dialogueSystem->continueText.setFillColor(sf::Color::White);
+
+        if (dialogueSystem->isWaitingAfterCompletion()) {
+            int remainingTime = static_cast<int>(5.0f - dialogueSystem->getCompletionTimer());
+            dialogueSystem->continueText.setString("Continuing in " + std::to_string(remainingTime) + " seconds...");
+        } else {
+            dialogueSystem->continueText.setString("Press ATTACK to continue...");
+        }
+
+        // Adjust continue text position based on box width
+        dialogueSystem->continueText.setPosition(boxX + boxWidth - 200.f, boxY - 25.f);
+        m_game.window().draw(dialogueSystem->continueText);
+    }
+
+    m_game.window().draw(dialogueSystem->dialogueBox);
+    m_game.window().draw(dialogueSystem->portraitSprite);
+    m_game.window().draw(dialogueSystem->speakerText);
+    m_game.window().draw(dialogueSystem->messageText);
+
+    m_game.window().setView(currentView);
 }
 
 void PlayRenderer::render() {
@@ -962,6 +1040,11 @@ void PlayRenderer::render() {
         }
         }
     }
+
+    if (m_dialogueSystem) {
+        renderDialogue(m_dialogueSystem);
+    }
+
     m_game.window().setView(m_cameraView);
     m_game.window().display();
 }

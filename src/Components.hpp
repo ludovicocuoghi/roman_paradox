@@ -380,14 +380,16 @@ enum class EnemyType {
     Strong,
     Elite,
     Super,
-    Emperor
+    Emperor,
+    Citizen
 };
 
 enum class EnemyBehavior {
     FollowOne,  // Only follows when player is in line-of-sight
     FollowTwo,   // Keeps following once the player is spotted
     FollowThree,  // Super always follows (ignores distance checks)
-    FollowFour
+    FollowFour,
+    Flee
 };
 
 enum class EnemyState {
@@ -397,7 +399,8 @@ enum class EnemyState {
     Knockback,   // The enemy is being pushed back,
     FinalAttack,
     BlockedByTile,
-    Defeated
+    Defeated,
+    Flee
 };
 
 enum class BossPhase {

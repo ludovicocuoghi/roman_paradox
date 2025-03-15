@@ -4,6 +4,7 @@
 #include <cmath>
 #include <algorithm>
 #include <iostream>
+#include <limits>
 
 // ----------------------------------------------------------------------
 // 1) Utility Functions (unchanged)
@@ -990,6 +991,9 @@ void EnemyAISystem::update(float deltaTime)
             case EnemyBehavior::FollowFour:
                 shouldFollow = playerVisible_emperor;
                 break;
+            case EnemyBehavior::Flee:
+                shouldFollow = false; // Citizens don't follow players
+                break;
         }
 
         // Attack cooldown decrement
@@ -1044,6 +1048,92 @@ void EnemyAISystem::update(float deltaTime)
                     std::cout << "[DEBUG] Enemy " << enemy->id()
                               << " detected tile in front!\n";
                     break;
+                }
+            }
+        }
+        // Citizen behavior - always flee to the left (absolute priority)
+        // Citizen behavior - always flee to the left, slower speed, no attacking
+        if (enemyAI.enemyType == EnemyType::Citizen) {
+            // Always face left
+            enemyAI.facingDirection = -1.0f;
+
+            enemyAI.enemyState = EnemyState::Flee;
+
+            // Set velocity to left, at slower speed
+            enemyTrans.velocity.x = -FOLLOW_MOVE_SPEED * 0.8f;
+
+            // Set appropriate running animation, facing left
+            if (enemy->has<CAnimation>()) {
+                auto& animation = enemy->get<CAnimation>();
+                std::string runAnim = m_game.worldType + "RunCitizen";
+
+                if (m_game.assets().hasAnimation(runAnim)) {
+                    animation.animation = m_game.assets().getAnimation(runAnim);
+                    flipSpriteLeft(animation.animation.getMutableSprite());
+                }
+            }
+
+            // Ensure Citizen never attacks or interacts
+            skipAttack = true;
+        }
+
+        // Super enemy logic - chase Citizens with priority
+        if (enemyAI.enemyType == EnemyType::Super) {
+            auto enemies = m_entityManager.getEntities("enemy");
+            std::shared_ptr<Entity> closestCitizen = nullptr;
+            float closestDistance = std::numeric_limits<float>::max();
+        
+            for (auto& otherEnemy : enemies) {
+                if (!otherEnemy->has<CTransform>() || !otherEnemy->has<CEnemyAI>()) continue;
+                
+                auto& otherEnemyAI = otherEnemy->get<CEnemyAI>();
+                
+                // Skip if not a Citizen or is the same entity
+                if (otherEnemyAI.enemyType != EnemyType::Citizen || otherEnemy->id() == enemy->id()) continue;
+                
+                auto& citizenTrans = otherEnemy->get<CTransform>();
+                
+                float dx = citizenTrans.pos.x - enemyTrans.pos.x;
+                float dy = citizenTrans.pos.y - enemyTrans.pos.y;
+                float citizenDistance = std::sqrt(dx*dx + dy*dy);
+                
+                // Check line of sight to citizen
+                bool canSeeCitizen = checkLineOfSight(enemyTrans.pos, 
+                                                    citizenTrans.pos, 
+                                                    m_entityManager);
+                
+                if (canSeeCitizen && citizenDistance < closestDistance) {
+                    closestDistance = citizenDistance;
+                    closestCitizen = otherEnemy;
+                }
+            }
+            
+            // If there's a citizen nearby, prioritize chasing the citizen
+            if (closestCitizen != nullptr && closestDistance < 600.f) {
+                auto& closestCitizenTrans = closestCitizen->get<CTransform>();
+                
+                // Calculate direction to citizen
+                float dx = closestCitizenTrans.pos.x - enemyTrans.pos.x;
+                
+                // Update facing direction
+                enemyAI.facingDirection = (dx < 0) ? -1.0f : 1.0f;
+                
+                // Set to follow state to pursue citizen
+                if (enemyAI.enemyState != EnemyState::Attack) {
+                    enemyAI.enemyState = EnemyState::Follow;
+                }
+                
+                // Always follow citizens
+                shouldFollow = true;
+                
+                // If close enough, attack the citizen
+                if (closestDistance < ATTACK_RANGE && enemyAI.attackCooldown <= 0.f && !skipAttack) {
+                    enemyAI.enemyState = EnemyState::Attack;
+                    enemyAI.attackTimer = ATTACK_TIMER_DEFAULT;
+                    enemyAI.swordSpawned = false;
+                    
+                    std::cout << "[DEBUG] Super Enemy " << enemy->id()
+                            << " attacking Citizen " << closestCitizen->id() << "\n";
                 }
             }
         }
@@ -1181,6 +1271,7 @@ void EnemyAISystem::update(float deltaTime)
                             case EnemyType::Normal:  idleAnimName = "FutureStandEnemyNormal"; break;
                             case EnemyType::Super:   idleAnimName = "FutureStandEnemySuper"; break;
                             case EnemyType::Emperor: idleAnimName = "FutureStandEmperor"; break;
+                            case EnemyType::Citizen: idleAnimName = "FutureStandCitizen"; break;
                         }
                         
                         if (m_game.assets().hasAnimation(idleAnimName) && 
@@ -1267,6 +1358,9 @@ void EnemyAISystem::update(float deltaTime)
                     break;
                 case EnemyType::Emperor:
                     runAnimName = m_game.worldType + "RunEmperor";
+                    break;
+                case EnemyType::Citizen:
+                    runAnimName = m_game.worldType + "RunEnemyCitizen";
                     break;
                 // Emperor is handled above.
             }
@@ -1491,6 +1585,7 @@ void EnemyAISystem::update(float deltaTime)
                 case EnemyType::Elite:   baseAnimName = "EnemyElite";    break;
                 case EnemyType::Super:   baseAnimName = "EnemySuper";    break;
                 case EnemyType::Emperor: baseAnimName = "Emperor";       break;
+                case EnemyType::Citizen: baseAnimName = "Citizen";       break;
             }
 
             // Attack animation

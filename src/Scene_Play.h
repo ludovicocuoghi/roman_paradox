@@ -14,6 +14,9 @@
 #include "systems/MovementSystem.h"
 #include "systems/EnemyAISystem.h"
 #include "systems/Spawner.h"
+#include "systems/DialogueSystem.h"
+
+
 class Scene_Play : public Scene {
 public:
     // Constructor: Pass a reference to the game engine and the level file path.
@@ -40,6 +43,9 @@ public:
     std::shared_ptr<Entity> spawnSword(std::shared_ptr<Entity> player);
     std::shared_ptr<Entity> spawnEnemySword(std::shared_ptr<Entity> enemy);
     std::shared_ptr<Entity> spawnItem(Vec2<float> position, const std::string& tileType);
+
+    // Add these function declarations to your class
+    void initializeDialogues();
 
 
     void applyKnockback(std::shared_ptr<Entity> entity, Vec2<float> hitDirection, float duration);
@@ -101,4 +107,7 @@ private:
     MovementSystem m_movementSystem;
     Spawner m_spawner;
     EnemyAISystem m_enemyAISystem;
+    
+    // Dialogue system (new)
+    std::shared_ptr<DialogueSystem> m_dialogueSystem;
 };

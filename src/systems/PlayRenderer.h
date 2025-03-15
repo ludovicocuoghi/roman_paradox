@@ -9,6 +9,8 @@
 
 class CAnimation; // Forward declaration se necessario
 
+class DialogueSystem;
+
 class PlayRenderer {
 public:
     // Costruttore: riceve i riferimenti necessari per il rendering
@@ -33,6 +35,8 @@ public:
     void drawDebugLine(const Vec2<float>& start, const Vec2<float>& end, sf::Color color);
     void flipSpriteLeft(CAnimation& canim);
     void flipSpriteRight(CAnimation& canim);
+    void setDialogueSystem(DialogueSystem* dialogueSystem) { m_dialogueSystem = dialogueSystem; }
+    void renderDialogue(DialogueSystem* dialogueSystem);
 
 private:
     GameEngine& m_game;
@@ -46,4 +50,6 @@ private:
     bool m_showBoundingBoxes;
     int m_score;
     std::string m_timeofday;
+
+    DialogueSystem* m_dialogueSystem = nullptr;
 };

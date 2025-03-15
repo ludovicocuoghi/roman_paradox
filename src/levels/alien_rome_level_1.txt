@@ -64,12 +64,6 @@ Tile Ground 60 0
 Tile Ground 62 0
 Tile Ground 63 0
 Tile Ground 65 0
-Tile Ground 16 1
-Tile Ground 18 1
-Tile Ground 17 1
-Tile Ground 19 1
-Tile Ground 20 1
-Tile Ground 21 1
 Tile Ground 66 0
 Tile Ground 67 0
 Tile Ground 68 0
@@ -219,7 +213,6 @@ Tile PipeTall 62 4
 Tile PipeTall 63 4
 Tile Ground 18 4
 Tile Ground 67 9
-Tile Ground 15 1
 Tile Ground 60 7
 Tile Ground 85 11
 Player 1 1
@@ -251,3 +244,14 @@ Enemy EnemySuper 86 9
 Enemy EnemySuper 123 1
 Enemy EnemySuper 117 1
 Enemy EnemySuper 65 8
+Enemy EnemyCitizen 11 1
+Enemy EnemyCitizen 19 1
+Enemy EnemyCitizen 37 2
+Enemy EnemyCitizen 40 1
+Enemy EnemyCitizen 54 5
+Enemy EnemyCitizen 63 8
+Enemy EnemyCitizen 69 1
+Enemy EnemyCitizen 85 10
+Enemy EnemyCitizen 91 9
+Enemy EnemyCitizen 108 1
+Enemy EnemyCitizen 102 2

@@ -266,6 +266,9 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
             else if (enemyTypeStr == "Super" || enemyTypeStr == "EnemySuper") {
                 enemyType = EnemyType::Super;
             }
+            else if (enemyTypeStr == "Citizen" || enemyTypeStr == "EnemyCitizen") {
+                enemyType = EnemyType::Citizen;
+            }
             else {
                 std::cerr << "[WARNING] Unknown enemy type: " << enemyTypeStr << ". Defaulting to Normal.\n";
                 enemyType = EnemyType::Normal;
@@ -361,6 +364,19 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
                 enemy->get<CEnemyAI>().enemyBehavior = EnemyBehavior::FollowTwo;
                 enemy->get<CHealth>().maxHealth = LoadLevel::ENEMY_SUPER_HEALTH;
                 enemy->get<CHealth>().currentHealth = LoadLevel::ENEMY_SUPER_HEALTH;
+            }
+            else if (enemyType == EnemyType::Citizen) {
+                enemy->get<CEnemyAI>().enemyType = EnemyType::Citizen;
+                enemy->get<CEnemyAI>().damage = LoadLevel::ENEMY_NORMAL_DAMAGE;
+                enemy->get<CState>().bulletDamage = LoadLevel::BULLET_DAMAGE_ENEMY_NORMAL;
+                enemy->get<CEnemyAI>().speedMultiplier = LoadLevel::ENEMY_NORMAL_SPEED_MULTIPLIER;
+                enemy->get<CState>().maxConsecutiveSwordAttacks = LoadLevel::ENEMY_NORMAL_MAX_CONSECUTIVE_SWORD_ATTACKS;
+                enemy->get<CState>().bulletBurstCount = LoadLevel::ENEMY_NORMAL_BULLET_BURST_COUNT;
+                enemy->get<CState>().superBulletCount = LoadLevel::ENEMY_NORMAL_SUPER_BULLET_COUNT;
+                enemy->get<CState>().superBulletDamage = LoadLevel::ENEMY_NORMAL_SUPER_BULLET_DAMAGE;
+                enemy->get<CEnemyAI>().enemyBehavior = EnemyBehavior::Flee;
+                enemy->get<CHealth>().maxHealth = LoadLevel::ENEMY_NORMAL_HEALTH;
+                enemy->get<CHealth>().currentHealth = LoadLevel::ENEMY_NORMAL_HEALTH;
             }
 
             if (m_game.worldType == "Future") {

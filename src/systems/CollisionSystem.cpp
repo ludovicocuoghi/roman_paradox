@@ -447,7 +447,7 @@ void CollisionSystem::handlePlayerEnemyCollisions() {
             sf::FloatRect playerRect = pBB.getRect(pTrans.pos);
 
             // Check player on-ground state
-            bool playerOnGround = pState.onGround;
+            //bool playerOnGround = pState.onGround;
             
             if (enemyRect.intersects(playerRect)) {
                 // Compute overlaps along X and Y

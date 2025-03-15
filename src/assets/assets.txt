@@ -195,14 +195,25 @@ Texture TexAncientStandEnemyNormal Enemy/ancient_rome/gold/stand1002_gold.png
 Texture TexAncientRunEnemyNormal Enemy/ancient_rome/gold/run1004_gold.png
 Texture TexAncientAirEnemyNormal Enemy/ancient_rome/gold/air1002_gold.png
 Texture TexAncientHitEnemyNormal Enemy/ancient_rome/gold/hit100nosword_gold.png
+
+
 Animation AncientStandEnemyNormal TexAncientStandEnemyNormal 100 100 1 0
 Animation AncientRunEnemyNormal TexAncientRunEnemyNormal 100 100 4 6
 Animation AncientHitEnemyNormal TexAncientHitEnemyNormal 100 100 1 0
+
+Texture TexAlienStandEnemyCitizen Player/ancient_rome/a_stand100Anim.png
+Texture TexAlienRunEnemyCitizen Player/ancient_rome/a_run1004.png
+Texture TexAlienHitEnemyCitizen Player/ancient_rome/a_hit100nosword.png
+
+Animation AlienStandEnemyCitizen TexAlienStandEnemyCitizen 100 100 6 8
+Animation AlienRunEnemyCitizen TexAlienRunEnemyCitizen 100 100 4 6
+Animation AlienHitEnemyCitizen TexAlienHitEnemyCitizen 100 100 1 0
 
 Texture TexFutureStandEnemyFast Enemy/future_rome/fast/stand_fast.png
 Texture TexFutureRunEnemyFast Enemy/future_rome/fast/run_fast.png
 Texture TexFutureAirEnemyFast Enemy/future_rome/fast/air_fast.png
 Texture TexFutureHitEnemyFast Enemy/future_rome/fast/hit_fast.png
+
 Animation FutureStandEnemyFast TexFutureStandEnemyFast 100 100 1 0
 Animation FutureRunEnemyFast TexFutureRunEnemyFast 100 100 4 7
 Animation FutureHitEnemyFast TexFutureHitEnemyFast 100 100 1 0
@@ -211,6 +222,7 @@ Texture TexFutureStandEnemyStrong Enemy/future_rome/strong/stand_strong.png
 Texture TexFutureRunEnemyStrong Enemy/future_rome/strong/run_strong.png
 Texture TexFutureAirEnemyStrong Enemy/future_rome/strong/air_strong.png
 Texture TexFutureHitEnemyStrong Enemy/future_rome/strong/hit_strong.png
+
 Animation FutureStandEnemyStrong TexFutureStandEnemyStrong 100 100 1 0
 Animation FutureRunEnemyStrong TexFutureRunEnemyStrong 100 100 4 7
 Animation FutureHitEnemyStrong TexFutureHitEnemyStrong 100 100 1 0

@@ -59,8 +59,8 @@ std::shared_ptr<Entity> Spawner::spawnPlayerBullet(std::shared_ptr<Entity> playe
     float randomAngle = ((static_cast<float>(rand()) / static_cast<float>(RAND_MAX)) * 2.0f - 1.0f) * randomAngleRange;
     
     // FIXED: Simplified angle calculation to avoid potential errors
-    float baseAngle = (facingDir < 0) ? M_PI : 0.0f; // Base angle depending on facing direction
-    float finalAngle = baseAngle + randomAngle;
+    //float baseAngle = (facingDir < 0) ? M_PI : 0.0f; // Base angle depending on facing direction
+    //float finalAngle = baseAngle + randomAngle;
     
     // FIXED: Add a sanity check to ensure valid facing direction
     if (facingDir == 0.0f) {
@@ -353,7 +353,7 @@ void Spawner::spawnEnemyGrave(const Vec2<float>& position, bool isEmperor) {
         Vec2<float> size(static_cast<float>(graveAnim.getSize().x), static_cast<float>(graveAnim.getSize().y));
         grave->add<CBoundingBox>(size, size * 0.5f);
     } else {
-        std::cerr << "[ERROR] Missing animation: " << graveAnimName << "!\n";
+        std::cerr << "[ERROR] Missing grave animation: " << graveAnimName << "!\n";
     }
 
     std::cout << "[DEBUG] Spawned " << (isEmperor ? "Emperor" : "Enemy") 

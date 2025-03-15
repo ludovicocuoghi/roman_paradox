@@ -81,7 +81,7 @@ void GameEngine::loadLevel(const std::string& levelPath) {
     m_currentLevel = levelPath;  // ✅ Ensure current level is stored
     std::cout << "[DEBUG] Loading Level: " << m_currentLevel << std::endl;
 
-    changeScene("PLAY", std::make_shared<Scene_Play>(*this, m_currentLevel));
+    changeScene("PLAY", std::static_pointer_cast<Scene>(std::make_shared<Scene_Play>(*this, m_currentLevel)));
 }
 
 // Check if the game is running
@@ -174,7 +174,7 @@ void GameEngine::changeScene(const std::string& sceneName, std::shared_ptr<Scene
 // Add this to GameEngine.h
 void GameEngine::restartLevel(const std::string& levelPath) {
     std::cout << "[DEBUG] Restarting level: " << levelPath << std::endl;
-    changeScene("PLAY", std::make_shared<Scene_Play>(*this, levelPath));
+    changeScene("PLAY", std::static_pointer_cast<Scene>(std::make_shared<Scene_Play>(*this, m_currentLevel)));
 }
 
 // Stops the game engine properly

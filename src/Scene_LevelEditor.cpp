@@ -18,6 +18,8 @@ static EnemyType getEnemyType(const std::string &typeStr) {
         return EnemyType::Super;
     else if (typeStr == "Emperor")
         return EnemyType::Emperor;
+    else if (typeStr == "EnemyCitizen")
+        return EnemyType::Citizen;
     else
         return EnemyType::Normal;
 }
@@ -515,7 +517,7 @@ void Scene_LevelEditor::loadDecOptions() {
 }
 
 void Scene_LevelEditor::loadEnemyOptions() {
-    m_enemyOptions = { "EnemyFast", "EnemyStrong", "EnemyElite", "EnemyNormal", "EnemySuper", "Emperor" };
+    m_enemyOptions = { "EnemyFast", "EnemyStrong", "EnemyElite", "EnemyNormal", "EnemySuper", "Emperor", "EnemyCitizen" };
     if (!m_enemyOptions.empty()) {
         m_selectedEnemy = m_enemyOptions[0];
     }
@@ -623,6 +625,7 @@ void Scene_LevelEditor::saveLevel(const std::string& filePath) {
             case EnemyType::Elite:   enemyType = "EnemyElite"; break;
             case EnemyType::Normal:   enemyType = "EnemyNormal"; break;
             case EnemyType::Super:   enemyType = "EnemySuper"; break;
+            case EnemyType::Citizen:   enemyType = "EnemyCitizen"; break;
             case EnemyType::Emperor: enemyType = "Emperor"; break;
             default:
                 std::cerr << "[ERROR] Unknown enemy type at (" << gridX << ", " << savedGridY << ")! Skipping...\n";

@@ -80,6 +80,10 @@ Scene_Play::Scene_Play(GameEngine& game, const std::string& levelPath)
     std::cout << "[DEBUG] Initializing Camera...\n";
     initializeCamera();
 
+    // Add dialogue system initialization here, right after camera initialization
+    std::cout << "[DEBUG] Initializing Dialogue System...\n";
+    initializeDialogues();
+
     std::cout << "[DEBUG] Calling init()...\n";
     init();
 
@@ -168,44 +172,52 @@ void Scene_Play::init()
     std::cout << "[DEBUG] Scene_Play::init() - Calling m_levelLoader.load()\n";
     m_levelLoader.load(m_levelPath, m_entityManager);
     std::cout << "[DEBUG] Scene_Play::init() - Level loaded successfully!\n";
-}
-//
+}//
 // Main Update Function
 //
 void Scene_Play::update(float deltaTime)
 {
     if (!m_gameOver)
     {
-        // 1) Update your entity manager, states, collisions, etc.
+        // Update entity manager
         m_entityManager.update();
 
+        // Update states
         for (auto& entity : m_entityManager.getEntities()) {
             if (entity->has<CHealth>())
                 entity->get<CHealth>().update(deltaTime);
             if (entity->has<CState>())
                 entity->get<CState>().update(deltaTime);
         }
-        sMovement(deltaTime);
-        sEnemyAI(deltaTime);
-        sCollision();
-        sAnimation(deltaTime);
-        UpdateFragments(deltaTime);
-        m_spawner.updateGraves(deltaTime);
-        sUpdateSword();
-        sLifespan(deltaTime);
-        sAmmoSystem(deltaTime);
-        updateBurstFire(deltaTime);
-
-        // Then do ephemeral checks, life checks, etc.
-        lifeCheckEnemyDeath();
-        lifeCheckPlayerDeath();
+        
+        // Update dialogue system first
+        if (m_dialogueSystem) {
+            m_dialogueSystem->update(deltaTime);
+        }
+        
+        // Only process game mechanics if dialogue is not active
+        if (!m_dialogueSystem || !m_dialogueSystem->isDialogueActive()) {
+            sMovement(deltaTime);
+            sEnemyAI(deltaTime);
+            sCollision();
+            sAnimation(deltaTime);
+            UpdateFragments(deltaTime);
+            m_spawner.updateGraves(deltaTime);
+            sUpdateSword();
+            sLifespan(deltaTime);
+            sAmmoSystem(deltaTime);
+            updateBurstFire(deltaTime);
+            
+            // Life checks
+            lifeCheckEnemyDeath();
+            lifeCheckPlayerDeath();
+        }
     }
     else
     {
         m_game.window().setView(m_game.window().getDefaultView());
         std::cout << "[DEBUG] Transitioning to GameOver scene with level path: " << m_levelPath << std::endl;
         m_game.changeScene("GAMEOVER", std::make_shared<Scene_GameOver>(m_game, m_levelPath));
-
     }
 
     // 3) Finally, render
@@ -215,13 +227,18 @@ void Scene_Play::update(float deltaTime)
 //
 
 void Scene_Play::sRender() {
-    // Aggiorna eventuali impostazioni di rendering se necessario:
+    // Update rendering settings
     m_playRenderer.setShowGrid(m_showGrid);
     m_playRenderer.setShowBoundingBoxes(m_showBoundingBoxes);
     m_playRenderer.setScore(m_score);
     m_playRenderer.setTimeOfDay(m_timeofday);
-
-    // Esegui il rendering tramite PlayRenderer
+    
+    // Set dialogue system for rendering
+    if (m_dialogueSystem) {
+        m_playRenderer.setDialogueSystem(m_dialogueSystem.get());
+    }
+    
+    // Render
     m_playRenderer.render();
 }
 
@@ -246,10 +263,130 @@ void Scene_Play::sCollision() {
     CollisionSystem collisionSystem(m_entityManager, m_game, &m_spawner, m_score);
     collisionSystem.updateCollisions();
 }
+void Scene_Play::initializeDialogues()
+{
+    // Create the dialogue system
+    m_dialogueSystem = std::make_shared<DialogueSystem>(m_game, m_entityManager);
+    
+    // Add dialogue triggers based on the current level
+    std::string levelName = extractLevelName(m_levelPath);
+    
+    // Setup dialogue triggers based on level
+    if (levelName == "alien_rome_level_1.txt") {
+        std::vector<DialogueMessage> introDialogue = {
+            {
+                "Alien Centurion",                               // speaker
+                "HELP!!!",                                       // message
+                "bin/images/Portraits/alien_ancient_right.png",  // portraitPath
+                false,                                           // portraitOnLeft
+                sf::Color::Yellow,                               // speakerColor
+                sf::Color::Red,                                  // messageColor
+                sf::Vector2f(800.f, 500.f),                      // dialogueBoxPosition
+                650.f,                                           // boxWidth - compact for short message
+                150.f,                                           // boxHeight
+                40,                                              // messageFontSize - larger for emphasis
+                true                                            // useTypewriterEffect - immediate display
+            },
+            {
+                "Alien Centurion",
+                "WE ARE BEING INVADED!!",
+                "bin/images/Portraits/alien_ancient_right.png",
+                false,
+                sf::Color::Yellow,
+                sf::Color::Red,
+                sf::Vector2f(800.f, 500.f),
+                650.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                40,                                              // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
+            }
+        };
+        m_dialogueSystem->addDialogueTrigger(800, introDialogue);
+        std::vector<DialogueMessage> secondDialogue = {
+            {
+                "Alien Centurion",                               // speaker
+                "THEY ARE INVINCIBLE!!!!",            // message
+                "bin/images/Portraits/alien_ancient_right.png",        // portraitPath
+                false,                                            // portraitOnLeft
+                sf::Color::Yellow,
+                sf::Color::Red,
+                sf::Vector2f(800.f, 500.f),
+                650.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                40,                                              // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
+            },
+            {
+                "Alien Centurion",                               // speaker
+                "....",            // message
+                "bin/images/Portraits/alien_ancient_right.png",        // portraitPath
+                false,                                            // portraitOnLeft
+                sf::Color::Yellow,
+                sf::Color::Red,
+                sf::Vector2f(800.f, 500.f),
+                650.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                40,                                              // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
+            },
+            {
+                "Alien Centurion",                               // speaker
+                "RUN!!!!",            // message
+                "bin/images/Portraits/alien_ancient_right.png",        // portraitPath
+                false,                                            // portraitOnLeft
+                sf::Color::Yellow,
+                sf::Color::Red,
+                sf::Vector2f(800.f, 500.f),
+                650.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                40,                                              // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
+            },
+            // Additional messages for the second dialogue...
+        };
+        m_dialogueSystem->addDialogueTrigger(1000, secondDialogue);
+    }
+    else if (levelName == "future_rome_level_emperor_room.txt") {
+        std::vector<DialogueMessage> bossDialogue = {
+            {
+                "Future Emperor",
+                "You dare challenge me? The master of time itself!",
+                "bin/images/Portraits/future_emperor_portrait.png",
+                false,                                    // portraitOnLeft (right side)
+                sf::Color::Red,                           // speakerColor
+                sf::Color::White,                         // messageColor
+                sf::Vector2f(100.f, 550.f)                // dialogueBoxPosition
+            },
+            {
+                "Centurion",
+                "Your reign of terror ends here!",
+                "bin/images/Portraits/player_future_armor.png",
+                true,
+                sf::Color::Cyan,
+                sf::Color::White,
+                sf::Vector2f(100.f, 550.f)
+            }
+        };
+        m_dialogueSystem->addDialogueTrigger(500, bossDialogue);
+    }
+    
+    std::cout << "[DEBUG] Dialogue system initialized for level: " << levelName << std::endl;
+}
 // Action Processing (Input Handling)                        
 
 void Scene_Play::sDoAction(const Action& action)
 {
+    // Check if dialogue is active - if so, only process ATTACK to advance dialogue
+    if (m_dialogueSystem && m_dialogueSystem->isDialogueActive()) {
+        if (action.name() == "ATTACK" && action.type() == "START") {
+            // Direct call to advance dialogue
+            m_dialogueSystem->handleAttackAction();
+        }
+        // Block all other actions during dialogue
+        return;
+    }
+
+    // Normal gameplay actions - only process if dialogue is not active
     auto playerEntities = m_entityManager.getEntities("player");
     if (playerEntities.empty()) return;
 
