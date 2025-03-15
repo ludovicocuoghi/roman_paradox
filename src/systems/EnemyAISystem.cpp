@@ -114,12 +114,12 @@ void EnemyAISystem::update(float deltaTime)
         }
 
         // Special handling for Super enemies to attack citizens
-        if (enemyAI.enemyType == EnemyType::Super) {
+        if (enemyAI.enemyType == EnemyType::Super || enemyAI.enemyType == EnemyType::Super2) {
             // Check for nearby citizens
             if (enemy->has<CBoundingBox>()) {
                 auto& superBB = enemy->get<CBoundingBox>();
                 sf::FloatRect superRect = superBB.getRect(enemyTrans.pos);
-                float attackRange = 100.0f; // Super enemy attack range
+                float attackRange = 200.0f; // Increased range for Super2 (shooting)
                 
                 // Extend the attack rectangle in the direction the super enemy is facing
                 sf::FloatRect attackRect = superRect;
@@ -156,22 +156,47 @@ void EnemyAISystem::update(float deltaTime)
                                 float dx = citizenTrans.pos.x - enemyTrans.pos.x;
                                 enemyAI.facingDirection = (dx > 0.f) ? 1.f : -1.f;
                                 
-                                std::cout << "[DEBUG] Super enemy attacking citizen!\n";
+                                if (enemyAI.enemyType == EnemyType::Super) {
+                                    std::cout << "[DEBUG] Super enemy attacking citizen with sword!\n";
+                                } else {
+                                    std::cout << "[DEBUG] Super2 enemy attacking citizen with bullets!\n";
+                                }
                             }
                             
-                            // If already attacking and at sword spawn threshold
+                            // If already attacking and at sword/bullet spawn threshold
                             if (enemyAI.enemyState == EnemyState::Attack && 
                                 !enemyAI.swordSpawned && 
                                 enemyAI.attackTimer <= SWORD_SPAWN_THRESHOLD) {
                                 
-                                m_spawner->spawnEnemySword(enemy);
+                                if (enemyAI.enemyType == EnemyType::Super) {
+                                    // Super enemy uses sword
+                                    m_spawner->spawnEnemySword(enemy);
+                                } else {
+                                    // Super2 enemy shoots bullets
+                                    for (int i = 0; i < 3; ++i) {
+                                        auto bullet = m_spawner->spawnEnemyBullet(enemy);
+                                        if (bullet && bullet->has<CTransform>()) {
+                                            auto& bulletTrans = bullet->get<CTransform>();
+                                            
+                                            // Aim at citizen
+                                            float dx = citizenTrans.pos.x - enemyTrans.pos.x;
+                                            float dy = citizenTrans.pos.y - enemyTrans.pos.y;
+                                            float angleRadians = std::atan2(dy, dx);
+                                            
+                                            // Convert to degrees and rotate
+                                            float angleDegrees = angleRadians * 180.0f / 3.14159f;
+                                            bulletTrans.rotate(angleDegrees);
+                                        }
+                                    }
+                                }
+                                
                                 enemyAI.swordSpawned = true;
                                 
                                 // Handle citizen damage/death
                                 if (citizen->has<CHealth>()) {
                                     auto& health = citizen->get<CHealth>();
                                     health.currentHealth = 0; // Kill the citizen
-                                    std::cout << "[DEBUG] Citizen killed by Super enemy's sword!\n";
+                                    std::cout << "[DEBUG] Citizen killed by Super/Super2 enemy's attack!\n";
                                 } else {
                                     // If no health component, just destroy the entity
                                     citizen->destroy();
@@ -1086,7 +1111,7 @@ void EnemyAISystem::update(float deltaTime)
         }
 
         // Check for tiles in front of Super enemies
-        if (enemyAI.enemyType == EnemyType::Super) {
+        if (enemyAI.enemyType == EnemyType::Super || enemyAI.enemyType == EnemyType::Super2) {
             enemyAI.tileDetected = false; // Reset flag
             
             auto& bb = enemy->get<CBoundingBox>();
@@ -1187,34 +1212,41 @@ void EnemyAISystem::update(float deltaTime)
             }
             
             // Se il nemico di tipo Super rileva un tile, passa allo stato Attack
-            if (enemyAI.enemyType == EnemyType::Super &&
-                enemyAI.tileDetected &&
-                (enemyAI.enemyState == EnemyState::Follow || enemyAI.enemyState == EnemyState::Idle))
-            {
-                std::cout << "[DEBUG] EnemySuper " << enemy->id()
-                        << " switching to Attack state.\n";
-                enemyAI.enemyState = EnemyState::Attack;
-                // Imposta l'animazione di attacco, resetta la velocità, ecc.
-                if (enemy->has<CAnimation>()) {
-                    std::string attackAnimName = m_game.worldType + "Hit" + "EnemySuper";
-                    if (m_game.assets().hasAnimation(attackAnimName)) {
-                        auto& anim = enemy->get<CAnimation>();
-                        anim.animation = m_game.assets().getAnimation(attackAnimName);
-                        anim.repeat = false;
-                        std::cout << "[DEBUG] Setting attack animation: " << attackAnimName << std::endl;
-                        if (enemyAI.facingDirection < 0) {
-                            flipSpriteLeft(anim.animation.getMutableSprite());
-                        } else {
-                            flipSpriteRight(anim.animation.getMutableSprite());
-                        }
-                    } else {
-                        std::cout << "[DEBUG] ERROR: Attack animation not found: " << attackAnimName << std::endl;
-                    }
+            if ((enemyAI.enemyType == EnemyType::Super || enemyAI.enemyType == EnemyType::Super2) &&
+            enemyAI.tileDetected &&
+            (enemyAI.enemyState == EnemyState::Follow || enemyAI.enemyState == EnemyState::Idle))
+        {
+            std::cout << "[DEBUG] EnemySuper/Super2 " << enemy->id()
+                    << " switching to Attack state.\n";
+            enemyAI.enemyState = EnemyState::Attack;
+            
+            // Imposta l'animazione di attacco, resetta la velocità, ecc.
+            if (enemy->has<CAnimation>()) {
+                std::string attackAnimName;
+                if (enemyAI.enemyType == EnemyType::Super) {
+                    attackAnimName = m_game.worldType + "Hit" + "EnemySuper";
+                } else {
+                    attackAnimName = m_game.worldType + "Hit" + "EnemySuper2";
                 }
-                enemyTrans.velocity.x = 0.f;
-                enemyAI.attackTimer = ATTACK_TIMER_DEFAULT;
-                enemyAI.swordSpawned = false;
+                
+                if (m_game.assets().hasAnimation(attackAnimName)) {
+                    auto& anim = enemy->get<CAnimation>();
+                    anim.animation = m_game.assets().getAnimation(attackAnimName);
+                    anim.repeat = false;
+                    std::cout << "[DEBUG] Setting attack animation: " << attackAnimName << std::endl;
+                    if (enemyAI.facingDirection < 0) {
+                        flipSpriteLeft(anim.animation.getMutableSprite());
+                    } else {
+                        flipSpriteRight(anim.animation.getMutableSprite());
+                    }
+                } else {
+                    std::cout << "[DEBUG] ERROR: Attack animation not found: " << attackAnimName << std::endl;
+                }
             }
+            enemyTrans.velocity.x = 0.f;
+            enemyAI.attackTimer = ATTACK_TIMER_DEFAULT;
+            enemyAI.swordSpawned = false;
+        }
             
             // Logica di movimento - Special logic for Future enemies
             if (m_game.worldType == "Future") {
@@ -1349,6 +1381,9 @@ void EnemyAISystem::update(float deltaTime)
                     break;
                 case EnemyType::Super:
                     runAnimName = m_game.worldType + "RunEnemySuper";
+                    break;
+                case EnemyType::Super2:
+                    runAnimName = m_game.worldType + "RunEnemySuper2";
                     break;
                 case EnemyType::Emperor:
                     runAnimName = m_game.worldType + "RunEmperor";
@@ -1578,6 +1613,7 @@ void EnemyAISystem::update(float deltaTime)
                 case EnemyType::Strong:  baseAnimName = "EnemyStrong";   break;
                 case EnemyType::Elite:   baseAnimName = "EnemyElite";    break;
                 case EnemyType::Super:   baseAnimName = "EnemySuper";    break;
+                case EnemyType::Super2:  baseAnimName = "EnemySuper2";   break;
                 case EnemyType::Emperor: baseAnimName = "Emperor";       break;
                 case EnemyType::Citizen: baseAnimName = "Citizen";       break;
             }
@@ -1615,14 +1651,31 @@ void EnemyAISystem::update(float deltaTime)
                         }
                     }
                 }
+                else if (enemyAI.enemyType == EnemyType::Super2) {
+                    // Super2 enemy shoots bullets instead of sword
+                    std::cout << "[DEBUG] Super2 enemy shooting bullets!\n";
+                    
+                    // Spawn multiple bullets in a spread pattern
+                    int bulletCount = 3;
+                    float spreadAngle = 15.0f; // degrees
+                    
+                    for (int i = 0; i < bulletCount; ++i) {
+                        auto bullet = m_spawner->spawnEnemyBullet(enemy);
+                        if (bullet && bullet->has<CTransform>()) {
+                            auto& bulletTrans = bullet->get<CTransform>();
+                            float angle = -spreadAngle + (spreadAngle * 2 * i / (bulletCount - 1));
+                            bulletTrans.rotate(angle);
+                        }
+                    }
+                }
                 else if (m_game.worldType != "Future") {
-                    // Normal sword for non-future
+                    // Normal sword for non-future regular enemies
                     m_spawner->spawnEnemySword(enemy);
                 }
+                
                 enemyAI.swordSpawned = true;
-
                 std::cout << "[DEBUG] Enemy " << enemy->id()
-                          << " spawning sword at AttackTimer: "
+                          << " spawning attack at AttackTimer: "
                           << enemyAI.attackTimer << "\n";
             }
 

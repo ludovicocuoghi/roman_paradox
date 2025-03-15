@@ -380,6 +380,7 @@ enum class EnemyType {
     Strong,
     Elite,
     Super,
+    Super2,
     Emperor,
     Citizen
 };

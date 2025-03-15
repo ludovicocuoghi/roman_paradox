@@ -253,6 +253,13 @@ Animation FutureStandEnemySuper TexFutureStandEnemySuper 100 100 1 0
 Animation FutureRunEnemySuper TexFutureRunEnemySuper 100 100 4 6
 Animation FutureHitEnemySuper TexFutureHitEnemySuper 100 100 1 0
 
+Texture TexFutureStandEnemySuper2 Enemy/alien_rome/super_shooting/stand.png
+Texture TexFutureRunEnemySuper2 Enemy/alien_rome/super_shooting/run.png
+Texture TexFutureHitEnemySuper2 Enemy/alien_rome/super_shooting/attack.png
+Animation AlienStandEnemySuper2 TexFutureStandEnemySuper2 100 100 1 0
+Animation AlienRunEnemySuper2 TexFutureRunEnemySuper2 100 100 4 8
+Animation AlienHitEnemySuper2 TexFutureHitEnemySuper2 100 100 1 0
+
 Texture TexAncientStandEmperor Enemy/ancient_rome/emperor/emperor.png
 Texture TexAncientStandEmperorDefeated Enemy/ancient_rome/emperor/emperor_defeated.png
 Animation AncientStandEmperor TexAncientStandEmperor 160 250 1 0
