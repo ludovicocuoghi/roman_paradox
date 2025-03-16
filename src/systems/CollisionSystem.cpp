@@ -6,8 +6,8 @@
 #include <random>
 #include <SFML/Graphics.hpp>
 
-CollisionSystem::CollisionSystem(EntityManager& entityManager, GameEngine& game, Spawner* spawner, int& score)
-    : m_entityManager(entityManager), m_game(game), m_spawner(spawner), m_score(score) {}
+CollisionSystem::CollisionSystem(EntityManager& entityManager, GameEngine& game, Spawner* spawner, int& score, const std::string& levelPath)
+    : m_entityManager(entityManager), m_game(game), m_spawner(spawner), m_score(score), m_levelPath(levelPath) {}
 
 void CollisionSystem::updateCollisions() {
     if (m_score >=100) {
@@ -48,7 +48,6 @@ void CollisionSystem::handlePlayerTileCollisions() {
 
         // -------------------------------------
         // We'll store if we picked up armor here
-        // -------------------------------------
         [[maybe_unused]]bool pickedUpArmor = false;
         std::shared_ptr<Entity> tileToDestroy = nullptr;
 
@@ -225,6 +224,9 @@ void CollisionSystem::handleMassiveBlackHoleCollisions() {
 
             // Using regular collision for simplicity
             if (blackHoleRect.intersects(tileRect)) {
+                auto& tileAnim      = tile->get<CAnimation>().animation;
+                std::string animName = tileAnim.getName();
+                m_spawner->createBlockFragments(tileTrans.pos, animName);
                 tile->destroy();
             }
         }
@@ -621,6 +623,7 @@ void CollisionSystem::handleBulletPlayerCollisions() {
         sf::FloatRect bulletRect = bulletBB.getRect(bulletTrans.pos);
 
         // 1) Distruggi il proiettile se tocca una tile
+        // Check for bullet collision with tiles
         for (auto& tile : m_entityManager.getEntities("tile")) {
             if (!tile->has<CTransform>() || !tile->has<CBoundingBox>())
                 continue;
@@ -629,9 +632,72 @@ void CollisionSystem::handleBulletPlayerCollisions() {
             auto& tileBB    = tile->get<CBoundingBox>();
             sf::FloatRect tileRect = tileBB.getRect(tileTrans.pos);
 
+            bool isSuper2Bullet = false;
+            if (bullet->has<CState>()) {
+                std::string parentId = bullet->get<CState>().state;
+                for (auto& enemy : m_entityManager.getEntities("enemy")) {
+                    if (std::to_string(enemy->id()) == parentId && 
+                        enemy->has<CEnemyAI>() && 
+                        enemy->get<CEnemyAI>().enemyType == EnemyType::Super2) {
+                        isSuper2Bullet = true;
+                        break;
+                    }
+                }
+            }
+
             if (bulletRect.intersects(tileRect)) {
-                //std::cout << "[DEBUG] Bullet hit a tile! Destroying bullet.\n";
-                bullet->destroy();
+                if (isSuper2Bullet) {
+                    // Super2 bullets destroy tiles
+                    auto& tileAnim      = tile->get<CAnimation>().animation;
+                    std::string animName = tileAnim.getName();
+                    m_spawner->createBlockFragments(tileTrans.pos, animName);
+                    tile->destroy();
+                } else {
+                    // Regular bullets get destroyed by tiles
+                    bullet->destroy();
+                }
+                break;
+            }
+        }
+        // Check for bullet collision with citizens
+        for (auto& citizen : m_entityManager.getEntities("enemy")) {
+            // Skip if not a citizen
+            if (!citizen->has<CEnemyAI>() || 
+                citizen->get<CEnemyAI>().enemyType != EnemyType::Citizen ||
+                !citizen->has<CTransform>() || !citizen->has<CBoundingBox>())
+                continue;
+            
+            auto& citizenTrans = citizen->get<CTransform>();
+            auto& citizenBB = citizen->get<CBoundingBox>();
+            sf::FloatRect citizenRect = citizenBB.getRect(citizenTrans.pos);
+            
+            if (bulletRect.intersects(citizenRect)) {
+                // Kill the citizen
+                if (citizen->has<CHealth>()) {
+                    auto& health = citizen->get<CHealth>();
+                    health.currentHealth = 0;
+                    std::cout << "[DEBUG] Citizen killed by enemy bullet!\n";
+                } else {
+                    citizen->destroy();
+                }
+                
+                // Also destroy the bullet (unless it's a Super2 bullet)
+                bool isSuper2Bullet = false;
+                if (bullet->has<CState>()) {
+                    std::string parentId = bullet->get<CState>().state;
+                    for (auto& enemy : m_entityManager.getEntities("enemy")) {
+                        if (std::to_string(enemy->id()) == parentId && 
+                            enemy->has<CEnemyAI>() && 
+                            enemy->get<CEnemyAI>().enemyType == EnemyType::Super2) {
+                            isSuper2Bullet = true;
+                            break;
+                        }
+                    }
+                }
+                
+                if (!isSuper2Bullet) {
+                    bullet->destroy();
+                }
                 break;
             }
         }
@@ -738,23 +804,38 @@ void CollisionSystem::handleBlackHoleTileCollisions() {
             sf::FloatRect tileRect = tileBB.getRect(tileTrans.pos);
 
             if (blackHoleRect.intersects(tileRect)) {
-                // Check if the tile is beyond the x-coordinate limit
-                if (tileTrans.pos.x > 3744) {
-                    // Skip destruction for tiles beyond x=3744
-                    std::cout << "[DEBUG] Black hole hit a protected tile at position (" 
-                              << tileTrans.pos.x << "," << tileTrans.pos.y << ") - not destroyed\n";
+                // Get the black hole's animation name to determine its type
+                std::string blackHoleAnimName = blackHole->get<CAnimation>().animation.getName();
+                
+                // Protect tiles beyond x=3744 only in the emperor room level
+                bool protectedTile = (m_levelPath == "future_rome_level_emperor_room.txt" && tileTrans.pos.x > 3744);
+                
+                // Determine if this black hole should destroy tiles (only if it's RedBig)
+                bool canDestroyTiles = (blackHoleAnimName.find("BlackHoleRedBig") != std::string::npos);
+                
+                if (protectedTile || !canDestroyTiles) {
+                    // Skip destruction for protected tiles or if not the right black hole type
+                    std::cout << "[DEBUG] Black hole hit a tile at position (" 
+                              << tileTrans.pos.x << "," << tileTrans.pos.y << ") - not destroyed";
+                    
+                    if (protectedTile) {
+                        std::cout << " (protected tile)";
+                    }
+                    if (!canDestroyTiles) {
+                        std::cout << " (not a BlackHoleRedBig)";
+                    }
+                    
+                    std::cout << "\n";
                     continue;
                 }
                 
-                // Optional: Play a sound effect
-                // Destroy the tile
                 std::cout << "[DEBUG] Black hole destroyed a tile at position (" 
                           << tileTrans.pos.x << "," << tileTrans.pos.y << ")\n";
                 
+                auto& tileAnim      = tile->get<CAnimation>().animation;
+                std::string animName = tileAnim.getName();
+                m_spawner->createBlockFragments(tileTrans.pos, animName);
                 tile->destroy();
-                
-                // Unlike regular bullets, black holes don't get destroyed upon hitting a tile
-                // This makes them more destructive as they continue through multiple tiles
                 
                 break; // Move to the next black hole after handling one tile collision
             }
@@ -914,9 +995,10 @@ void CollisionSystem::handleSwordCollisions() {
 
             if (shouldDestroyTile) {
                 // Create block fragments & spawn item
+                std::string animName = tileAnim.getName();
                 std::cout << "[DEBUG] Spawning black hole!!!\n";
-                m_spawner->spawnBlackHoleAfterTileDestruction(tileTransform.pos);
-
+                m_spawner->createBlockFragments(tileTransform.pos, animName);
+                //m_spawner->spawnBlackHoleAfterTileDestruction(tileTransform.pos);
                 tile->destroy();  // Destroy tile
             }
 
@@ -954,7 +1036,7 @@ void CollisionSystem::handleSwordCollisions() {
         
         // Enemy sword vs other enemies
         for (auto& otherEnemy : m_entityManager.getEntities("enemy")) {
-            if (!otherEnemy->has<CTransform>() || !otherEnemy->has<CBoundingBox>())
+            if (!otherEnemy->has<CTransform>() || !otherEnemy->has<CBoundingBox>() || otherEnemy->get<CEnemyAI>().enemyType == EnemyType::Super)
                 continue;
             
             auto& enemyTrans = otherEnemy->get<CTransform>();

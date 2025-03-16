@@ -19,13 +19,12 @@ public:
 
     void registerAction(int key, const std::string& actionName);
     void registerCommonActions();
-    // Nella classe Scene (header)
-    virtual bool usesImGui() const { return false; };
+    void togglePause();
     
+    virtual void sDoAction(const Action& action) = 0;
     virtual void update(float deltaTime) = 0;
     virtual void sRender() = 0;
-    virtual void sDoAction(const Action& action) = 0;
-
-    void togglePause();
+    virtual bool usesImGui() const { return false; }
+    
     const std::unordered_map<int, std::string>& getActionMap() const { return m_actionMap; }
 };

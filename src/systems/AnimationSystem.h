@@ -3,21 +3,21 @@
 #include "GameEngine.h"
 #include "EntityManager.hpp"
 #include "Components.hpp"
-#include "Animation.hpp"  // Per CAnimation e Animation
+#include "Animation.hpp"
 #include "Vec2.hpp"
 #include <string>
 
-// La classe AnimationSystem si occupa di aggiornare le animazioni degli oggetti
-// della scena, come giocatore, tile, nemici e collectable.
+// The AnimationSystem class handles updating animations for all scene objects,
+// including player, tiles, enemies, and collectables
 class AnimationSystem {
 public:
-    // Il costruttore riceve i riferimenti necessari:
-    // - il GameEngine per accedere alle risorse (asset)
-    // - l'EntityManager per iterare sulle entità della scena
-    // - un riferimento a una variabile (m_lastDirection) per determinare il verso del giocatore
+    // Constructor takes required references:
+    // - GameEngine for accessing assets
+    // - EntityManager for iterating scene entities
+    // - lastDirection reference to determine player orientation
     AnimationSystem(GameEngine& game, EntityManager& entityManager, float& lastDirection);
 
-    // Metodo principale che aggiorna le animazioni in base al deltaTime
+    // Main method that updates animations based on deltaTime
     void update(float deltaTime);
 
 private:

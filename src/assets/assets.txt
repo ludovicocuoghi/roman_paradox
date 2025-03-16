@@ -169,8 +169,6 @@ Animation FutureBlackHoleRedBig TexAlienBlackHoleRedBig 500 500 10 14
 Animation AlienBlackHoleAttack TexAlienBlackHoleAttack 81 41 8 22
 
 
-
-
 Texture TexAncientStandEnemyFast Enemy/ancient_rome/silver/stand1002_silver.png
 Texture TexAncientRunEnemyFast Enemy/ancient_rome/silver/run1004_silver.png
 Texture TexAncientAirEnemyFast Enemy/ancient_rome/silver/air1002_silver.png
@@ -221,6 +219,10 @@ Texture TexFutureHitEnemyFast Enemy/future_rome/fast/hit_fast.png
 Animation FutureStandEnemyFast TexFutureStandEnemyFast 100 100 1 0
 Animation FutureRunEnemyFast TexFutureRunEnemyFast 100 100 4 7
 Animation FutureHitEnemyFast TexFutureHitEnemyFast 100 100 1 0
+
+Animation AlienStandEnemyFast TexFutureStandEnemyFast 100 100 1 0
+Animation AlienRunEnemyFast TexFutureRunEnemyFast 100 100 4 7
+Animation AlienHitEnemyFast TexFutureHitEnemyFast 100 100 1 0
 
 Texture TexFutureStandEnemyStrong Enemy/future_rome/strong/stand_strong.png
 Texture TexFutureRunEnemyStrong Enemy/future_rome/strong/run_strong.png

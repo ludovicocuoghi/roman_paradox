@@ -55,13 +55,12 @@ void AnimationSystem::update(float deltaTime) {
                     st.state = "idle";
             }
         } else if (st.state == "defense") {
-                // Gestione della difesa (scudo)
                 std::string defenseAnim = prefix + "PlayerDefense";
                 if (m_game.assets().hasAnimation(defenseAnim)) {
                     if (canim.animation.getName() != defenseAnim) {
                         std::cout << "[DEBUG] Defense animation activated.\n";
                         canim.animation = m_game.assets().getAnimation(defenseAnim);
-                        canim.repeat = true;  // L'animazione si ripete finché il tasto è premuto
+                        canim.repeat = true; // Loop defense animation
                         if (m_lastDirection < 0)
                             flipSpriteLeft(canim.animation.getMutableSprite());
                         else
@@ -151,7 +150,6 @@ void AnimationSystem::update(float deltaTime) {
             default:                 baseAnimName = "EnemyNormal"; break;
         }
 
-        // Inside your AnimationSystem.cpp, in the enemy animation section
         if (enemy->has<CEnemyAI>() && enemy->get<CEnemyAI>().enemyType == EnemyType::Super) {
             canim.animation.update(deltaTime);
             continue;  // Skip to next entity
@@ -160,8 +158,8 @@ void AnimationSystem::update(float deltaTime) {
         std::string desiredAnim;
         switch (ai.enemyState) {
             case EnemyState::Follow:    desiredAnim = m_game.worldType + "Run" + baseAnimName; break;
-            case EnemyState::Attack:    desiredAnim = m_game.worldType + "Hit" + baseAnimName; break; // CHANGED "Attack" to "Hit"
-            case EnemyState::Knockback: desiredAnim = m_game.worldType + "Hit" + baseAnimName; break; // CHANGED "Attack" to "Hit"
+            case EnemyState::Attack:    desiredAnim = m_game.worldType + "Hit" + baseAnimName; break; 
+            case EnemyState::Knockback: desiredAnim = m_game.worldType + "Hit" + baseAnimName; break;
             default:                    desiredAnim = m_game.worldType + "Stand" + baseAnimName; break;
         }
     

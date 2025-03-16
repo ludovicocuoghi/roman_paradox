@@ -6,9 +6,10 @@ void Scene::registerAction(int key, const std::string& actionName) {
     m_actionMap[key] = actionName;
 }
 
+// Register default actions available in all scenes:
+// - ESC: Quit the game
 void Scene::registerCommonActions() {
     registerAction(sf::Keyboard::Escape, "QUIT");
-    registerAction(sf::Keyboard::P, "PAUSE");
 }
 
 void Scene::togglePause() {

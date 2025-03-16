@@ -129,8 +129,8 @@ public:
     
     // Super enemy attack params
     static constexpr int   ENEMY_SUPER_MAX_CONSECUTIVE_SWORD_ATTACKS = 10;
-    static constexpr int   ENEMY_SUPER_BULLET_BURST_COUNT = 4;
-    static constexpr int   ENEMY_SUPER_SUPER_BULLET_COUNT = 4;
+    static constexpr int   ENEMY_SUPER_BULLET_BURST_COUNT = 3;
+    static constexpr int   ENEMY_SUPER_SUPER_BULLET_COUNT = 1;
     static constexpr float ENEMY_SUPER_SUPER_BULLET_DAMAGE = 9999;
     
     // Emperor enemy attack params

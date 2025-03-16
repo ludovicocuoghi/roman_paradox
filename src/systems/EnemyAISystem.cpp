@@ -114,12 +114,12 @@ void EnemyAISystem::update(float deltaTime)
         }
 
         // Special handling for Super enemies to attack citizens
-        if (enemyAI.enemyType == EnemyType::Super) {
+        if (enemyAI.enemyType == EnemyType::Super || enemyAI.enemyType == EnemyType::Super2) {
             // Check for nearby citizens
             if (enemy->has<CBoundingBox>()) {
                 auto& superBB = enemy->get<CBoundingBox>();
                 sf::FloatRect superRect = superBB.getRect(enemyTrans.pos);
-                float attackRange = 200.0f;
+                float attackRange = 70.0f;
                 
                 // Extend the attack rectangle in the direction the super enemy is facing
                 sf::FloatRect attackRect = superRect;
@@ -165,10 +165,11 @@ void EnemyAISystem::update(float deltaTime)
                                 if (enemyAI.enemyType == EnemyType::Super) {
                                     // Super enemy uses sword
                                     m_spawner->spawnEnemySword(enemy);
+                                    enemyAI.swordSpawned = true;
+                                } else if (enemyAI.enemyType == EnemyType::Super2) {
+                                    // Super2 enemy uses black hole
+                                    m_spawner->spawnEnemyBullet(enemy);
                                 }
-                                
-                                enemyAI.swordSpawned = true;
-                                
                                 // Handle citizen damage/death
                                 if (citizen->has<CHealth>()) {
                                     auto& health = citizen->get<CHealth>();
@@ -320,7 +321,7 @@ void EnemyAISystem::update(float deltaTime)
                             // Create massive black hole
                             auto massiveBlackHole = m_entityManager.addEntity("emperorBlackHole");
                             massiveBlackHole->add<CTransform>(enemyTrans.pos);
-                            massiveBlackHole->add<CLifeSpan>(30.0f);
+                            massiveBlackHole->add<CLifeSpan>(25.0f);
                             massiveBlackHole->add<CState>(std::to_string(enemy->id()));
                             
                             // Animation setup
@@ -868,7 +869,7 @@ void EnemyAISystem::update(float deltaTime)
                                 // Create massive black hole
                                 auto massiveBlackHole = m_entityManager.addEntity("emperorBlackHole");
                                 massiveBlackHole->add<CTransform>(enemyTrans.pos);
-                                massiveBlackHole->add<CLifeSpan>(10.0f);
+                                massiveBlackHole->add<CLifeSpan>(25.0f);
                                 massiveBlackHole->add<CState>(std::to_string(enemy->id()));
                                 
                                 // Animation setup
@@ -1056,7 +1057,7 @@ void EnemyAISystem::update(float deltaTime)
                                              m_entityManager);
 
         bool playerVisible       = (distance < PLAYER_VISIBLE_DISTANCE) && canSeePlayer;
-        bool playerVisible_elite = (distance < PLAYER_VISIBLE_DISTANCE) || 
+        bool playerVisible_elite = (distance < PLAYER_VISIBLE_DISTANCE*1.3) || 
                           (canSeePlayer && distance < PLAYER_VISIBLE_DISTANCE * 2);
         bool playerVisible_emperor = (distance < PLAYER_VISIBLE_DISTANCE * 100);
 
@@ -1241,27 +1242,26 @@ void EnemyAISystem::update(float deltaTime)
                     if (distance < TOO_CLOSE_DISTANCE) {
                         // Too close - back up!
                         enemyTrans.velocity.x = -enemyAI.facingDirection * FOLLOW_MOVE_SPEED * 0.8f;
-                        std::cout << "[DEBUG] Future enemy " << enemy->id() 
+                        std::cout << "[DEBUG] " << (enemyAI.enemyType == EnemyType::Super2 ? "Super2" : "Future") 
+                                << " enemy " << enemy->id() 
                                 << " backing away (too close: " << distance << ")\n";
                     }
                     else if (distance < OPTIMAL_MIN_DISTANCE && hasLineOfSight) {
                         // A bit too close but has line of sight - back up slightly
                         enemyTrans.velocity.x = -enemyAI.facingDirection * FOLLOW_MOVE_SPEED * 0.5f;
-                        std::cout << "[DEBUG] Future enemy " << enemy->id() 
+                        std::cout << "[DEBUG] " << (enemyAI.enemyType == EnemyType::Super2 ? "Super2" : "Future") 
+                                << " enemy " << enemy->id() 
                                 << " backing to optimal range (distance: " << distance << ")\n";
                     }
                     else if (distance > OPTIMAL_MAX_DISTANCE || !hasLineOfSight) {
                         // Too far or no line of sight - approach slowly
                         enemyTrans.velocity.x = enemyAI.facingDirection * FOLLOW_MOVE_SPEED * 0.6f;
-                        // std::cout << "[DEBUG] Future enemy " << enemy->id() 
-                        //         << " approaching (distance: " << distance 
-                        //         << ", LOS: " << (hasLineOfSight ? "yes" : "no") << ")\n";
                     }
                     else {
                         // In optimal range and has line of sight - stop moving and shoot
                         enemyTrans.velocity.x = 0.f;
                         
-                        // Set animation to idle or attack animation for Future world
+                        // Set animation to idle or attack animation for Future world and Super2
                         std::string idleAnimName;
                         switch (enemyAI.enemyType) {
                             case EnemyType::Fast:    idleAnimName = "FutureStandEnemyFast"; break;
@@ -1269,7 +1269,7 @@ void EnemyAISystem::update(float deltaTime)
                             case EnemyType::Elite:   idleAnimName = "FutureStandEnemyElite"; break;
                             case EnemyType::Normal:  idleAnimName = "FutureStandEnemyNormal"; break;
                             case EnemyType::Super:   idleAnimName = "FutureStandEnemySuper"; break;
-                            case EnemyType::Super2:   idleAnimName = "FutureStandEnemySuper"; break;
+                            case EnemyType::Super2:  idleAnimName = "FutureStandEnemySuper2"; break; // Added specific animation for Super2
                             case EnemyType::Emperor: idleAnimName = "FutureStandEmperor"; break;
                             case EnemyType::Citizen: idleAnimName = "FutureStandCitizen"; break;
                         }
@@ -1284,7 +1284,8 @@ void EnemyAISystem::update(float deltaTime)
                             }
                         }
                         
-                        std::cout << "[DEBUG] Future enemy " << enemy->id() 
+                        std::cout << "[DEBUG] " << (enemyAI.enemyType == EnemyType::Super2 ? "Super2" : "Future") 
+                                << " enemy " << enemy->id() 
                                 << " at optimal shooting range (distance: " << distance << ")\n";
                     }
                 } else {
@@ -1386,7 +1387,7 @@ void EnemyAISystem::update(float deltaTime)
         // Place this at the beginning of the Future-world ranged attacks section (section 7)
         // to include Super2 in the same logic as Future enemies:
 
-        if (m_game.worldType == "Future" || enemyAI.enemyType == EnemyType::Super2) {
+        if (m_game.worldType == "Future" || enemyAI.enemyType == EnemyType::Super2 || (enemyAI.enemyType == EnemyType::Fast && m_game.worldType == "Alien")) {
             enemyAI.shootTimer += deltaTime;
             enemyAI.superMoveTimer += deltaTime; // track super move timer
 
@@ -1401,7 +1402,13 @@ void EnemyAISystem::update(float deltaTime)
             if (enemyAI.burstCooldownActive) {
                 enemyAI.burstCooldownTimer += deltaTime;
                 
-                float postBurstCooldown = (enemyAI.enemyType == EnemyType::Super2) ? 5.0f : 1.0f;
+                // Different cooldown durations based on enemy type
+                float postBurstCooldown = 1.0f; // Default cooldown
+                
+                // Super2 should have longer cooldowns between bursts
+                if (enemyAI.enemyType == EnemyType::Super2) {
+                    postBurstCooldown = 3.0f; // Longer cooldown for Super2
+                }
                 
                 if (enemyAI.burstCooldownTimer >= postBurstCooldown) {
                     enemyAI.burstCooldownActive = false;
@@ -1428,22 +1435,41 @@ void EnemyAISystem::update(float deltaTime)
                         enemyAI.superMoveReady = false;
                         std::cout << "[DEBUG] Enemy " << enemy->id()
                                 << " uses SUPER MOVE!\n";
-
+                    
                         if (enemyAI.enemyType == EnemyType::Super2) {
                             // Super2 fires one large black hole as super move
                             auto bullet = m_spawner->spawnEnemyBullet(enemy);
                             if (bullet && bullet->has<CAnimation>()) {
-                                // Resize the black hole to be larger for super move
-                                auto& sprite = bullet->get<CAnimation>().animation.getMutableSprite();
-                                float scale = 3.f; // Larger scale for super move
-                                sprite.setScale(scale, scale);
+                                // Check if the animation is a black hole
+                                std::string animName = bullet->get<CAnimation>().animation.getName();
+                                if (animName.find("BlackHole") != std::string::npos) {
+                                    // Resize the black hole to be larger for super move
+                                    auto& sprite = bullet->get<CAnimation>().animation.getMutableSprite();
+                                    float scale = 3.0f; // Make it even larger for more impact
+                                    sprite.setScale(scale, scale);
+                                    
+                                    // Give it a longer lifespan
+                                    if (bullet->has<CLifeSpan>()) {
+                                        bullet->get<CLifeSpan>().remainingTime = 25.0f; // Longer lifespan
+                                    } else {
+                                        bullet->add<CLifeSpan>(25.0f);
+                                    }
+                                    
+                                    // Reduce speed for larger black hole
+                                    if (bullet->has<CTransform>()) {
+                                        bullet->get<CTransform>().velocity *= 0.6f; // Slower but more menacing
+                                    }
+                                }
                             }
                             std::cout << "[DEBUG] Super2 enemy fired super black hole!\n";
+                            
+                            // Longer cooldown after super move for Super2
+                            enemyAI.superMoveCooldown = 15.0f; // Longer cooldown between super moves
                         } else {
                             // Regular Future enemies use spread bullets
                             int superBullets = enemyState.superBulletCount;
                             float angleRange = 30.f; // spread angle
-
+                    
                             for (int i = 0; i < superBullets; ++i) {
                                 auto bullet = m_spawner->spawnEnemyBullet(enemy);
                                 if (bullet && bullet->has<CTransform>()) {
@@ -1483,9 +1509,6 @@ void EnemyAISystem::update(float deltaTime)
                         
                         // Resize the bullet/black hole if it's a Super2 enemy
                         if (enemyAI.enemyType == EnemyType::Super2 && bullet && bullet->has<CAnimation>()) {
-                            auto& sprite = bullet->get<CAnimation>().animation.getMutableSprite();
-                            float scale = 0.8f; // Smaller scale for regular burst
-                            sprite.setScale(scale, scale);
                             std::cout << "[DEBUG] Super2 enemy fired small black hole #" << enemyAI.bulletsShot << "\n";
                         } else {
                             std::cout << "[DEBUG] Enemy " << enemy->id()
@@ -1495,7 +1518,7 @@ void EnemyAISystem::update(float deltaTime)
                         // Slight random angle for all enemies
                         if (bullet && bullet->has<CTransform>()) {
                             auto& bulletTrans = bullet->get<CTransform>();
-                            float angleOffset = -10.f + static_cast<float>(rand() % 6);
+                            float angleOffset = -3.f + static_cast<float>(rand() % 6);
                             bulletTrans.rotate(angleOffset);
                         }
 
@@ -1522,13 +1545,12 @@ void EnemyAISystem::update(float deltaTime)
             ? EMPEROR_ATTACK_RANGE
             : ATTACK_RANGE;
         
-        bool shouldAttack = (shouldFollow && distance < currentAttackRange)
-                   ||
-                   (enemyAI.enemyType == EnemyType::Super && 
-                    enemyAI.enemyState == EnemyState::BlockedByTile)
-                   || 
-                   (enemyAI.enemyType == EnemyType::Super && 
-                    enemyAI.tileDetected);  // Add this condition
+        bool shouldAttack = ((shouldFollow && distance < currentAttackRange)
+                            && (enemyAI.enemyType != EnemyType::Super2))
+                            || ((enemyAI.enemyType == EnemyType::Super && 
+                                    enemyAI.enemyState == EnemyState::BlockedByTile)
+                            || (enemyAI.enemyType == EnemyType::Super && 
+                                    enemyAI.tileDetected)); 
         
         // If skipAttack is true, we skip the logic below
         if (!skipAttack) {
@@ -1691,9 +1713,10 @@ void EnemyAISystem::updateCitizens(float deltaTime, const CTransform& playerTran
 {
     auto enemies = m_entityManager.getEntities("enemy");
     auto superEnemies = m_entityManager.getEntities("superEnemy");
+
     
     // Constants specifically for citizen behavior
-    const float FLEE_DISTANCE = 1000.f; // Changed from 500.f to 900.f
+    const float FLEE_DISTANCE = 1300.f; // Changed from 500.f to 900.f
     const float CITIZEN_SPEED_FACTOR = 0.7f;
     
     for (auto& enemy : enemies) {
@@ -1806,7 +1829,11 @@ void EnemyAISystem::updateCitizens(float deltaTime, const CTransform& playerTran
             if (m_game.assets().hasAnimation(runAnim) && anim.animation.getName() != runAnim) {
                 anim.animation = m_game.assets().getAnimation(runAnim);
                 anim.repeat = true; // Ensure animation repeats
-                flipSpriteLeft(anim.animation.getMutableSprite()); // Explicitly flip sprite LEFT
+                if (enemyAI.facingDirection < 0) {
+                    flipSpriteLeft(anim.animation.getMutableSprite());
+                } else {
+                    flipSpriteRight(anim.animation.getMutableSprite());
+                }
             }
         } else {
             // Player is far - remain idle

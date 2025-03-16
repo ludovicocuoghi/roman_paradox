@@ -126,7 +126,7 @@ std::shared_ptr<Entity> Spawner::spawnEnemyBullet(std::shared_ptr<Entity> enemy)
     // Bullet velocity goes left or right depending on dir
     float bulletSpeed = ENEMY_BULLET_SPEED;
     if (enemy->has<CEnemyAI>() && enemy->get<CEnemyAI>().enemyType == EnemyType::Super2) {
-        bulletSpeed = ENEMY_BULLET_SPEED * 0.7f; // 70% speed for Super2 black holes
+        bulletSpeed = ENEMY_BULLET_SPEED * 0.5f; // 70% speed for Super2 black holes
     }
 
     // Bullet velocity goes left or right depending on dir
@@ -162,11 +162,23 @@ std::shared_ptr<Entity> Spawner::spawnEnemyBullet(std::shared_ptr<Entity> enemy)
     if (m_game.assets().hasAnimation(animationName)) {
         auto& bulletAnim = m_game.assets().getAnimation(animationName);
         bullet->add<CAnimation>(bulletAnim, false);
-
+    
         // Use animation size for bounding box
         sf::Vector2i animSize = bulletAnim.getSize();
         float w = static_cast<float>(animSize.x);
         float h = static_cast<float>(animSize.y);
+        
+        // For Super2 enemies, scale down both sprite and bounding box
+        if (enemyAI.enemyType == EnemyType::Super2) {
+            float scale = 0.5f;
+            auto& sprite = bullet->get<CAnimation>().animation.getMutableSprite();
+            sprite.setScale(scale, scale);
+            
+            // Scale dimensions for bounding box
+            w *= scale;
+            h *= scale;
+        }
+        
         bullet->add<CBoundingBox>(Vec2<float>(w, h), Vec2<float>(w * 0.5f, h * 0.5f));
     } else {
         std::cerr << "[ERROR] Missing " << animationName << " animation!\n";
@@ -197,7 +209,7 @@ std::shared_ptr<Entity> Spawner::spawnEnemySword(std::shared_ptr<Entity> enemy) 
     // Determine sword animation based on world and enemy type
     std::string animationName;
 
-    animationName = (enemyAI.enemyType == EnemyType::Super) ? "SuperSword" : "EnemySword";
+    animationName = (enemyAI.enemyType == EnemyType::Super || enemyAI.enemyType == EnemyType::Super2) ? "SuperSword" : "EnemySword";
 
     std::cout << "[DEBUG] Using " << animationName << " animation for enemy sword.\n";
 

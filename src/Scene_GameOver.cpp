@@ -95,10 +95,10 @@ void Scene_GameOver::update(float deltaTime) {
 void Scene_GameOver::sDoAction(const Action& action) {
     if (action.type() == "START") {
         if (action.name() == "UP") {
-            m_selectedOption = (m_selectedOption == 0) ? 1 : 0; // Toggle between 0 and 1
+            m_selectedOption = (m_selectedOption == 0) ? 1 : 0;
         } 
         else if (action.name() == "DOWN") {
-            m_selectedOption = (m_selectedOption == 0) ? 1 : 0; // Toggle between 0 and 1
+            m_selectedOption = (m_selectedOption == 0) ? 1 : 0;
         }
         else if (action.name() == "SELECT") {
             if (m_selectedOption == 0) {

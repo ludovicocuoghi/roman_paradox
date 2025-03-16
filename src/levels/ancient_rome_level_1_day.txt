@@ -328,8 +328,7 @@ Enemy EnemyNormal 103 2
 Enemy EnemyNormal 74 2
 Enemy EnemyNormal 83 6
 Enemy EnemyNormal 79 6
-Enemy EnemyNormal 9 2
-Enemy EnemyNormal 29 7
 Enemy EnemyNormal 80 2
 Enemy EnemyFast 94 2
 Enemy EnemyNormal 104 6
+Enemy EnemyNormal 27 7

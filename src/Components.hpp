@@ -19,7 +19,7 @@ class CTransform : public Component {
         Vec2<float> velocity;
         Vec2<float> scale;
         float rotation;
-        float facingDirection = 1.f; // or -1.f
+        float facingDirection = -1.f; // or -1.f
     
         CTransform(const Vec2<float>& p = {0, 0},
                    const Vec2<float>& v = {0, 0},
@@ -547,7 +547,7 @@ class CEnemyAI : public Component {
                 attackRadius(100.f),
     
                 // Jump & Movement
-                facingDirection(1.f),
+                facingDirection(-1.f),
                 jumpCooldown(0.5f),
                 isJumping(false),
                 jumpTimer(0.f),
