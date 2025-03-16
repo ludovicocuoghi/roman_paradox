@@ -528,6 +528,7 @@ class CEnemyAI : public Component {
         float stateChangeCooldown;
         float phaseTimer;
         float blackHoleTimer;
+        float blackHoleCooldown;
     
         // ------------------------------------------------------
         // Costruttore
@@ -612,7 +613,8 @@ class CEnemyAI : public Component {
                 canChangeState(true),
                 stateChangeCooldown(0.f),
                 phaseTimer(0.0f),
-                blackHoleTimer(0.0f)
+                blackHoleTimer(0.0f),
+                blackHoleCooldown(0.0f)
         {
         }
     };

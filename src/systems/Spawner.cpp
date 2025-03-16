@@ -124,7 +124,14 @@ std::shared_ptr<Entity> Spawner::spawnEnemyBullet(std::shared_ptr<Entity> enemy)
     float dir     = enemyAI.facingDirection;
 
     // Bullet velocity goes left or right depending on dir
-    Vec2<float> bulletVelocity(dir * ENEMY_BULLET_SPEED, 0.0f);
+    float bulletSpeed = ENEMY_BULLET_SPEED;
+    if (enemy->has<CEnemyAI>() && enemy->get<CEnemyAI>().enemyType == EnemyType::Super2) {
+        bulletSpeed = ENEMY_BULLET_SPEED * 0.7f; // 70% speed for Super2 black holes
+    }
+
+    // Bullet velocity goes left or right depending on dir
+    Vec2<float> bulletVelocity(dir * bulletSpeed, 0.0f);
+
 
     // Offsets so the bullet spawns near the enemy
     float offsetX = (dir < 0) ? -ENEMY_BULLET_OFFSET_X : ENEMY_BULLET_OFFSET_X;
@@ -145,7 +152,7 @@ std::shared_ptr<Entity> Spawner::spawnEnemyBullet(std::shared_ptr<Entity> enemy)
         case EnemyType::Strong:  animationName = "FutureRedBullet";  break;
         case EnemyType::Fast:    animationName = "FutureBlueBullet";  break;
         case EnemyType::Normal:  animationName = "FutureGoldBullet"; break;
-        case EnemyType::Super:   animationName = "FutureSilverBullet"; break;  
+        case EnemyType::Super2:   animationName = "AlienBlackHoleAttack"; break;  
         default:
             std::cerr << "[WARNING] Unhandled EnemyType in Spawner! Defaulting to FutureRedBullet.\n";
             animationName = "FutureRedBullet"; // Default case for safety

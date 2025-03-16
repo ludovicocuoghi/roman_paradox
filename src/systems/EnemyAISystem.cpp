@@ -114,12 +114,12 @@ void EnemyAISystem::update(float deltaTime)
         }
 
         // Special handling for Super enemies to attack citizens
-        if (enemyAI.enemyType == EnemyType::Super || enemyAI.enemyType == EnemyType::Super2) {
+        if (enemyAI.enemyType == EnemyType::Super) {
             // Check for nearby citizens
             if (enemy->has<CBoundingBox>()) {
                 auto& superBB = enemy->get<CBoundingBox>();
                 sf::FloatRect superRect = superBB.getRect(enemyTrans.pos);
-                float attackRange = 200.0f; // Increased range for Super2 (shooting)
+                float attackRange = 200.0f;
                 
                 // Extend the attack rectangle in the direction the super enemy is facing
                 sf::FloatRect attackRect = superRect;
@@ -155,12 +155,6 @@ void EnemyAISystem::update(float deltaTime)
                                 // Set facing direction toward citizen
                                 float dx = citizenTrans.pos.x - enemyTrans.pos.x;
                                 enemyAI.facingDirection = (dx > 0.f) ? 1.f : -1.f;
-                                
-                                if (enemyAI.enemyType == EnemyType::Super) {
-                                    std::cout << "[DEBUG] Super enemy attacking citizen with sword!\n";
-                                } else {
-                                    std::cout << "[DEBUG] Super2 enemy attacking citizen with bullets!\n";
-                                }
                             }
                             
                             // If already attacking and at sword/bullet spawn threshold
@@ -171,23 +165,6 @@ void EnemyAISystem::update(float deltaTime)
                                 if (enemyAI.enemyType == EnemyType::Super) {
                                     // Super enemy uses sword
                                     m_spawner->spawnEnemySword(enemy);
-                                } else {
-                                    // Super2 enemy shoots bullets
-                                    for (int i = 0; i < 3; ++i) {
-                                        auto bullet = m_spawner->spawnEnemyBullet(enemy);
-                                        if (bullet && bullet->has<CTransform>()) {
-                                            auto& bulletTrans = bullet->get<CTransform>();
-                                            
-                                            // Aim at citizen
-                                            float dx = citizenTrans.pos.x - enemyTrans.pos.x;
-                                            float dy = citizenTrans.pos.y - enemyTrans.pos.y;
-                                            float angleRadians = std::atan2(dy, dx);
-                                            
-                                            // Convert to degrees and rotate
-                                            float angleDegrees = angleRadians * 180.0f / 3.14159f;
-                                            bulletTrans.rotate(angleDegrees);
-                                        }
-                                    }
                                 }
                                 
                                 enemyAI.swordSpawned = true;
@@ -208,7 +185,6 @@ void EnemyAISystem::update(float deltaTime)
                 }
             }
         }
-
         
         // This flag allows movement but prevents attacking
         bool skipAttack = false;
@@ -253,6 +229,7 @@ void EnemyAISystem::update(float deltaTime)
                 float healthPercentage = 1.f;
                 if (enemy->has<CHealth>()) {
                     auto& health = enemy->get<CHealth>();
+                    
                     healthPercentage = static_cast<float>(health.currentHealth) / static_cast<float>(health.maxHealth);
                 }
 
@@ -1111,7 +1088,7 @@ void EnemyAISystem::update(float deltaTime)
         }
 
         // Check for tiles in front of Super enemies
-        if (enemyAI.enemyType == EnemyType::Super || enemyAI.enemyType == EnemyType::Super2) {
+        if (enemyAI.enemyType == EnemyType::Super) {
             enemyAI.tileDetected = false; // Reset flag
             
             auto& bb = enemy->get<CBoundingBox>();
@@ -1212,12 +1189,10 @@ void EnemyAISystem::update(float deltaTime)
             }
             
             // Se il nemico di tipo Super rileva un tile, passa allo stato Attack
-            if ((enemyAI.enemyType == EnemyType::Super || enemyAI.enemyType == EnemyType::Super2) &&
+            if ((enemyAI.enemyType == EnemyType::Super) &&
             enemyAI.tileDetected &&
             (enemyAI.enemyState == EnemyState::Follow || enemyAI.enemyState == EnemyState::Idle))
         {
-            std::cout << "[DEBUG] EnemySuper/Super2 " << enemy->id()
-                    << " switching to Attack state.\n";
             enemyAI.enemyState = EnemyState::Attack;
             
             // Imposta l'animazione di attacco, resetta la velocità, ecc.
@@ -1225,8 +1200,6 @@ void EnemyAISystem::update(float deltaTime)
                 std::string attackAnimName;
                 if (enemyAI.enemyType == EnemyType::Super) {
                     attackAnimName = m_game.worldType + "Hit" + "EnemySuper";
-                } else {
-                    attackAnimName = m_game.worldType + "Hit" + "EnemySuper2";
                 }
                 
                 if (m_game.assets().hasAnimation(attackAnimName)) {
@@ -1249,7 +1222,7 @@ void EnemyAISystem::update(float deltaTime)
         }
             
             // Logica di movimento - Special logic for Future enemies
-            if (m_game.worldType == "Future") {
+            if (m_game.worldType == "Future" || enemyAI.enemyType == EnemyType::Super2) {
                 // Define optimal shooting range
                 const float OPTIMAL_MIN_DISTANCE = 350.0f;
                 const float OPTIMAL_MAX_DISTANCE = 550.0f;
@@ -1296,6 +1269,7 @@ void EnemyAISystem::update(float deltaTime)
                             case EnemyType::Elite:   idleAnimName = "FutureStandEnemyElite"; break;
                             case EnemyType::Normal:  idleAnimName = "FutureStandEnemyNormal"; break;
                             case EnemyType::Super:   idleAnimName = "FutureStandEnemySuper"; break;
+                            case EnemyType::Super2:   idleAnimName = "FutureStandEnemySuper"; break;
                             case EnemyType::Emperor: idleAnimName = "FutureStandEmperor"; break;
                             case EnemyType::Citizen: idleAnimName = "FutureStandCitizen"; break;
                         }
@@ -1409,9 +1383,10 @@ void EnemyAISystem::update(float deltaTime)
         // ----------------------------------------------------
         // 7) FUTURE-WORLD Ranged Attacks (Bullets)
         // ----------------------------------------------------
-        // In the Future-world ranged attacks section (section 7), replace with:
+        // Place this at the beginning of the Future-world ranged attacks section (section 7)
+        // to include Super2 in the same logic as Future enemies:
 
-        if (m_game.worldType == "Future") {
+        if (m_game.worldType == "Future" || enemyAI.enemyType == EnemyType::Super2) {
             enemyAI.shootTimer += deltaTime;
             enemyAI.superMoveTimer += deltaTime; // track super move timer
 
@@ -1426,10 +1401,9 @@ void EnemyAISystem::update(float deltaTime)
             if (enemyAI.burstCooldownActive) {
                 enemyAI.burstCooldownTimer += deltaTime;
                 
-                // Fixed cooldown of 2.5 seconds after each burst
-                const float POST_BURST_COOLDOWN = 1.0f;
+                float postBurstCooldown = (enemyAI.enemyType == EnemyType::Super2) ? 5.0f : 1.0f;
                 
-                if (enemyAI.burstCooldownTimer >= POST_BURST_COOLDOWN) {
+                if (enemyAI.burstCooldownTimer >= postBurstCooldown) {
                     enemyAI.burstCooldownActive = false;
                     enemyAI.burstCooldownTimer = 0.0f;
                     std::cout << "[DEBUG] Enemy " << enemy->id()
@@ -1445,8 +1419,8 @@ void EnemyAISystem::update(float deltaTime)
                 // (B) If not bursting
                 if (!enemyAI.inBurst) {
                     bool canShoot = checkLineOfSight(enemyTrans.pos,
-                                                    playerTrans.pos,
-                                                    m_entityManager)
+                                                playerTrans.pos,
+                                                m_entityManager)
                                     && (distance >= enemyAI.minShootDistance);
 
                     // If super move ready + can shoot
@@ -1455,17 +1429,29 @@ void EnemyAISystem::update(float deltaTime)
                         std::cout << "[DEBUG] Enemy " << enemy->id()
                                 << " uses SUPER MOVE!\n";
 
-                        // Use superBulletCount from CEnemyAI instead of hardcoded value
-                        int superBullets = enemyState.superBulletCount;
-                        float angleRange = 30.f; // spread angle
-
-                        for (int i = 0; i < superBullets; ++i) {
+                        if (enemyAI.enemyType == EnemyType::Super2) {
+                            // Super2 fires one large black hole as super move
                             auto bullet = m_spawner->spawnEnemyBullet(enemy);
-                            if (bullet && bullet->has<CTransform>()) {
-                                auto& bulletTrans = bullet->get<CTransform>();
-                                float step  = angleRange / (superBullets - 1);
-                                float angle = -angleRange * 0.5f + step * i;
-                                bulletTrans.rotate(angle);
+                            if (bullet && bullet->has<CAnimation>()) {
+                                // Resize the black hole to be larger for super move
+                                auto& sprite = bullet->get<CAnimation>().animation.getMutableSprite();
+                                float scale = 3.f; // Larger scale for super move
+                                sprite.setScale(scale, scale);
+                            }
+                            std::cout << "[DEBUG] Super2 enemy fired super black hole!\n";
+                        } else {
+                            // Regular Future enemies use spread bullets
+                            int superBullets = enemyState.superBulletCount;
+                            float angleRange = 30.f; // spread angle
+
+                            for (int i = 0; i < superBullets; ++i) {
+                                auto bullet = m_spawner->spawnEnemyBullet(enemy);
+                                if (bullet && bullet->has<CTransform>()) {
+                                    auto& bulletTrans = bullet->get<CTransform>();
+                                    float step  = angleRange / (superBullets - 1);
+                                    float angle = -angleRange * 0.5f + step * i;
+                                    bulletTrans.rotate(angle);
+                                }
                             }
                         }
                         
@@ -1483,7 +1469,7 @@ void EnemyAISystem::update(float deltaTime)
                         enemyAI.burstTimer  = 0.f;
 
                         std::cout << "[DEBUG] Enemy " << enemy->id()
-                                << " starts bullet burst (one at a time).\n";
+                                << " starts bullet burst.\n";
                     }
                 }
                 // (C) If already bursting
@@ -1495,17 +1481,25 @@ void EnemyAISystem::update(float deltaTime)
 
                         auto bullet = m_spawner->spawnEnemyBullet(enemy);
                         
-                        std::cout << "[DEBUG] Enemy " << enemy->id()
-                                << " fires bullet #" << enemyAI.bulletsShot << "\n";
+                        // Resize the bullet/black hole if it's a Super2 enemy
+                        if (enemyAI.enemyType == EnemyType::Super2 && bullet && bullet->has<CAnimation>()) {
+                            auto& sprite = bullet->get<CAnimation>().animation.getMutableSprite();
+                            float scale = 0.8f; // Smaller scale for regular burst
+                            sprite.setScale(scale, scale);
+                            std::cout << "[DEBUG] Super2 enemy fired small black hole #" << enemyAI.bulletsShot << "\n";
+                        } else {
+                            std::cout << "[DEBUG] Enemy " << enemy->id()
+                                    << " fires bullet #" << enemyAI.bulletsShot << "\n";
+                        }
 
-                        // Slight random angle
+                        // Slight random angle for all enemies
                         if (bullet && bullet->has<CTransform>()) {
                             auto& bulletTrans = bullet->get<CTransform>();
-                            float angleOffset = -3.f + static_cast<float>(rand() % 6);
+                            float angleOffset = -10.f + static_cast<float>(rand() % 6);
                             bulletTrans.rotate(angleOffset);
                         }
 
-                        // Use bulletBurstCount from CEnemyAI instead of bulletCount
+                        // Use bulletBurstCount from CState
                         if (enemyAI.bulletsShot >= enemyState.bulletBurstCount) {
                             enemyAI.inBurst = false;
                             
@@ -1519,8 +1513,7 @@ void EnemyAISystem::update(float deltaTime)
                     }
                 }
             } // end of shooting logic
-        }
-
+        } // end of Future/Super2 ranged attacks
         // ----------------------------------------------------
         // 8) Melee Attack (Non-Future)
         // ----------------------------------------------------
@@ -1648,23 +1641,6 @@ void EnemyAISystem::update(float deltaTime)
                             auto& swTrans = sword->get<CTransform>();
                             float dirX = (dx > 0.f) ? 1.f : -1.f;
                             swTrans.velocity = Vec2<float>(200.f * dirX, 0.f);
-                        }
-                    }
-                }
-                else if (enemyAI.enemyType == EnemyType::Super2) {
-                    // Super2 enemy shoots bullets instead of sword
-                    std::cout << "[DEBUG] Super2 enemy shooting bullets!\n";
-                    
-                    // Spawn multiple bullets in a spread pattern
-                    int bulletCount = 3;
-                    float spreadAngle = 15.0f; // degrees
-                    
-                    for (int i = 0; i < bulletCount; ++i) {
-                        auto bullet = m_spawner->spawnEnemyBullet(enemy);
-                        if (bullet && bullet->has<CTransform>()) {
-                            auto& bulletTrans = bullet->get<CTransform>();
-                            float angle = -spreadAngle + (spreadAngle * 2 * i / (bulletCount - 1));
-                            bulletTrans.rotate(angle);
                         }
                     }
                 }

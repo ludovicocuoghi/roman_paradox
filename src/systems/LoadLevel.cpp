@@ -266,6 +266,9 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
             else if (enemyTypeStr == "Super" || enemyTypeStr == "EnemySuper") {
                 enemyType = EnemyType::Super;
             }
+            else if (enemyTypeStr == "Super2" || enemyTypeStr == "EnemySuper2") {
+                enemyType = EnemyType::Super2;
+            }
             else if (enemyTypeStr == "Citizen" || enemyTypeStr == "EnemyCitizen") {
                 enemyType = EnemyType::Citizen;
             }
@@ -355,13 +358,20 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
             } else if (enemyType == EnemyType::Super) {
                 enemy->get<CEnemyAI>().enemyType = EnemyType::Super;
                 enemy->get<CEnemyAI>().damage = LoadLevel::ENEMY_SUPER_DAMAGE;
-                enemy->get<CState>().bulletDamage = LoadLevel::BULLET_DAMAGE_ENEMY_SUPER;
                 enemy->get<CEnemyAI>().speedMultiplier = LoadLevel::ENEMY_SUPER_SPEED_MULTIPLIER;
                 enemy->get<CState>().maxConsecutiveSwordAttacks = LoadLevel::ENEMY_SUPER_MAX_CONSECUTIVE_SWORD_ATTACKS;
+                enemy->get<CEnemyAI>().enemyBehavior = EnemyBehavior::FollowTwo;
+                enemy->get<CHealth>().maxHealth = LoadLevel::ENEMY_SUPER_HEALTH;
+                enemy->get<CHealth>().currentHealth = LoadLevel::ENEMY_SUPER_HEALTH;
+            } else if (enemyType == EnemyType::Super2) {
+                enemy->get<CEnemyAI>().enemyType = EnemyType::Super2;
+                enemy->get<CState>().bulletDamage = LoadLevel::BULLET_DAMAGE_ENEMY_SUPER;
+                enemy->get<CEnemyAI>().speedMultiplier = LoadLevel::ENEMY_SUPER_SPEED_MULTIPLIER;
                 enemy->get<CState>().bulletBurstCount = LoadLevel::ENEMY_SUPER_BULLET_BURST_COUNT;
                 enemy->get<CState>().superBulletCount = LoadLevel::ENEMY_SUPER_SUPER_BULLET_COUNT;
                 enemy->get<CState>().superBulletDamage = LoadLevel::ENEMY_SUPER_SUPER_BULLET_DAMAGE;
                 enemy->get<CEnemyAI>().enemyBehavior = EnemyBehavior::FollowTwo;
+                enemy->get<CEnemyAI>().superMoveCooldown = 3.f;
                 enemy->get<CHealth>().maxHealth = LoadLevel::ENEMY_SUPER_HEALTH;
                 enemy->get<CHealth>().currentHealth = LoadLevel::ENEMY_SUPER_HEALTH;
             }

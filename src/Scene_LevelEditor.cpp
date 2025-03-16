@@ -16,6 +16,8 @@ static EnemyType getEnemyType(const std::string &typeStr) {
         return EnemyType::Elite;
     else if (typeStr == "EnemySuper")
         return EnemyType::Super;
+    else if (typeStr == "EnemySuper2")
+        return EnemyType::Super2;
     else if (typeStr == "Emperor")
         return EnemyType::Emperor;
     else if (typeStr == "EnemyCitizen")
@@ -517,7 +519,7 @@ void Scene_LevelEditor::loadDecOptions() {
 }
 
 void Scene_LevelEditor::loadEnemyOptions() {
-    m_enemyOptions = { "EnemyFast", "EnemyStrong", "EnemyElite", "EnemyNormal", "EnemySuper", "Emperor", "EnemyCitizen" };
+    m_enemyOptions = { "EnemyFast", "EnemyStrong", "EnemyElite", "EnemyNormal", "EnemySuper", "EnemySuper2", "Emperor", "EnemyCitizen" };
     if (!m_enemyOptions.empty()) {
         m_selectedEnemy = m_enemyOptions[0];
     }
@@ -625,6 +627,7 @@ void Scene_LevelEditor::saveLevel(const std::string& filePath) {
             case EnemyType::Elite:   enemyType = "EnemyElite"; break;
             case EnemyType::Normal:   enemyType = "EnemyNormal"; break;
             case EnemyType::Super:   enemyType = "EnemySuper"; break;
+            case EnemyType::Super2:   enemyType = "EnemySuper2"; break;
             case EnemyType::Citizen:   enemyType = "EnemyCitizen"; break;
             case EnemyType::Emperor: enemyType = "Emperor"; break;
             default:
