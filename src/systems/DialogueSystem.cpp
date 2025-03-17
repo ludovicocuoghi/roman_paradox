@@ -73,7 +73,14 @@ void DialogueSystem::checkTriggers()
     float playerX = playerTransform.pos.x;
 
     for (const auto& trigger : m_dialogueTriggers) {
-        if (playerX >= trigger.first && std::find(m_triggeredPositions.begin(), m_triggeredPositions.end(), trigger.first) == m_triggeredPositions.end()) {
+        float triggerPosition = std::abs(trigger.first); // Get absolute position
+        bool greaterThanOrEqual = (trigger.first >= 0);  // If position is negative, we check for player <= position
+        
+        bool shouldTrigger = greaterThanOrEqual ? 
+                             (playerX >= triggerPosition) : 
+                             (playerX <= triggerPosition);
+                             
+        if (shouldTrigger && std::find(m_triggeredPositions.begin(), m_triggeredPositions.end(), trigger.first) == m_triggeredPositions.end()) {
             m_currentDialogue = trigger.second;
             m_currentMessageIndex = 0;
             m_dialogueActive = true;
@@ -85,7 +92,8 @@ void DialogueSystem::checkTriggers()
                 startNewMessage(m_currentDialogue[0]);
             }
 
-            std::cout << "[DEBUG] Triggered dialogue at x=" << trigger.first << "\n";
+            std::cout << "[DEBUG] Triggered dialogue at x=" << trigger.first 
+                      << " (type: " << (greaterThanOrEqual ? "player >= position" : "player <= position") << ")\n";
             break;
         }
     }

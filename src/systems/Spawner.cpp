@@ -439,7 +439,7 @@ void Spawner::spawnEmperorSwordArmorRadial(std::shared_ptr<Entity> enemy, int sw
         //           << " velocity=(" << vx << ", " << vy << ")\n";
     }
 }
-// Spawn degli item
+/// Item spawning function
 std::shared_ptr<Entity> Spawner::spawnItem(const Vec2<float>& position, const std::string& tileType) {
     static std::random_device rd;
     static std::mt19937 gen(rd());
@@ -447,18 +447,18 @@ std::shared_ptr<Entity> Spawner::spawnItem(const Vec2<float>& position, const st
     Vec2<float> spawnPos = position;
 
     if (tileType == m_game.worldType + "Box1" || tileType == m_game.worldType + "Box2" ) {  
-        // 5 possibili risultati: 20% ciascuno
-        //  1) CoinBronze
-        //  2) CoinSilver
-        //  3) GrapeSmall
-        //  4) ChickenSmall
-        //  5) Nessun item
+        // Drop rates for regular boxes:
+        //  1) BronzeCoin - 10%
+        //  2) SilverCoin - 10%
+        //  3) SmallGrape - 40%
+        //  4) SmallChicken - 30%
+        //  5) No item - 10%
         std::uniform_int_distribution<int> dist(0, 99);
         int roll = dist(gen);
 
-        if (roll < 15) {
+        if (roll < 10) {
             itemName = m_game.worldType + "CoinBronze";
-        } else if (roll < 30) {
+        } else if (roll < 20) {
             itemName = m_game.worldType + "CoinSilver";
         } else if (roll < 60) {
             itemName = m_game.worldType + "GrapeSmall";
@@ -470,11 +470,10 @@ std::shared_ptr<Entity> Spawner::spawnItem(const Vec2<float>& position, const st
         }
     } 
     else if (tileType == m_game.worldType + "TreasureHit") {
-        // 4 possibili risultati: 25% ciascuno
-        //  1) CoinGold
-        //  2) GrapeBig
-        //  3) ChickenBig
-        //  4) Nessun item
+        // Treasure box drop rates:
+        //  1) GoldCoin - 20%
+        //  2) BigGrape - 40%
+        //  3) BigChicken - 40%
         std::cout << "Hit treasure box\n";
         std::uniform_int_distribution<int> dist(0, 99);
         int roll = dist(gen);
@@ -483,13 +482,10 @@ std::shared_ptr<Entity> Spawner::spawnItem(const Vec2<float>& position, const st
             itemName = m_game.worldType + "CoinGold";
         } else if (roll < 60) {
             itemName = m_game.worldType + "GrapeBig";
-        } else if (roll < 95) {
+        } else if (roll < 100) {
             itemName = m_game.worldType + "ChickenBig";
-        } else {
-            std::cout << "[DEBUG] Treasure is empty, no item spawned.\n";
-            return nullptr; 
         }
-        // Se esce un item, lo spawniamo un po' più in alto
+        // Position the item slightly higher than the treasure box
         spawnPos.y -= TREASURE_BOX_TILE_SIZE;
     } 
     else {
@@ -497,11 +493,11 @@ std::shared_ptr<Entity> Spawner::spawnItem(const Vec2<float>& position, const st
         return nullptr;
     }
 
-    // Se itemName è impostato, creiamo l'entità
+    // If itemName is set, create the entity
     auto item = m_entityManager.addEntity("collectable");
     item->add<CTransform>(spawnPos);
 
-    // Carichiamo l'animazione associata all'item
+    // Load the animation associated with the item
     if (m_game.assets().hasAnimation(itemName)) {
         auto& anim = m_game.assets().getAnimation(itemName);
         item->add<CAnimation>(anim, true);
@@ -511,14 +507,14 @@ std::shared_ptr<Entity> Spawner::spawnItem(const Vec2<float>& position, const st
         return nullptr;
     }
 
-    // Creiamo bounding box basandoci sulla dimensione dell'animazione
+    // Create bounding box based on animation size
     auto& anim = item->get<CAnimation>().animation;
     Vec2<float> animSize(static_cast<float>(anim.getSize().x), static_cast<float>(anim.getSize().y));
     Vec2<float> bboxSize = animSize * COLLECTABLE_SCALE_FACTOR;
     Vec2<float> bboxOffset = bboxSize * 0.5f;
     item->add<CBoundingBox>(bboxSize, bboxOffset);
 
-    // Aggiungiamo un CState con il nome dell'item (opzionale)
+    // Add a CState with the item name (optional)
     item->add<CState>(itemName);
 
     std::cout << "[DEBUG] Spawned " << itemName << " from " << tileType
@@ -526,7 +522,6 @@ std::shared_ptr<Entity> Spawner::spawnItem(const Vec2<float>& position, const st
     return item;
 }
 
-// Aggiornamento dei frammenti
 void Spawner::updateFragments(float deltaTime) {
     for (auto& fragment : m_entityManager.getEntities("fragment")) {
         auto& transform = fragment->get<CTransform>();
@@ -549,12 +544,9 @@ void Spawner::updateFragments(float deltaTime) {
 
 std::shared_ptr<Entity> Spawner::spawnBlackHoleAfterTileDestruction(const Vec2<float>& position)
 {
-    // 2) Spawn the permanent black-hole tile
-    //
     auto blackHoleTile = m_entityManager.addEntity("tile");
     blackHoleTile->add<CTransform>(position);
 
-    // Load black hole tile animation
     if (m_game.assets().hasAnimation("AlienBlackHoleAttack")) {
         auto& tileAnim = m_game.assets().getAnimation("AlienBlackHoleAttack");
         blackHoleTile->add<CAnimation>(tileAnim, true); // loop

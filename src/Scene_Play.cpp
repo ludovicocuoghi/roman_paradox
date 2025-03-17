@@ -311,7 +311,7 @@ void Scene_Play::initializeDialogues()
                 sf::Vector2f(800.f, 600.f),
                 650.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
-                35,                                              // messageFontSize - still emphasized
+                40,                                              // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
             },
             {
@@ -324,7 +324,33 @@ void Scene_Play::initializeDialogues()
                 sf::Vector2f(50.f, 600.f),
                 650.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
-                30,                                              // messageFontSize - still emphasized
+                40,                                              // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
+            },
+            {
+                "***GUIDE***",                               // speaker
+                "(Press SPACE to Attack)",            // message
+                "bin/images/Portraits/alien_ancient.png",        // portraitPath
+                true,                                            // portraitOnLeft
+                sf::Color::Magenta,
+                sf::Color::White,
+                sf::Vector2f(50.f, 300.f),
+                900.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                50,                                              // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
+            },
+            {
+                "***GUIDE***",                               // speaker
+                "(Keep M pressed to Defend)",            // message
+                "bin/images/Portraits/alien_ancient.png",        // portraitPath
+                true,                                            // portraitOnLeft
+                sf::Color::Magenta,
+                sf::Color::White,
+                sf::Vector2f(50.f, 300.f),
+                900.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                50,                                               // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
             },
         };
@@ -953,7 +979,33 @@ void Scene_Play::initializeDialogues()
         std::vector<DialogueMessage> Dialogue0 = {
             {
                 "Ancient Emperor",                               // speaker
-                "...And so you eventually got here..invader...",            // message
+                "...And so you eventually got here..",            // message
+                "bin/images/Portraits/ancient_emperor.png",        // portraitPath
+                false,                                            // portraitOnLeft
+                sf::Color::Yellow,
+                sf::Color::White,
+                sf::Vector2f(800.f, 500.f),
+                650.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                20,                                              // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
+            },
+            {
+                "Ancient Emperor",                               // speaker
+                "..Invader...",            // message
+                "bin/images/Portraits/ancient_emperor.png",        // portraitPath
+                false,                                            // portraitOnLeft
+                sf::Color::Yellow,
+                sf::Color::White,
+                sf::Vector2f(800.f, 500.f),
+                650.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                40,                                              // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
+            },
+            {
+                "Ancient Emperor",                             // speaker
+                "I am the Emperor of this kingdom...",            // message
                 "bin/images/Portraits/ancient_emperor.png",        // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Yellow,
@@ -966,7 +1018,7 @@ void Scene_Play::initializeDialogues()
             },
             {
                 "Ancient Emperor",                             // speaker
-                "I am the Emperor of this kingdom..",            // message
+                "how dare you coming here!?",            // message
                 "bin/images/Portraits/ancient_emperor.png",        // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Yellow,
@@ -974,20 +1026,7 @@ void Scene_Play::initializeDialogues()
                 sf::Vector2f(800.f, 500.f),
                 650.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
-                20,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            },
-            {
-                "Ancient Emperor",                             // speaker
-                "how dare you coming here...",            // message
-                "bin/images/Portraits/ancient_emperor.png",        // portraitPath
-                false,                                            // portraitOnLeft
-                sf::Color::Yellow,
-                sf::Color::White,
-                sf::Vector2f(800.f, 500.f),
-                650.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                20,                                              // messageFontSize - still emphasized
+                35,                                              // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
             }
             ,
@@ -1021,7 +1060,7 @@ void Scene_Play::initializeDialogues()
             ,
             {
                 "Alien Centurion",                              // speaker
-                "And I came here trough a black hole while escaping..",            // message
+                "And I came here trough a black hole while escaping...",            // message
                 "bin/images/Portraits/alien_ancient.png",       // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Magenta,
@@ -1043,12 +1082,12 @@ void Scene_Play::initializeDialogues()
                 sf::Vector2f(800.f, 500.f),
                 650.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
-                20,                                             // messageFontSize - still emphasized
+                30,                                             // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
             },
             {
                 "Ancient Emperor",                             // speaker
-                "Black holes?! How I could believe you..",            // message
+                "Black holes?! What a nonsense.",            // message
                 "bin/images/Portraits/ancient_emperor.png",        // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Yellow,
@@ -1056,7 +1095,7 @@ void Scene_Play::initializeDialogues()
                 sf::Vector2f(800.f, 500.f),
                 650.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
-                20,                                             // messageFontSize - still emphasized
+                25,                                             // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
             }
             ,
@@ -1074,7 +1113,7 @@ void Scene_Play::initializeDialogues()
                 true                                             // useTypewriterEffect
             }
         };
-        m_dialogueSystem->addDialogueTrigger(300, Dialogue0);
+        m_dialogueSystem->addDialogueTrigger(400, Dialogue0);
         std::vector<DialogueMessage> Dialogue1 = {
             {
                 "Alien Centurion",                               // speaker
@@ -1131,7 +1170,7 @@ void Scene_Play::initializeDialogues()
             }
             ,
         };
-        m_dialogueSystem->addDialogueTrigger(1000, Dialogue1);
+        m_dialogueSystem->addDialogueTrigger(800, Dialogue1);
         std::vector<DialogueMessage> LowHPAncientEmperorDialogue = {
             {
                 "EMPEROR",                               // speaker
@@ -1218,6 +1257,699 @@ void Scene_Play::initializeDialogues()
 
         };
         m_dialogueSystem->addNamedDialogue("emperor_ancient_defeated", phasedefeatedAncientDialogue);
+        std::vector<DialogueMessage> DialogueFinalEmperorRoom0 = {
+            {
+                "Alien Centurion",                               // speaker
+                "Oh.. the obstacle that was blocking the way disappeared..",            // message
+               "bin/images/Portraits/alien_ancient.png",       // portraitPath
+                false,                                            // portraitOnLeft
+                sf::Color::Magenta,
+                sf::Color::White,
+                sf::Vector2f(0.f, 500.f),
+                650.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                15,                                             // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
+            }
+        };
+        m_dialogueSystem->addDialogueTrigger(4400, DialogueFinalEmperorRoom0);
+        std::vector<DialogueMessage> DialogueFinalEmperorRoom1 = {
+            {
+                "Alien Centurion",                               // speaker
+                "Lets go back home...",            // message
+               "bin/images/Portraits/alien_ancient.png",       // portraitPath
+                false,                                            // portraitOnLeft
+                sf::Color::Magenta,
+                sf::Color::White,
+                sf::Vector2f(0.f, 500.f),
+                650.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                20,                                             // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
+            }
+        };
+        m_dialogueSystem->addDialogueTrigger(6000, DialogueFinalEmperorRoom1);
+    }
+    else if (levelName ==  "ancient_rome_level_5_day_v2.txt") {
+        std::vector<DialogueMessage> Dialogue0 = {
+            {
+                "Alien Centurion",                               // speaker
+                "Oh, I am back here...",            // message
+                "bin/images/Portraits/alien_ancient.png",       // portraitPath
+                false,                                            // portraitOnLeft
+                sf::Color::Magenta,
+                sf::Color::White,
+                sf::Vector2f(0.f, 500.f),
+                650.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                30,                                              // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
+            }
+            ,
+            {
+                "Alien Centurion",                              // speaker
+                "Lets check I can access those gold stairs now.. ",            // message
+                "bin/images/Portraits/alien_ancient.png",       // portraitPath
+                false,                                            // portraitOnLeft
+                sf::Color::Magenta,
+                sf::Color::White,
+                sf::Vector2f(0.f, 500.f),
+                650.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                20,                                             // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
+            }
+        };
+        m_dialogueSystem->addDialogueTrigger(-10800, Dialogue0);
+        std::vector<DialogueMessage> Dialogue1 = {
+            {
+                "Alien Centurion",                               // speaker
+                "Oh, now I can climb those stairs!",            // message
+                "bin/images/Portraits/alien_ancient.png",       // portraitPath
+                false,                                            // portraitOnLeft
+                sf::Color::Magenta,
+                sf::Color::White,
+                sf::Vector2f(0.f, 500.f),
+                650.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                30,                                              // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
+            }
+            ,
+            {
+                "Alien Centurion",                              // speaker
+                "Lets see if I can go get back to the black hole..",            // message
+                "bin/images/Portraits/alien_ancient.png",       // portraitPath
+                false,                                            // portraitOnLeft
+                sf::Color::Magenta,
+                sf::Color::White,
+                sf::Vector2f(0.f, 500.f),
+                900.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                30,                                             // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
+            }
+        };
+        m_dialogueSystem->addDialogueTrigger(-2750, Dialogue1);
+        std::vector<DialogueMessage> Dialogue2 = {
+            {
+                "Alien Centurion",                               // speaker
+                "Oh.. it seems like I can really go back!",            // message
+                "bin/images/Portraits/alien_ancient.png",       // portraitPath
+                false,                                            // portraitOnLeft
+                sf::Color::Magenta,
+                sf::Color::White,
+                sf::Vector2f(0.f, 500.f),
+                900.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                30,                                              // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
+            }
+            ,
+            {
+                "Alien Centurion",                              // speaker
+                "Since I defeated their Emperor does it mean that...",            // message
+                "bin/images/Portraits/alien_ancient.png",       // portraitPath
+                false,                                            // portraitOnLeft
+                sf::Color::Magenta,
+                sf::Color::White,
+                sf::Vector2f(0.f, 500.f),
+                900.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                30,                                             // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
+            }
+            ,
+            {
+                "Alien Centurion",                              // speaker
+                "those black warriors wont exist in the Future?",            // message
+                "bin/images/Portraits/alien_ancient.png",       // portraitPath
+                false,                                            // portraitOnLeft
+                sf::Color::Magenta,
+                sf::Color::White,
+                sf::Vector2f(0.f, 500.f),
+                900.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                30,                                             // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
+            }
+            ,
+            {
+                "Alien Centurion",                              // speaker
+                "Lets go back and see !!!",            // message
+                "bin/images/Portraits/alien_ancient.png",       // portraitPath
+                false,                                            // portraitOnLeft
+                sf::Color::Magenta,
+                sf::Color::White,
+                sf::Vector2f(0.f, 500.f),
+                650.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                30,                                             // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
+            }
+        };
+        m_dialogueSystem->addDialogueTrigger(-950, Dialogue2);
+    }
+    else if (levelName ==  "future_rome_level_1.txt") {
+        std::vector<DialogueMessage> Dialogue0 = {
+            {
+                "Alien Centurion",                               // speaker
+                "Where am I???",            // message
+                "bin/images/Portraits/alien_ancient.png",       // portraitPath
+                false,                                            // portraitOnLeft
+                sf::Color::Magenta,
+                sf::Color::White,
+                sf::Vector2f(0.f, 500.f),
+                600.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                40,                                              // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
+            }
+            ,
+            {
+                "Alien Centurion",                              // speaker
+                "What happened???",            // message
+                "bin/images/Portraits/alien_ancient.png",       // portraitPath
+                false,                                            // portraitOnLeft
+                sf::Color::Magenta,
+                sf::Color::White,
+                sf::Vector2f(0.f, 500.f),
+                600.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                40,                                             // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
+            },
+            {
+                "Alien Centurion",                               // speaker
+                "I am sure I jumped in the same black hole I came from...",            // message
+                "bin/images/Portraits/alien_ancient.png",       // portraitPath
+                false,                                            // portraitOnLeft
+                sf::Color::Magenta,
+                sf::Color::White,
+                sf::Vector2f(0.f, 500.f),
+                1000.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                30,                                              // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
+            }
+            };
+            m_dialogueSystem->addDialogueTrigger(600, Dialogue0);
+            std::vector<DialogueMessage> Dialogue02 = {
+            {
+                "Alien Centurion",                              // speaker
+                "Oh.. wait....",            // message
+                "bin/images/Portraits/alien_ancient.png",       // portraitPath
+                true,                                            // portraitOnLeft
+                sf::Color::Magenta,
+                sf::Color::White,
+                sf::Vector2f(0.f, 500.f),
+                600.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                30,                                             // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
+            }
+            ,
+            {
+                "Alien Centurion",                              // speaker
+                "Since I defeated their Emperor in the past",            // message
+                "bin/images/Portraits/alien_ancient.png",       // portraitPath
+                true,                                            // portraitOnLeft
+                sf::Color::Magenta,
+                sf::Color::White,
+                sf::Vector2f(0.f, 500.f),
+                900.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                30,                                             // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
+            }
+            ,
+            {
+                "Alien Centurion",                              // speaker
+                "Is it possible that I...",            // message
+                "bin/images/Portraits/alien_ancient.png",       // portraitPath
+                true,                                            // portraitOnLeft
+                sf::Color::Magenta,
+                sf::Color::White,
+                sf::Vector2f(0.f, 500.f),
+                650.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                30,                                             // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
+            }
+            ,
+            {
+                "Alien Centurion",                              // speaker
+                "Altered the Present?????",            // message
+                "bin/images/Portraits/alien_ancient.png",       // portraitPath
+                true,                                            // portraitOnLeft
+                sf::Color::Magenta,
+                sf::Color::White,
+                sf::Vector2f(0.f, 500.f),
+                700.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                40,                                             // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
+            }
+        };
+        m_dialogueSystem->addDialogueTrigger(900, Dialogue02);
+        std::vector<DialogueMessage> Dialogue1 = {
+            {
+                "Centurion (Altered Present)",                               // speaker
+                "Who are you??",            // message
+                "bin/images/Portraits/future_normal.png",       // portraitPath
+                false,                                            // portraitOnLeft
+                sf::Color::Cyan,
+                sf::Color::White,
+                sf::Vector2f(700.f, 500.f),
+                600.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                30,                                              // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
+            }
+            ,
+            {
+                "Alien Centurion",                              // speaker
+                "Oh no..don't tell me that..",            // message
+                "bin/images/Portraits/alien_ancient.png",       // portraitPath
+                true,                                            // portraitOnLeft
+                sf::Color::Magenta,
+                sf::Color::White,
+                sf::Vector2f(0.f, 500.f),
+                650.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                30,                                             // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
+            }
+            ,
+            {
+                "Alien Centurion",                              // speaker
+                "they are trying kill me??",            // message
+                "bin/images/Portraits/alien_ancient.png",       // portraitPath
+                true,                                            // portraitOnLeft
+                sf::Color::Magenta,
+                sf::Color::White,
+                sf::Vector2f(0.f, 500.f),
+                650.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                30,                                             // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
+            }
+            ,
+            {
+                "Alien Centurion",                              // speaker
+                "AGAIN?!",            // message
+                "bin/images/Portraits/alien_ancient.png",       // portraitPath
+                true,                                            // portraitOnLeft
+                sf::Color::Magenta,
+                sf::Color::White,
+                sf::Vector2f(0.f, 500.f),
+                600.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                40,                                             // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
+            }
+        };
+        m_dialogueSystem->addDialogueTrigger(1500, Dialogue1);
+        std::vector<DialogueMessage> Dialogue21 = {
+            {
+                "Alien Centurion",                              // speaker
+                "WHO ARE YOU???",            // message
+                "bin/images/Portraits/future_fast.png",       // portraitPath
+                false,                                            // portraitOnLeft
+                sf::Color::Cyan,
+                sf::Color::White,
+                sf::Vector2f(800.f, 300.f),
+                600.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                50,                                             // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
+            }
+        };
+        m_dialogueSystem->addDialogueTrigger(3000, Dialogue21);
+        std::vector<DialogueMessage> Dialogue2 = {
+            {
+                "Alien Centurion",                              // speaker
+                "Thinking about it...",            // message
+                "bin/images/Portraits/alien_ancient.png",       // portraitPath
+                true,                                            // portraitOnLeft
+                sf::Color::Magenta,
+                sf::Color::White,
+                sf::Vector2f(0.f, 500.f),
+                650.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                30,                                             // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
+            }
+            ,
+            {
+                "Alien Centurion",                              // speaker
+                "these centurions look familiar...",            // message
+                "bin/images/Portraits/alien_ancient.png",       // portraitPath
+                true,                                            // portraitOnLeft
+                sf::Color::Magenta,
+                sf::Color::White,
+                sf::Vector2f(0.f, 500.f),
+                700.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                30,                                             // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
+            }
+            ,
+            {
+                "Alien Centurion",                              // speaker
+                "but how is THAT possible???",            // message
+                "bin/images/Portraits/alien_ancient.png",       // portraitPath
+                true,                                            // portraitOnLeft
+                sf::Color::Magenta,
+                sf::Color::White,
+                sf::Vector2f(0.f, 500.f),
+                650.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                30,                                             // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
+            }
+        };
+        m_dialogueSystem->addDialogueTrigger(4500, Dialogue2);
+        std::vector<DialogueMessage> Dialogue3 = {
+        {
+            "Alien Centurion",                              // speaker
+            "They are too strong...",            // message
+            "bin/images/Portraits/alien_ancient.png",       // portraitPath
+            false,                                            // portraitOnLeft
+            sf::Color::Magenta,
+            sf::Color::White,
+            sf::Vector2f(0.f, 500.f),
+            650.f,                                           // boxWidth - medium for medium message
+            150.f,                                           // boxHeight
+            30,                                             // messageFontSize - still emphasized
+            true                                             // useTypewriterEffect
+        }
+        ,
+        {
+            "Alien Centurion",                              // speaker
+            "With my sword there is not much I can do...",            // message
+            "bin/images/Portraits/alien_ancient.png",       // portraitPath
+            false,                                            // portraitOnLeft
+            sf::Color::Magenta,
+            sf::Color::White,
+            sf::Vector2f(0.f, 500.f),
+            950.f,                                           // boxWidth - medium for medium message
+            150.f,                                           // boxHeight
+            30,                                             // messageFontSize - still emphasized
+            true                                             // useTypewriterEffect
+        }
+        ,
+        {
+            "Alien Centurion",                              // speaker
+            "What should I do??",            // message
+            "bin/images/Portraits/alien_ancient.png",       // portraitPath
+            false,                                            // portraitOnLeft
+            sf::Color::Magenta,
+            sf::Color::White,
+            sf::Vector2f(0.f, 500.f),
+            650.f,                                           // boxWidth - medium for medium message
+            150.f,                                           // boxHeight
+            30,                                             // messageFontSize - still emphasized
+            true                                             // useTypewriterEffect
+        }
+        ,
+        {
+            "Alien Centurion",                              // speaker
+            "I am in big trouble now...",            // message
+            "bin/images/Portraits/alien_ancient.png",       // portraitPath
+            false,                                            // portraitOnLeft
+            sf::Color::Magenta,
+            sf::Color::White,
+            sf::Vector2f(0.f, 500.f),
+            650.f,                                           // boxWidth - medium for medium message
+            150.f,                                           // boxHeight
+            30,                                             // messageFontSize - still emphasized
+            true                                             // useTypewriterEffect
+        }
+        };
+        m_dialogueSystem->addDialogueTrigger(5000, Dialogue3);
+    std::vector<DialogueMessage> Dialogue4 = {
+        {
+            "Alien Centurion",                              // speaker
+            "Oh... what is that futuristic armor??",            // message
+            "bin/images/Portraits/alien_ancient.png",       // portraitPath
+            false,                                            // portraitOnLeft
+            sf::Color::Magenta,
+            sf::Color::White,
+            sf::Vector2f(0.f, 500.f),
+            800.f,                                           // boxWidth - medium for medium message
+            150.f,                                           // boxHeight
+            30,                                             // messageFontSize - still emphasized
+            true                                             // useTypewriterEffect
+        }
+        ,
+        {
+            "Alien Centurion",                              // speaker
+            "Maybe If I wear it I can shoot bullets like they do!",            // message
+            "bin/images/Portraits/alien_ancient.png",       // portraitPath
+            false,                                            // portraitOnLeft
+            sf::Color::Magenta,
+            sf::Color::White,
+            sf::Vector2f(0.f, 500.f),
+            950.f,                                           // boxWidth - medium for medium message
+            150.f,                                           // boxHeight
+            30,                                             // messageFontSize - still emphasized
+            true                                             // useTypewriterEffect
+        }
+    };
+    m_dialogueSystem->addDialogueTrigger(5700, Dialogue4);
+    std::vector<DialogueMessage> Dialogue5 = {
+        {
+            "Alien Centurion (Armor Engaged)",                              // speaker
+            "IT WORKED!!!",            // message
+            "bin/images/Portraits/alien_future.png",       // portraitPath
+            false,                                            // portraitOnLeft
+            sf::Color::Magenta,
+            sf::Color::White,
+            sf::Vector2f(0.f, 500.f),
+            650.f,                                           // boxWidth - medium for medium message
+            150.f,                                           // boxHeight
+            40,                                             // messageFontSize - still emphasized
+            true                                             // useTypewriterEffect
+        }
+        ,
+        {
+            "Alien Centurion (Armor Engaged)",                           // speaker
+            "NOW I CAN SHOOT BULLETS!!",            // message
+            "bin/images/Portraits/alien_future.png",       // portraitPath
+            false,                                            // portraitOnLeft
+            sf::Color::Magenta,
+            sf::Color::White,
+            sf::Vector2f(0.f, 500.f),
+            700.f,                                           // boxWidth - medium for medium message
+            150.f,                                           // boxHeight
+            40,                                             // messageFontSize - still emphasized
+            true                                             // useTypewriterEffect
+        }
+        ,
+        {
+            "Alien Centurion (Armor Engaged)",                           // speaker
+            "LETS GOOOOO!!!",            // message
+            "bin/images/Portraits/alien_future.png",       // portraitPath
+            false,                                            // portraitOnLeft
+            sf::Color::Magenta,
+            sf::Color::White,
+            sf::Vector2f(0.f, 500.f),
+            650.f,                                           // boxWidth - medium for medium message
+            150.f,                                           // boxHeight
+            40,                                             // messageFontSize - still emphasized
+            true                                             // useTypewriterEffect
+        }
+        ,
+        {
+            "Alien Centurion (Armor Engaged)",                           // speaker
+            "GET THIS YOU DAMNED PARADOX MONSTERS!!!",            // message
+            "bin/images/Portraits/alien_future.png",       // portraitPath
+            false,                                            // portraitOnLeft
+            sf::Color::Magenta,
+            sf::Color::White,
+            sf::Vector2f(0.f, 500.f),
+            1050.f,                                           // boxWidth - medium for medium message
+            150.f,                                           // boxHeight
+            40,                                             // messageFontSize - still emphasized
+            true                                             // useTypewriterEffect
+        }
+        ,
+        {
+            "***GUIDE***",                           // speaker
+            "(Keep SPACE pressed to shoot bursts of bullets!)",            // message
+            "bin/images/Portraits/alien_future.png",       // portraitPath
+            false,                                            // portraitOnLeft
+            sf::Color::Magenta,
+            sf::Color::White,
+            sf::Vector2f(0.f, 200.f),
+            1100.f,                                           // boxWidth - medium for medium message
+            150.f,                                           // boxHeight
+            40,                                             // messageFontSize - still emphasized
+            true                                             // useTypewriterEffect
+        }
+        ,
+        {
+            "***GUIDE***",                           // speaker
+            "(Press ENTER to activate the supermove!!)",            // message
+            "bin/images/Portraits/alien_future.png",       // portraitPath
+            false,                                            // portraitOnLeft
+            sf::Color::Magenta,
+            sf::Color::White,
+            sf::Vector2f(0.f, 200.f),
+            1100.f,                                           // boxWidth - medium for medium message
+            150.f,                                           // boxHeight
+            40,                                             // messageFontSize - still emphasized
+            true                                             // useTypewriterEffect
+        }
+    };
+    m_dialogueSystem->addDialogueTrigger(6400, Dialogue5);
+    }
+    else if (levelName ==  "future_rome_level_3.txt") {
+        std::vector<DialogueMessage> Dialogue0 = {
+            {
+                "Future Centurion (Elite)",                               // speaker
+                "You.. invader...",            // message
+                "bin/images/Portraits/future_elite.png",       // portraitPath
+                false,                                            // portraitOnLeft
+                sf::Color::Red,
+                sf::Color::White,
+                sf::Vector2f(600.f, 500.f),
+                650.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                40,                                              // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
+            }
+            ,
+            {
+                "Future Centurion (Elite)",                             // speaker
+                "How dare you coming to this place??",            // message
+                "bin/images/Portraits/future_elite.png",       // portraitPath
+                false,                                            // portraitOnLeft
+                sf::Color::Red,
+                sf::Color::White,
+                sf::Vector2f(500.f, 500.f),
+                750.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                30,                                             // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
+            },
+            };
+            m_dialogueSystem->addDialogueTrigger(600, Dialogue0);
+            std::vector<DialogueMessage> Dialogue02 = {
+            {
+                "Future Centurion (Elite)",                           // speaker
+                "Wait...it's not possible...",            // message
+                "bin/images/Portraits/future_elite.png",       // portraitPath
+                false,                                            // portraitOnLeft
+                sf::Color::Red,
+                sf::Color::White,
+                sf::Vector2f(600.f, 500.f),
+                600.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                40,                                             // messageFontSize - still emphasized
+                true                                               // useTypewriterEffect
+            }
+            ,
+            {
+                "Future Centurion (Elite)",                             // speaker
+                "We Elite Centurisions are thought the history..",            // message
+                "bin/images/Portraits/future_elite.png",       // portraitPath
+                false,                                            // portraitOnLeft
+                sf::Color::Red,
+                sf::Color::White,
+                sf::Vector2f(300.f, 500.f),
+                1100.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                40,                                             // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
+            }
+            ,
+            {
+                "Future Centurion (Elite)",                             // speaker
+                "I heard about an alien who came to this world 1000 years ago...",            // message
+                "bin/images/Portraits/future_elite.png",       // portraitPath
+                false,                                            // portraitOnLeft
+                sf::Color::Red,
+                sf::Color::White,
+                sf::Vector2f(300.f, 500.f),
+                1150.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                30,                                             // messageFontSize - still emphasized
+                true                                              // useTypewriterEffect
+            }
+            ,
+            {
+                "Future Centurion (Elite)",                                // speaker
+                "And killed lots of our comrades and injured our emperor..",            // message
+                "bin/images/Portraits/future_elite.png",       // portraitPath
+                false,                                            // portraitOnLeft
+                sf::Color::Red,
+                sf::Color::White,
+                sf::Vector2f(300.f, 500.f),
+                1100.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                30,                                             // messageFontSize - still emphasized
+                true                                               // useTypewriterEffect
+            }
+            ,
+            {
+                "Future Centurion (Elite)",                                // speaker
+                "A centurion with violet and black clothes...",            // message
+                "bin/images/Portraits/future_elite.png",       // portraitPath
+                false,                                            // portraitOnLeft
+                sf::Color::Red,
+                sf::Color::White,
+                sf::Vector2f(400.f, 500.f),
+                900.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                30,                                             // messageFontSize - still emphasized
+                true                                               // useTypewriterEffect
+            }
+            ,
+            {
+                "Future Centurion (Elite)",                           // speaker
+                "Could it be that....",// message
+                "bin/images/Portraits/future_elite.png",       // portraitPath
+                false,                                            // portraitOnLeft
+                sf::Color::Red,
+                sf::Color::White,
+                sf::Vector2f(800.f, 500.f),
+                600.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                40,                                             // messageFontSize - still emphasized
+                true                                           // useTypewriterEffect
+            }
+            ,
+            {
+                "Future Centurion (Elite)",                              // speaker
+                "IT IS YOU????",// message
+                "bin/images/Portraits/future_elite.png",       // portraitPath
+                false,                                            // portraitOnLeft
+                sf::Color::Red,
+                sf::Color::White,
+                sf::Vector2f(500.f, 500.f),
+                600.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                50,                                             // messageFontSize - still emphasized
+                true                                              // useTypewriterEffect
+            }
+            ,
+            {
+                "Alien Centurion",                              // speaker
+                "Oh, I think I really altered the present...",// message
+                "bin/images/Portraits/alien_future.png",       // portraitPath
+                true,                                            // portraitOnLeft
+                sf::Color::Magenta,
+                sf::Color::White,
+                sf::Vector2f(0.f, 500.f),
+                800.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                30,                                             // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
+            }
+        };
+        m_dialogueSystem->addDialogueTrigger(900, Dialogue02);
     }
     else if (levelName == "future_rome_level_emperor_room.txt") {
         std::vector<DialogueMessage> bossDialogue = {

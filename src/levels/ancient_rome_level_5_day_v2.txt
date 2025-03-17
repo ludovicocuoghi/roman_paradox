@@ -293,7 +293,6 @@ Tile GoldGround 9 14
 Tile GoldGround 8 14
 Tile GoldGround 11 14
 Tile GoldGround 14 14
-Tile GoldGround 2 18
 Tile GoldGround 16 14
 Tile GoldGround 17 14
 Tile GoldGround 19 13
@@ -306,8 +305,8 @@ Tile GoldGround 24 10
 Tile GoldGround 25 10
 Tile GoldGround 26 9
 Tile GoldGround 27 9
-Player 113 2
-Dec LevelDoor 112 6
+Player 114 2
+Dec LevelDoor 113 6
 Dec CloudBig 1 10
 Dec CloudSmall 10 9
 Dec CloudBig 22 11

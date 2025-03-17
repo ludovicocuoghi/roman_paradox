@@ -910,11 +910,11 @@ void CollisionSystem::handleSwordCollisions() {
                     int damage = PLAYER_SWORD_DAMAGE;
                     
                     // Reduce damage in Future world without FutureArmor
-                    if (m_game.worldType == "Future") {
+                    if (m_game.worldType == "Future" || (m_game.worldType == "Alien" && enemy->has<CEnemyAI>() && enemy->get<CEnemyAI>().enemyType == EnemyType::Fast)) {
                         auto players = m_entityManager.getEntities("player");
                         if (!players.empty() && players.front()->has<CPlayerEquipment>()) {
                             if (!players.front()->get<CPlayerEquipment>().hasFutureArmor) {
-                                damage = static_cast<int>(damage / 1.5f);
+                                damage = static_cast<int>(damage / 3.f);
                                 std::cout << "[DEBUG] Future world + no FutureArmor: sword damage reduced to " 
                                         << damage << "\n";
                             }
