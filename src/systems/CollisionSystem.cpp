@@ -794,7 +794,6 @@ void CollisionSystem::handleBlackHoleTileCollisions() {
         sf::FloatRect blackHoleRect = blackHoleBB.getRect(blackHoleTrans.pos);
 
         // Check for collisions with tiles
-        // Check for collisions with tiles
         for (auto& tile : m_entityManager.getEntities("tile")) {
             if (!tile->has<CTransform>() || !tile->has<CBoundingBox>())
                 continue;
@@ -808,24 +807,9 @@ void CollisionSystem::handleBlackHoleTileCollisions() {
                 std::string blackHoleAnimName = blackHole->get<CAnimation>().animation.getName();
                 
                 // Protect tiles beyond x=3744 only in the emperor room level
-                bool protectedTile = (m_levelPath == "future_rome_level_emperor_room.txt" && tileTrans.pos.x > 3744);
+                bool protectedTile = (m_levelPath == "future_rome_level_emperor_room.txt" && tileTrans.pos.x > 3400);
                 
-                // Determine if this black hole should destroy tiles (only if it's RedBig)
-                bool canDestroyTiles = (blackHoleAnimName.find("BlackHoleRedBig") != std::string::npos);
-                
-                if (protectedTile || !canDestroyTiles) {
-                    // Skip destruction for protected tiles or if not the right black hole type
-                    std::cout << "[DEBUG] Black hole hit a tile at position (" 
-                              << tileTrans.pos.x << "," << tileTrans.pos.y << ") - not destroyed";
-                    
-                    if (protectedTile) {
-                        std::cout << " (protected tile)";
-                    }
-                    if (!canDestroyTiles) {
-                        std::cout << " (not a BlackHoleRedBig)";
-                    }
-                    
-                    std::cout << "\n";
+                if (protectedTile) {
                     continue;
                 }
                 

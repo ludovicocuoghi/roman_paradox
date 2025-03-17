@@ -530,7 +530,7 @@ Tile Brick 50 16
 Tile Brick 48 19
 Tile Brick 47 19
 Tile Brick 46 13
-Player 1 2
+Player 94 13
 Dec BushTall 0 5
 Dec BushTall 2 5
 Dec BushTall 30 5

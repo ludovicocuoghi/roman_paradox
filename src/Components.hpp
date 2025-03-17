@@ -485,6 +485,7 @@ class CEnemyAI : public Component {
         float radialAttackTimerSuper; // Timer per super attacco radiale
         float radialAttackDamage; // Timer per super attacco radiale
         float finalBurstTimer;        // Timer per la fase finale di burst
+        float defeatTimer;            // Timer per la sconfitta
         int   burstCount;             // Quanti burst sono stati fatti nella fase finale
         bool  burstCooldownActive;    // Se il burst è in cooldown
         float burstCooldownTimer;     // Timer per il cooldown del burst
@@ -581,6 +582,7 @@ class CEnemyAI : public Component {
                 radialAttackTimerSuper(5.0f),
                 radialAttackDamage(1.0f),
                 finalBurstTimer(0.f),
+                defeatTimer(0.f),
                 burstCount(0),
                 burstCooldownActive(false),
                 burstCooldownTimer(0.f),

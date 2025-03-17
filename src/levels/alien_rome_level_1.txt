@@ -223,6 +223,8 @@ Tile Ground 82 11
 Tile Ground 83 11
 Tile Ground 84 11
 Tile Ground 81 11
+Tile Ground 77 8
+Tile Ground 76 7
 Player 1 1
 Dec BushTall2 0 4
 Dec BushSmall 32 1

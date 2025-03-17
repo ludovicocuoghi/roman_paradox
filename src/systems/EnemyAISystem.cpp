@@ -185,6 +185,24 @@ void EnemyAISystem::update(float deltaTime)
                     }
                 }
             }
+            
+        }
+        if (enemyAI.enemyState == EnemyState::Defeated) {
+            // Keep the enemy in place
+            enemyTrans.velocity.x = 0.f;
+            enemyTrans.velocity.y = 0.f;
+            
+            // Increment the defeat timer
+            enemyAI.defeatTimer += deltaTime;
+            
+            // Trigger dialogue after 3 seconds
+            if (enemyAI.defeatTimer >= 3.0f && 
+                m_dialogueSystem && 
+                m_triggeredDialogues.find("emperor_ancient_defeated") == m_triggeredDialogues.end()) {
+                m_dialogueSystem->triggerDialogueByID("emperor_ancient_defeated");
+                m_triggeredDialogues["emperor_ancient_defeated"] = true;
+            }
+            continue; // Skip to the next enemy
         }
         
         // This flag allows movement but prevents attacking
@@ -198,7 +216,6 @@ void EnemyAISystem::update(float deltaTime)
             enemyTrans.velocity.y = 0.f;
             continue; // Skip to the next enemy
         }
-
         // ----------------------------------------------------
         // 1) Forced Cooldown Check
         // ----------------------------------------------------
@@ -240,7 +257,7 @@ void EnemyAISystem::update(float deltaTime)
                 }
 
                 // Check if health is below threshold to trigger final attack for Future Emperor
-                if (m_game.worldType == "Future" && healthPercentage <= 0.3f && 
+                if (m_game.worldType == "Future" && healthPercentage <= 0.2f && 
                     enemyAI.enemyState != EnemyState::FinalAttack && 
                     enemyAI.enemyState != EnemyState::Defeated) {
                     
@@ -262,6 +279,11 @@ void EnemyAISystem::update(float deltaTime)
                 }
                 // Future Emperor final attack logic
                 if (m_game.worldType == "Future" && enemyAI.enemyState == EnemyState::FinalAttack) {
+
+                    if (m_dialogueSystem && m_triggeredDialogues.find("emperor_future_final") == m_triggeredDialogues.end()) {
+                        m_dialogueSystem->triggerDialogueByID("emperor_future_final");
+                        m_triggeredDialogues["emperor_future_final"] = true;
+                    }
                     // Always stop movement during final attack
                     enemyTrans.velocity.x = 0.f;
                     enemyTrans.velocity.y = 0.f;
@@ -271,7 +293,6 @@ void EnemyAISystem::update(float deltaTime)
                     
                     // Use burstCount to track phases
                     if (enemyAI.burstCount == 0) {
-                        // Phase 0: Initial teleport (happens once)
                         float screenWidth = m_game.window().getSize().x;
                         float screenHeight = m_game.window().getSize().y;
 
@@ -287,8 +308,14 @@ void EnemyAISystem::update(float deltaTime)
                                 animation.animation = m_game.assets().getAnimation(standAnim);
                             }
                         }
-                        
-                        std::cout << "[DEBUG] TELEPORT COMPLETE: Emperor teleported to center position\n";
+
+                        if (m_dialogueSystem && m_triggeredDialogues.find("emperor_future_defeated") == m_triggeredDialogues.end() && healthPercentage <= 0.1f) {
+                            m_dialogueSystem->triggerDialogueByID("emperor_future_defeated");
+                            m_triggeredDialogues["emperor_future_defeated"] = true;
+                            enemyAI.phaseTimer = 0.f; 
+                        }
+                                
+                        std::cout << "[DEBUG] TELEPORT COMPLETE: Emperor teleported\n";
                     }
                     else if (enemyAI.burstCount == 1 && enemyAI.phaseTimer >= 1.0f) {
                         // Phase 1: Fire the black hole after charging
@@ -321,7 +348,7 @@ void EnemyAISystem::update(float deltaTime)
                             // Create massive black hole
                             auto massiveBlackHole = m_entityManager.addEntity("emperorBlackHole");
                             massiveBlackHole->add<CTransform>(enemyTrans.pos);
-                            massiveBlackHole->add<CLifeSpan>(25.0f);
+                            massiveBlackHole->add<CLifeSpan>(16.0f);
                             massiveBlackHole->add<CState>(std::to_string(enemy->id()));
                             
                             // Animation setup
@@ -372,17 +399,27 @@ void EnemyAISystem::update(float deltaTime)
                         std::cout << "[DEBUG] FINAL TELEPORT: Emperor teleported to final position at (3777, 0)\n";
                     }
                     else if (enemyAI.burstCount == 3) {
+                        if (m_dialogueSystem && m_triggeredDialogues.find("emperor_future_defeated") == m_triggeredDialogues.end()) {
+                            m_dialogueSystem->triggerDialogueByID("emperor_future_defeated");
+                            m_triggeredDialogues["emperor_future_defeated"] = true;
+                        }
                         // Phase 4: Stay at final position until defeated
                         // Reset velocities to ensure the emperor stays still
                         enemyTrans.velocity.x = 0.f;
                         enemyTrans.velocity.y = 0.f;
-                        
                         // Enemy can now be defeated, but we don't automatically kill it
                         // The player must defeat it through regular combat
                     }
                     
                     // Skip the rest of the logic when in final attack mode
                     return;
+                }
+                else if (m_game.worldType != "Future" && healthPercentage <= 0.f && 
+                    m_triggeredDialogues.find("emperor_lowHP") == m_triggeredDialogues.end()) {
+                    if (m_dialogueSystem) {
+                        m_dialogueSystem->triggerDialogueByID("emperor_lowHP");
+                        m_triggeredDialogues["emperor_lowHP"] = true;
+                    }
                 }
                 // Ancient Emperor final attack logic
                 else if (m_game.worldType != "Future" && healthPercentage <= 0.1f) {
@@ -391,10 +428,10 @@ void EnemyAISystem::update(float deltaTime)
                         enemyAI.enemyState = EnemyState::FinalAttack;
                         enemyAI.finalBurstTimer = 0.f;
                         enemyAI.burstCount = 0;
+                        enemyAI.defeatTimer = 0.f; // Initialize the timer
                         
                         std::cout << "[DEBUG] Ancient Emperor entering final attack state!\n";
                     }
-                    
                     enemyTrans.velocity.x = 0.f;
                     enemyTrans.velocity.y = 0.f;
                     
@@ -450,6 +487,9 @@ void EnemyAISystem::update(float deltaTime)
                             enemyAI.enemyState = EnemyState::Defeated;
                             enemyTrans.velocity.x = 0.f;
                             enemyTrans.velocity.y = 0.f;
+                            
+                            // We don't trigger the dialogue here anymore
+                            // Instead, we'll let the defeat timer handle it
                         }
                     }
                     return;
@@ -546,8 +586,7 @@ void EnemyAISystem::update(float deltaTime)
                 }
             }
             
-            // Add floating behavior to keep Emperor airborne
-            // This will make the Emperor hover and prevent getting stuck below ground level
+            // floating behavior to keep Emperor airborne
             float floatingHeight = 300.f; // Target height from the top of the screen
             float targetY = floatingHeight; 
             float heightDifference = targetY - enemyTrans.pos.y;
@@ -594,9 +633,9 @@ void EnemyAISystem::update(float deltaTime)
                         if (!enemyAI.burstCooldownActive) {
                             // FIRING PHASE - lasts for 3 seconds
                             
-                            // Fire a radial burst every 0.2 seconds
+                            // Fire a radial burst every 0.7 seconds
                             enemyAI.radialAttackTimer += deltaTime;
-                            if (enemyAI.radialAttackTimer >= 0.2f) {
+                            if (enemyAI.radialAttackTimer >= 0.7f) {
                                 enemyAI.radialAttackTimer = 0.f;
                                 
                                 // Spawn a single radial burst
@@ -605,7 +644,7 @@ void EnemyAISystem::update(float deltaTime)
                                     EMPEROR_RADIAL_BULLETS_COUNT,
                                     EMPEROR_RADIAL_BULLETS_RADIUS,
                                     EMPEROR_RADIAL_BULLETS_SPEED,
-                                    "Fast" // Blue bullets
+                                    "Fast"
                                 );
                             }
                             
@@ -638,9 +677,9 @@ void EnemyAISystem::update(float deltaTime)
                         if (!enemyAI.burstCooldownActive) {
                             // FIRING PHASE - lasts for 4 seconds
                             
-                            // Fire a radial burst every 0.3 seconds
+                            // Fire a radial burst every 0.6 seconds
                             enemyAI.radialAttackTimer += deltaTime;
-                            if (enemyAI.radialAttackTimer >= 0.3f) {
+                            if (enemyAI.radialAttackTimer >= 0.6f) {
                                 enemyAI.radialAttackTimer = 0.f;
                                 
                                 // Spawn a radial burst with more bullets
@@ -754,9 +793,9 @@ void EnemyAISystem::update(float deltaTime)
                         if (!enemyAI.burstCooldownActive) {
                             // FIRING PHASE - lasts for 5 seconds
                             
-                            // Fire a radial burst every 0.25 seconds
+                            // Fire a radial burst every 0.6 seconds
                             enemyAI.radialAttackTimer += deltaTime;
-                            if (enemyAI.radialAttackTimer >= 0.25f) {
+                            if (enemyAI.radialAttackTimer >= 0.6f) {
                                 enemyAI.radialAttackTimer = 0.f;
                                 
                                 // Alternate between Elite (black) and Strong (red) bullets
@@ -849,7 +888,7 @@ void EnemyAISystem::update(float deltaTime)
                         enemyAI.blackHoleTimer += deltaTime;
                         
                         // MASSIVE BLACK HOLE ATTACK TARGETED AT PLAYER: Every 10 seconds
-                        if (enemyAI.blackHoleTimer >= 5.0f) {
+                        if (enemyAI.blackHoleTimer >= 7.0f) {
                             enemyAI.blackHoleTimer = 0.f;
                             
                             // Get player position
@@ -879,7 +918,7 @@ void EnemyAISystem::update(float deltaTime)
                                 // Create massive black hole
                                 auto massiveBlackHole = m_entityManager.addEntity("emperorBlackHole");
                                 massiveBlackHole->add<CTransform>(enemyTrans.pos);
-                                massiveBlackHole->add<CLifeSpan>(25.0f);
+                                massiveBlackHole->add<CLifeSpan>(15.0f);
                                 massiveBlackHole->add<CState>(std::to_string(enemy->id()));
                                 
                                 // Animation setup
@@ -1394,8 +1433,6 @@ void EnemyAISystem::update(float deltaTime)
         // ----------------------------------------------------
         // 7) FUTURE-WORLD Ranged Attacks (Bullets)
         // ----------------------------------------------------
-        // Place this at the beginning of the Future-world ranged attacks section (section 7)
-        // to include Super2 in the same logic as Future enemies:
 
         if (m_game.worldType == "Future" || enemyAI.enemyType == EnemyType::Super2 || (enemyAI.enemyType == EnemyType::Fast && m_game.worldType == "Alien")) {
             enemyAI.shootTimer += deltaTime;
@@ -1460,9 +1497,9 @@ void EnemyAISystem::update(float deltaTime)
                                     
                                     // Give it a longer lifespan
                                     if (bullet->has<CLifeSpan>()) {
-                                        bullet->get<CLifeSpan>().remainingTime = 25.0f; // Longer lifespan
+                                        bullet->get<CLifeSpan>().remainingTime = 18.0f; // Longer lifespan
                                     } else {
-                                        bullet->add<CLifeSpan>(25.0f);
+                                        bullet->add<CLifeSpan>(18.0f);
                                     }
                                     
                                     // Reduce speed for larger black hole
