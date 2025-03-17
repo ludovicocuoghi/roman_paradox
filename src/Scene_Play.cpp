@@ -266,6 +266,8 @@ void Scene_Play::initializeDialogues()
 {
     // Create the dialogue system
     m_dialogueSystem = std::make_shared<DialogueSystem>(m_game, m_entityManager);
+
+    m_enemyAISystem.setDialogueSystem(m_dialogueSystem);
     
     // Add dialogue triggers based on the current level
     std::string levelName = extractLevelName(m_levelPath);
@@ -393,7 +395,7 @@ void Scene_Play::initializeDialogues()
                 true,                                            // portraitOnLeft
                 sf::Color::Yellow,
                 sf::Color::White,
-                sf::Vector2f(100.f, 300.f),
+                sf::Vector2f(50.f, 300.f),
                 650.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
                 25,                                              // messageFontSize - still emphasized
@@ -406,7 +408,7 @@ void Scene_Play::initializeDialogues()
                 true,                                            // portraitOnLeft
                 sf::Color::Yellow,
                 sf::Color::White,
-                sf::Vector2f(100.f, 300.f),
+                sf::Vector2f(50.f, 300.f),
                 650.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
                 26,                                              // messageFontSize - still emphasized
@@ -424,7 +426,7 @@ void Scene_Play::initializeDialogues()
                 true,                                            // portraitOnLeft
                 sf::Color::Yellow,
                 sf::Color::White,
-                sf::Vector2f(100.f, 300.f),
+                sf::Vector2f(50.f, 300.f),
                 650.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
                 26,                                              // messageFontSize - still emphasized
@@ -437,7 +439,7 @@ void Scene_Play::initializeDialogues()
                 true,                                            // portraitOnLeft
                 sf::Color::Yellow,
                 sf::Color::White,
-                sf::Vector2f(100.f, 300.f),
+                sf::Vector2f(50.f, 300.f),
                 650.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
                 26,                                              // messageFontSize - still emphasized
@@ -450,7 +452,7 @@ void Scene_Play::initializeDialogues()
                 true,                                            // portraitOnLeft
                 sf::Color::Yellow,
                 sf::Color::White,
-                sf::Vector2f(100.f, 300.f),
+                sf::Vector2f(50.f, 300.f),
                 650.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
                 40,                                              // messageFontSize - still emphasized
@@ -462,25 +464,152 @@ void Scene_Play::initializeDialogues()
     else if (levelName == "future_rome_level_emperor_room.txt") {
         std::vector<DialogueMessage> bossDialogue = {
             {
-                "Future Emperor",
-                "You dare challenge me? The master of time itself!",
-                "bin/images/Portraits/future_emperor_portrait.png",
+                "EMPEROR",
+                "... And so you are back...",
+                "bin/images/Portraits/future_emperor.png",
                 false,                                    // portraitOnLeft (right side)
-                sf::Color::Red,                           // speakerColor
+                sf::Color::Cyan,                           // speakerColor
                 sf::Color::White,                         // messageColor
-                sf::Vector2f(100.f, 550.f)                // dialogueBoxPosition
+                sf::Vector2f(800.f, 550.f),                // dialogueBoxPosition
+                650.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                30,                                              // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
             },
             {
-                "Centurion",
-                "Your reign of terror ends here!",
-                "bin/images/Portraits/player_future_armor.png",
-                true,
+                "EMPEROR",
+                "I remember you... ",
+                "bin/images/Portraits/future_emperor.png",
+                false,
                 sf::Color::Cyan,
                 sf::Color::White,
-                sf::Vector2f(100.f, 550.f)
+                sf::Vector2f(800.f, 550.f),
+                650.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                30,                                              // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
             }
         };
         m_dialogueSystem->addDialogueTrigger(500, bossDialogue);
+        std::vector<DialogueMessage> bossDialogue2 = {
+            {
+                "EMPEROR",
+                "Thousands of years ago you came here.. ",
+                "bin/images/Portraits/future_emperor.png",
+                false,
+                sf::Color::Cyan,
+                sf::Color::White,
+                sf::Vector2f(800.f, 550.f),
+                650.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                26,                                              // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
+            }
+            ,
+            {
+                "EMPEROR",
+                ".. and I barely survived your wrath.",
+                "bin/images/Portraits/future_emperor.png",
+                false,
+                sf::Color::Cyan,
+                sf::Color::White,
+                sf::Vector2f(800.f, 550.f),
+                650.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                26,                                              // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
+            }
+            ,
+            {
+                "EMPEROR",
+                "But this time..",
+                "bin/images/Portraits/future_emperor.png",
+                false,
+                sf::Color::Cyan,
+                sf::Color::White,
+                sf::Vector2f(800.f, 550.f),
+                650.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                30,                                              // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
+            }
+            ,
+            {
+                "EMPEROR",
+                "I will make you pay for it!!!",
+                "bin/images/Portraits/future_emperor.png",
+                false,
+                sf::Color::Cyan,
+                sf::Color::Red,
+                sf::Vector2f(800.f, 550.f),
+                650.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                40,                                              // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
+            }
+        };
+        m_dialogueSystem->addDialogueTrigger(700, bossDialogue2);
+        std::vector<DialogueMessage> phase2Dialogue = {
+            {
+                "EMPEROR",                               // speaker
+                "You're stronger than I expected...",    // message
+                "bin/images/Portraits/future_emperor.png", // portraitPath (adjust path as needed)
+                false,                                   // portraitOnLeft
+                sf::Color::Cyan,                         // speakerColor
+                sf::Color::White,                        // messageColor
+                sf::Vector2f(800.f, 550.f),              // dialogueBoxPosition
+                650.f,                                   // boxWidth
+                150.f,                                   // boxHeight
+                30,                                      // messageFontSize
+                true                                     // useTypewriterEffect
+            },
+            {
+                "EMPEROR",
+                "But this is just the beginning!",
+                "bin/images/Portraits/future_emperor.png",
+                false,
+                sf::Color::Cyan,
+                sf::Color::Red,
+                sf::Vector2f(800.f, 550.f),
+                650.f,
+                150.f,
+                35,
+                true
+            }
+        };
+        
+        // Phase 3 dialogue (30% health)
+        std::vector<DialogueMessage> phase3Dialogue = {
+            {
+                "EMPEROR",                               // speaker
+                "IMPOSSIBLE!",                           // message
+                "bin/images/Portraits/future_emperor.png", // portraitPath
+                false,                                   // portraitOnLeft
+                sf::Color::Cyan,                         // speakerColor
+                sf::Color::Red,                          // messageColor
+                sf::Vector2f(800.f, 550.f),              // dialogueBoxPosition
+                650.f,                                   // boxWidth
+                150.f,                                   // boxHeight
+                40,                                      // messageFontSize
+                true                                     // useTypewriterEffect
+            },
+            {
+                "EMPEROR",
+                "Time to show you my TRUE POWER!",
+                "bin/images/Portraits/future_emperor.png",
+                false,
+                sf::Color::Cyan,
+                sf::Color::Red,
+                sf::Vector2f(800.f, 550.f),
+                650.f,
+                150.f,
+                40,
+                true
+            }
+        };
+        // Add the named dialogues to our system
+        m_dialogueSystem->addNamedDialogue("emperor_phase2", phase2Dialogue);
+        m_dialogueSystem->addNamedDialogue("emperor_phase3", phase3Dialogue);
     }
     
     std::cout << "[DEBUG] Dialogue system initialized for level: " << levelName << std::endl;

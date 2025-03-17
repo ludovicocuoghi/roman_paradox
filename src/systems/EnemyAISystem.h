@@ -2,7 +2,8 @@
 
 #include "EntityManager.hpp"
 #include "Spawner.h"
-#include "GameEngine.h" // Make sure to include the GameEngine header
+#include "GameEngine.h"
+#include "systems/DialogueSystem.h" //
 
 class EnemyAISystem {
 public:
@@ -17,7 +18,7 @@ public:
     static constexpr float EMPEROR_ATTACK_RANGE = 200.f;
 
     // Unified Emperor attack constants
-    static constexpr int   EMPEROR_RADIAL_BULLETS_COUNT = 100;   
+    static constexpr int   EMPEROR_RADIAL_BULLETS_COUNT = 60;   
     static constexpr float EMPEROR_RADIAL_BULLETS_RADIUS = 120.f;
     static constexpr float EMPEROR_RADIAL_BULLETS_SPEED = 800.f;
     
@@ -33,9 +34,14 @@ public:
     void update(float deltaTime);
     void updateCitizens(float deltaTime, const CTransform& playerTrans);
     void processSuperEnemies(float deltaTime);
+    void setDialogueSystem(std::shared_ptr<DialogueSystem> dialogueSystem) {
+        m_dialogueSystem = dialogueSystem;
+    }
 
 private:
     EntityManager& m_entityManager;
     Spawner* m_spawner;
     GameEngine& m_game; // Added member to access assets
+    std::shared_ptr<DialogueSystem> m_dialogueSystem;
+    std::map<std::string, bool> m_triggeredDialogues;
 };

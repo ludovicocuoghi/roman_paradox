@@ -786,10 +786,12 @@ Tile Ground 65 16
 Tile Ground 66 16
 Tile Ground 67 16
 Tile Ground 68 16
-Tile Ground 21 13
-Tile Ground 22 13
-Tile Ground 23 13
-Tile Ground 20 13
+Tile Ground 18 13
+Tile Ground 20 14
+Tile Ground 21 14
+Tile Ground 22 14
+Tile Ground 23 14
+Tile Ground 19 14
 Player 2 3
 Dec EnemyGrave 20 3
 Dec EnemyGrave 55 1
@@ -871,7 +873,6 @@ Dec EnemyGrave 81 11
 Dec EnemyGrave 103 10
 Dec EnemyGrave 102 10
 Enemy EnemySuper 62 10
-Enemy EnemySuper 130 1
 Enemy EnemySuper2 78 2
 Enemy EnemySuper 35 15
 Enemy EnemySuper2 59 1
@@ -896,11 +897,12 @@ Enemy EnemyCitizen 48 7
 Enemy EnemySuper 50 7
 Enemy EnemySuper2 43 7
 Enemy EnemySuper 70 14
-Enemy EnemySuper2 135 1
 Enemy EnemyCitizen 13 3
-Enemy EnemySuper2 52 18
 Enemy EnemySuper 51 18
-Enemy EnemySuper 109 9
 Enemy EnemySuper2 16 3
 Enemy EnemyCitizen 21 11
 Enemy EnemySuper2 24 11
+Enemy EnemySuper2 108 9
+Enemy EnemySuper 109 9
+Enemy EnemySuper2 122 1
+Enemy EnemySuper 129 1

@@ -565,10 +565,20 @@ void EnemyAISystem::update(float deltaTime)
                 auto& bossPhase = enemy->get<CBossPhase>().phase;
                 if (healthPercentage > 0.7f && bossPhase != BossPhase::Phase1) {
                     bossPhase = BossPhase::Phase1;
-                } else if (healthPercentage <= 0.7f && healthPercentage > 0.3f && bossPhase != BossPhase::Phase2) {
+                } else if (healthPercentage <= 0.7f && healthPercentage > 0.4f && bossPhase != BossPhase::Phase2) {
                     bossPhase = BossPhase::Phase2;
-                } else if (healthPercentage <= 0.3f && healthPercentage > 0.2f && bossPhase != BossPhase::Phase3) {
+                    // Trigger phase 2 dialogue if dialogue system is available
+                    if (m_dialogueSystem && m_triggeredDialogues.find("emperor_phase2") == m_triggeredDialogues.end()) {
+                        m_dialogueSystem->triggerDialogueByID("emperor_phase2");
+                        m_triggeredDialogues["emperor_phase2"] = true;
+                    }
+                } else if (healthPercentage <= 0.4f && bossPhase != BossPhase::Phase3) {
                     bossPhase = BossPhase::Phase3;
+                    // Trigger phase 3 dialogue if dialogue system is available
+                    if (m_dialogueSystem && m_triggeredDialogues.find("emperor_phase3") == m_triggeredDialogues.end()) {
+                        m_dialogueSystem->triggerDialogueByID("emperor_phase3");
+                        m_triggeredDialogues["emperor_phase3"] = true;
+                    }
                 }
             }
 

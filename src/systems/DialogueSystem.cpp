@@ -258,3 +258,29 @@ void DialogueSystem::update(float deltaTime)
         }
     }
 }
+
+void DialogueSystem::triggerDialogueByID(const std::string& dialogueID) {
+    // Look up the dialogue in a map of named dialogues
+    if (m_namedDialogues.find(dialogueID) != m_namedDialogues.end()) {
+        m_currentDialogue = m_namedDialogues[dialogueID];
+        m_currentMessageIndex = 0;
+        m_dialogueActive = true;
+        m_isTyping = false;
+        m_waitingAfterCompletion = false;
+        
+        if (!m_currentDialogue.empty()) {
+            startNewMessage(m_currentDialogue[0]);
+        }
+        
+        std::cout << "[DEBUG] Triggered dialogue by ID: " << dialogueID << "\n";
+    } else {
+        std::cout << "[WARNING] Could not find dialogue with ID: " << dialogueID << "\n";
+    }
+}
+
+
+void DialogueSystem::addNamedDialogue(const std::string& dialogueID, const std::vector<DialogueMessage>& dialogue) {
+    m_namedDialogues[dialogueID] = dialogue;
+    std::cout << "[DEBUG] Added named dialogue: " << dialogueID << " with " 
+              << dialogue.size() << " messages\n";
+}

@@ -40,6 +40,8 @@ public:
     bool isWaitingAfterCompletion() const;
     float getCompletionTimer() const;
     const sf::Texture& getPortraitTexture() const;
+    void triggerDialogueByID(const std::string& dialogueID);
+    void addNamedDialogue(const std::string& dialogueID, const std::vector<DialogueMessage>& dialogue);
 
     // Public rendering components
     sf::RectangleShape dialogueBox;
@@ -76,4 +78,5 @@ private:
 
     void startNewMessage(const DialogueMessage& message);
     void updateTypewriterEffect(float deltaTime);
+    std::map<std::string, std::vector<DialogueMessage>> m_namedDialogues;
 };
