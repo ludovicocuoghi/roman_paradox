@@ -29,6 +29,7 @@ GameEngine::GameEngine(const std::string& path) {
         {"future_rome_level_1.txt", "future_rome_level_2.txt"},
         {"future_rome_level_2.txt", "future_rome_level_3.txt"},
         {"future_rome_level_3.txt", "future_rome_level_emperor_room.txt"},
+        {"future_rome_level_emperor_room.txt", "future_rome_level_5_day_v2.txt"},
 
     };
 
