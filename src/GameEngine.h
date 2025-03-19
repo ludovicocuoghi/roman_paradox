@@ -1,59 +1,70 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include <unordered_map>
 #include <memory>
-#include <string>
+#include <map>
 #include <queue>
-#include "Assets.hpp"  
-#include "Action.hpp"  
-
-class Scene;  // Forward declaration (DO NOT include Scene_Play.h here!)
+#include <string>
+#include "Assets.hpp"
+#include "Action.hpp"
+#include "Scene.h"
 
 class GameEngine {
-private:
-    sf::RenderWindow m_window;
-    std::unordered_map<std::string, std::shared_ptr<Scene>> m_scenes;
-    std::shared_ptr<Scene> m_currentScene;
-    bool m_running = true;
-    Assets m_assets;
-    sf::Clock m_clock;
-    std::queue<Action> m_actionQueue;
-    sf::View m_cameraView;
-    int m_score = 0;
-    std::unordered_map<std::string, std::string> m_levelConnections;
-    std::string m_currentLevel;
-    std::string m_pendingLevelChange = "";
-
 public:
-    GameEngine(const std::string& assetsPath);
-    void init(const std::string& assetsPath);
+    GameEngine(const std::string& path);
+
+    // Scene management
+    void changeScene(const std::string& sceneName, std::shared_ptr<Scene> scene);
+    std::shared_ptr<Scene> getCurrentScene();
+
+    // Level management
+    void loadLevel(const std::string& levelPath);
+    std::string getNextLevelPath();
+    void setCurrentLevel(const std::string& levelPath);
+    const std::string& getCurrentLevel() const;
+    void restartLevel(const std::string& levelPath);
+    void scheduleLevelChange(const std::string& levelPath);
+    bool isFinalLevel(const std::string& levelPath);
+    void showEnding();
+
+    // Game loop
+    bool isRunning() const;
     void run();
     void update();
-    void sUserInput();
-    std::string worldType;
-    void restartLevel(const std::string& levelPath);
-    
-    void changeScene(const std::string& sceneName, std::shared_ptr<Scene> scene);
-    void setCurrentLevel(const std::string& levelPath);
-    const std::string& getCurrentLevel()const;
     void stop();
 
-    sf::RenderWindow& window();
-    bool isRunning() const;
-    float getDeltaTime();
-    Assets& assets();
-
+    // Action management
     void clearActions();
     bool hasActions() const;
     Action popAction();
 
-    std::shared_ptr<Scene> getCurrentScene();
+    // Access
+    sf::RenderWindow& window();
+    float getDeltaTime();
+    Assets& assets();
     
+    // Camera management
     void setCameraView(const sf::View& view);
     sf::View& getCameraView();
+    std::string worldType;
+
+private:
+    void sUserInput();
+
+    sf::RenderWindow m_window;
+    sf::Clock m_clock;
+    sf::View m_cameraView;
+    Assets m_assets;
     
-    void loadLevel(const std::string& levelPath);
-    std::string getNextLevelPath();
-    void scheduleLevelChange(const std::string& levelPath);
+    bool m_running = true;
+    bool m_showEndingScreen = false;
+
+
+    std::shared_ptr<Scene> m_currentScene;
+    std::map<std::string, std::shared_ptr<Scene>> m_scenes;
+    std::queue<Action> m_actionQueue;
+    
+    std::string m_currentLevel;
+    std::string m_pendingLevelChange;
+    std::map<std::string, std::string> m_levelConnections;
 };

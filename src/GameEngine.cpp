@@ -1,5 +1,6 @@
 #include "GameEngine.h"
 #include "Scene_Menu.h"
+#include "Scene_StoryText.h"
 #include "Scene_Play.h"
 #include <iostream>
 #include "imgui.h"
@@ -14,10 +15,10 @@ GameEngine::GameEngine(const std::string& path) {
     // Load assets globally
     m_assets.loadFromFile(path);
 
-    // ✅ Set the default camera view
+    //  Set the default camera view
     m_cameraView = m_window.getDefaultView();
 
-    // ✅ Define level transitions
+    //  Define level transitions
     m_levelConnections = {
         {"alien_rome_level_1.txt", "alien_rome_level_2.txt"},
         {"alien_rome_level_2.txt", "ancient_rome_level_1_day.txt"},
@@ -28,21 +29,24 @@ GameEngine::GameEngine(const std::string& path) {
         {"ancient_rome_level_5_day_v2.txt", "future_rome_level_1.txt"},
         {"future_rome_level_1.txt", "future_rome_level_2.txt"},
         {"future_rome_level_2.txt", "future_rome_level_3.txt"},
-        {"future_rome_level_3.txt", "future_rome_level_emperor_room.txt"},
-        {"future_rome_level_emperor_room.txt", "future_rome_level_5_day_v2.txt"},
-
+        {"future_rome_level_3.txt", "future_rome_level_4_emperor_room.txt"},
+        {"future_rome_level_4_emperor_room.txt", "future_rome_level_5_day_v2.txt"},
     };
+
+    // Register the story scenes
+    m_scenes["INTRO"] = nullptr;  // Will be properly created when needed
+    m_scenes["ENDING"] = nullptr;  // Will be properly created when needed
 
     // Start in menu
     changeScene("MENU", std::make_shared<Scene_Menu>(*this));
 }
 
-// ✅ Retrieve the current scene
+//  Retrieve the current scene
 std::shared_ptr<Scene> GameEngine::getCurrentScene() {
     return m_currentScene;
 }
 
-// ✅ Get the next level path
+//  Get the next level path
 std::string GameEngine::getNextLevelPath() {
     if (m_currentLevel.empty()) {
         std::cerr << "[ERROR] m_currentLevel is empty when requesting next level!\n";
@@ -72,15 +76,25 @@ const std::string& GameEngine::getCurrentLevel() const {
     return m_currentLevel;
 }
 
-// ✅ Load a new level and update the current level
+//  Load a new level and update the current level
 void GameEngine::loadLevel(const std::string& levelPath) {
     if (levelPath.empty()) {
         std::cerr << "[ERROR] Attempted to load an empty level path!\n";
         return;
     }
 
-    m_currentLevel = levelPath;  // ✅ Ensure current level is stored
+    m_currentLevel = levelPath;  //  Ensure current level is stored
     std::cout << "[DEBUG] Loading Level: " << m_currentLevel << std::endl;
+
+    // Set the world type based on the level name
+    std::string levelFile = levelPath.substr(levelPath.find_last_of("/\\") + 1);
+    if (levelFile.find("ancient") != std::string::npos) {
+        worldType = "Ancient";
+    } else if (levelFile.find("future") != std::string::npos) {
+        worldType = "Future";
+    } else {
+        worldType = "Normal";
+    }
 
     changeScene("PLAY", std::static_pointer_cast<Scene>(std::make_shared<Scene_Play>(*this, m_currentLevel)));
 }
@@ -112,11 +126,18 @@ void GameEngine::update() {
         m_currentScene->update(deltaTime);
         m_currentScene->sRender();
 
-        // ✅ Process pending level change AFTER update cycle
+        //  Process pending level change AFTER update cycle
         if (!m_pendingLevelChange.empty()) {
             std::string nextLevel = m_pendingLevelChange;
             m_pendingLevelChange = "";
             loadLevel(nextLevel);
+        }
+        
+        // Check if we need to show the ending when the final level is completed
+        if (m_showEndingScreen) {
+            m_showEndingScreen = false;
+            worldType = "Normal"; // Reset to Normal world type
+            changeScene("ENDING", std::make_shared<Scene_StoryText>(*this, StoryType::ENDING));
         }
     }
 }
@@ -125,7 +146,7 @@ void GameEngine::update() {
 void GameEngine::sUserInput() {
     sf::Event event;
     while (m_window.pollEvent(event)) {
-        // Inoltra gli eventi a ImGui solo se esiste un contesto (cioè se la scena corrente usa ImGui)
+        // Forward events to ImGui only if the current scene uses it
         if (m_currentScene && m_currentScene->usesImGui() && ImGui::GetCurrentContext() != nullptr)
             ImGui::SFML::ProcessEvent(event);
         
@@ -149,21 +170,25 @@ void GameEngine::sUserInput() {
     }
 }
 
-// ✅ Change the active scene properly
+//  Change the active scene properly
 void GameEngine::changeScene(const std::string& sceneName, std::shared_ptr<Scene> scene) {
     if (!scene) {
-        std::cerr << "[ERROR] Tried to switch to NULL scene: " << sceneName << std::endl;
-        return;
+        // Special handling for predefined scenes
+        if (sceneName == "INTRO") {
+            scene = std::make_shared<Scene_StoryText>(*this, StoryType::INTRO);
+        } else if (sceneName == "ENDING") {
+            scene = std::make_shared<Scene_StoryText>(*this, StoryType::ENDING);
+        } else {
+            std::cerr << "[ERROR] Tried to switch to NULL scene: " << sceneName << std::endl;
+            return;
+        }
     }
 
     std::cout << "[DEBUG] Switching Scene to: " << sceneName << std::endl;
 
     clearActions();
     
-    // ✅ Remove previous scene to avoid memory issues
-    m_scenes.erase(sceneName);
-
-    // ✅ Store the new scene properly
+    // Store the new scene properly
     m_scenes[sceneName] = scene;
     m_currentScene = scene;
 
@@ -222,16 +247,42 @@ Assets& GameEngine::assets() {
     return m_assets;
 }
 
-// ✅ NEW: Set the camera view
+//  NEW: Set the camera view
 void GameEngine::setCameraView(const sf::View& view) {
     m_cameraView = view;
     m_window.setView(m_cameraView);
 }
 
-// ✅ NEW: Get the camera view
+//  NEW: Get the camera view
 sf::View& GameEngine::getCameraView() {
     return m_cameraView;
 }
+
 void GameEngine::scheduleLevelChange(const std::string& levelPath) {
+    // Check if we're in the final level and trying to go to another level
+    std::string currentLevelFile = m_currentLevel.substr(m_currentLevel.find_last_of("/\\") + 1);
+    
+    if (currentLevelFile == "future_rome_level_5_day_v2.txt") {
+        // Player completed the final level, show ending
+        std::cout << "[DEBUG] Final level completed, showing ending screen" << std::endl;
+        m_showEndingScreen = true;
+        return;
+    }
+    
+    // Normal level transition
     m_pendingLevelChange = levelPath;
+}
+
+
+// New method to trigger the ending screen
+void GameEngine::showEnding() {
+    m_showEndingScreen = true;
+}
+
+// Check if this level is the final one
+bool GameEngine::isFinalLevel(const std::string& levelPath) {
+    if (levelPath.empty()) return false;
+    
+    std::string levelFile = levelPath.substr(levelPath.find_last_of("/\\") + 1);
+    return levelFile == "future_rome_level_5_day_v2.txt";
 }

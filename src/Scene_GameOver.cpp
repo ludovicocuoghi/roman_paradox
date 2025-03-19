@@ -67,7 +67,7 @@ void Scene_GameOver::renderGameOverText() {
     // Instructions
     sf::Text instructionText;
     instructionText.setFont(m_game.assets().getFont("Menu"));
-    instructionText.setString("Use UP/DOWN arrows to select and ENTER to confirm");
+    instructionText.setString("Use W/S to select and D to confirm");
     instructionText.setCharacterSize(20);
     instructionText.setFillColor(sf::Color(200, 200, 200));
 
@@ -116,18 +116,34 @@ void Scene_GameOver::sDoAction(const Action& action) {
                         m_game.restartLevel(currentLevel);
                     } else {
                         std::cerr << "[ERROR] Cannot determine level path for restart. Going to menu." << std::endl;
-                        m_game.changeScene("MENU", std::make_shared<Scene_Menu>(m_game));
+                        goToLevelSelection();
                     }
                 }
             } 
             else if (m_selectedOption == 1) {
                 // Go to level selection
                 std::cout << "[DEBUG] Going to level selection menu" << std::endl;
-                m_game.changeScene("MENU", std::make_shared<Scene_Menu>(m_game));
+                goToLevelSelection();
             }
         } 
         else if (action.name() == "QUIT") {
             m_game.window().close(); // Close the game
         }
     }
+}
+
+void Scene_GameOver::goToLevelSelection() {
+    // Create a new menu scene that directly opens to level selection
+    auto menuScene = std::make_shared<Scene_Menu>(m_game);
+    
+    // Access the newly created menu scene to set its state to LEVEL_SELECT
+    // We need to cast it to access its internals
+    auto* menuPtr = menuScene.get();
+    if (menuPtr) {
+        // Set the menu state to LEVEL_SELECT directly
+        // Note: This requires adding a friend declaration or a public method in Scene_Menu
+        menuPtr->setMenuState(Scene_Menu::MenuState::LEVEL_SELECT);
+    }
+    
+    m_game.changeScene("MENU", menuScene);
 }

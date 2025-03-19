@@ -433,7 +433,7 @@ Tile Ground 36 9
 Tile Ground 30 12
 Tile Ground 37 9
 Tile Ground 28 13
-Player 146 2
+Player 9 15
 Dec BushTall 2 5
 Dec BushTall 0 5
 Dec BushSmall 21 2

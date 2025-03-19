@@ -1,6 +1,7 @@
 #include "Scene_Play.h"
 #include "Scene_Menu.h"
 #include "Scene_GameOver.h"
+#include "Scene_StoryText.h"
 #include "Physics.hpp"
 #include "Entity.hpp"
 #include "Components.hpp"
@@ -124,7 +125,7 @@ void Scene_Play::selectBackgroundFromLevel(const std::string& levelPath) {
     } else if (levelName == "future_rome_level_3.txt") {
         m_backgroundPath = "src/images/Background/future_rome/future_rome_night.png";
         m_timeofday = "FUTURE ROME (NIGHT)";
-    } else if (levelName == "future_rome_level_emperor_room.txt") {
+    } else if (levelName == "future_rome_level_4_emperor_room.txt") {
         m_backgroundPath = "src/images/Background/future_rome/emperor_room.png";
         m_timeofday = "FUTURE EMPEROR ROOM";
     } else if (levelName == "future_rome_level_5_day_v2.txt") {
@@ -319,7 +320,7 @@ void Scene_Play::initializeDialogues()
             },
             {
                 "Alien Centurion",                               // speaker
-                "Who are you ??!",            // message
+                "Who are you ?!",            // message
                 "bin/images/Portraits/alien_ancient.png",        // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,
@@ -1970,7 +1971,7 @@ void Scene_Play::initializeDialogues()
         };
         m_dialogueSystem->addDialogueTrigger(12500, Dialoguelast);
     }
-    else if (levelName == "future_rome_level_emperor_room.txt") {
+    else if (levelName == "future_rome_level_4_emperor_room.txt") {
         std::vector<DialogueMessage> bossDialogue = {
             {
                 "EMPEROR",
@@ -2274,7 +2275,7 @@ void Scene_Play::initializeDialogues()
                 sf::Color::Magenta,
                 sf::Color::White,
                 sf::Vector2f(0.f, 500.f),
-                950.f,                                           // boxWidth - medium for medium message
+                950.f,                                           // boxWidth - medium for medium messageN
                 150.f,                                           // boxHeight
                 30,                                             // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
@@ -2857,18 +2858,15 @@ void Scene_Play::removeTileByID(const std::string& tileID) {
             if (uid.id == tileID) {
                 t->destroy();
                 std::cout << "[DEBUG] Tile " << tileID << " distrutta!\n";
-                break; // esci dopo averla trovata
+                break;
             }
         }
     }
 }
 
-// Add this function to your Scene_Play class declaration in Scene_Play.h
 void handleEmperorDeath(std::shared_ptr<Entity> emperor);
 
-// Add this implementation to Scene_Play.cpp
 void Scene_Play::handleEmperorDeath(std::shared_ptr<Entity> emperor) {
-    // Check if the emperor entity exists and has the required components
     if (!emperor || !emperor->has<CEnemyAI>() || !emperor->has<CTransform>() || !emperor->has<CHealth>()) {
         return;
     }
@@ -2892,7 +2890,6 @@ void Scene_Play::handleEmperorDeath(std::shared_ptr<Entity> emperor) {
             std::cout << "[DEBUG] Emperor defeated. Grave spawned at position (" 
                       << deathPosition.x << "," << deathPosition.y << ")\n";
             
-            // If we're in level 4, remove the pipe
             std::string levelName = extractLevelName(m_levelPath);
             if (levelName.find("emperor_room") != std::string::npos) {
                 // This is specific to emperor room levels

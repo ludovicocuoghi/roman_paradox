@@ -18,4 +18,5 @@ public:
     void update(float deltaTime) override;
     void sRender() override;
     void sDoAction(const Action& action) override;
+    void goToLevelSelection();
 };
