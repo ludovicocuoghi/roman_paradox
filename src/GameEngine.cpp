@@ -11,6 +11,9 @@
 GameEngine::GameEngine(const std::string& path) {
     m_window.create(sf::VideoMode(1920, 1080), "Game Window");
     m_window.setFramerateLimit(100);
+    universeNumber = rand() % 900 + 100;
+    alternateUniverseNumber = rand() % 900 + 100;
+    alternateUniverseNumber2 = rand() % 900 + 100;
 
     // Load assets globally
     m_assets.loadFromFile(path);

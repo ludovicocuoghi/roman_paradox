@@ -16,6 +16,7 @@ public:
     // Scene management
     void changeScene(const std::string& sceneName, std::shared_ptr<Scene> scene);
     std::shared_ptr<Scene> getCurrentScene();
+    
 
     // Level management
     void loadLevel(const std::string& levelPath);
@@ -47,6 +48,9 @@ public:
     void setCameraView(const sf::View& view);
     sf::View& getCameraView();
     std::string worldType;
+    int universeNumber;
+    int alternateUniverseNumber;
+    int alternateUniverseNumber2;
 
 private:
     void sUserInput();
@@ -58,6 +62,7 @@ private:
     
     bool m_running = true;
     bool m_showEndingScreen = false;
+    
 
 
     std::shared_ptr<Scene> m_currentScene;

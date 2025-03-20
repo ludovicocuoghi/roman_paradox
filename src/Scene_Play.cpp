@@ -275,12 +275,14 @@ void Scene_Play::initializeDialogues()
     
     // Add dialogue triggers based on the current level
     std::string levelName = extractLevelName(m_levelPath);
+
+
     
     // Setup dialogue triggers based on level
     if (levelName == "alien_rome_level_1.txt") {
         std::vector<DialogueMessage> Dialogue1 = {
             {
-                "????",                               // speaker
+                "????",                          // speaker
                 "I'VE FINALLY FOUND YOU!!",            // message
                 "bin/images/Portraits/future_fast.png",        // portraitPath
                 false,                                            // portraitOnLeft
@@ -495,7 +497,7 @@ void Scene_Play::initializeDialogues()
     else if (levelName ==  "alien_rome_level_2.txt") {
         std::vector<DialogueMessage> Dialogue0 = {
             {
-                "?????",                               // speaker
+                "????????",                               // speaker
                 "The Invaders must..",            // message
                 "bin/images/Portraits/alien_super2.png",        // portraitPath
                 false,                                            // portraitOnLeft
@@ -508,7 +510,7 @@ void Scene_Play::initializeDialogues()
                 true                                             // useTypewriterEffect
             },
             {
-                "?????",                               // speaker
+                "????????",                               // speaker
                 "PERISH!!!!!",            // message
                 "bin/images/Portraits/alien_super2.png",        // portraitPath
                 false,                                            // portraitOnLeft
@@ -635,7 +637,7 @@ void Scene_Play::initializeDialogues()
         m_dialogueSystem->addDialogueTrigger(11300, Dialogue2);
         std::vector<DialogueMessage> Dialogue3 = {
             {
-                "????",                               // speaker
+                "????????",                               // speaker
                 "DESTROY HIM BEFORE HE ESCAPES!!!",            // message
                 "bin/images/Portraits/alien_super2.png",        // portraitPath
                 false,                                            // portraitOnLeft
