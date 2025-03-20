@@ -302,6 +302,7 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
                 enemy->get<CState>().superBulletDamage = LoadLevel::ENEMY_NORMAL_SUPER_BULLET_DAMAGE;
                 enemy->get<CEnemyAI>().enemyBehavior = EnemyBehavior::FollowOne;
                 enemy->get<CHealth>().maxHealth = LoadLevel::ENEMY_NORMAL_HEALTH;
+                enemy->get<CHealth>().currentHealth = LoadLevel::ENEMY_NORMAL_HEALTH;
             }
             else if (enemyType == EnemyType::Strong) {
                 enemy->get<CEnemyAI>().enemyType = EnemyType::Strong;
