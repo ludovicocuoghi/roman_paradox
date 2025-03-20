@@ -1185,7 +1185,7 @@ void Scene_Play::initializeDialogues()
         m_dialogueSystem->addDialogueTrigger(400, Dialogue0);
         std::vector<DialogueMessage> LowHPAncientEmperorDialogue = {
             {
-                "EMPEROR",                               // speaker
+                "Ancient Emperor",                               // speaker
                 "I have no choice but to show you my true...",                           // message
                 "bin/images/Portraits/ancient_emperor.png", // portraitPath
                 false,                                   // portraitOnLeft
@@ -1198,7 +1198,7 @@ void Scene_Play::initializeDialogues()
                 true                                     // useTypewriterEffect
             },
             {
-                "EMPEROR",                               // speaker
+                "Ancient Emperor",                               // speaker
                 "POWER!",                           // message
                 "bin/images/Portraits/ancient_emperor.png", // portraitPath
                 false,                                   // portraitOnLeft
@@ -1428,7 +1428,7 @@ void Scene_Play::initializeDialogues()
                 "Alien Legionary",                               // speaker
                 "Where am I???",            // message
                 "bin/images/Portraits/alien_ancient.png",       // portraitPath
-                false,                                            // portraitOnLeft
+                true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
                 sf::Vector2f(0.f, 500.f),
@@ -1442,7 +1442,7 @@ void Scene_Play::initializeDialogues()
                 "Alien Legionary",                              // speaker
                 "What happened???",            // message
                 "bin/images/Portraits/alien_ancient.png",       // portraitPath
-                false,                                            // portraitOnLeft
+                true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
                 sf::Vector2f(0.f, 500.f),
@@ -1480,80 +1480,102 @@ void Scene_Play::initializeDialogues()
             };
             m_dialogueSystem->addDialogueTrigger(600, Dialogue0);
             std::vector<DialogueMessage> Dialogue02 = {
-            {
-                "Alien Legionary",                              // speaker
-                "Wait a second...",            // message
-                "bin/images/Portraits/alien_ancient.png",       // portraitPath
-                true,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(0.f, 500.f),
-                600.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                30,                                             // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            }
-            ,
-            {
-                "Alien Legionary",                              // speaker
-                "By defeating the Emperor in the past...",            // message
-                "bin/images/Portraits/alien_ancient.png",       // portraitPath
-                true,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(0.f, 500.f),
-                950.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                30,                                             // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            }
-            ,
-            {
-                "Alien Legionary",                              // speaker
-                "Could I have actually altered the timeline...",            // message
-                "bin/images/Portraits/alien_ancient.png",       // portraitPath
-                true,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(0.f, 500.f),
-                1000.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                30,                                             // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            }
-            ,
-            {
-                "Alien Legionary",                              // speaker
-                "and somehow...",            // message
-                "bin/images/Portraits/alien_ancient.png",       // portraitPath
-                true,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(0.f, 500.f),
-                600.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                30,                                             // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            }
-            ,
-            {
-                "Alien Legionary",                              // speaker
-                "CHANGED THE PRESENT????",            // message
-                "bin/images/Portraits/alien_ancient.png",       // portraitPath
-                true,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::Red,
-                sf::Vector2f(0.f, 500.f),
-                750.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                50,                                             // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            }
-        };
+                {
+                    "Alien Legionary",
+                    "Let me think:",
+                    "bin/images/Portraits/alien_ancient.png",
+                    true,
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    700.f,
+                    150.f,
+                    30,
+                    true
+                },
+                {
+                    "Alien Legionary",
+                    "I went through the black hole...",
+                    "bin/images/Portraits/alien_ancient.png",
+                    true,
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    600.f,
+                    150.f,
+                    30,
+                    true
+                },
+                {
+                    "Alien Legionary",
+                    "And this was supposed to be their present...",
+                    "bin/images/Portraits/alien_ancient.png",
+                    true,
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    850.f,
+                    150.f,
+                    30,
+                    true
+                },
+                {
+                    "Alien Legionary",
+                    "But I killed their Emperor in the past...",
+                    "bin/images/Portraits/alien_ancient.png",
+                    true,
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    900.f,
+                    150.f,
+                    30,
+                    true
+                },
+                {
+                    "Alien Legionary",
+                    "And so they shouldn't exist anymore...",
+                    "bin/images/Portraits/alien_ancient.png",
+                    true,
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    850.f,
+                    150.f,
+                    30,
+                    true
+                },
+                {
+                    "Alien Legionary",
+                    "Did I somehow change history...",
+                    "bin/images/Portraits/alien_ancient.png",
+                    true,
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    750.f,
+                    150.f,
+                    30,
+                    true
+                },
+                {
+                    "Alien Legionary",
+                    "AND CREATED A NEW PRESENT?!",
+                    "bin/images/Portraits/alien_ancient.png",
+                    true,
+                    sf::Color::Magenta,
+                    sf::Color::Red,
+                    sf::Vector2f(0.f, 500.f),
+                    800.f,
+                    150.f,
+                    40,
+                    true
+                }
+            };
         m_dialogueSystem->addDialogueTrigger(900, Dialogue02);
         std::vector<DialogueMessage> Dialogue1 = {
             {
-                "Legionary (Altered Present)",                               // speaker
+                "Legionary",                               // speaker
                 "Who are you??",            // message
                 "bin/images/Portraits/future_normal.png",       // portraitPath
                 false,                                            // portraitOnLeft
@@ -1611,7 +1633,7 @@ void Scene_Play::initializeDialogues()
         m_dialogueSystem->addDialogueTrigger(1500, Dialogue1);
         std::vector<DialogueMessage> Dialogue21 = {
             {
-                "Alien Legionary",                              // speaker
+                "Legionary",                              // speaker
                 "WHO ARE YOU???",            // message
                 "bin/images/Portraits/future_fast.png",       // portraitPath
                 false,                                            // portraitOnLeft
@@ -1759,7 +1781,7 @@ void Scene_Play::initializeDialogues()
     m_dialogueSystem->addDialogueTrigger(5700, Dialogue4);
     std::vector<DialogueMessage> Dialogue5 = {
         {
-            "Alien Legionary (Armor Engaged)",                              // speaker
+            "Alien Legionary",                              // speaker
             "IT WORKED!!!",            // message
             "bin/images/Portraits/alien_future.png",       // portraitPath
             true,                                            // portraitOnLeft
@@ -1773,7 +1795,7 @@ void Scene_Play::initializeDialogues()
         }
         ,
         {
-            "Alien Legionary (Armor Engaged)",                           // speaker
+            "Alien Legionary",                           // speaker
             "NOW I CAN SHOOT BULLETS!!",            // message
             "bin/images/Portraits/alien_future.png",       // portraitPath
             true,                                            // portraitOnLeft
@@ -1787,7 +1809,7 @@ void Scene_Play::initializeDialogues()
         }
         ,
         {
-            "Alien Legionary (Armor Engaged)",                           // speaker
+            "Alien Legionary",                           // speaker
             "TAKE THESE YOU DAMN PARADOX PEOPLE!!!",            // message
             "bin/images/Portraits/alien_future.png",       // portraitPath
             false,                                            // portraitOnLeft
@@ -1833,7 +1855,7 @@ void Scene_Play::initializeDialogues()
     else if (levelName ==  "future_rome_level_3.txt") {
         std::vector<DialogueMessage> Dialogue0 = {
             {
-                "Future Legionary (Elite)",                               // speaker
+                "Legionary (Elite)",                               // speaker
                 "You.. invader...",            // message
                 "bin/images/Portraits/future_elite.png",       // portraitPath
                 false,                                            // portraitOnLeft
@@ -1847,7 +1869,7 @@ void Scene_Play::initializeDialogues()
             }
             ,
             {
-                "Future Legionary (Elite)",                             // speaker
+                "Legionary (Elite)",                             // speaker
                 "How dare you coming to this place??",            // message
                 "bin/images/Portraits/future_elite.png",       // portraitPath
                 false,                                            // portraitOnLeft
@@ -1863,7 +1885,7 @@ void Scene_Play::initializeDialogues()
             m_dialogueSystem->addDialogueTrigger(600, Dialogue0);
             std::vector<DialogueMessage> Dialogue02 = {
             {
-                "Future Legionary (Elite)",                           // speaker
+                "Legionary (Elite)",                           // speaker
                 "Who is this strange legionary?",            // message
                 "bin/images/Portraits/future_elite.png",       // portraitPath
                 true,                                            // portraitOnLeft
@@ -1877,7 +1899,7 @@ void Scene_Play::initializeDialogues()
             }
             ,
             {
-                "Future Legionary (Elite)",                           // speaker
+                "Legionary (Elite)",                           // speaker
                 "Wait... those violet and black colors...",            // message
                 "bin/images/Portraits/future_elite.png",       // portraitPath
                 false,                                            // portraitOnLeft
@@ -1891,7 +1913,7 @@ void Scene_Play::initializeDialogues()
             }
             ,
             {
-                "Future Legionary (Elite)",                           // speaker
+                "Legionary (Elite)",                           // speaker
                 "IMPOSSIBLE",            // message
                 "bin/images/Portraits/future_elite.png",       // portraitPath
                 true,                                            // portraitOnLeft
@@ -1905,7 +1927,7 @@ void Scene_Play::initializeDialogues()
             }
             ,
             {
-                "Future Legionary (Elite)",                           // speaker
+                "Legionary (Elite)",                           // speaker
                 "You match the ancient records...",            // message
                 "bin/images/Portraits/future_elite.png",       // portraitPath
                 false,                                            // portraitOnLeft
@@ -1919,7 +1941,7 @@ void Scene_Play::initializeDialogues()
             }
             ,
             {
-                "Future Legionary (Elite)",                             // speaker
+                "Legionary (Elite)",                             // speaker
                 "A warrior who wounded our emperor and then..",            // message
                 "bin/images/Portraits/future_elite.png",       // portraitPath
                 false,                                            // portraitOnLeft
@@ -1933,7 +1955,7 @@ void Scene_Play::initializeDialogues()
             }
             ,
             {
-                "Future Legionary (Elite)",                             // speaker
+                "Legionary (Elite)",                             // speaker
                 "VANISHED...",            // message
                 "bin/images/Portraits/future_elite.png",       // portraitPath
                 true,                                            // portraitOnLeft
@@ -1947,7 +1969,7 @@ void Scene_Play::initializeDialogues()
             }
             ,
             {
-                "Future Legionary (Elite)",                             // speaker
+                "Legionary (Elite)",                             // speaker
                 "could it be really you?!",            // message
                 "bin/images/Portraits/future_elite.png",       // portraitPath
                 false,                                            // portraitOnLeft
@@ -1977,7 +1999,7 @@ void Scene_Play::initializeDialogues()
         m_dialogueSystem->addDialogueTrigger(5700, Dialogue02);
         std::vector<DialogueMessage> Dialoguelast = {
         {
-            "Future Legionary (Elite)",                                // speaker
+            "Legionary (Elite)",                                // speaker
             "STOP THE INVADER!!!",// message
             "bin/images/Portraits/future_elite.png",       // portraitPath
             true,                                            // portraitOnLeft
@@ -1990,7 +2012,7 @@ void Scene_Play::initializeDialogues()
             true                                             // useTypewriterEffect
         },
         {
-            "Future Legionary (Elite)",                                // speaker
+            "Legionary (Elite)",                                // speaker
             "STOP HIM NOW! HISTORY MUST NOT REPEAT ITSELF!",// message
             "bin/images/Portraits/future_elite.png",       // portraitPath
             true,                                            // portraitOnLeft
@@ -2008,7 +2030,7 @@ void Scene_Play::initializeDialogues()
     else if (levelName == "future_rome_level_4_emperor_room.txt") {
         std::vector<DialogueMessage> bossDialogue = {
             {
-                "EMPEROR",
+                "Emperor",
                 "... And so you are back...",
                 "bin/images/Portraits/future_emperor.png",
                 false,                                    // portraitOnLeft (right side)
@@ -2021,7 +2043,7 @@ void Scene_Play::initializeDialogues()
                 true                                             // useTypewriterEffect
             },
             {
-                "EMPEROR",
+                "Emperor",
                 "I remember you... ",
                 "bin/images/Portraits/future_emperor.png",
                 false,
@@ -2037,7 +2059,7 @@ void Scene_Play::initializeDialogues()
         m_dialogueSystem->addDialogueTrigger(500, bossDialogue);
         std::vector<DialogueMessage> bossDialogue2 = {
             {
-                "EMPEROR",
+                "Emperor",
                 "Thousands of years ago you came here.. ",
                 "bin/images/Portraits/future_emperor.png",
                 false,
@@ -2051,7 +2073,7 @@ void Scene_Play::initializeDialogues()
             }
             ,
             {
-                "EMPEROR",
+                "Emperor",
                 ".. and I barely survived your wrath.",
                 "bin/images/Portraits/future_emperor.png",
                 false,
@@ -2065,7 +2087,7 @@ void Scene_Play::initializeDialogues()
             }
             ,
             {
-                "EMPEROR",
+                "Emperor",
                 "But this time..",
                 "bin/images/Portraits/future_emperor.png",
                 false,
@@ -2079,7 +2101,7 @@ void Scene_Play::initializeDialogues()
             }
             ,
             {
-                "EMPEROR",
+                "Emperor",
                 "I will make you pay for it!!!",
                 "bin/images/Portraits/future_emperor.png",
                 false,
@@ -2095,7 +2117,7 @@ void Scene_Play::initializeDialogues()
         m_dialogueSystem->addDialogueTrigger(700, bossDialogue2);
         std::vector<DialogueMessage> phase2Dialogue = {
             {
-                "EMPEROR",                               // speaker
+                "Emperor",                               // speaker
                 "You are stronger than I expected...",    // message
                 "bin/images/Portraits/future_emperor_2.png", // portraitPath (adjust path as needed)
                 false,                                   // portraitOnLeft
@@ -2108,7 +2130,7 @@ void Scene_Play::initializeDialogues()
                 true                                     // useTypewriterEffect
             },
             {
-                "EMPEROR",
+                "Emperor",
                 "But this is just the beginning!!",
                 "bin/images/Portraits/future_emperor_2.png",
                 false,
@@ -2125,7 +2147,7 @@ void Scene_Play::initializeDialogues()
         // Phase 3 dialogue (30% health)
         std::vector<DialogueMessage> phase3Dialogue = {
             {
-                "EMPEROR",                               // speaker
+                "Emperor",                               // speaker
                 "HOW IS THIS POSSIBLE??",                           // message
                 "bin/images/Portraits/future_emperor_3.png", // portraitPath
                 false,                                   // portraitOnLeft
@@ -2138,7 +2160,7 @@ void Scene_Play::initializeDialogues()
                 true                                     // useTypewriterEffect
             },
             {
-                "EMPEROR",
+                "Emperor",
                 "IT'S NOT OVER YET!!!",
                 "bin/images/Portraits/future_emperor_3.png",
                 false,
@@ -2154,7 +2176,7 @@ void Scene_Play::initializeDialogues()
         // Phase 3 dialogue (30% health)
         std::vector<DialogueMessage> phasefinalDialogue = {
             {
-                "EMPEROR",                               // speaker
+                "Emperor",                               // speaker
                 "IMP055IBLE!!!",                           // message
                 "bin/images/Portraits/future_emperor_3.png", // portraitPath
                 false,                                   // portraitOnLeft
@@ -2167,7 +2189,7 @@ void Scene_Play::initializeDialogues()
                 true                                     // useTypewriterEffect
             },
             {
-                "EMPEROR",
+                "Emperor",
                 "TIME T0 SH0W Y0U MY...",
                 "bin/images/Portraits/future_emperor_3.png",
                 false,
@@ -2180,7 +2202,7 @@ void Scene_Play::initializeDialogues()
                 true
             },
             {
-                "EMPEROR",
+                "Emperor",
                 "TRUE POWER!",
                 "bin/images/Portraits/future_emperor_3.png",
                 false,
@@ -2195,7 +2217,7 @@ void Scene_Play::initializeDialogues()
         };
         std::vector<DialogueMessage> phasedefeatedFutureDialogue = {
             {
-                "EMPEROR",                               // speaker
+                "Emperor",                               // speaker
                 "...",                           // message
                 "bin/images/Portraits/future_emperor_3.png", // portraitPath
                 false,                                   // portraitOnLeft

@@ -80,23 +80,25 @@ void PlayRenderer::renderDialogue(DialogueSystem* dialogueSystem)
                          boxWidth - portraitSize - 30.f;
 
     dialogueSystem->speakerText.setFont(m_game.assets().getFont("Menu"));
-    dialogueSystem->speakerText.setCharacterSize(24);  // Keep standard size for speaker name
+    dialogueSystem->speakerText.setCharacterSize(30);
     dialogueSystem->speakerText.setFillColor(message->speakerColor);
     std::string speakerWithUniverse;
     if (message->speaker == "????") {
         speakerWithUniverse = message->speaker + " [Universe #" + std::to_string(m_game.alternateUniverseNumber) + "]";
     } 
-    else if (message->speaker == "????????" || message->speaker.find("Future") != std::string::npos || message->speaker.find("Ancient") != std::string::npos) {
+    else if (message->speaker == "????????" || message->speaker.find("Future") != std::string::npos || message->speaker.find("Ancient") != std::string::npos || message->speaker== "Legionary" ||message->speaker== "Legionary" ) {
         speakerWithUniverse = message->speaker + " [Universe #" + std::to_string(m_game.alternateUniverseNumber2) + "]";
     }
-    else {
+    else if (message->speaker.find("GUIDE") != std::string::npos) {
+        speakerWithUniverse = message->speaker;
+    } else {
         speakerWithUniverse = message->speaker + " [Universe #" + std::to_string(m_game.universeNumber) + "]";
     }
     dialogueSystem->speakerText.setString(speakerWithUniverse);
     dialogueSystem->speakerText.setPosition(textX, boxY + 15.f);
 
     dialogueSystem->messageText.setFont(m_game.assets().getFont("Menu"));
-    dialogueSystem->messageText.setCharacterSize(message->messageFontSize);  // Use custom font size only for message
+    dialogueSystem->messageText.setCharacterSize(message->messageFontSize); 
     dialogueSystem->messageText.setFillColor(message->messageColor);
     dialogueSystem->messageText.setString(dialogueSystem->getDisplayedText());
     dialogueSystem->messageText.setPosition(textX, boxY + 50.f);
@@ -785,7 +787,7 @@ void PlayRenderer::render() {
         else if (m_game.worldType == "Future")  centerEra = "ALTERED PRESENT (YEAR: 2135)";
 
         // Add Universe number
-        centerEra += " | Universe #" + std::to_string(m_game.universeNumber);
+        m_game.worldType == "Alien" ? centerEra += " | Universe #" + std::to_string(m_game.universeNumber) : centerEra += " | Universe #" + std::to_string(m_game.alternateUniverseNumber2);
     
         // ----- LATO SINISTRO: NOME LIVELLO + SCORE -----
         {
