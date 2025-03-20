@@ -382,7 +382,6 @@ Tile Ground 147 1
 Tile Ground 147 0
 Tile Ground 148 1
 Tile Ground 148 0
-Dec LevelDoor 145 6
 Tile Ground 149 1
 Tile Ground 149 0
 Tile Ground 150 0
@@ -433,7 +432,8 @@ Tile Ground 36 9
 Tile Ground 30 12
 Tile Ground 37 9
 Tile Ground 28 13
-Player 9 15
+Player 146 2
+Dec LevelDoor 145 6
 Dec BushTall 2 5
 Dec BushTall 0 5
 Dec BushSmall 21 2

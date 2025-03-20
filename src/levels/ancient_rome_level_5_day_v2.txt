@@ -305,7 +305,7 @@ Tile GoldGround 24 10
 Tile GoldGround 25 10
 Tile GoldGround 26 9
 Tile GoldGround 27 9
-Player 9 15
+Player 30 10
 Dec LevelDoor 113 6
 Dec CloudBig 1 10
 Dec CloudSmall 10 9

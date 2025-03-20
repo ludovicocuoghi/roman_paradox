@@ -947,7 +947,7 @@ void Scene_Play::initializeDialogues()
                 false,                                            // portraitOnLeft
                 sf::Color::Red,
                 sf::Color::White,
-                sf::Vector2f(800.f, 500.f),
+                sf::Vector2f(700.f, 500.f),
                 650.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
                 35,                                              // messageFontSize - still emphasized
@@ -955,26 +955,26 @@ void Scene_Play::initializeDialogues()
             },
             {
                 "Ancient Legionary (Elite)",                                // speaker
-                "How dare you coming to this land?",            // message
+                "How dare you trespass on imperial lands?",            // message
                 "bin/images/Portraits/ancient_elite.png",        // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Red,
                 sf::Color::White,
-                sf::Vector2f(800.f, 500.f),
-                750.f,                                           // boxWidth - medium for medium message
+                sf::Vector2f(700.f, 500.f),
+                800.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
                 30,                                              // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
             },
             {
                 "Ancient Legionary (Elite)",                              // speaker
-                "We will protect the emperor..",            // message
+                "We will protect the Emperor..",            // message
                 "bin/images/Portraits/ancient_elite.png",        // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Red,
                 sf::Color::White,
-                sf::Vector2f(800.f, 500.f),
-                650.f,                                           // boxWidth - medium for medium message
+                sf::Vector2f(700.f, 500.f),
+                700.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
                 30,                                              // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
@@ -987,14 +987,14 @@ void Scene_Play::initializeDialogues()
                 false,                                            // portraitOnLeft
                 sf::Color::Red,
                 sf::Color::Red,
-                sf::Vector2f(800.f, 500.f),
+                sf::Vector2f(700.f, 500.f),
                 650.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
                 50,                                              // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
             }
         };
-        m_dialogueSystem->addDialogueTrigger(300, Dialogue0);
+        m_dialogueSystem->addDialogueTrigger(200, Dialogue0);
         std::vector<DialogueMessage> Dialogue1 = {
             {
                 "Ancient Legionary (Elite)",                               // speaker
@@ -1059,7 +1059,7 @@ void Scene_Play::initializeDialogues()
             },
             {
                 "Ancient Emperor",                               // speaker
-                "..Invader...",            // message
+                "..Alien Invader...",            // message
                 "bin/images/Portraits/ancient_emperor.png",        // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Yellow,
@@ -1085,7 +1085,7 @@ void Scene_Play::initializeDialogues()
             },
             {
                 "Ancient Emperor",                             // speaker
-                "how dare you coming here!?",            // message
+                "How dare you come here!?",            // message
                 "bin/images/Portraits/ancient_emperor.png",        // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Yellow,
@@ -1127,13 +1127,13 @@ void Scene_Play::initializeDialogues()
             ,
             {
                 "Alien Legionary",                              // speaker
-                "And I came here trough a black hole while escaping...",            // message
+                "And I came here through a black hole while escaping...",            // message
                 "bin/images/Portraits/alien_ancient.png",       // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
                 sf::Vector2f(0.f, 500.f),
-                900.f,                                           // boxWidth - medium for medium message
+                1000.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
                 30,                                             // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
@@ -1154,7 +1154,7 @@ void Scene_Play::initializeDialogues()
             },
             {
                 "Ancient Emperor",                             // speaker
-                "Black holes?! What a nonsense.",            // message
+                "Black holes?! What nonsense.",            // message
                 "bin/images/Portraits/ancient_emperor.png",        // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Yellow,
@@ -1189,8 +1189,8 @@ void Scene_Play::initializeDialogues()
                 false,                                   // portraitOnLeft
                 sf::Color::Cyan,                         // speakerColor
                 sf::Color::White,                          // messageColor
-                sf::Vector2f(800.f, 550.f),              // dialogueBoxPosition
-                750.f,                                   // boxWidth
+                sf::Vector2f(600.f, 550.f),              // dialogueBoxPosition
+                910.f,                                   // boxWidth
                 150.f,                                   // boxHeight
                 30,                                      // messageFontSize
                 true                                     // useTypewriterEffect
@@ -1276,7 +1276,7 @@ void Scene_Play::initializeDialogues()
                 sf::Color::Magenta,
                 sf::Color::White,
                 sf::Vector2f(0.f, 500.f),
-                950.f,                                           // boxWidth - medium for medium message
+                900.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
                 30,                                             // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
@@ -1292,7 +1292,7 @@ void Scene_Play::initializeDialogues()
                 sf::Color::Magenta,
                 sf::Color::White,
                 sf::Vector2f(0.f, 500.f),
-                700.f,                                           // boxWidth - medium for medium message
+                650.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
                 30,                                             // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
@@ -1304,7 +1304,7 @@ void Scene_Play::initializeDialogues()
         std::vector<DialogueMessage> Dialogue0 = {
             {
                 "Alien Legionary",                               // speaker
-                "Hmm, I've returned here...",            // message
+                "Oh, I've returned here...",            // message
                 "bin/images/Portraits/alien_ancient.png",       // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Magenta,
@@ -1364,13 +1364,13 @@ void Scene_Play::initializeDialogues()
         std::vector<DialogueMessage> Dialogue2 = {
             {
                 "Alien Legionary",                               // speaker
-                "Incredible! I can actually return now!",            // message
+                "Great! I can actually return now!",            // message
                 "bin/images/Portraits/alien_ancient.png",       // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
                 sf::Vector2f(0.f, 500.f),
-                900.f,                                           // boxWidth - medium for medium message
+                700.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
                 30,                                              // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
@@ -1384,7 +1384,7 @@ void Scene_Play::initializeDialogues()
                 sf::Color::Magenta,
                 sf::Color::White,
                 sf::Vector2f(0.f, 500.f),
-                900.f,                                           // boxWidth - medium for medium message
+                700.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
                 30,                                             // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
@@ -1392,13 +1392,13 @@ void Scene_Play::initializeDialogues()
             ,
             {
                 "Alien Legionary",                              // speaker
-                "..those dark legionaries have been erased from time?",            // message
+                "..those dark warriors have been erased from time?",            // message
                 "bin/images/Portraits/alien_ancient.png",       // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
                 sf::Vector2f(0.f, 500.f),
-                900.f,                                           // boxWidth - medium for medium message
+                1000.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
                 30,                                             // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
@@ -1451,13 +1451,26 @@ void Scene_Play::initializeDialogues()
             },
             {
                 "Alien Legionary",                               // speaker
-                "I definitely entered the same black hole that brought me here...",            // message
+                "I entered the same black hole but...",            // message
                 "bin/images/Portraits/alien_ancient.png",       // portraitPath
-                false,                                            // portraitOnLeft
+                true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
                 sf::Vector2f(0.f, 500.f),
-                1000.f,                                           // boxWidth - medium for medium message
+                800.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                30,                                              // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
+            },
+            {
+                "Alien Legionary",                               // speaker
+                "...this present seem different",            // message
+                "bin/images/Portraits/alien_ancient.png",       // portraitPath
+                true,                                            // portraitOnLeft
+                sf::Color::Magenta,
+                sf::Color::White,
+                sf::Vector2f(0.f, 500.f),
+                800.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
                 30,                                              // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
@@ -1523,7 +1536,7 @@ void Scene_Play::initializeDialogues()
             ,
             {
                 "Alien Legionary",                              // speaker
-                "CREATED A PARADOX????",            // message
+                "CHANGED THE PRESENT????",            // message
                 "bin/images/Portraits/alien_ancient.png",       // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,

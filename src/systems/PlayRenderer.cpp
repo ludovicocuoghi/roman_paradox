@@ -770,10 +770,9 @@ void PlayRenderer::render() {
     
         // Determina l’era (PRESENT, PAST, ALTERED PRESENT) dal worldType
         std::string centerEra;
-        if      (m_game.worldType == "Alien")   centerEra = "PRESENT";
-        else if (m_game.worldType == "Ancient") centerEra = "PAST";
-        else if (m_game.worldType == "Future")  centerEra = "ALTERED PRESENT";
-        else                                    centerEra = "UNKNOWN ERA";
+        if      (m_game.worldType == "Alien")   centerEra = "PRESENT (YEAR: 2135)";
+        else if (m_game.worldType == "Ancient") centerEra = "PAST (YEAR: 225)";
+        else if (m_game.worldType == "Future")  centerEra = "ALTERED PRESENT (YEAR: 2135)";
     
         // ----- LATO SINISTRO: NOME LIVELLO + SCORE -----
         {
