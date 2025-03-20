@@ -414,7 +414,7 @@ void EnemyAISystem::update(float deltaTime)
                     // Skip the rest of the logic when in final attack mode
                     return;
                 }
-                else if (m_game.worldType != "Future" && healthPercentage <= 0.f && 
+                else if (m_game.worldType != "Future" && healthPercentage <= 0.2f && 
                     m_triggeredDialogues.find("emperor_lowHP") == m_triggeredDialogues.end()) {
                     if (m_dialogueSystem) {
                         m_dialogueSystem->triggerDialogueByID("emperor_lowHP");
@@ -1106,9 +1106,20 @@ void EnemyAISystem::update(float deltaTime)
                                              m_entityManager);
 
         bool playerVisible       = (distance < PLAYER_VISIBLE_DISTANCE) && canSeePlayer;
-        bool playerVisible_elite = (distance < PLAYER_VISIBLE_DISTANCE*1.3) || 
-                          (canSeePlayer && distance < PLAYER_VISIBLE_DISTANCE * 2);
-        bool playerVisible_emperor = (distance < PLAYER_VISIBLE_DISTANCE * 100);
+
+        // Calculate horizontal and vertical distances separately
+        float horizontalDistance = std::abs(dx);
+        float verticalDistance = std::abs(dy);
+
+        // Maximum vertical distance to consider following the player
+        const float MAX_VERTICAL_FOLLOW_DISTANCE = 200.f;
+
+        bool playerVisible_elite = (distance < PLAYER_VISIBLE_DISTANCE * 1.3) && (verticalDistance < MAX_VERTICAL_FOLLOW_DISTANCE) ||
+                                (canSeePlayer && 
+                                distance < PLAYER_VISIBLE_DISTANCE * 2 && 
+                                verticalDistance < MAX_VERTICAL_FOLLOW_DISTANCE);
+        // Emperor follows Player from a far distance
+        bool playerVisible_emperor = (distance < PLAYER_VISIBLE_DISTANCE * 10);
 
         bool shouldFollow = false;
         switch (enemyAI.enemyBehavior) {
@@ -1117,9 +1128,6 @@ void EnemyAISystem::update(float deltaTime)
                 break;
             case EnemyBehavior::FollowTwo:
                 shouldFollow = playerVisible_elite;
-                break;
-            case EnemyBehavior::FollowThree:
-                shouldFollow = true;  // Always follow, regardless of distance
                 break;
             case EnemyBehavior::FollowFour:
                 shouldFollow = playerVisible_emperor;
@@ -1475,8 +1483,10 @@ void EnemyAISystem::update(float deltaTime)
                     bool canShoot = checkLineOfSight(enemyTrans.pos,
                                                 playerTrans.pos,
                                                 m_entityManager)
-                                    && (distance >= enemyAI.minShootDistance);
-
+                                    && (distance >= enemyAI.minShootDistance)
+                                    && (distance <= enemyAI.maxShootDistance);
+                    std::cout << "[DEBUG] Enemy " << enemy->id()
+                            << " can shoot: " << canShoot << "\n";
                     // If super move ready + can shoot
                     if (enemyAI.superMoveReady && canShoot) {
                         enemyAI.superMoveReady = false;

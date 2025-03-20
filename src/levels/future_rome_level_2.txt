@@ -432,7 +432,6 @@ Enemy EnemyStrong 62 2
 Enemy EnemyStrong 16 2
 Enemy EnemyStrong 40 4
 Enemy EnemyStrong 36 4
-Enemy EnemyStrong 90 1
 Enemy EnemyStrong 89 1
 Enemy EnemyStrong 93 8
 Enemy EnemyStrong 101 14
@@ -445,3 +444,5 @@ Enemy EnemyStrong 86 1
 Enemy EnemyStrong 84 8
 Enemy EnemyStrong 101 8
 Enemy EnemyStrong 96 14
+Enemy EnemyStrong 88 1
+Enemy EnemyStrong 85 1

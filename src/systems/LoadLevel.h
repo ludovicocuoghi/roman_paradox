@@ -33,23 +33,22 @@ public:
     // Player attack parameters
     static constexpr float PLAYER_ATTACK_COOLDOWN = 0.5f;
     static constexpr float PLAYER_SWORD_COOLDOWN = 0.5f;
-    static constexpr int   PLAYER_MAX_CONSECUTIVE_SWORD_ATTACKS = 3;
     
     // Player shield
-    static constexpr float PLAYER_SHIELD_STAMINA = 3.f;
+    static constexpr float PLAYER_SHIELD_STAMINA = 5.f;
     
     // Player bullet parameters
-    static constexpr int   PLAYER_BULLET_COUNT = 50;
-    static constexpr int   PLAYER_BULLET_DAMAGE = 2;
+    static constexpr int   PLAYER_BULLET_COUNT = 80;
+    static constexpr int   PLAYER_BULLET_DAMAGE = 4;
     static constexpr float PLAYER_BULLET_COOLDOWN = 0.1f;
     static constexpr int   PLAYER_BULLET_BURST_COUNT = 10;
-    static constexpr float PLAYER_BULLET_BURSTDURATION = 3.f;
+    static constexpr float PLAYER_BULLET_BURSTDURATION = 5.f;
     static constexpr float PLAYER_BULLET_BURSTINTERVAL = 0.2f;
     
     // Player super bullet parameters
-    static constexpr int   PLAYER_SUPER_BULLET_COUNT = 50;
+    static constexpr int   PLAYER_SUPER_BULLET_COUNT = 30;
     static constexpr float PLAYER_SUPER_BULLET_DAMAGE = 1.f;
-    static constexpr float PLAYER_SUPER_BULLET_COOLDOWN = 15.f;
+    static constexpr float PLAYER_SUPER_BULLET_COOLDOWN = 11.f;
 
     // =======================================
     // Enemy base stats

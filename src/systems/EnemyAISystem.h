@@ -3,7 +3,7 @@
 #include "EntityManager.hpp"
 #include "Spawner.h"
 #include "GameEngine.h"
-#include "systems/DialogueSystem.h" //
+#include "systems/DialogueSystem.h"
 
 class EnemyAISystem {
 public:

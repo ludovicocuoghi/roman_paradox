@@ -509,6 +509,7 @@ class CEnemyAI : public Component {
         // 11) Distanza di shooting e cooldown
         // ------------------------------------------------------
         float minShootDistance; // Distanza minima per sparare
+        float maxShootDistance; // Distanza massima per sparare
         float shootCooldown;    // Cooldown tra un colpo e l'altro
     
         // ------------------------------------------------------
@@ -599,7 +600,8 @@ class CEnemyAI : public Component {
                 superMoveCooldown(5.f),
     
                 // Shooting distance & cooldown
-                minShootDistance(100.f),
+                minShootDistance(200.f),
+                maxShootDistance(900.f),
                 shootCooldown(1.f),
     
                 // Forced cooldown

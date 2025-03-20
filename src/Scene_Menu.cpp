@@ -225,7 +225,7 @@ void Scene_Menu::handleSelectAction() {
                     // Start with the intro story screen
                     m_game.changeScene("INTRO", std::make_shared<Scene_StoryText>(m_game, StoryType::INTRO));
                 } 
-                else if (selectedOption == "LEVEL SELECTION") {
+                else if (selectedOption == "MANUAL LEVEL SELECTION") {
                     m_state = MenuState::LEVEL_SELECT;
                 } 
                 else if (selectedOption == "LEVEL EDITOR") {

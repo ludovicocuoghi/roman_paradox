@@ -192,7 +192,6 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
                 // Existing bullet/sword parameters
                 state.bulletDamage         = LoadLevel::PLAYER_BULLET_DAMAGE;
                 state.bulletBurstCount         = LoadLevel::PLAYER_BULLET_BURST_COUNT;
-                state.maxConsecutiveSwordAttacks = LoadLevel::PLAYER_MAX_CONSECUTIVE_SWORD_ATTACKS;
                 state.superBulletCount         = LoadLevel::PLAYER_SUPER_BULLET_COUNT;
                 state.superBulletDamage        = LoadLevel::PLAYER_SUPER_BULLET_DAMAGE;
         
@@ -305,7 +304,6 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
                 enemy->get<CState>().superBulletDamage = LoadLevel::ENEMY_NORMAL_SUPER_BULLET_DAMAGE;
                 enemy->get<CEnemyAI>().enemyBehavior = EnemyBehavior::FollowOne;
                 enemy->get<CHealth>().maxHealth = LoadLevel::ENEMY_NORMAL_HEALTH;
-                enemy->get<CHealth>().currentHealth = LoadLevel::ENEMY_NORMAL_HEALTH;
             }
             else if (enemyType == EnemyType::Strong) {
                 enemy->get<CEnemyAI>().enemyType = EnemyType::Strong;

@@ -110,6 +110,8 @@ void CollisionSystem::handlePlayerTileCollisions() {
                 if (player->has<CHealth>()) {
                     // Heal player to max health
                     auto& health = player->get<CHealth>();
+
+                    player->get<CHealth>().maxHealth = health.maxHealth * 1.5;
                     health.heal(health.maxHealth);  // This will heal by the maximum health amount
                 }
                 

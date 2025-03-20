@@ -961,7 +961,7 @@ void Scene_Play::initializeDialogues()
                 sf::Color::Red,
                 sf::Color::White,
                 sf::Vector2f(800.f, 500.f),
-                650.f,                                           // boxWidth - medium for medium message
+                750.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
                 30,                                              // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
@@ -1014,7 +1014,7 @@ void Scene_Play::initializeDialogues()
         std::vector<DialogueMessage> Dialogue2 = {
             {
                 "Alien Centurion",                               // speaker
-                "Does this golden portal lead to the emperor?!",            // message
+                "Does this golden portal lead to the Emperor?!",            // message
                 "bin/images/Portraits/alien_ancient.png",        // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,
@@ -1027,13 +1027,13 @@ void Scene_Play::initializeDialogues()
             },
             {
                 "Alien Centurion",                               // speaker
-                "There's only way to find it out!!",            // message
+                "There's only one way to find out!!",            // message
                 "bin/images/Portraits/alien_ancient.png",        // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
                 sf::Vector2f(750.f, 400.f),
-                750.f,                                           // boxWidth - medium for medium message
+                650.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
                 26,                                              // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
@@ -1052,9 +1052,9 @@ void Scene_Play::initializeDialogues()
                 sf::Color::Yellow,
                 sf::Color::White,
                 sf::Vector2f(800.f, 500.f),
-                650.f,                                           // boxWidth - medium for medium message
+                700.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
-                20,                                              // messageFontSize - still emphasized
+                30,                                              // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
             },
             {
@@ -1078,9 +1078,9 @@ void Scene_Play::initializeDialogues()
                 sf::Color::Yellow,
                 sf::Color::White,
                 sf::Vector2f(800.f, 500.f),
-                650.f,                                           // boxWidth - medium for medium message
+                700.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
-                20,                                              // messageFontSize - still emphasized
+                30,                                              // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
             },
             {
@@ -1091,7 +1091,7 @@ void Scene_Play::initializeDialogues()
                 sf::Color::Yellow,
                 sf::Color::White,
                 sf::Vector2f(800.f, 500.f),
-                650.f,                                           // boxWidth - medium for medium message
+                700.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
                 35,                                              // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
@@ -1107,7 +1107,7 @@ void Scene_Play::initializeDialogues()
                 sf::Vector2f(0.f, 500.f),
                 650.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
-                20,                                              // messageFontSize - still emphasized
+                30,                                              // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
             }
             ,
@@ -1119,9 +1119,9 @@ void Scene_Play::initializeDialogues()
                 sf::Color::Magenta,
                 sf::Color::White,
                 sf::Vector2f(0.f, 500.f),
-                650.f,                                           // boxWidth - medium for medium message
+                800.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
-                20,                                             // messageFontSize - still emphasized
+                30,                                             // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
             }
             ,
@@ -1133,9 +1133,9 @@ void Scene_Play::initializeDialogues()
                 sf::Color::Magenta,
                 sf::Color::White,
                 sf::Vector2f(0.f, 500.f),
-                650.f,                                           // boxWidth - medium for medium message
+                900.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
-                20,                                             // messageFontSize - still emphasized
+                30,                                             // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
             }
             ,
@@ -1146,8 +1146,8 @@ void Scene_Play::initializeDialogues()
                 false,                                            // portraitOnLeft
                 sf::Color::Yellow,
                 sf::Color::White,
-                sf::Vector2f(800.f, 500.f),
-                650.f,                                           // boxWidth - medium for medium message
+                sf::Vector2f(750.f, 500.f),
+                750.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
                 30,                                             // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
@@ -1162,7 +1162,7 @@ void Scene_Play::initializeDialogues()
                 sf::Vector2f(800.f, 500.f),
                 650.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
-                25,                                             // messageFontSize - still emphasized
+                30,                                             // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
             }
             ,
@@ -1181,63 +1181,6 @@ void Scene_Play::initializeDialogues()
             }
         };
         m_dialogueSystem->addDialogueTrigger(400, Dialogue0);
-        std::vector<DialogueMessage> Dialogue1 = {
-            {
-                "Alien Centurion",                               // speaker
-                "It seems like there is a way to escape back there..!!",            // message
-               "bin/images/Portraits/alien_ancient.png",       // portraitPath
-                false,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(0.f, 500.f),
-                650.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                20,                                             // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            },
-            {
-                "Alien Centurion",                               // speaker
-                "but it seems blocked...",            // message
-                "bin/images/Portraits/alien_ancient.png",       // portraitPath
-                false,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(0.f, 500.f),
-                650.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                20,                                             // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            },
-            {
-                "Alien Centurion",                             // speaker
-                "As expected the only way to go back is to..",            // message
-                "bin/images/Portraits/alien_ancient.png",        // portraitPath
-                false,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(0.f, 500.f),
-                650.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                20,                                           // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            }
-            ,
-            {
-                "Alien Centurion",                               // speaker
-                "defeat him!!!",            // message
-                "bin/images/Portraits/alien_ancient.png",       // portraitPath
-                false,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(0.f, 500.f),
-                650.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                20,                                             // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            }
-            ,
-        };
-        m_dialogueSystem->addDialogueTrigger(800, Dialogue1);
         std::vector<DialogueMessage> LowHPAncientEmperorDialogue = {
             {
                 "EMPEROR",                               // speaker
@@ -1247,9 +1190,9 @@ void Scene_Play::initializeDialogues()
                 sf::Color::Cyan,                         // speakerColor
                 sf::Color::White,                          // messageColor
                 sf::Vector2f(800.f, 550.f),              // dialogueBoxPosition
-                650.f,                                   // boxWidth
+                700.f,                                   // boxWidth
                 150.f,                                   // boxHeight
-                25,                                      // messageFontSize
+                30,                                      // messageFontSize
                 true                                     // useTypewriterEffect
             },
             {
@@ -1260,7 +1203,7 @@ void Scene_Play::initializeDialogues()
                 sf::Color::Cyan,                         // speakerColor
                 sf::Color::Red,                          // messageColor
                 sf::Vector2f(800.f, 550.f),              // dialogueBoxPosition
-                650.f,                                   // boxWidth
+                600.f,                                   // boxWidth
                 150.f,                                   // boxHeight
                 50,                                      // messageFontSize
                 true                                     // useTypewriterEffect
@@ -1566,7 +1509,7 @@ void Scene_Play::initializeDialogues()
             ,
             {
                 "Alien Centurion",                              // speaker
-                "Altered the Present?????",            // message
+                "ALTERED THE PRESENT????",            // message
                 "bin/images/Portraits/alien_ancient.png",       // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,
@@ -1684,7 +1627,7 @@ void Scene_Play::initializeDialogues()
             ,
             {
                 "Alien Centurion",                              // speaker
-                "but how is THAT possible???",            // message
+                "but how is that possible??",            // message
                 "bin/images/Portraits/alien_ancient.png",       // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,
@@ -1696,13 +1639,13 @@ void Scene_Play::initializeDialogues()
                 true                                             // useTypewriterEffect
             }
         };
-        m_dialogueSystem->addDialogueTrigger(4500, Dialogue2);
+        m_dialogueSystem->addDialogueTrigger(3900, Dialogue2);
         std::vector<DialogueMessage> Dialogue3 = {
         {
             "Alien Centurion",                              // speaker
             "They are too strong...",            // message
             "bin/images/Portraits/alien_ancient.png",       // portraitPath
-            false,                                            // portraitOnLeft
+            true,                                            // portraitOnLeft
             sf::Color::Magenta,
             sf::Color::White,
             sf::Vector2f(0.f, 500.f),
@@ -1716,11 +1659,11 @@ void Scene_Play::initializeDialogues()
             "Alien Centurion",                              // speaker
             "With my sword there is not much I can do...",            // message
             "bin/images/Portraits/alien_ancient.png",       // portraitPath
-            false,                                            // portraitOnLeft
+            true,                                            // portraitOnLeft
             sf::Color::Magenta,
             sf::Color::White,
             sf::Vector2f(0.f, 500.f),
-            950.f,                                           // boxWidth - medium for medium message
+            900.f,                                           // boxWidth - medium for medium message
             150.f,                                           // boxHeight
             30,                                             // messageFontSize - still emphasized
             true                                             // useTypewriterEffect
@@ -1730,7 +1673,7 @@ void Scene_Play::initializeDialogues()
             "Alien Centurion",                              // speaker
             "What should I do??",            // message
             "bin/images/Portraits/alien_ancient.png",       // portraitPath
-            false,                                            // portraitOnLeft
+            true,                                            // portraitOnLeft
             sf::Color::Magenta,
             sf::Color::White,
             sf::Vector2f(0.f, 500.f),
@@ -1744,7 +1687,7 @@ void Scene_Play::initializeDialogues()
             "Alien Centurion",                              // speaker
             "I am in big trouble now...",            // message
             "bin/images/Portraits/alien_ancient.png",       // portraitPath
-            false,                                            // portraitOnLeft
+            true,                                            // portraitOnLeft
             sf::Color::Magenta,
             sf::Color::White,
             sf::Vector2f(0.f, 500.f),
@@ -1754,13 +1697,13 @@ void Scene_Play::initializeDialogues()
             true                                             // useTypewriterEffect
         }
         };
-        m_dialogueSystem->addDialogueTrigger(5000, Dialogue3);
+        m_dialogueSystem->addDialogueTrigger(4800, Dialogue3);
     std::vector<DialogueMessage> Dialogue4 = {
         {
             "Alien Centurion",                              // speaker
             "Oh... what is that futuristic armor??",            // message
             "bin/images/Portraits/alien_ancient.png",       // portraitPath
-            false,                                            // portraitOnLeft
+            true,                                            // portraitOnLeft
             sf::Color::Magenta,
             sf::Color::White,
             sf::Vector2f(0.f, 500.f),
@@ -1774,7 +1717,7 @@ void Scene_Play::initializeDialogues()
             "Alien Centurion",                              // speaker
             "Maybe If I wear it I can shoot bullets like they do!",            // message
             "bin/images/Portraits/alien_ancient.png",       // portraitPath
-            false,                                            // portraitOnLeft
+            true,                                            // portraitOnLeft
             sf::Color::Magenta,
             sf::Color::White,
             sf::Vector2f(0.f, 500.f),
@@ -1790,7 +1733,7 @@ void Scene_Play::initializeDialogues()
             "Alien Centurion (Armor Engaged)",                              // speaker
             "IT WORKED!!!",            // message
             "bin/images/Portraits/alien_future.png",       // portraitPath
-            false,                                            // portraitOnLeft
+            true,                                            // portraitOnLeft
             sf::Color::Magenta,
             sf::Color::White,
             sf::Vector2f(0.f, 500.f),
@@ -1804,7 +1747,7 @@ void Scene_Play::initializeDialogues()
             "Alien Centurion (Armor Engaged)",                           // speaker
             "NOW I CAN SHOOT BULLETS!!",            // message
             "bin/images/Portraits/alien_future.png",       // portraitPath
-            false,                                            // portraitOnLeft
+            true,                                            // portraitOnLeft
             sf::Color::Magenta,
             sf::Color::White,
             sf::Vector2f(0.f, 500.f),
@@ -1816,21 +1759,7 @@ void Scene_Play::initializeDialogues()
         ,
         {
             "Alien Centurion (Armor Engaged)",                           // speaker
-            "LETS GOOOOO!!!",            // message
-            "bin/images/Portraits/alien_future.png",       // portraitPath
-            false,                                            // portraitOnLeft
-            sf::Color::Magenta,
-            sf::Color::White,
-            sf::Vector2f(0.f, 500.f),
-            650.f,                                           // boxWidth - medium for medium message
-            150.f,                                           // boxHeight
-            40,                                             // messageFontSize - still emphasized
-            true                                             // useTypewriterEffect
-        }
-        ,
-        {
-            "Alien Centurion (Armor Engaged)",                           // speaker
-            "GET THIS YOU DAMNED PARADOX MONSTERS!!!",            // message
+            "TAKE THESE YOU DAMN PARADOX PEOPLE!!!",            // message
             "bin/images/Portraits/alien_future.png",       // portraitPath
             false,                                            // portraitOnLeft
             sf::Color::Magenta,

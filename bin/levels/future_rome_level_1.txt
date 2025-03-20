@@ -404,6 +404,12 @@ Tile PipeTall 86 5
 Tile Treasure 84 8
 Tile Box1 100 3
 Tile Box1 99 3
+Tile Treasure 92 4
+Tile Treasure 91 4
+Tile Treasure 93 4
+Tile Treasure 99 6
+Tile Treasure 118 11
+Tile Treasure 117 11
 Player 2 10
 Dec BushTall 2 5
 Dec BushTall 0 5
