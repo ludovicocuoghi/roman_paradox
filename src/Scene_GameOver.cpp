@@ -54,7 +54,7 @@ void Scene_GameOver::renderGameOverText() {
     // Option 2: Level Selection
     sf::Text menuText;
     menuText.setFont(m_game.assets().getFont("Menu"));
-    menuText.setString("Level Selection");
+    menuText.setString("Manual Level Selection");
     menuText.setCharacterSize(30);
     menuText.setFillColor(m_selectedOption == 1 ? sf::Color::Yellow : sf::Color::White);
 

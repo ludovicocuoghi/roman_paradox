@@ -28,7 +28,7 @@ Scene_Menu::Scene_Menu(GameEngine& game)
     m_languageOptions = {"English", "Japanese"};
     
     // Initialize main menu options
-    m_mainMenuOptions = {"PLAY STORY", "LEVEL SELECTION", "LEVEL EDITOR", "QUIT"};
+    m_mainMenuOptions = {"PLAY STORY", "MANUAL LEVEL SELECTION", "LEVEL EDITOR", "QUIT"};
 
     registerAction(sf::Keyboard::W, "UP");
     registerAction(sf::Keyboard::S, "DOWN");
