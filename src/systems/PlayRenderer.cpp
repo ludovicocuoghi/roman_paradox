@@ -360,6 +360,45 @@ void PlayRenderer::render() {
                 healthText.setPosition(baseX + (barWidth / 2.f) - (textBounds.width / 2.f), baseY - 25.f);
                 m_game.window().draw(healthText);
             }
+        } else if (enemy->get<CEnemyAI>().enemyType == EnemyType::Super || enemy->get<CEnemyAI>().enemyType == EnemyType::Super2) {
+            // Super enemy "mystery" health bar
+            float barWidth = 60.f;  // Slightly wider than regular enemies
+            float barHeight = 7.f;  // Slightly taller than regular enemies
+            float offsetY = 65.f;
+            
+            float barX = eTrans.pos.x - (barWidth / 2.f);
+            float barY = eTrans.pos.y - offsetY;
+            
+            // Black background
+            sf::RectangleShape healthBg(sf::Vector2f(barWidth, barHeight));
+            healthBg.setFillColor(sf::Color(0, 0, 0));
+            healthBg.setPosition(barX, barY);
+            m_game.window().draw(healthBg);
+            
+            // Red border
+            sf::RectangleShape borderRect(sf::Vector2f(barWidth, barHeight));
+            borderRect.setFillColor(sf::Color::Transparent);
+            borderRect.setOutlineColor(sf::Color(200, 0, 0));
+            borderRect.setOutlineThickness(1.5f);
+            borderRect.setPosition(barX, barY);
+            m_game.window().draw(borderRect);
+            
+            // "???" text in the middle
+            if (m_game.assets().hasFont("Menu")) {
+                sf::Text mysteryText;
+                mysteryText.setFont(m_game.assets().getFont("Menu"));
+                mysteryText.setString("???");
+                mysteryText.setCharacterSize(12);
+                mysteryText.setFillColor(sf::Color(200, 0, 0));  // Red text
+                
+                sf::FloatRect textBounds = mysteryText.getLocalBounds();
+                mysteryText.setPosition(
+                    barX + (barWidth / 2.f) - (textBounds.width / 2.f),
+                    barY + (barHeight / 2.f) - (textBounds.height / 2.f) - 2.f  // Small offset for better centering
+                );
+                
+                m_game.window().draw(mysteryText);
+            }
         } else {
             // Regular enemy health bar
             float barWidth = 40.f;

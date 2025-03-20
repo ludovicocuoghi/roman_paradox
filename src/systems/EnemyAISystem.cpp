@@ -414,7 +414,7 @@ void EnemyAISystem::update(float deltaTime)
                     // Skip the rest of the logic when in final attack mode
                     return;
                 }
-                else if (m_game.worldType != "Future" && healthPercentage <= 0.2f && 
+                else if (m_game.worldType != "Future" && healthPercentage <= 0.3f && 
                     m_triggeredDialogues.find("emperor_lowHP") == m_triggeredDialogues.end()) {
                     if (m_dialogueSystem) {
                         m_dialogueSystem->triggerDialogueByID("emperor_lowHP");
@@ -1108,16 +1108,19 @@ void EnemyAISystem::update(float deltaTime)
         bool playerVisible       = (distance < PLAYER_VISIBLE_DISTANCE) && canSeePlayer;
 
         // Calculate horizontal and vertical distances separately
-        float horizontalDistance = std::abs(dx);
         float verticalDistance = std::abs(dy);
 
         // Maximum vertical distance to consider following the player
         const float MAX_VERTICAL_FOLLOW_DISTANCE = 200.f;
 
-        bool playerVisible_elite = (distance < PLAYER_VISIBLE_DISTANCE * 1.3) && (verticalDistance < MAX_VERTICAL_FOLLOW_DISTANCE) ||
-                                (canSeePlayer && 
-                                distance < PLAYER_VISIBLE_DISTANCE * 2 && 
-                                verticalDistance < MAX_VERTICAL_FOLLOW_DISTANCE);
+        bool playerVisible_elite = ((distance < PLAYER_VISIBLE_DISTANCE * 1.3) && (verticalDistance < MAX_VERTICAL_FOLLOW_DISTANCE)) ||
+        (canSeePlayer && 
+         distance < PLAYER_VISIBLE_DISTANCE * 2 && 
+         verticalDistance < MAX_VERTICAL_FOLLOW_DISTANCE);
+
+        bool playerVisible_super = (distance < PLAYER_VISIBLE_DISTANCE*1.3) || 
+        (canSeePlayer && distance < PLAYER_VISIBLE_DISTANCE * 2);
+
         // Emperor follows Player from a far distance
         bool playerVisible_emperor = (distance < PLAYER_VISIBLE_DISTANCE * 10);
 
@@ -1128,6 +1131,9 @@ void EnemyAISystem::update(float deltaTime)
                 break;
             case EnemyBehavior::FollowTwo:
                 shouldFollow = playerVisible_elite;
+                break;
+            case EnemyBehavior::FollowThree:
+                shouldFollow = playerVisible_super;
                 break;
             case EnemyBehavior::FollowFour:
                 shouldFollow = playerVisible_emperor;
@@ -1278,73 +1284,73 @@ void EnemyAISystem::update(float deltaTime)
             enemyAI.attackTimer = ATTACK_TIMER_DEFAULT;
             enemyAI.swordSpawned = false;
         }
+        // Special logic for Future enemies and Super2 type
+        if (m_game.worldType == "Future" || enemyAI.enemyType == EnemyType::Super2) {
+            // Define optimal horizontal shooting range
+            const float OPTIMAL_MIN_DISTANCE_X = 350.0f;
+            const float OPTIMAL_MAX_DISTANCE_X = 550.0f;
+            const float TOO_CLOSE_DISTANCE_X = 200.0f;
             
-            // Logica di movimento - Special logic for Future enemies
-            if (m_game.worldType == "Future" || enemyAI.enemyType == EnemyType::Super2) {
-                // Define optimal shooting range
-                const float OPTIMAL_MIN_DISTANCE = 350.0f;
-                const float OPTIMAL_MAX_DISTANCE = 550.0f;
-                const float TOO_CLOSE_DISTANCE = 200.0f;
+            if (std::abs(dx) > xThreshold) {
+                // Always face the player
+                enemyAI.facingDirection = (dx > 0.f) ? 1.f : -1.f;
                 
-                if (std::abs(dx) > xThreshold) {
-                    // Always face the player
-                    enemyAI.facingDirection = (dx > 0.f) ? 1.f : -1.f;
+                // Check if we can see the player (for ranged attacks)
+                bool hasLineOfSight = checkLineOfSight(enemyTrans.pos, 
+                                                    playerTrans.pos, 
+                                                    m_entityManager);
+                
+                // Decide how to move based on horizontal distance only
+                float horizontalDistance = std::abs(dx);
+                
+                if (horizontalDistance < TOO_CLOSE_DISTANCE_X) {
+                    // Too close horizontally - back up!
+                    enemyTrans.velocity.x = -enemyAI.facingDirection * FOLLOW_MOVE_SPEED * 0.8f;
+                    std::cout << "[DEBUG] " << (enemyAI.enemyType == EnemyType::Super2 ? "Super2" : "Future") 
+                            << " enemy " << enemy->id() 
+                            << " backing away (too close horizontally: " << horizontalDistance << ")\n";
+                }
+                else if (horizontalDistance < OPTIMAL_MIN_DISTANCE_X && hasLineOfSight) {
+                    // A bit too close horizontally but has line of sight - back up slightly
+                    enemyTrans.velocity.x = -enemyAI.facingDirection * FOLLOW_MOVE_SPEED * 0.5f;
+                    std::cout << "[DEBUG] " << (enemyAI.enemyType == EnemyType::Super2 ? "Super2" : "Future") 
+                            << " enemy " << enemy->id() 
+                            << " backing to optimal horizontal range (distance: " << horizontalDistance << ")\n";
+                }
+                else if (horizontalDistance > OPTIMAL_MAX_DISTANCE_X || !hasLineOfSight) {
+                    // Too far horizontally or no line of sight - approach slowly
+                    enemyTrans.velocity.x = enemyAI.facingDirection * FOLLOW_MOVE_SPEED * 0.6f;
+                }
+                else {
+                    // In optimal horizontal range and has line of sight - stop moving and shoot
+                    enemyTrans.velocity.x = 0.f;
+                    // Set animation to idle or attack animation for Future world and Super2
+                    std::string idleAnimName;
+                    switch (enemyAI.enemyType) {
+                        case EnemyType::Fast:    idleAnimName = "FutureStandEnemyFast"; break;
+                        case EnemyType::Strong:  idleAnimName = "FutureStandEnemyStrong"; break;
+                        case EnemyType::Elite:   idleAnimName = "FutureStandEnemyElite"; break;
+                        case EnemyType::Normal:  idleAnimName = "FutureStandEnemyNormal"; break;
+                        case EnemyType::Super:   idleAnimName = "FutureStandEnemySuper"; break;
+                        case EnemyType::Super2:  idleAnimName = "FutureStandEnemySuper2"; break; // Added specific animation for Super2
+                        case EnemyType::Emperor: idleAnimName = "FutureStandEmperor"; break;
+                        case EnemyType::Citizen: idleAnimName = "FutureStandCitizen"; break;
+                    }
                     
-                    // Check if we can see the player (for ranged attacks)
-                    bool hasLineOfSight = checkLineOfSight(enemyTrans.pos, 
-                                                        playerTrans.pos, 
-                                                        m_entityManager);
+                    if (m_game.assets().hasAnimation(idleAnimName) && 
+                        anim.animation.getName() != idleAnimName) {
+                        anim.animation = m_game.assets().getAnimation(idleAnimName);
+                        if (enemyAI.facingDirection < 0) {
+                            flipSpriteLeft(anim.animation.getMutableSprite());
+                        } else {
+                            flipSpriteRight(anim.animation.getMutableSprite());
+                        }
+                    }
                     
-                    // Decide how to move based on distance
-                    if (distance < TOO_CLOSE_DISTANCE) {
-                        // Too close - back up!
-                        enemyTrans.velocity.x = -enemyAI.facingDirection * FOLLOW_MOVE_SPEED * 0.8f;
-                        std::cout << "[DEBUG] " << (enemyAI.enemyType == EnemyType::Super2 ? "Super2" : "Future") 
-                                << " enemy " << enemy->id() 
-                                << " backing away (too close: " << distance << ")\n";
-                    }
-                    else if (distance < OPTIMAL_MIN_DISTANCE && hasLineOfSight) {
-                        // A bit too close but has line of sight - back up slightly
-                        enemyTrans.velocity.x = -enemyAI.facingDirection * FOLLOW_MOVE_SPEED * 0.5f;
-                        std::cout << "[DEBUG] " << (enemyAI.enemyType == EnemyType::Super2 ? "Super2" : "Future") 
-                                << " enemy " << enemy->id() 
-                                << " backing to optimal range (distance: " << distance << ")\n";
-                    }
-                    else if (distance > OPTIMAL_MAX_DISTANCE || !hasLineOfSight) {
-                        // Too far or no line of sight - approach slowly
-                        enemyTrans.velocity.x = enemyAI.facingDirection * FOLLOW_MOVE_SPEED * 0.6f;
-                    }
-                    else {
-                        // In optimal range and has line of sight - stop moving and shoot
-                        enemyTrans.velocity.x = 0.f;
-                        
-                        // Set animation to idle or attack animation for Future world and Super2
-                        std::string idleAnimName;
-                        switch (enemyAI.enemyType) {
-                            case EnemyType::Fast:    idleAnimName = "FutureStandEnemyFast"; break;
-                            case EnemyType::Strong:  idleAnimName = "FutureStandEnemyStrong"; break;
-                            case EnemyType::Elite:   idleAnimName = "FutureStandEnemyElite"; break;
-                            case EnemyType::Normal:  idleAnimName = "FutureStandEnemyNormal"; break;
-                            case EnemyType::Super:   idleAnimName = "FutureStandEnemySuper"; break;
-                            case EnemyType::Super2:  idleAnimName = "FutureStandEnemySuper2"; break; // Added specific animation for Super2
-                            case EnemyType::Emperor: idleAnimName = "FutureStandEmperor"; break;
-                            case EnemyType::Citizen: idleAnimName = "FutureStandCitizen"; break;
-                        }
-                        
-                        if (m_game.assets().hasAnimation(idleAnimName) && 
-                            anim.animation.getName() != idleAnimName) {
-                            anim.animation = m_game.assets().getAnimation(idleAnimName);
-                            if (enemyAI.facingDirection < 0) {
-                                flipSpriteLeft(anim.animation.getMutableSprite());
-                            } else {
-                                flipSpriteRight(anim.animation.getMutableSprite());
-                            }
-                        }
-                        
-                        std::cout << "[DEBUG] " << (enemyAI.enemyType == EnemyType::Super2 ? "Super2" : "Future") 
-                                << " enemy " << enemy->id() 
-                                << " at optimal shooting range (distance: " << distance << ")\n";
-                    }
+                    std::cout << "[DEBUG] " << (enemyAI.enemyType == EnemyType::Super2 ? "Super2" : "Future") 
+                            << " enemy " << enemy->id() 
+                            << " at optimal shooting range (distance: " << distance << ")\n";
+                }
                 } else {
                     enemyTrans.velocity.x = 0.f;
                 }

@@ -388,7 +388,7 @@ enum class EnemyType {
 enum class EnemyBehavior {
     FollowOne,  // Only follows when player is in line-of-sight
     FollowTwo,   // Keeps following once the player is spotted
-    FollowThree,  // Super always follows (ignores distance checks)
+    FollowThree,
     FollowFour,
     Flee
 };

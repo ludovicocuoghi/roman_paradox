@@ -164,12 +164,7 @@ Tile Ground 69 7
 Tile Ground 66 7
 Tile Ground 75 7
 Tile Ground 76 7
-Tile Ground 71 3
 Tile Ground 71 2
-Tile Ground 72 3
-Tile Ground 72 2
-Tile Ground 73 3
-Tile Ground 73 2
 Tile Ground 70 6
 Tile Ground 74 6
 Tile Ground 64 7
@@ -417,22 +412,14 @@ Tile Ground 43 19
 Tile Ground 44 19
 Tile Ground 45 19
 Tile Ground 47 19
-Tile Ground 48 19
 Tile Ground 46 19
 Tile Ground 44 18
 Tile Ground 45 18
 Tile Ground 46 18
 Tile Ground 47 18
 Tile Ground 48 18
-Tile Ground 49 19
-Tile Ground 49 18
 Tile Ground 48 17
 Tile Ground 49 17
-Tile Ground 50 17
-Tile Ground 50 18
-Tile Ground 50 16
-Tile Ground 51 16
-Tile Ground 51 17
 Tile Ground 6 10
 Tile Ground 8 9
 Tile Ground 9 9
@@ -532,7 +519,16 @@ Tile Ground 26 18
 Tile Ground 25 17
 Tile Treasure 116 4
 Tile Treasure 126 4
-Player 2 7
+Tile Ground 72 2
+Tile Ground 73 2
+Tile Ground 72 3
+Tile Ground 58 7
+Tile Ground 57 7
+Tile Ground 46 17
+Tile Ground 47 17
+Tile Ground 49 16
+Tile Ground 48 16
+Player 50 7
 Dec BushTall 130 5
 Dec BushTall 129 5
 Dec BushTall 128 5
@@ -561,9 +557,9 @@ Enemy EnemyElite 15 2
 Enemy EnemyElite 11 10
 Enemy EnemyElite 37 20
 Enemy EnemyElite 23 17
-Enemy EnemyElite 65 2
 Enemy EnemyElite 91 8
 Enemy EnemyElite 119 2
 Enemy EnemyElite 129 2
-Enemy EnemyElite 60 2
-Enemy EnemyFast 97 14
+Enemy EnemyElite 97 14
+Enemy EnemyElite 69 2
+Enemy EnemyElite 70 2

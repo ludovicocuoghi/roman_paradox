@@ -77,9 +77,7 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
                 }
                 else if (assetType == "BlackHoleRedBig")
                 {
-                    //realY += LoadLevel::GRID_SIZE * LoadLevel::BLACKHOLE_OFFSET_MULTIPLIER;
-                    //realX += LoadLevel::GRID_SIZE * LoadLevel::BLACKHOLE_OFFSET_MULTIPLIER;
-                    Vec2<float> bboxSize(150.f, 150.f);
+                    Vec2<float> bboxSize(500.f, 300.f);
                     Vec2<float> bboxOffset = bboxSize * 0.5f;
                     tile->add<CBoundingBox>(bboxSize, bboxOffset);
                 }
@@ -358,7 +356,7 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
                 enemy->get<CEnemyAI>().damage = LoadLevel::ENEMY_SUPER_DAMAGE;
                 enemy->get<CEnemyAI>().speedMultiplier = LoadLevel::ENEMY_SUPER_SPEED_MULTIPLIER;
                 enemy->get<CState>().maxConsecutiveSwordAttacks = LoadLevel::ENEMY_SUPER_MAX_CONSECUTIVE_SWORD_ATTACKS;
-                enemy->get<CEnemyAI>().enemyBehavior = EnemyBehavior::FollowTwo;
+                enemy->get<CEnemyAI>().enemyBehavior = EnemyBehavior::FollowThree;
                 enemy->get<CHealth>().maxHealth = LoadLevel::ENEMY_SUPER_HEALTH;
                 enemy->get<CHealth>().currentHealth = LoadLevel::ENEMY_SUPER_HEALTH;
             } else if (enemyType == EnemyType::Super2) {
@@ -368,7 +366,7 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
                 enemy->get<CState>().bulletBurstCount = LoadLevel::ENEMY_SUPER_BULLET_BURST_COUNT;
                 enemy->get<CState>().superBulletCount = LoadLevel::ENEMY_SUPER_SUPER_BULLET_COUNT;
                 enemy->get<CState>().superBulletDamage = LoadLevel::ENEMY_SUPER_SUPER_BULLET_DAMAGE;
-                enemy->get<CEnemyAI>().enemyBehavior = EnemyBehavior::FollowTwo;
+                enemy->get<CEnemyAI>().enemyBehavior = EnemyBehavior::FollowThree;
                 enemy->get<CEnemyAI>().superMoveCooldown = 3.f;
                 enemy->get<CHealth>().maxHealth = LoadLevel::ENEMY_SUPER_HEALTH;
                 enemy->get<CHealth>().currentHealth = LoadLevel::ENEMY_SUPER_HEALTH;

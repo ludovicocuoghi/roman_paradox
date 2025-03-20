@@ -44,7 +44,7 @@ void Scene_StoryText::loadStoryText(StoryType type) {
         m_storyLines.push_back("each with its own history and development.");
         m_storyLines.push_back(" ");
         m_storyLines.push_back("During what seemed like a normal day,");
-        m_storyLines.push_back("you suddenly find yourself invaded by futuristic Centurions.");
+        m_storyLines.push_back("you suddenly find yourself invaded by futuristic Legionaries.");
         m_storyLines.push_back(" ");
         m_storyLines.push_back("You must escape and discover the truth behind this invasion...");
         
@@ -56,7 +56,7 @@ void Scene_StoryText::loadStoryText(StoryType type) {
         m_storyLines.push_back(" ");
         m_storyLines.push_back("And so the history repeats itself...");
         m_storyLines.push_back(" ");
-        m_storyLines.push_back("The future Centurion, determined for revenge,");
+        m_storyLines.push_back("The future Legionary, determined for revenge,");
         m_storyLines.push_back("travels through a black hole to another dimension.");
         m_storyLines.push_back(" ");
         m_storyLines.push_back("There, he will find a different alien,");
