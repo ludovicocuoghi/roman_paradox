@@ -8,6 +8,8 @@
     <string>com.yourcompany.Rome Interdimensional Journey</string>
     <key>CFBundleName</key>
     <string>Rome Interdimensional Journey</string>
+    <key>CFBundleIconFile</key>
+    <string>MyIcon</string>
     <key>CFBundleInfoDictionaryVersion</key>
     <string>6.0</string>
     <key>CFBundlePackageType</key>

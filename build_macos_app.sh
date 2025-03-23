@@ -21,6 +21,9 @@ cp -r bin/fonts "${RESOURCES_DIR}/"
 cp -r bin/images "${RESOURCES_DIR}/"
 cp -r bin/levels "${RESOURCES_DIR}/"
 
+# Copy icon file
+cp MyIcon.icns "${RESOURCES_DIR}/"
+
 # Copy SFML frameworks (if needed)
 cp -R /opt/homebrew/opt/sfml@2/lib/*.dylib "${FRAMEWORKS_DIR}/"
 
@@ -36,11 +39,13 @@ cat > "${CONTENTS_DIR}/Info.plist" << EOF
 <plist version="1.0">
 <dict>
     <key>CFBundleExecutable</key>
-    <string>${APP_NAME}</string>
+    <string>Rome Interdimensional Journey</string>
     <key>CFBundleIdentifier</key>
-    <string>com.yourcompany.${APP_NAME}</string>
+    <string>com.yourcompany.Rome Interdimensional Journey</string>
     <key>CFBundleName</key>
-    <string>${APP_NAME}</string>
+    <string>Rome Interdimensional Journey</string>
+    <key>CFBundleIconFile</key>
+    <string>MyIcon</string>
     <key>CFBundleInfoDictionaryVersion</key>
     <string>6.0</string>
     <key>CFBundlePackageType</key>
