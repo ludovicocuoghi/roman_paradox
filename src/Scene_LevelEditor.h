@@ -20,6 +20,7 @@ public:
 
     // Salvataggio/Caricamento livello
     void saveLevel(const std::string& filePath);
+    void saveLevelToFile(const std::string& savePath);
     void loadLevel(const std::string& filePath);
 
     // Funzioni per piazzare gli entity

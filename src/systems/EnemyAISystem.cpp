@@ -1105,7 +1105,7 @@ void EnemyAISystem::update(float deltaTime)
                                              playerTrans.pos,
                                              m_entityManager);
 
-        bool playerVisible       = (distance < PLAYER_VISIBLE_DISTANCE) && canSeePlayer;
+        bool playerVisible       = (distance < PLAYER_VISIBLE_DISTANCE) || ((distance < PLAYER_VISIBLE_DISTANCE * 1.5) && canSeePlayer);
 
         // Calculate horizontal and vertical distances separately
         float verticalDistance = std::abs(dy);

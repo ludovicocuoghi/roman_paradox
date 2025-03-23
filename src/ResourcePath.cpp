@@ -42,6 +42,11 @@ std::string getResourcePath(const std::string& relativePath) {
                 possiblePaths.push_back(execDir + "assets/");
                 possiblePaths.push_back(execDir + "../assets/");
                 possiblePaths.push_back(execDir + "Resources/assets/");
+                // Add levels directory paths
+                possiblePaths.push_back(execDir + "levels/");
+                possiblePaths.push_back(execDir + "assets/levels/");
+                possiblePaths.push_back(execDir + "../assets/levels/");
+                possiblePaths.push_back(execDir + "Resources/assets/levels/");
             }
         }
         #endif
@@ -53,6 +58,14 @@ std::string getResourcePath(const std::string& relativePath) {
         possiblePaths.push_back("../../assets/");
         possiblePaths.push_back("bin/");
         possiblePaths.push_back("bin/assets/");
+        
+        // Add levels-specific paths for development environment
+        possiblePaths.push_back("./levels/");
+        possiblePaths.push_back("./assets/levels/");
+        possiblePaths.push_back("../assets/levels/");
+        possiblePaths.push_back("../../assets/levels/");
+        possiblePaths.push_back("bin/levels/");
+        possiblePaths.push_back("bin/assets/levels/");
         
         // Check which path contains a known asset file or directory
         for (const auto& path : possiblePaths) {
@@ -97,6 +110,19 @@ void printResourceInfo() {
         "levels/level1.txt",
         "assets.txt"
     };
+    
+    // Add a test specifically for the levels directory
+    std::cout << "Checking for levels directory: " << getResourcePath("levels") << " (exists: "
+              << (std::filesystem::exists(getResourcePath("levels")) ? "YES" : "NO") << ")\n";
+    
+    // Try to list contents of levels directory if it exists
+    std::string levelsPath = getResourcePath("levels");
+    if (std::filesystem::exists(levelsPath) && std::filesystem::is_directory(levelsPath)) {
+        std::cout << "Contents of levels directory:\n";
+        for (const auto& entry : std::filesystem::directory_iterator(levelsPath)) {
+            std::cout << "  - " << entry.path().filename().string() << "\n";
+        }
+    }
     
     for (const auto& file : testFiles) {
         std::string path = getResourcePath(file);

@@ -29,7 +29,7 @@ Scene_Menu::Scene_Menu(GameEngine& game)
     m_languageOptions = {"English", "Japanese"};
     
     // Initialize main menu options
-    m_mainMenuOptions = {"PLAY STORY", "MANUAL LEVEL SELECTION", "LEVEL EDITOR", "QUIT"};
+    m_mainMenuOptions = {"PLAY MAIN STORY", "MANUAL LEVEL SELECTION", "LEVEL EDITOR", "QUIT"};
 
     registerAction(sf::Keyboard::W, "UP");
     registerAction(sf::Keyboard::S, "DOWN");
@@ -131,15 +131,27 @@ void Scene_Menu::renderLanguageMenu(sf::Text& text, float startY, float spacing)
 }
 
 void Scene_Menu::renderMainMenu(sf::Text& text, float startY, float spacing) {
-    // Increase spacing for main menu items
-    float mainMenuSpacing = spacing * 1.5f;  // 50% more space between items
+    // Position for the centered "PLAY STORY" option
+    startY = 250.f;
     
-    // Start higher on the screen
-    startY = 150.f;
+    // Draw "PLAY STORY" much larger and centered
+    text.setString(m_mainMenuOptions[0]); // "PLAY STORY"
+    text.setCharacterSize(70); // Larger font size for PLAY STORY
+    text.setPosition(m_game.window().getSize().x / 2 - text.getLocalBounds().width / 2, startY);
+    text.setFillColor((0 == m_selectedMainMenuIndex) ? sf::Color::Blue : sf::Color::White);
+    m_game.window().draw(text);
     
-    for (size_t i = 0; i < m_mainMenuOptions.size(); ++i) {
+    // Reset character size for other options
+    text.setCharacterSize(40);
+    
+    // More space after PLAY STORY before showing other options
+    startY += spacing * 4.5f;
+    
+    // Draw the rest of the menu options below with standard spacing
+    float mainMenuSpacing = spacing * 1.5f;
+    for (size_t i = 1; i < m_mainMenuOptions.size(); ++i) {
         text.setString(m_mainMenuOptions[i]);
-        text.setPosition(m_game.window().getSize().x / 2 - text.getLocalBounds().width / 2, startY + i * mainMenuSpacing);
+        text.setPosition(m_game.window().getSize().x / 2 - text.getLocalBounds().width / 2, startY + (i-1) * mainMenuSpacing);
         text.setFillColor((i == m_selectedMainMenuIndex) ? sf::Color::Blue : sf::Color::White);
         m_game.window().draw(text);
     }
@@ -231,7 +243,7 @@ void Scene_Menu::handleSelectAction() {
             {
                 std::string selectedOption = m_mainMenuOptions[m_selectedMainMenuIndex];
                 
-                if (selectedOption == "PLAY STORY") {
+                if (selectedOption == "PLAY MAIN STORY") {
                     // Start with the intro story screen
                     m_game.changeScene("INTRO", std::make_shared<Scene_StoryText>(m_game, StoryType::INTRO));
                 } 

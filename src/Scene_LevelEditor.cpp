@@ -530,17 +530,106 @@ void Scene_LevelEditor::loadEnemyOptions() {
 
 void Scene_LevelEditor::saveLevel(const std::string& filePath) {
     m_entityManager.update();
-    std::ofstream out(filePath);
+    
+    // Extract just the filename from the path
+    std::string filename = fs::path(filePath).filename().string();
+    
+    // Define bin level path (where the game will look for levels at runtime)
+    std::string binLevelPath = getResourcePath("levels/") + filename;
+    
+    // Based on the screenshot, construct the source path
+    std::string srcLevelPath = "";
+    
+    // Current bin path is something like:
+    // /Users/ludovicocuoghi/Documents/cpp_course/comp4300_course/final_project/bin/levels/...
+    
+    // We need to replace "bin/levels" with "src/levels"
+    std::string binPath = getResourcePath("levels/");
+    std::cout << "[DEBUG] Bin levels path: " << binPath << "\n";
+    
+    // Try to find "bin" in the path and replace it with "src"
+    size_t binPos = binPath.find("/bin/");
+    if (binPos != std::string::npos) {
+        srcLevelPath = binPath.substr(0, binPos) + "/src/levels/" + filename;
+        std::cout << "[DEBUG] Determined src path: " << srcLevelPath << "\n";
+    } else {
+        // Alternative: Parse the full project path from the current binPath
+        std::string projectPattern = "Documents/cpp_course/comp4300_course/final_project/";
+        size_t projPos = binPath.find(projectPattern);
+        if (projPos != std::string::npos) {
+            std::string basePath = binPath.substr(0, projPos + projectPattern.length());
+            srcLevelPath = basePath + "src/levels/" + filename;
+            std::cout << "[DEBUG] Using project pattern to determine src path: " << srcLevelPath << "\n";
+        }
+    }
+    
+    // Fallback: Try a hardcoded path based on the screenshot if all else fails
+    if (srcLevelPath.empty()) {
+        // Determine home directory
+        const char* homeDir = getenv("HOME");
+        if (homeDir) {
+            srcLevelPath = std::string(homeDir) + 
+                           "/Documents/cpp_course/comp4300_course/final_project/src/levels/" + 
+                           filename;
+            std::cout << "[DEBUG] Using home directory fallback for src path: " << srcLevelPath << "\n";
+        } else {
+            // Last resort hardcoded path
+            srcLevelPath = "/Users/ludovicocuoghi/Documents/cpp_course/comp4300_course/final_project/src/levels/" + filename;
+            std::cout << "[DEBUG] Using hardcoded fallback path: " << srcLevelPath << "\n";
+        }
+    }
+    
+    // Ensure both directories exist
+    try {
+        std::string binLevelsDir = fs::path(binLevelPath).parent_path().string();
+        if (!fs::exists(binLevelsDir)) {
+            std::cout << "[DEBUG] Creating bin levels directory: " << binLevelsDir << "\n";
+            fs::create_directories(binLevelsDir);
+        }
+        
+        std::string srcLevelsDir = fs::path(srcLevelPath).parent_path().string();
+        if (!fs::exists(srcLevelsDir)) {
+            std::cout << "[DEBUG] Creating src levels directory: " << srcLevelsDir << "\n";
+            fs::create_directories(srcLevelsDir);
+        }
+    } catch (const fs::filesystem_error& e) {
+        std::cerr << "[ERROR] Failed to create directories: " << e.what() << "\n";
+    }
+    
+    // Save to both paths
+    std::cout << "[DEBUG] Saving level to bin path: " << binLevelPath << "\n";
+    saveLevelToFile(binLevelPath);
+    
+    if (!srcLevelPath.empty()) {
+        std::cout << "[DEBUG] Also saving level to src path: " << srcLevelPath << "\n";
+        saveLevelToFile(srcLevelPath);
+    } else {
+        std::cerr << "[ERROR] Could not determine source directory path!\n";
+    }
+    
+    // Store the bin path as current path for future saves
+    m_currentLevelPath = binLevelPath;
+    
+    // Refresh level files list to include the newly saved level
+    loadLevelFiles();
+}
+
+// Add this function to your Scene_LevelEditor.cpp file
+void Scene_LevelEditor::saveLevelToFile(const std::string& savePath) {
+    std::ofstream out(savePath);
     if (!out.is_open()) {
-        std::cerr << "[ERROR] Cannot open file for saving: " << filePath << "\n";
+        std::cerr << "[ERROR] Cannot open file for saving: " << savePath << "\n";
         return;
     }
-
+    
     auto stripWorldCategory = [this](const std::string& fullName) -> std::string {
         if (!worldcategory.empty() && fullName.find(worldcategory) == 0)
             return fullName.substr(worldcategory.size());
         return fullName;
     };
+
+    // Add a comment to track world category
+    out << "# World: " << worldcategory << "\n";
 
     // ========================
     // Save Tiles
@@ -560,7 +649,7 @@ void Scene_LevelEditor::saveLevel(const std::string& filePath) {
         std::string animName = tile->get<CAnimation>().animation.getName();
         animName = stripWorldCategory(animName);
 
-        // **Check if animName is empty**
+        // Check if animName is empty
         if (animName.empty()) {
             std::cerr << "[ERROR] Empty tile name at (" << gridX << ", " << savedGridY << ")! Skipping...\n";
             continue;
@@ -571,15 +660,15 @@ void Scene_LevelEditor::saveLevel(const std::string& filePath) {
 
     // Save Player
     auto& players = m_entityManager.getEntities("player");
-        if (!players.empty()) {
-            auto& player = players.front();
-            auto& transform = player->get<CTransform>();
-            int gridX = static_cast<int>(transform.pos.x / tileSize);
-            int gridY = static_cast<int>(transform.pos.y / tileSize);
-            int savedGridY = worldHeight - 1 - gridY;
-            
-            out << "Player " << gridX << " " << savedGridY << "\n";
-        }
+    if (!players.empty()) {
+        auto& player = players.front();
+        auto& transform = player->get<CTransform>();
+        int gridX = static_cast<int>(transform.pos.x / tileSize);
+        int gridY = static_cast<int>(transform.pos.y / tileSize);
+        int savedGridY = worldHeight - 1 - gridY;
+        
+        out << "Player " << gridX << " " << savedGridY << "\n";
+    }
     
     // ========================
     // Save Decorations
@@ -599,7 +688,7 @@ void Scene_LevelEditor::saveLevel(const std::string& filePath) {
         std::string animName = dec->get<CAnimation>().animation.getName();
         animName = stripWorldCategory(animName);
 
-        // **Check if animName is empty**
+        // Check if animName is empty
         if (animName.empty()) {
             std::cerr << "[ERROR] Empty decoration name at (" << gridX << ", " << savedGridY << ")! Skipping...\n";
             continue;
@@ -628,10 +717,10 @@ void Scene_LevelEditor::saveLevel(const std::string& filePath) {
             case EnemyType::Fast:    enemyType = "EnemyFast"; break;
             case EnemyType::Strong:  enemyType = "EnemyStrong"; break;
             case EnemyType::Elite:   enemyType = "EnemyElite"; break;
-            case EnemyType::Normal:   enemyType = "EnemyNormal"; break;
+            case EnemyType::Normal:  enemyType = "EnemyNormal"; break;
             case EnemyType::Super:   enemyType = "EnemySuper"; break;
-            case EnemyType::Super2:   enemyType = "EnemySuper2"; break;
-            case EnemyType::Citizen:   enemyType = "EnemyCitizen"; break;
+            case EnemyType::Super2:  enemyType = "EnemySuper2"; break;
+            case EnemyType::Citizen: enemyType = "EnemyCitizen"; break;
             case EnemyType::Emperor: enemyType = "Emperor"; break;
             default:
                 std::cerr << "[ERROR] Unknown enemy type at (" << gridX << ", " << savedGridY << ")! Skipping...\n";
@@ -648,7 +737,13 @@ void Scene_LevelEditor::saveLevel(const std::string& filePath) {
     }
 
     out.close();
-    std::cout << "[DEBUG] Level saved to " << filePath << "\n";
+    
+    // Verify the file was written successfully
+    if (!out) {
+        std::cerr << "[ERROR] Failed to write level file: " << savePath << "\n";
+    } else {
+        std::cout << "[DEBUG] Level successfully saved to " << savePath << "\n";
+    }
 }
 
 

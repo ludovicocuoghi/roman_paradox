@@ -315,13 +315,13 @@ void Scene_Play::initializeDialogues()
         std::vector<DialogueMessage> Dialogue1 = {
             {
                 "????",                          // speaker
-                "I'VE FINALLY FOUND YOU!!",            // message
+                "I HAVE FINALLY FOUND YOU!!",            // message
                 basePath + "future_fast.png",        // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Cyan,
                 sf::Color::Red,
-                sf::Vector2f(800.f, 500.f),
-                650.f,                                           // boxWidth - medium for medium message
+                sf::Vector2f(750.f, 450.f),
+                750.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
                 40,                                              // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
@@ -333,8 +333,8 @@ void Scene_Play::initializeDialogues()
                 false,                                            // portraitOnLeft
                 sf::Color::Cyan,
                 sf::Color::Red,
-                sf::Vector2f(800.f, 500.f),
-                650.f,                                           // boxWidth - medium for medium message
+                sf::Vector2f(750.f, 450.f),
+                750.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
                 40,                                              // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
@@ -346,7 +346,7 @@ void Scene_Play::initializeDialogues()
                 false,                                            // portraitOnLeft
                 sf::Color::Cyan,
                 sf::Color::Red,
-                sf::Vector2f(500.f, 500.f),
+                sf::Vector2f(500.f, 450.f),
                 1000.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
                 40,                                              // messageFontSize - still emphasized
@@ -359,8 +359,8 @@ void Scene_Play::initializeDialogues()
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
-                sf::Vector2f(50.f, 500.f),
-                600.f,                                           // boxWidth - medium for medium message
+                sf::Vector2f(250.f, 450.f),
+                650.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
                 40,                                              // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
@@ -380,7 +380,7 @@ void Scene_Play::initializeDialogues()
             },
             {
                 "***GUIDE***",                               // speaker
-                "(Keep M pressed to Defend)",            // message
+                "(Hold M to activate your shield)",            // message
                 basePath + "alien_ancient.png",        // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,
@@ -401,7 +401,7 @@ void Scene_Play::initializeDialogues()
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
-                sf::Vector2f(50.f, 500.f),
+                sf::Vector2f(50.f, 450.f),
                 650.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
                 35,                                              // messageFontSize - still emphasized
@@ -417,8 +417,8 @@ void Scene_Play::initializeDialogues()
                 false,                                           // portraitOnLeft
                 sf::Color::Yellow,                               // speakerColor
                 sf::Color::Red,                                  // messageColor
-                sf::Vector2f(800.f, 500.f),                      // dialogueBoxPosition
-                500.f,                                           // boxWidth - compact for short message
+                sf::Vector2f(800.f, 450.f),                      // dialogueBoxPosition
+                650.f,                                           // boxWidth - compact for short message
                 150.f,                                           // boxHeight
                 50,                                              // messageFontSize - larger for emphasis
                 true                                            // useTypewriterEffect - immediate display
@@ -430,7 +430,7 @@ void Scene_Play::initializeDialogues()
                 false,
                 sf::Color::Yellow,
                 sf::Color::Red,
-                sf::Vector2f(800.f, 500.f),
+                sf::Vector2f(800.f, 450.f),
                 650.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
                 40,                                              // messageFontSize - still emphasized
@@ -441,13 +441,13 @@ void Scene_Play::initializeDialogues()
         std::vector<DialogueMessage> Dialogue3 = {
             {
                 "Alien Legionary",                               // speaker
-                "Who are these dark legionaries???",            // message
+                "Who are these shadow legionnaires???",            // message
                 basePath + "alien_ancient_left.png",        // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
-                sf::Vector2f(50.f, 500.f),
-                700.f,                                           // boxWidth - medium for medium message
+                sf::Vector2f(150.f, 450.f),
+                850.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
                 30,                                              // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
@@ -459,8 +459,8 @@ void Scene_Play::initializeDialogues()
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
-                sf::Vector2f(50.f, 500.f),
-                650.f,                                           // boxWidth - medium for medium message
+                sf::Vector2f(150.f, 450.f),
+                700.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
                 30,                                              // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
@@ -475,7 +475,7 @@ void Scene_Play::initializeDialogues()
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
-                sf::Vector2f(50.f, 500.f),
+                sf::Vector2f(50.f, 450.f),
                 700.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
                 25,                                              // messageFontSize - still emphasized
@@ -483,13 +483,13 @@ void Scene_Play::initializeDialogues()
             },
             {
                 "Alien Legionary",                               // speaker
-                "I have to avoid getting near them!",            // message
+                "I must avoid them at all costs!",            // message
                 basePath + "alien_ancient_left.png",        // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
-                sf::Vector2f(50.f, 500.f),
-                650.f,                                           // boxWidth - medium for medium message
+                sf::Vector2f(50.f, 450.f),
+                700.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
                 26,                                              // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
@@ -660,7 +660,7 @@ void Scene_Play::initializeDialogues()
                 sf::Color::Magenta,
                 sf::Color::White,
                 sf::Vector2f(0.f, 400.f),
-                700.f,                                           // boxWidth - medium for medium message
+                750.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
                 30,                                              // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
@@ -720,7 +720,7 @@ void Scene_Play::initializeDialogues()
                 sf::Color::Magenta,
                 sf::Color::White,
                 sf::Vector2f(0.f, 400.f),
-                550.f,                                           // boxWidth - medium for medium message
+                700.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
                 35,                                              // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
@@ -762,7 +762,7 @@ void Scene_Play::initializeDialogues()
                 sf::Color::Magenta,
                 sf::Color::Red,
                 sf::Vector2f(0.f, 400.f),
-                650.f,                                           // boxWidth - medium for medium message
+                700.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
                 60,                                              // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
@@ -813,26 +813,26 @@ void Scene_Play::initializeDialogues()
         m_dialogueSystem->addDialogueTrigger(1800, Dialogue2);
         std::vector<DialogueMessage> Dialogue4 = {
             {
-                "Ancient Legionary",                               // speaker
+                "Legionary",                               // speaker
                 "WHO ARE YOU??",            // message
                 basePath + "ancient_normal.png",        // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Yellow,
                 sf::Color::White,
-                sf::Vector2f(850.f, 500.f),
+                sf::Vector2f(850.f, 450.f),
                 600.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
                 40,                                              // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
             },
             {
-                "Ancient Legionary",                               // speaker
+                "Legionary",                               // speaker
                 "GET OUT OF HERE!!!",            // message
                 basePath + "ancient_normal.png",        // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Yellow,
                 sf::Color::White,
-                sf::Vector2f(850.f, 500.f),
+                sf::Vector2f(850.f, 450.f),
                 600.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
                 40,                                              // messageFontSize - still emphasized
@@ -842,27 +842,27 @@ void Scene_Play::initializeDialogues()
         m_dialogueSystem->addDialogueTrigger(2400, Dialogue4);
         std::vector<DialogueMessage> Dialogue5 = {
             {
-                "Ancient Legionary",                               // speaker
+                "Legionary",                               // speaker
                 "WE ARE BEING INVADED!",            // message
                 basePath + "ancient_normal.png",        // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Yellow,
                 sf::Color::White,
-                sf::Vector2f(850.f, 500.f),
-                600.f,                                           // boxWidth - medium for medium message
+                sf::Vector2f(850.f, 450.f),
+                650.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
                 40,                                              // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
             },
             {
-                "Ancient Legionary",                               // speaker
+                "Legionary",                               // speaker
                 "SEND THE REINFORCEMENTS!!!",            // message
                 basePath + "ancient_normal.png",        // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Yellow,
                 sf::Color::White,
-                sf::Vector2f(600.f, 500.f),
-                850.f,                                           // boxWidth - medium for medium message
+                sf::Vector2f(600.f, 450.f),
+                800.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
                 40,                                              // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
@@ -874,7 +874,7 @@ void Scene_Play::initializeDialogues()
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
-                sf::Vector2f(50.f, 400.f),
+                sf::Vector2f(50.f, 450.f),
                 750.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
                 30,                                              // messageFontSize - still emphasized
@@ -925,10 +925,10 @@ void Scene_Play::initializeDialogues()
                 true                                             // useTypewriterEffect
             },
         };
-        m_dialogueSystem->addDialogueTrigger(250, Dialogue1);
+        m_dialogueSystem->addDialogueTrigger(150, Dialogue1);
         std::vector<DialogueMessage> Dialogue2 = {
             {
-                "Ancient Legionary",                                // speaker
+                "Legionary",                                // speaker
                 "AAAAAH!",            // message
                 basePath + "ancient_normal.png",        // portraitPath
                 false,                                            // portraitOnLeft
@@ -970,44 +970,44 @@ void Scene_Play::initializeDialogues()
                 true                                             // useTypewriterEffect
             },
         };
-        m_dialogueSystem->addDialogueTrigger(1150, Dialogue3);
+        m_dialogueSystem->addDialogueTrigger(1000, Dialogue3);
     }
     else if (levelName ==  "ancient_rome_level_3_night.txt") {
         std::vector<DialogueMessage> Dialogue0 = {
             {
-                "Ancient Legionary (Elite)",                               // speaker
+                "Legionary (Elite)",                               // speaker
                 "Are you the invader?",            // message
                 basePath + "ancient_elite.png",        // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Red,
                 sf::Color::White,
-                sf::Vector2f(700.f, 500.f),
-                650.f,                                           // boxWidth - medium for medium message
+                sf::Vector2f(700.f, 450.f),
+                700.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
                 35,                                              // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
             },
             {
-                "Ancient Legionary (Elite)",                                // speaker
+                "Legionary (Elite)",                                // speaker
                 "How dare you trespass on imperial lands?",            // message
                 basePath + "ancient_elite.png",        // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Red,
                 sf::Color::White,
-                sf::Vector2f(700.f, 500.f),
+                sf::Vector2f(700.f, 450.f),
                 800.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
                 30,                                              // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
             },
             {
-                "Ancient Legionary (Elite)",                              // speaker
+                "Legionary (Elite)",                              // speaker
                 "We will protect the Emperor..",            // message
                 basePath + "ancient_elite.png",        // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Red,
                 sf::Color::White,
-                sf::Vector2f(700.f, 500.f),
+                sf::Vector2f(700.f, 450.f),
                 700.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
                 30,                                              // messageFontSize - still emphasized
@@ -1015,14 +1015,14 @@ void Scene_Play::initializeDialogues()
             }
             ,
             {
-                "Ancient Legionary (Elite)",                               // speaker
+                "Legionary (Elite)",                               // speaker
                 "AT ALL COSTS!!",            // message
                 basePath + "ancient_elite.png",        // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Red,
                 sf::Color::Red,
-                sf::Vector2f(700.f, 500.f),
-                650.f,                                           // boxWidth - medium for medium message
+                sf::Vector2f(700.f, 450.f),
+                700.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
                 50,                                              // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
@@ -1031,7 +1031,7 @@ void Scene_Play::initializeDialogues()
         m_dialogueSystem->addDialogueTrigger(200, Dialogue0);
         std::vector<DialogueMessage> Dialogue1 = {
             {
-                "Ancient Legionary (Elite)",                               // speaker
+                "Legionary (Elite)",                               // speaker
                 "STOP THE INVADER!!",            // message
                 basePath + "ancient_elite.png",        // portraitPath
                 false,                                            // portraitOnLeft
@@ -1079,7 +1079,7 @@ void Scene_Play::initializeDialogues()
     else if (levelName ==  "ancient_rome_level_4_emperor_room.txt") {
         std::vector<DialogueMessage> Dialogue0 = {
             {
-                "Ancient Emperor",                               // speaker
+                "Emperor",                               // speaker
                 "...And so you eventually got here..",            // message
                 basePath + "ancient_emperor.png",        // portraitPath
                 false,                                            // portraitOnLeft
@@ -1092,7 +1092,7 @@ void Scene_Play::initializeDialogues()
                 true                                             // useTypewriterEffect
             },
             {
-                "Ancient Emperor",                               // speaker
+                "Emperor",                               // speaker
                 "..Alien Invader...",            // message
                 basePath + "ancient_emperor.png",        // portraitPath
                 false,                                            // portraitOnLeft
@@ -1105,7 +1105,7 @@ void Scene_Play::initializeDialogues()
                 true                                             // useTypewriterEffect
             },
             {
-                "Ancient Emperor",                             // speaker
+                "Emperor",                             // speaker
                 "I am the Emperor of this kingdom...",            // message
                 basePath + "ancient_emperor.png",        // portraitPath
                 false,                                            // portraitOnLeft
@@ -1118,7 +1118,7 @@ void Scene_Play::initializeDialogues()
                 true                                             // useTypewriterEffect
             },
             {
-                "Ancient Emperor",                             // speaker
+                "Emperor",                             // speaker
                 "How dare you come here!?",            // message
                 basePath + "ancient_emperor.png",        // portraitPath
                 false,                                            // portraitOnLeft
@@ -1174,7 +1174,7 @@ void Scene_Play::initializeDialogues()
             }
             ,
             {
-                "Ancient Emperor",                             // speaker
+                "Emperor",                             // speaker
                 "What are you even talking about?!?",            // message
                 basePath + "ancient_emperor.png",        // portraitPath
                 false,                                            // portraitOnLeft
@@ -1187,7 +1187,7 @@ void Scene_Play::initializeDialogues()
                 true                                             // useTypewriterEffect
             },
             {
-                "Ancient Emperor",                             // speaker
+                "Emperor",                             // speaker
                 "Black holes?! What nonsense.",            // message
                 basePath + "ancient_emperor.png",        // portraitPath
                 false,                                            // portraitOnLeft
@@ -1201,7 +1201,7 @@ void Scene_Play::initializeDialogues()
             }
             ,
             {
-                "Ancient Emperor",                               // speaker
+                "Emperor",                               // speaker
                 "YOU WILL PERISH!!!",            // message
                 basePath + "ancient_emperor.png",        // portraitPath
                 false,                                            // portraitOnLeft
@@ -1217,7 +1217,7 @@ void Scene_Play::initializeDialogues()
         m_dialogueSystem->addDialogueTrigger(400, Dialogue0);
         std::vector<DialogueMessage> LowHPAncientEmperorDialogue = {
             {
-                "Ancient Emperor",                               // speaker
+                "Emperor",                               // speaker
                 "I have no choice but to show you my true...",                           // message
                 basePath + "ancient_emperor.png", // portraitPath
                 false,                                   // portraitOnLeft
@@ -1230,7 +1230,7 @@ void Scene_Play::initializeDialogues()
                 true                                     // useTypewriterEffect
             },
             {
-                "Ancient Emperor",                               // speaker
+                "Emperor",                               // speaker
                 "POWER!",                           // message
                 basePath + "ancient_emperor.png", // portraitPath
                 false,                                   // portraitOnLeft
@@ -1247,7 +1247,7 @@ void Scene_Play::initializeDialogues()
         m_dialogueSystem->addNamedDialogue("emperor_lowHP", LowHPAncientEmperorDialogue);
         std::vector<DialogueMessage> phasedefeatedAncientDialogue = {
             {
-                "Ancient Emperor",                              // speaker
+                "Emperor",                              // speaker
                 "YOU.. DAMNED... ALIEN...",            // message
                 basePath + "ancient_emperor_defeated.png",       // portraitPath
                 false,                                            // portraitOnLeft
@@ -1358,7 +1358,7 @@ void Scene_Play::initializeDialogues()
                 sf::Color::Magenta,
                 sf::Color::White,
                 sf::Vector2f(0.f, 500.f),
-                950.f,                                           // boxWidth - medium for medium message
+                970.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
                 30,                                             // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
@@ -1418,7 +1418,7 @@ void Scene_Play::initializeDialogues()
                 sf::Color::Magenta,
                 sf::Color::White,
                 sf::Vector2f(0.f, 500.f),
-                700.f,                                           // boxWidth - medium for medium message
+                720.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
                 30,                                             // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
@@ -1432,7 +1432,7 @@ void Scene_Play::initializeDialogues()
                 sf::Color::Magenta,
                 sf::Color::White,
                 sf::Vector2f(0.f, 500.f),
-                1000.f,                                           // boxWidth - medium for medium message
+                960.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
                 30,                                             // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
@@ -2852,7 +2852,24 @@ void Scene_Play::sDoAction(const Action& action)
         else if (action.name() == "DEFENSE") {
             // End defense when defense key is released
             if (state.state == "defense") {
-                state.state = "idle";
+                // Apply movement based on currently pressed keys when exiting defense
+                if (leftKeyPressed && !rightKeyPressed) {
+                    PTrans.facingDirection = -1.f;
+                    vel.x = -xSpeed;
+                    state.state = "run";
+                    std::cout << "[MOVEMENT] Continuing left movement after defense" << std::endl;
+                } 
+                else if (rightKeyPressed && !leftKeyPressed) {
+                    PTrans.facingDirection = 1.f;
+                    vel.x = xSpeed;
+                    state.state = "run";
+                    std::cout << "[MOVEMENT] Continuing right movement after defense" << std::endl;
+                }
+                else {
+                    vel.x = 0.f;
+                    state.state = "idle";
+                    std::cout << "[MOVEMENT] Returning to idle after defense" << std::endl;
+                }
             }
         }
     }
