@@ -94,7 +94,7 @@ public:
     static constexpr int   BULLET_DAMAGE_ENEMY_NORMAL = 4;
     static constexpr int   BULLET_DAMAGE_ENEMY_FAST = 3;
     static constexpr int   BULLET_DAMAGE_ENEMY_STRONG = 6;
-    static constexpr int   BULLET_DAMAGE_ENEMY_ELITE = 5;
+    static constexpr int   BULLET_DAMAGE_ENEMY_ELITE = 40;
     static constexpr int   BULLET_DAMAGE_ENEMY_SUPER = 99999;
     static constexpr int   BULLET_DAMAGE_ENEMY_EMPEROR = 7;
 

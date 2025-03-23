@@ -1464,7 +1464,7 @@ void Scene_Play::initializeDialogues()
                 sf::Color::Magenta,
                 sf::Color::White,
                 sf::Vector2f(0.f, 500.f),
-                600.f,                                           // boxWidth - medium for medium message
+                650.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
                 40,                                              // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
@@ -1478,7 +1478,7 @@ void Scene_Play::initializeDialogues()
                 sf::Color::Magenta,
                 sf::Color::White,
                 sf::Vector2f(0.f, 500.f),
-                600.f,                                           // boxWidth - medium for medium message
+                650.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
                 40,                                             // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
@@ -1512,98 +1512,98 @@ void Scene_Play::initializeDialogues()
             };
             m_dialogueSystem->addDialogueTrigger(600, Dialogue0);
             std::vector<DialogueMessage> Dialogue02 = {
-                {
-                    "Alien Legionary",
-                    "Let me think:",
-                    basePath + "alien_ancient.png",
-                    true,
-                    sf::Color::Magenta,
-                    sf::Color::White,
-                    sf::Vector2f(0.f, 500.f),
-                    700.f,
-                    150.f,
-                    30,
-                    true
-                },
-                {
-                    "Alien Legionary",
-                    "I went through the black hole...",
-                    basePath + "alien_ancient.png",
-                    true,
-                    sf::Color::Magenta,
-                    sf::Color::White,
-                    sf::Vector2f(0.f, 500.f),
-                    600.f,
-                    150.f,
-                    30,
-                    true
-                },
-                {
-                    "Alien Legionary",
-                    "And this was supposed to be their present...",
-                    basePath + "alien_ancient.png",
-                    true,
-                    sf::Color::Magenta,
-                    sf::Color::White,
-                    sf::Vector2f(0.f, 500.f),
-                    850.f,
-                    150.f,
-                    30,
-                    true
-                },
-                {
-                    "Alien Legionary",
-                    "But I killed their Emperor in the past...",
-                    basePath + "alien_ancient.png",
-                    true,
-                    sf::Color::Magenta,
-                    sf::Color::White,
-                    sf::Vector2f(0.f, 500.f),
-                    900.f,
-                    150.f,
-                    30,
-                    true
-                },
-                {
-                    "Alien Legionary",
-                    "And so they shouldn't exist anymore...",
-                    basePath + "alien_ancient.png",
-                    true,
-                    sf::Color::Magenta,
-                    sf::Color::White,
-                    sf::Vector2f(0.f, 500.f),
-                    850.f,
-                    150.f,
-                    30,
-                    true
-                },
-                {
-                    "Alien Legionary",
-                    "Did I somehow change history...",
-                    basePath + "alien_ancient.png",
-                    true,
-                    sf::Color::Magenta,
-                    sf::Color::White,
-                    sf::Vector2f(0.f, 500.f),
-                    750.f,
-                    150.f,
-                    30,
-                    true
-                },
-                {
-                    "Alien Legionary",
-                    "AND CREATED A NEW PRESENT?!",
-                    basePath + "alien_ancient.png",
-                    true,
-                    sf::Color::Magenta,
-                    sf::Color::Red,
-                    sf::Vector2f(0.f, 500.f),
-                    800.f,
-                    150.f,
-                    40,
-                    true
-                }
-            };
+            {
+                "Alien Legionary",
+                "Let me think:",
+                basePath + "alien_ancient.png",
+                true,
+                sf::Color::Magenta,
+                sf::Color::White,
+                sf::Vector2f(0.f, 500.f),
+                750.f,
+                150.f,
+                30,
+                true
+            },
+            {
+                "Alien Legionary",
+                "I went through the black hole...",
+                basePath + "alien_ancient.png",
+                true,
+                sf::Color::Magenta,
+                sf::Color::White,
+                sf::Vector2f(0.f, 500.f),
+                750.f,
+                150.f,
+                30,
+                true
+            },
+            {
+                "Alien Legionary",
+                "And this was supposed to be their present...",
+                basePath + "alien_ancient.png",
+                true,
+                sf::Color::Magenta,
+                sf::Color::White,
+                sf::Vector2f(0.f, 500.f),
+                850.f,
+                150.f,
+                30,
+                true
+            },
+            {
+                "Alien Legionary",
+                "But I killed their Emperor in the past...",
+                basePath + "alien_ancient.png",
+                true,
+                sf::Color::Magenta,
+                sf::Color::White,
+                sf::Vector2f(0.f, 500.f),
+                850.f,
+                150.f,
+                30,
+                true
+            },
+            {
+                "Alien Legionary",
+                "And so they shouldn't exist anymore...",
+                basePath + "alien_ancient.png",
+                true,
+                sf::Color::Magenta,
+                sf::Color::White,
+                sf::Vector2f(0.f, 500.f),
+                850.f,
+                150.f,
+                30,
+                true
+            },
+            {
+                "Alien Legionary",
+                "Did I somehow change history...",
+                basePath + "alien_ancient.png",
+                true,
+                sf::Color::Magenta,
+                sf::Color::White,
+                sf::Vector2f(0.f, 500.f),
+                750.f,
+                150.f,
+                30,
+                true
+            },
+            {
+                "Alien Legionary",
+                "AND CREATED A NEW PRESENT?!",
+                basePath + "alien_ancient.png",
+                true,
+                sf::Color::Magenta,
+                sf::Color::Red,
+                sf::Vector2f(0.f, 500.f),
+                800.f,
+                150.f,
+                40,
+                true
+            }
+        };
         m_dialogueSystem->addDialogueTrigger(900, Dialogue02);
         std::vector<DialogueMessage> Dialogue1 = {
             {
@@ -1628,7 +1628,7 @@ void Scene_Play::initializeDialogues()
                 sf::Color::Magenta,
                 sf::Color::White,
                 sf::Vector2f(0.f, 500.f),
-                650.f,                                           // boxWidth - medium for medium message
+                700.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
                 30,                                             // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
@@ -1642,7 +1642,7 @@ void Scene_Play::initializeDialogues()
                 sf::Color::Magenta,
                 sf::Color::White,
                 sf::Vector2f(0.f, 500.f),
-                650.f,                                           // boxWidth - medium for medium message
+                700.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
                 30,                                             // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
@@ -1656,9 +1656,9 @@ void Scene_Play::initializeDialogues()
                 sf::Color::Magenta,
                 sf::Color::White,
                 sf::Vector2f(0.f, 500.f),
-                600.f,                                           // boxWidth - medium for medium message
+                700.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
-                40,                                             // messageFontSize - still emphasized
+                50,                                             // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
             }
         };
@@ -1746,7 +1746,7 @@ void Scene_Play::initializeDialogues()
             sf::Color::Magenta,
             sf::Color::White,
             sf::Vector2f(0.f, 500.f),
-            900.f,                                           // boxWidth - medium for medium message
+            950.f,                                           // boxWidth - medium for medium message
             150.f,                                           // boxHeight
             30,                                             // messageFontSize - still emphasized
             true                                             // useTypewriterEffect
@@ -1760,7 +1760,7 @@ void Scene_Play::initializeDialogues()
             sf::Color::Magenta,
             sf::Color::White,
             sf::Vector2f(0.f, 500.f),
-            650.f,                                           // boxWidth - medium for medium message
+            700.f,                                           // boxWidth - medium for medium message
             150.f,                                           // boxHeight
             30,                                             // messageFontSize - still emphasized
             true                                             // useTypewriterEffect
@@ -1774,7 +1774,7 @@ void Scene_Play::initializeDialogues()
             sf::Color::Magenta,
             sf::Color::White,
             sf::Vector2f(0.f, 500.f),
-            650.f,                                           // boxWidth - medium for medium message
+            700.f,                                           // boxWidth - medium for medium message
             150.f,                                           // boxHeight
             30,                                             // messageFontSize - still emphasized
             true                                             // useTypewriterEffect
@@ -1784,13 +1784,13 @@ void Scene_Play::initializeDialogues()
     std::vector<DialogueMessage> Dialogue4 = {
         {
             "Alien Legionary",                              // speaker
-            "Oh... what is that futuristic armor??",            // message
+            "Oh... what is that futuristic looking armor??",            // message
             basePath + "alien_ancient.png",       // portraitPath
             true,                                            // portraitOnLeft
             sf::Color::Magenta,
             sf::Color::White,
             sf::Vector2f(0.f, 500.f),
-            800.f,                                           // boxWidth - medium for medium message
+            950.f,                                           // boxWidth - medium for medium message
             150.f,                                           // boxHeight
             30,                                             // messageFontSize - still emphasized
             true                                             // useTypewriterEffect
@@ -1848,7 +1848,7 @@ void Scene_Play::initializeDialogues()
             sf::Color::Magenta,
             sf::Color::White,
             sf::Vector2f(0.f, 500.f),
-            1050.f,                                           // boxWidth - medium for medium message
+            1100.f,                                           // boxWidth - medium for medium message
             150.f,                                           // boxHeight
             40,                                             // messageFontSize - still emphasized
             true                                             // useTypewriterEffect
@@ -1856,7 +1856,7 @@ void Scene_Play::initializeDialogues()
         ,
         {
             "***GUIDE***",                           // speaker
-            "(Keep SPACE pressed to shoot bursts of bullets!)",            // message
+            "(Hold SPACE to shoot bursts of bullets!)",            // message
             basePath + "alien_future.png",       // portraitPath
             false,                                            // portraitOnLeft
             sf::Color::Magenta,
@@ -1893,10 +1893,10 @@ void Scene_Play::initializeDialogues()
                 false,                                            // portraitOnLeft
                 sf::Color::Red,
                 sf::Color::White,
-                sf::Vector2f(700.f, 400.f),
-                650.f,                                           // boxWidth - medium for medium message
+                sf::Vector2f(700.f, 450.f),
+                700.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
-                40,                                              // messageFontSize - still emphasized
+                30,                                              // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
             }
             ,
@@ -1907,7 +1907,7 @@ void Scene_Play::initializeDialogues()
                 false,                                            // portraitOnLeft
                 sf::Color::Red,
                 sf::Color::White,
-                sf::Vector2f(700.f, 400.f),
+                sf::Vector2f(700.f, 450.f),
                 750.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
                 30,                                             // messageFontSize - still emphasized
@@ -1915,6 +1915,64 @@ void Scene_Play::initializeDialogues()
             },
             };
             m_dialogueSystem->addDialogueTrigger(600, Dialogue0);
+            std::vector<DialogueMessage> Dialogue1 = {
+            {
+                "Alien Legionary",                               // speaker
+                "These legionnaries look danegrous..",            // message
+                basePath + "alien_future.png",       // portraitPath
+                true,                                            // portraitOnLeft
+                sf::Color::Magenta,
+                sf::Color::White,
+                sf::Vector2f(50.f, 450.f),
+                800.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                30,                                              // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
+            }
+            ,
+            {
+                "Alien Legionary",                             // speaker
+                "I can barely see them...",            // message
+                basePath + "alien_future.png",       // portraitPath
+                true,                                            // portraitOnLeft
+                sf::Color::Magenta,
+                sf::Color::White,
+                sf::Vector2f(50.f, 450.f),
+                750.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                30,                                             // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
+            }
+            ,
+            {
+                "Alien Legionary",                             // speaker
+                "Like fighting shadows... or ghosts...",            // message
+                basePath + "alien_future.png",        // portraitPath
+                true,                                            // portraitOnLeft
+                sf::Color::Magenta,
+                sf::Color::White,
+                sf::Vector2f(50.f, 450.f),
+                750.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                30,                                             // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
+            }
+            ,
+            {
+                "Alien Legionary",                             // speaker
+                "Gotta be very careful",            // message
+                basePath + "alien_future.png",       // portraitPath
+                true,                                            // portraitOnLeft
+                sf::Color::Magenta,
+                sf::Color::White,
+                sf::Vector2f(50.f, 450.f),
+                750.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                30,                                             // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
+            },
+            };
+            m_dialogueSystem->addDialogueTrigger(2600, Dialogue1);
             std::vector<DialogueMessage> Dialogue02 = {
             {
                 "Legionary (Elite)",                           // speaker
@@ -1994,7 +2052,7 @@ void Scene_Play::initializeDialogues()
                 sf::Color::Red,
                 sf::Color::White,
                 sf::Vector2f(600.f, 400.f),
-                600.f,                                           // boxWidth - medium for medium message
+                650.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
                 50,                                                // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
@@ -2008,7 +2066,7 @@ void Scene_Play::initializeDialogues()
                 sf::Color::Red,
                 sf::Color::White,
                 sf::Vector2f(500.f, 400.f),
-                850.f,                                           // boxWidth - medium for medium message
+                700.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
                 30,                                                // messageFontSize - still emphasized
                 true                                              // useTypewriterEffect
@@ -2069,7 +2127,7 @@ void Scene_Play::initializeDialogues()
                 sf::Color::Cyan,                           // speakerColor
                 sf::Color::White,                         // messageColor
                 sf::Vector2f(800.f, 550.f),                // dialogueBoxPosition
-                500.f,                                           // boxWidth - medium for medium message
+                650.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
                 30,                                              // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
@@ -2082,7 +2140,7 @@ void Scene_Play::initializeDialogues()
                 sf::Color::Cyan,
                 sf::Color::White,
                 sf::Vector2f(800.f, 550.f),
-                500.f,                                           // boxWidth - medium for medium message
+                650.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
                 30,                                              // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
@@ -2134,7 +2192,7 @@ void Scene_Play::initializeDialogues()
             ,
             {
                 "Emperor",
-                "I will make you pay for it!!!",
+                "YOU WILL NOT SURVIVE!!!",
                 basePath + "future_emperor.png",
                 false,
                 sf::Color::Cyan,
@@ -2274,7 +2332,7 @@ void Scene_Play::initializeDialogues()
                 "Alien Legionary",                               // speaker
                 "Oh, I am back here...",            // message
                 basePath + "alien_ancient.png",       // portraitPath
-                false,                                            // portraitOnLeft
+                true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
                 sf::Vector2f(0.f, 500.f),
@@ -2288,7 +2346,7 @@ void Scene_Play::initializeDialogues()
                 "Alien Legionary",                              // speaker
                 "..I am so tired.. ",            // message
                 basePath + "alien_ancient.png",       // portraitPath
-                false,                                            // portraitOnLeft
+                true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
                 sf::Vector2f(0.f, 500.f),
@@ -2302,7 +2360,7 @@ void Scene_Play::initializeDialogues()
                 "Alien Legionary",                              // speaker
                 "I must go back to the black hole and hope i can get home..",            // message
                 basePath + "alien_ancient.png",       // portraitPath
-                false,                                            // portraitOnLeft
+                true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
                 sf::Vector2f(0.f, 500.f),
@@ -2318,7 +2376,7 @@ void Scene_Play::initializeDialogues()
                 "Alien Legionary",                               // speaker
                 "Thinking about it..",            // message
                 basePath + "alien_ancient.png",       // portraitPath
-                false,                                            // portraitOnLeft
+                true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
                 sf::Vector2f(0.f, 500.f),
@@ -2332,7 +2390,7 @@ void Scene_Play::initializeDialogues()
                 "Alien Legionary",                              // speaker
                 "I killed so many people...",            // message
                 basePath + "alien_ancient.png",       // portraitPath
-                false,                                            // portraitOnLeft
+                true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
                 sf::Vector2f(0.f, 500.f),
@@ -2345,7 +2403,7 @@ void Scene_Play::initializeDialogues()
                 "Alien Legionary",                               // speaker
                 "but I had no other choices..",            // message
                 basePath + "alien_ancient.png",       // portraitPath
-                false,                                            // portraitOnLeft
+                true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
                 sf::Vector2f(0.f, 500.f),
@@ -2357,13 +2415,13 @@ void Scene_Play::initializeDialogues()
             ,
             {
                 "Alien Legionary",                              // speaker
-                "However.. am I really on the right side?...",            // message
+                "But.. did I really do the right thing?...",            // message
                 basePath + "alien_ancient.png",       // portraitPath
-                false,                                            // portraitOnLeft
+                true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
                 sf::Vector2f(0.f, 500.f),
-                950.f,                                           // boxWidth - medium for medium messageN
+                700.f,                                           // boxWidth - medium for medium messageN
                 150.f,                                           // boxHeight
                 30,                                             // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
@@ -2375,7 +2433,7 @@ void Scene_Play::initializeDialogues()
                 "Alien Legionary",                               // speaker
                 "Here are the stairs..",            // message
                 basePath + "alien_ancient.png",       // portraitPath
-                false,                                            // portraitOnLeft
+                true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
                 sf::Vector2f(0.f, 500.f),
@@ -2389,9 +2447,9 @@ void Scene_Play::initializeDialogues()
         std::vector<DialogueMessage> Dialogue3 = {
             {
                 "Alien Legionary",                               // speaker
-                "I am so scared...",            // message
+                "I am so afraid...",            // message
                 basePath + "alien_ancient.png",       // portraitPath
-                false,                                            // portraitOnLeft
+                true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
                 sf::Vector2f(0.f, 500.f),
@@ -2403,9 +2461,9 @@ void Scene_Play::initializeDialogues()
             ,
             {
                 "Alien Legionary",                              // speaker
-                "Will I ever get back home?",            // message
+                "Will I ever see my home again?",            // message
                 basePath + "alien_ancient.png",       // portraitPath
-                false,                                            // portraitOnLeft
+                true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
                 sf::Vector2f(0.f, 500.f),
@@ -2416,9 +2474,9 @@ void Scene_Play::initializeDialogues()
             },
             {
                 "Alien Legionary",                               // speaker
-                "Do I even exist anymore?",            // message
+                "Am I even real anymore?",            // message
                 basePath + "alien_ancient.png",       // portraitPath
-                false,                                            // portraitOnLeft
+                true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
                 sf::Vector2f(0.f, 500.f),
@@ -2430,13 +2488,13 @@ void Scene_Play::initializeDialogues()
             ,
             {
                 "Alien Legionary",                              // speaker
-                "I have no other choice but to hope I can get home somehow...",            // message
+                "I must keep fighting... it's my only hope of finding a way back...",            // message
                 basePath + "alien_ancient.png",       // portraitPath
-                false,                                            // portraitOnLeft
+                true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
                 sf::Vector2f(0.f, 500.f),
-                1050.f,                                           // boxWidth - medium for medium message
+                1100.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
                 30,                                             // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
@@ -2445,10 +2503,10 @@ void Scene_Play::initializeDialogues()
         m_dialogueSystem->addDialogueTrigger(-1100, Dialogue3);
         std::vector<DialogueMessage> Dialogue4 = {
             {
-                "Legionary (ALTERED PRESENT)",                               // speaker
+                "Alien Legionary",                               // speaker
                 "Here goes nothing!!",            // message
                 basePath + "alien_ancient.png",       // portraitPath
-                false,                                            // portraitOnLeft
+                true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
                 sf::Vector2f(0.f, 500.f),
@@ -2458,62 +2516,115 @@ void Scene_Play::initializeDialogues()
                 true                                             // useTypewriterEffect
             },
             {
-                "Legionary (ALTERED PRESENT)",                                // speaker
+                "Legionary",                                // speaker
                 "HEY !!! STOP!!!",            // message
                 basePath + "future_fast.png",       // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Cyan,
                 sf::Color::White,
-                sf::Vector2f(700.f, 500.f),
-                650.f,                                           // boxWidth - medium for medium message
+                sf::Vector2f(600.f, 400.f),
+                700.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
-                50,                                              // messageFontSize - still emphasized
+                35,                                              // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
-            }
-            ,
+            },
             {
-                "Legionary (ALTERED PRESENT)",                              // speaker
-                "YOU DAMNED ALIEN..",            // message
+                "Legionary",                              // speaker
+                "YOU DAMNED PARADOX ALIEN..",            // message
                 basePath + "future_fast.png",       // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Cyan,
                 sf::Color::White,
-                sf::Vector2f(700.f, 500.f),
-                650.f,                                           // boxWidth - medium for medium message
+                sf::Vector2f(600.f, 400.f),
+                700.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
-                50,                                             // messageFontSize - still emphasized
-                false                                             // useTypewriterEffect
-            }
-            ,
+                35,                                             // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
+            },
             {
-                "Legionary (ALTERED PRESENT)",                              // speaker
-                "I WILL FIND YOU!!! AND ILL MAKE YOU PAY FOR IT...",            // message
+                "Legionary",                              // speaker
+                "NOW I GET IT...",            // message
                 basePath + "future_fast.png",       // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Cyan,
                 sf::Color::White,
-                sf::Vector2f(700.f, 500.f),
-                1100.f,                                           // boxWidth - medium for medium message
+                sf::Vector2f(600.f, 400.f),
+                700.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
-                30,                                             // messageFontSize - still emphasized
+                35,                                             // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
             }
             ,
             {
-                "Alien Legionary",                              // speaker
-                "AT ALL COST!!!!",            // message
+                "Legionary",                              // speaker
+                "YOU CAME HERE THROUGH THAT BLACK HOLE...",            // message
+                basePath + "future_fast.png",       // portraitPath
+                false,                                            // portraitOnLeft
+                sf::Color::Cyan,
+                sf::Color::White,
+                sf::Vector2f(500.f, 400.f),
+                950.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                35,                                             // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
+            },
+            {
+                "Legionary",                              // speaker
+                "AND TRAVELED THROUGH DIMENSIONS..",            // message
                 basePath + "future_fast.png",        // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Cyan,
                 sf::Color::White,
-                sf::Vector2f(700.f, 500.f),
+                sf::Vector2f(600.f, 400.f),
+                850.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                35,                                             // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
+            }
+            ,
+            {
+                "Legionary",                              // speaker
+                "I'LL HUNT YOU ACROSS EVERY UNIVERSE!!",            // message
+                basePath + "future_fast.png",        // portraitPath
+                false,                                            // portraitOnLeft
+                sf::Color::Cyan,
+                sf::Color::White,
+                sf::Vector2f(600.f, 400.f),
+                880.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                35,                                             // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
+            }
+            ,
+            {
+                "Legionary",                              // speaker
+                "AND I WILL MAKE YOU PAY FOR IT...",            // message
+                basePath + "future_fast.png",        // portraitPath
+                false,                                            // portraitOnLeft
+                sf::Color::Cyan,
+                sf::Color::White,
+                sf::Vector2f(600.f, 400.f),
+                750.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                35,                                             // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
+            }
+            ,
+            {
+                "Legionary",                              // speaker
+                "AT ALL COSTS!!!",            // message
+                basePath + "future_fast.png",        // portraitPath
+                false,                                            // portraitOnLeft
+                sf::Color::Cyan,
+                sf::Color::Red,
+                sf::Vector2f(600.f, 400.f),
                 650.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
                 50,                                             // messageFontSize - still emphasized
-                false                                             // useTypewriterEffect
+                true                                             // useTypewriterEffect
             }
         };
-        m_dialogueSystem->addDialogueTrigger(-300, Dialogue4);
+        m_dialogueSystem->addDialogueTrigger(-400, Dialogue4);
     }
     
     

@@ -1,3 +1,4 @@
+# World: Ancient
 Tile Ground 0 0
 Tile Ground 1 0
 Tile Ground 2 0
@@ -305,7 +306,7 @@ Tile GoldGround 24 10
 Tile GoldGround 25 10
 Tile GoldGround 26 9
 Tile GoldGround 27 9
-Player 30 10
+Player 114 2
 Dec LevelDoor 113 6
 Dec CloudBig 1 10
 Dec CloudSmall 10 9

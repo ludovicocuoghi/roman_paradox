@@ -86,7 +86,7 @@ void PlayRenderer::renderDialogue(DialogueSystem* dialogueSystem)
     if (message->speaker == "????") {
         speakerWithUniverse = message->speaker + " [Universe #" + std::to_string(m_game.alternateUniverseNumber) + "]";
     } 
-    else if (message->speaker == "????????" || message->speaker.find("Future") != std::string::npos || message->speaker.find("Ancient") != std::string::npos || message->speaker== "Legionary" ||message->speaker== "Legionary" ) {
+    else if (message->speaker == "????????" || message->speaker.find("Future") != std::string::npos || message->speaker.find("Ancient") != std::string::npos || message->speaker== "Legionary" || message->speaker== "Legionary" || message->speaker== "Emperor" ) {
         speakerWithUniverse = message->speaker + " [Universe #" + std::to_string(m_game.alternateUniverseNumber2) + "]";
     }
     else if (message->speaker.find("GUIDE") != std::string::npos) {

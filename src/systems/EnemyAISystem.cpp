@@ -711,7 +711,7 @@ void EnemyAISystem::update(float deltaTime)
                         }
                         
                         // BLACK HOLE ATTACK: 2 directions (0 and 180 degrees) every 30 seconds
-                        if (enemyAI.blackHoleTimer >= 30.0f) {
+                        if (enemyAI.blackHoleTimer >= 10.0f) {
                             enemyAI.blackHoleTimer = 0.f;
                             
                             // Manual spawning for 2 black holes in opposite directions
@@ -883,7 +883,7 @@ void EnemyAISystem::update(float deltaTime)
                         }
                     }
                     // Phase 4: Black hole attacks every 10 seconds (50-30% health)
-                    else if (healthPercentage <= 0.5f && healthPercentage > 0.3f) {
+                    else if (healthPercentage <= 0.5f && healthPercentage > 0.2f) {
                         // Track black hole timer
                         enemyAI.blackHoleTimer += deltaTime;
                         
