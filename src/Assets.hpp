@@ -32,5 +32,5 @@ public:
 
     void loadFromFile(const std::string& filePath);
 
-    const Animation& getDefaultAnimation() const;  // ✅ Fix: Marked as const
+    const Animation& getDefaultAnimation() const;  // Fix: Marked as const
 };

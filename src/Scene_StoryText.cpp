@@ -2,6 +2,7 @@
 #include "GameEngine.h"
 #include "Scene_Menu.h"
 #include "Scene_Play.h"
+#include "ResourcePath.h"
 #include <iostream>
 
 Scene_StoryText::Scene_StoryText(GameEngine& game, StoryType type)
@@ -164,7 +165,7 @@ void Scene_StoryText::sDoAction(const Action& action) {
         if (action.name() == "CONTINUE") {
             if (m_type == StoryType::INTRO) {
                 // Start the first level after intro
-                std::string firstLevel = "./bin/levels/alien_rome_level_1.txt";
+                std::string firstLevel = getResourcePath("levels") + "/alien_rome_level_1.txt";
                 m_game.loadLevel(firstLevel);
             }
             else if (m_type == StoryType::ENDING) {

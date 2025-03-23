@@ -1,5 +1,6 @@
 #include "CollisionSystem.h"
 #include "Physics.hpp"
+#include "ResourcePath.h"
 #include <iostream>
 #include <algorithm>
 #include <limits>
@@ -122,10 +123,14 @@ void CollisionSystem::handlePlayerTileCollisions() {
             // 3) Next-level path check (unused in your snippet, but kept for consistency)
             if (!nextLevelPath.empty()) {
                 std::cout << "[DEBUG] Transitioning to next level: " << nextLevelPath << std::endl;
-                if (nextLevelPath == "./bin/levels/") {
-                    std::cerr << "[ERROR] Invalid next level path (empty string)!\n";
+                
+                // Check if the path is valid
+                std::string resourcePath = getResourcePath("levels");
+                if (nextLevelPath == resourcePath + "/") {
+                    std::cerr << "[ERROR] Invalid next level path (empty filename)!\n";
                     return;
                 }
+                
                 m_game.loadLevel(nextLevelPath);
                 return;
             }
@@ -144,7 +149,6 @@ void CollisionSystem::handlePlayerTileCollisions() {
                 } else {
                     transform.pos.x += overlapX; // Player is right, push right
                 }
-                velocity.x = 0.f; // Stop horizontal velocity
             } else {
                 // Fix Y overlap
                 if (transform.pos.y < tileTransform.pos.y) {
@@ -518,8 +522,6 @@ void CollisionSystem::handlePlayerEnemyCollisions() {
                         float backDirection = (enemyTrans.pos.x < pTrans.pos.x) ? 1.0f : -1.0f;
                         pTrans.pos.x += 20.0f * backDirection;
                     }
-                    // Stop player horizontal movement to prevent going through
-                    pTrans.velocity.x = 0;
                 } 
                 // Other vertical collision cases
                 else {
@@ -924,7 +926,7 @@ void CollisionSystem::handleSwordCollisions() {
                     }
                     
                     // For Emperor, ensure health never goes below 1
-                    // 🔽 APPLY damage and invincibility differently if Emperor
+                    //APPLY damage and invincibility differently if Emperor
                     if (isEmperor) {
                         int newHealth = health.currentHealth - damage;
                         if (newHealth < 1) newHealth = 1;
@@ -1016,7 +1018,7 @@ void CollisionSystem::handleSwordCollisions() {
                     std::cout << "[DEBUG] Enemy sword hit player! Damage: " << enemySword->get<CEnemyAI>().damage << "\n";
                 }
                 enemySword->destroy(); // Destroy sword after hit
-                break; // Exit player loop
+                break; 
             }
         }
         

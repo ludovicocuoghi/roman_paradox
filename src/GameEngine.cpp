@@ -2,6 +2,7 @@
 #include "Scene_Menu.h"
 #include "Scene_StoryText.h"
 #include "Scene_Play.h"
+#include "ResourcePath.h"
 #include <iostream>
 #include "imgui.h"
 #include "imgui-SFML.h"
@@ -53,7 +54,7 @@ std::shared_ptr<Scene> GameEngine::getCurrentScene() {
 std::string GameEngine::getNextLevelPath() {
     if (m_currentLevel.empty()) {
         std::cerr << "[ERROR] m_currentLevel is empty when requesting next level!\n";
-        return "./bin/levels/ancient_rome_level_1_day.txt"; // Default fallback
+        return getResourcePath("levels") + "/ancient_rome_level_1_day.txt"; // Default fallback
     }
 
     std::string levelFile = m_currentLevel.substr(m_currentLevel.find_last_of("/\\") + 1);
@@ -61,11 +62,11 @@ std::string GameEngine::getNextLevelPath() {
     if (m_levelConnections.find(levelFile) != m_levelConnections.end()) {
         std::string nextLevel = m_levelConnections[levelFile];
         std::cout << "[DEBUG] Next level found: " << nextLevel << std::endl;
-        return "./bin/levels/" + nextLevel;
+        return getResourcePath("levels") + "/" + nextLevel;
     }
 
     std::cerr << "[ERROR] No next level mapping for: " << levelFile << std::endl;
-    return "./bin/levels/ancient_rome_level_1_day.txt"; // Default if unknown
+    return getResourcePath("levels") + "/ancient_rome_level_1_day.txt"; // Default if unknown
 }
 
 void GameEngine::setCurrentLevel(const std::string& levelPath) {
@@ -81,11 +82,19 @@ const std::string& GameEngine::getCurrentLevel() const {
 
 //  Load a new level and update the current level
 void GameEngine::loadLevel(const std::string& levelPath) {
+    std::cout << "[DEBUG] Attempting to load level: " << levelPath << std::endl;
+    
     if (levelPath.empty()) {
         std::cerr << "[ERROR] Attempted to load an empty level path!\n";
         return;
     }
-
+    
+    // Check if the file exists
+    if (!std::filesystem::exists(levelPath)) {
+        std::cerr << "[ERROR] Level file does not exist: " << levelPath << std::endl;
+        return;
+    }
+    
     m_currentLevel = levelPath;  //  Ensure current level is stored
     std::cout << "[DEBUG] Loading Level: " << m_currentLevel << std::endl;
 
@@ -145,11 +154,11 @@ void GameEngine::update() {
     }
 }
 
-// Handle user input properly
+// Update the sUserInput method to be context-aware
 void GameEngine::sUserInput() {
     sf::Event event;
     while (m_window.pollEvent(event)) {
-        // Forward events to ImGui only if the current scene uses it
+        // Forward events to ImGui if needed
         if (m_currentScene && m_currentScene->usesImGui() && ImGui::GetCurrentContext() != nullptr)
             ImGui::SFML::ProcessEvent(event);
         
@@ -160,12 +169,35 @@ void GameEngine::sUserInput() {
         m_window.setKeyRepeatEnabled(false);
     
         if (event.type == sf::Event::KeyPressed || event.type == sf::Event::KeyReleased) {
+            std::string currentSceneType = m_currentScene->getSceneType();
+            bool isPlayScene = (currentSceneType == "PLAY" || currentSceneType == "EDITOR");
+            
+            // Debug the scene type
+            std::cout << "[DEBUG] Current scene type: " << currentSceneType << "\n";
+            
+            // Special handling for A/D keys in Play scene only
+            if (isPlayScene) {
+                if (event.key.code == sf::Keyboard::A || event.key.code == sf::Keyboard::Left) {
+                    std::string actionType = (event.type == sf::Event::KeyPressed) ? "START" : "END";
+                    m_actionQueue.push(Action("MOVE_LEFT", actionType));
+                    std::cout << "[DEBUG] Play scene movement: MOVE_LEFT | Type: " << actionType << "\n";
+                    continue; // Skip the normal mapping for these keys
+                }
+                else if (event.key.code == sf::Keyboard::D || event.key.code == sf::Keyboard::Right) {
+                    std::string actionType = (event.type == sf::Event::KeyPressed) ? "START" : "END";
+                    m_actionQueue.push(Action("MOVE_RIGHT", actionType));
+                    std::cout << "[DEBUG] Play scene movement: MOVE_RIGHT | Type: " << actionType << "\n";
+                    continue; // Skip the normal mapping for these keys
+                }
+            }
+            
+            // Normal action mapping for all other cases
             if (m_currentScene) {
                 for (const auto& [key, actionName] : m_currentScene->getActionMap()) {
                     if (event.key.code == key) {
                         std::string actionType = (event.type == sf::Event::KeyPressed) ? "START" : "END";
                         m_actionQueue.push(Action(actionName, actionType));
-                        std::cout << "[DEBUG] Action queued: " << actionName << " | Type: " << actionType << "\n";
+                        std::cout << "[DEBUG] Standard action: " << actionName << " | Type: " << actionType << "\n";
                     }
                 }
             }

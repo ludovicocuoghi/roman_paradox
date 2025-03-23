@@ -2,8 +2,9 @@
 #include "GameEngine.h"
 #include <iostream>
 #include <fstream>
-#include <cmath>      // per std::floor
-#include <filesystem> // per std::filesystem (C++17)
+#include <cmath>      
+#include <filesystem> 
+#include "ResourcePath.h" 
 
 namespace fs = std::filesystem;
 
@@ -46,7 +47,7 @@ Scene_LevelEditor::Scene_LevelEditor(GameEngine& game)
 
     registerAction(sf::Keyboard::Escape, "BACK");
 
-    loadBackground("src/images/Background/ancient_rome/ancient_rome_level_1_day.png");
+    loadBackground("images/Background/ancient_rome/ancient_rome_level_1_day.png");
     
     // Position camera at bottom left after loading background
     setCameraToBottomLeft();
@@ -67,7 +68,8 @@ void Scene_LevelEditor::loadLevelFiles() {
     levelFileNames.clear();
     selectedLevelIndex = 0;
 
-    std::string levelPath = "src/levels/";
+    std::string levelPath = getResourcePath("levels/");
+    
     if (!fs::exists(levelPath) || !fs::is_directory(levelPath)) {
         std::cerr << "[ERROR] Level directory not found: " << levelPath << "\n";
         return;
@@ -196,8 +198,9 @@ void Scene_LevelEditor::sDoAction(const Action& action) {
 }
 
 void Scene_LevelEditor::loadBackground(const std::string& path) {
-    if (!m_backgroundTexture.loadFromFile(path)) {
-        std::cerr << "[ERROR] Could not load background image: " << path << std::endl;
+    std::string fullPath = getResourcePath(path);
+    if (!m_backgroundTexture.loadFromFile(fullPath)) {
+        std::cerr << "[ERROR] Could not load background image: " << fullPath << std::endl;
         return;
     }
     
@@ -491,13 +494,13 @@ void Scene_LevelEditor::renderImGui() {
 
     if (ImGui::Button("Load")) {
         if (!levelFiles.empty()) {
-            std::string filePath = "src/levels/" + levelFiles[selectedLevelIndex];
+            std::string filePath = getResourcePath("levels/" + levelFiles[selectedLevelIndex]);
             loadLevel(filePath);
         }
     }
     ImGui::SameLine();
     if (ImGui::Button("Save")) {
-        std::string filePath = m_currentLevelPath.empty() ? "src/levels/level_save.txt" : m_currentLevelPath;
+        std::string filePath = m_currentLevelPath.empty() ? getResourcePath("levels/level_save.txt") : m_currentLevelPath;
         saveLevel(filePath);
     }
 
@@ -540,7 +543,7 @@ void Scene_LevelEditor::saveLevel(const std::string& filePath) {
     };
 
     // ========================
-    // ✅ Save Tiles
+    // Save Tiles
     // ========================
     for (auto& tile : m_entityManager.getEntities("tile")) {
         auto& transform = tile->get<CTransform>();
@@ -579,7 +582,7 @@ void Scene_LevelEditor::saveLevel(const std::string& filePath) {
         }
     
     // ========================
-    // ✅ Save Decorations
+    // Save Decorations
     // ========================
     for (auto& dec : m_entityManager.getEntities("decoration")) {
         auto& transform = dec->get<CTransform>();
@@ -606,7 +609,7 @@ void Scene_LevelEditor::saveLevel(const std::string& filePath) {
     }
     
     // ========================
-    // ✅ Save Enemies
+    // Save Enemies
     // ========================
     for (auto& enemy : m_entityManager.getEntities("enemy")) {
         auto& transform = enemy->get<CTransform>();

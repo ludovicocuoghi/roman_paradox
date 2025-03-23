@@ -26,5 +26,8 @@ public:
     virtual void sRender() = 0;
     virtual bool usesImGui() const { return false; }
     
+    // Added method to identify scene type for context-aware input handling
+    virtual std::string getSceneType() const { return "UNKNOWN"; }
+    
     const std::unordered_map<int, std::string>& getActionMap() const { return m_actionMap; }
 };

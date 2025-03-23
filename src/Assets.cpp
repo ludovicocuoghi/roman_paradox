@@ -1,6 +1,7 @@
 #include "Assets.hpp"
 #include <iostream>
 #include <fstream>
+#include "ResourcePath.h"
 
 // Constructor: Initialize default assets
 Assets::Assets() {
@@ -13,7 +14,7 @@ Assets::Assets() {
     m_defaultAnimation = Animation(m_defaultTexture, 1, 1, 1, 0);
 
     // Default Font (Avoid crash if fonts are missing)
-    if (!m_defaultFont.loadFromFile("bin/fonts/default.ttf")) {
+    if (!m_defaultFont.loadFromFile(getResourcePath("fonts/default.ttf"))) {
         std::cerr << "[ERROR] Default font missing! Some text may not display properly.\n";
     }
 }
@@ -26,8 +27,8 @@ const Animation& Assets::getDefaultAnimation() const {
 // Load and store textures
 void Assets::addTexture(const std::string& name, const std::string& path) {
     sf::Texture texture;
-    if (!texture.loadFromFile("bin/images/" + path)) {
-        std::cerr << "[Warning] Failed to load texture: bin/images/" << path << ". Using default.\n";
+    if (!texture.loadFromFile(getResourcePath("images/" + path))) {
+        std::cerr << "[Warning] Failed to load texture: " << getResourcePath("images/" + path) << ". Using default.\n";
         m_textureMap[name] = m_defaultTexture;
         return;
     }
@@ -37,8 +38,7 @@ void Assets::addTexture(const std::string& name, const std::string& path) {
 // Load and store fonts
 void Assets::addFont(const std::string& name, const std::string& path) {
     sf::Font font;
-    std::string fullPath = "bin/" + path;
-
+    std::string fullPath = getResourcePath(path); 
     if (!font.loadFromFile(fullPath)) {
         std::cerr << "[ERROR] Failed to load font: " << fullPath << ". Using default.\n";
         m_fontMap[name] = m_defaultFont;

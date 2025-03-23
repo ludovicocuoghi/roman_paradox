@@ -138,49 +138,34 @@ void MovementSystem::update(float deltaTime)
         }
         transform.velocity.y = std::min(transform.velocity.y, MAX_FALL_SPEED);
 
-        // Gestione del movimento orizzontale in base allo stato
+        // Handle horizontal movement based on state
         if (state.state == "defense") {
-            // Se il giocatore è a terra, annulla il movimento orizzontale
+            // If player is on ground, cancel horizontal movement
             if (state.onGround)
                 transform.velocity.x = 0.f;
-            // Aggiorna la posizione con l'intera velocità (la gravità e l'eventuale velocità orizzontale sono applicate)
+            // Update position with full velocity
             transform.pos += transform.velocity * deltaTime;
         }
         else {
-            transform.velocity.x = 0.f;
-        
-            // Se il giocatore sta premendo A
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-                transform.velocity.x = -X_SPEED;
+            // Update animation state based on current velocity
+            if (transform.velocity.x < 0) {
                 m_lastDirection = -1.f;
-        
-                // Non cambiare lo stato a "run" se è già "attack" o "air"
                 if (state.state != "air" && state.state != "attack") {
                     state.state = "run";
                 }
             }
-            // Se il giocatore sta premendo D
-            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-                transform.velocity.x = X_SPEED;
+            else if (transform.velocity.x > 0) {
                 m_lastDirection = 1.f;
-        
                 if (state.state != "air" && state.state != "attack") {
                     state.state = "run";
                 }
             }
-            else {
-                // Se non c'è input orizzontale, imposta "idle" solo se
-                // non siamo in aria E non stiamo attaccando
-                if (state.state != "air" && state.state != "attack") {
-                    state.state = "idle";
-                }
-            }
-        
-            // Aggiorna la posizione
+            
+            // Update position
             transform.pos += transform.velocity * deltaTime;
         }
         
-        // Flip sprite in base alla direzione
+        // Flip sprite based on direction
         if (m_lastDirection < 0) {
             flipSpriteLeft(canim.animation.getMutableSprite());
         } else {

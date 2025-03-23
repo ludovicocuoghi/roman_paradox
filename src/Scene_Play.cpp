@@ -16,6 +16,7 @@
 #include "systems/CollisionSystem.h"
 #include "systems/SpriteUtils.h"
 #include "systems/Spawner.h"
+#include "ResourcePath.h"
 
 void Scene_Play::initializeCamera()
 {
@@ -94,48 +95,62 @@ void Scene_Play::selectBackgroundFromLevel(const std::string& levelPath) {
     // Extract level name from path
     std::string levelName = levelPath.substr(levelPath.find_last_of("/\\") + 1);
     
+    // Base path using getResourcePath
+    std::string basePath = getResourcePath("images/Background");
+    
     // Mapping of levels to backgrounds
     if (levelName == "alien_rome_level_1.txt") {
-        m_backgroundPath = "src/images/Background/alien_rome/alien_rome_phase_1.png";
+        m_backgroundPath = basePath + "/alien_rome/alien_rome_phase_1.png";
         m_timeofday = "ALIEN EMPIRE";
     } else if (levelName == "alien_rome_level_2.txt") {
-        m_backgroundPath = "src/images/Background/alien_rome/alien_rome_phase_2.png";
+        m_backgroundPath = basePath + "/alien_rome/alien_rome_phase_2.png";
         m_timeofday = "ALIEN EMPIRE";
     } else if (levelName == "ancient_rome_level_1_day.txt") {
-        m_backgroundPath = "src/images/Background/ancient_rome/ancient_rome_level_1_day.png";
+        m_backgroundPath = basePath + "/ancient_rome/ancient_rome_level_1_day.png";
         m_timeofday = "ANCIENT ROME (DAY)";
     } else if (levelName == "ancient_rome_level_2_sunset.txt") {
-        m_backgroundPath = "src/images/Background/ancient_rome/ancient_rome_level_2_sunset.png";
+        m_backgroundPath = basePath + "/ancient_rome/ancient_rome_level_2_sunset.png";
         m_timeofday = "ANCIENT ROME (SUNSET)";
     } else if (levelName == "ancient_rome_level_3_night.txt") {
-        m_backgroundPath = "src/images/Background/ancient_rome/ancient_rome_level_3_night.png";
+        m_backgroundPath = basePath + "/ancient_rome/ancient_rome_level_3_night.png";
         m_timeofday = "ANCIENT ROME (NIGHT)";
     } else if (levelName == "ancient_rome_level_4_emperor_room.txt") {
-        m_backgroundPath = "src/images/Background/ancient_rome/ancient_rome_level_4_emperor_room.png";
+        m_backgroundPath = basePath + "/ancient_rome/ancient_rome_level_4_emperor_room.png";
         m_timeofday = "EMPEROR ROOM";
     } else if (levelName == "ancient_rome_level_5_day_v2.txt") {
-        m_backgroundPath = "src/images/Background/ancient_rome/ancient_rome_level_1_day.png";
+        m_backgroundPath = basePath + "/ancient_rome/ancient_rome_level_1_day.png";
         m_timeofday = "ANCIENT ROME (DAY 2)";
     } else if (levelName == "future_rome_level_1.txt") {
-        m_backgroundPath = "src/images/Background/future_rome/morning_future_3.png";
+        m_backgroundPath = basePath + "/future_rome/morning_future_3.png";
         m_timeofday = "FUTURE ROME (DAY)";
     } else if (levelName == "future_rome_level_2.txt") {
-        m_backgroundPath = "src/images/Background/future_rome/future_sunset3.png";
+        m_backgroundPath = basePath + "/future_rome/future_sunset3.png";
         m_timeofday = "FUTURE ROME (SUNSET)";
     } else if (levelName == "future_rome_level_3.txt") {
-        m_backgroundPath = "src/images/Background/future_rome/future_rome_night.png";
+        m_backgroundPath = basePath + "/future_rome/future_rome_night.png";
         m_timeofday = "FUTURE ROME (NIGHT)";
     } else if (levelName == "future_rome_level_4_emperor_room.txt") {
-        m_backgroundPath = "src/images/Background/future_rome/emperor_room.png";
+        m_backgroundPath = basePath + "/future_rome/emperor_room.png";
         m_timeofday = "FUTURE EMPEROR ROOM";
     } else if (levelName == "future_rome_level_5_day_v2.txt") {
-        m_backgroundPath = "src/images/Background/future_rome/morning_future_3.png";
+        m_backgroundPath = basePath + "/future_rome/morning_future_3.png";
         m_timeofday = "FUTURE ROME (DAY)";
     }  
     else {
         // Default background if level is not mapped
-        m_backgroundPath = "src/images/Background/default.png";
+        m_backgroundPath = getResourcePath("images") + "/Background/default.png";
         m_timeofday = "Unknown";
+    }
+    
+    // Add debug output to verify the path
+    std::cout << "[DEBUG] Background path set to: " << m_backgroundPath << std::endl;
+    
+    // Check if the file exists
+    std::ifstream file(m_backgroundPath);
+    if (!file.good()) {
+        std::cerr << "[ERROR] Background image does not exist: " << m_backgroundPath << std::endl;
+    } else {
+        std::cout << "[DEBUG] Background image file exists." << std::endl;
     }
 }
 
@@ -144,7 +159,6 @@ void Scene_Play::init()
     std::cout << "[DEBUG] Scene_Play::init() - Start\n";
 
     registerCommonActions();
-    registerAction(sf::Keyboard::T, "TOGGLE_TEXTURE");
     registerAction(sf::Keyboard::A, "MOVE_LEFT");
     registerAction(sf::Keyboard::D, "MOVE_RIGHT");
     registerAction(sf::Keyboard::W, "JUMP");
@@ -167,7 +181,7 @@ void Scene_Play::init()
         return;
     }
 
-    // ✅ Ensure entity manager is clean before loading
+    //Ensure entity manager is clean before loading
     m_entityManager = EntityManager();
 
     m_game.setCurrentLevel(m_levelPath);
@@ -196,6 +210,22 @@ void Scene_Play::update(float deltaTime)
         // Update dialogue system first
         if (m_dialogueSystem) {
             m_dialogueSystem->update(deltaTime);
+        }
+        auto playerEntities = m_entityManager.getEntities("player");
+        if (!playerEntities.empty()) {
+            auto player = playerEntities[0];
+            if (player->has<CTransform>()) {
+                static float lastVelX = 0.0f;
+                float currentVelX = player->get<CTransform>().velocity.x;
+                
+                // If velocity changed significantly without action
+                if (std::abs(lastVelX) > 0.1f && std::abs(currentVelX) < 0.1f) {
+                    std::cout << "[DEBUG] Velocity reset unexpectedly from " << lastVelX 
+                              << " to " << currentVelX << std::endl;
+                }
+                
+                lastVelX = currentVelX;
+            }
         }
         
         // Only process game mechanics if dialogue is not active
@@ -275,7 +305,9 @@ void Scene_Play::initializeDialogues()
     
     // Add dialogue triggers based on the current level
     std::string levelName = extractLevelName(m_levelPath);
-
+    
+    // Base path using getResourcePath
+    std::string basePath = getResourcePath("images/Portraits/");
 
     
     // Setup dialogue triggers based on level
@@ -284,7 +316,7 @@ void Scene_Play::initializeDialogues()
             {
                 "????",                          // speaker
                 "I'VE FINALLY FOUND YOU!!",            // message
-                "bin/images/Portraits/future_fast.png",        // portraitPath
+                basePath + "future_fast.png",        // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Cyan,
                 sf::Color::Red,
@@ -297,7 +329,7 @@ void Scene_Play::initializeDialogues()
             {
                 "????",                               // speaker
                 "YOU DAMNED ALIEN...",            // message
-                "bin/images/Portraits/future_fast.png",        // portraitPath
+                basePath + "future_fast.png",        // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Cyan,
                 sf::Color::Red,
@@ -310,7 +342,7 @@ void Scene_Play::initializeDialogues()
             {
                 "????",                               // speaker
                 "I WILL MAKE YOU PAY FOR WHAT YOU DID!!!",            // message
-                "bin/images/Portraits/future_fast.png",        // portraitPath
+                basePath + "future_fast.png",        // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Cyan,
                 sf::Color::Red,
@@ -323,7 +355,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                               // speaker
                 "Who are you ?!",            // message
-                "bin/images/Portraits/alien_ancient.png",        // portraitPath
+                basePath + "alien_ancient.png",        // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -336,7 +368,7 @@ void Scene_Play::initializeDialogues()
             {
                 "***GUIDE***",                               // speaker
                 "(Press SPACE to Attack)",            // message
-                "bin/images/Portraits/alien_ancient.png",        // portraitPath
+                basePath + "alien_ancient.png",        // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -349,7 +381,7 @@ void Scene_Play::initializeDialogues()
             {
                 "***GUIDE***",                               // speaker
                 "(Keep M pressed to Defend)",            // message
-                "bin/images/Portraits/alien_ancient.png",        // portraitPath
+                basePath + "alien_ancient.png",        // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -365,7 +397,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                               // speaker
                 "Have I met him before?",            // message
-                "bin/images/Portraits/alien_ancient.png",        // portraitPath
+                basePath + "alien_ancient.png",        // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -381,7 +413,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                               // speaker
                 "HELP!!!",                                       // message
-                "bin/images/Portraits/alien_ancient_right.png",  // portraitPath
+                basePath + "alien_ancient_right.png",  // portraitPath
                 false,                                           // portraitOnLeft
                 sf::Color::Yellow,                               // speakerColor
                 sf::Color::Red,                                  // messageColor
@@ -394,7 +426,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",
                 "WE ARE BEING INVADED!!",
-                "bin/images/Portraits/alien_ancient_right.png",
+                basePath + "alien_ancient_right.png",
                 false,
                 sf::Color::Yellow,
                 sf::Color::Red,
@@ -410,7 +442,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                               // speaker
                 "Who are these dark legionaries???",            // message
-                "bin/images/Portraits/alien_ancient_left.png",        // portraitPath
+                basePath + "alien_ancient_left.png",        // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -423,7 +455,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                               // speaker
                 "And why are they invading us??",            // message
-                "bin/images/Portraits/alien_ancient_left.png",        // portraitPath
+                basePath + "alien_ancient_left.png",        // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -439,7 +471,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                               // speaker
                 "They can destroy everything they hit...",            // message
-                "bin/images/Portraits/alien_ancient_left.png",        // portraitPath
+                basePath + "alien_ancient_left.png",        // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -452,7 +484,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                               // speaker
                 "I have to avoid getting near them!",            // message
-                "bin/images/Portraits/alien_ancient_left.png",        // portraitPath
+                basePath + "alien_ancient_left.png",        // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -468,7 +500,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                               // speaker
                 "AAAHH!!",            // message
-                "bin/images/Portraits/alien_ancient_right.png",        // portraitPath
+                basePath + "alien_ancient_right.png",        // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Yellow,
                 sf::Color::Red,
@@ -481,7 +513,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                               // speaker
                 "HELP!!!",            // message
-                "bin/images/Portraits/alien_ancient_right.png",        // portraitPath
+                basePath + "alien_ancient_right.png",        // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Yellow,
                 sf::Color::Red,
@@ -499,7 +531,7 @@ void Scene_Play::initializeDialogues()
             {
                 "????????",                               // speaker
                 "The Invaders must..",            // message
-                "bin/images/Portraits/alien_super2.png",        // portraitPath
+                basePath + "alien_super2.png",        // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Red,
                 sf::Color::White,
@@ -512,7 +544,7 @@ void Scene_Play::initializeDialogues()
             {
                 "????????",                               // speaker
                 "PERISH!!!!!",            // message
-                "bin/images/Portraits/alien_super2.png",        // portraitPath
+                basePath + "alien_super2.png",        // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Red,
                 sf::Color::White,
@@ -525,7 +557,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                               // speaker
                 "Invaders??",            // message
-                "bin/images/Portraits/alien_ancient.png",        // portraitPath
+                basePath + "alien_ancient.png",        // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -539,7 +571,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                               // speaker
                 "What is he talking about??",            // message
-                "bin/images/Portraits/alien_ancient.png",        // portraitPath
+                basePath + "alien_ancient.png",        // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -555,7 +587,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                               // speaker
                 "Those things look like black holes...",            // message
-                "bin/images/Portraits/alien_ancient.png",        // portraitPath
+                basePath + "alien_ancient.png",        // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -568,7 +600,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                               // speaker
                 "Could those warriors be coming from the...",            // message
-                "bin/images/Portraits/alien_ancient.png",        // portraitPath
+                basePath + "alien_ancient.png",        // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -581,7 +613,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                               // speaker
                 "...Future?!",            // message
-                "bin/images/Portraits/alien_ancient.png",        // portraitPath
+                basePath + "alien_ancient.png",        // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -597,7 +629,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                               // speaker
                 "I SAW THEM COMING OUT OF THAT BLACK HOLE!!!",            // message
-                "bin/images/Portraits/alien_ancient_right.png",        // portraitPath
+                basePath + "alien_ancient_right.png",        // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Yellow,
                 sf::Color::Red,
@@ -610,7 +642,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                               // speaker
                 "I heard black holes allow travel through space-time...",            // message
-                "bin/images/Portraits/alien_ancient.png",        // portraitPath
+                basePath + "alien_ancient.png",        // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Yellow,
                 sf::Color::White,
@@ -623,7 +655,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                               // speaker
                 "Could it be the only way to escape??",            // message
-                "bin/images/Portraits/alien_ancient.png",        // portraitPath
+                basePath + "alien_ancient.png",        // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -639,7 +671,7 @@ void Scene_Play::initializeDialogues()
             {
                 "????????",                               // speaker
                 "DESTROY HIM BEFORE HE ESCAPES!!!",            // message
-                "bin/images/Portraits/alien_super2.png",        // portraitPath
+                basePath + "alien_super2.png",        // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Red,
                 sf::Color::White,
@@ -652,7 +684,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                               // speaker
                 "I have no other choice then!!!",            // message
-                "bin/images/Portraits/alien_ancient.png",        // portraitPath
+                basePath + "alien_ancient.png",        // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -665,7 +697,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                               // speaker
                 "I MUST JUMP IN THE BLACK HOLE!!!!",            // message
-                "bin/images/Portraits/alien_ancient.png",        // portraitPath
+                basePath + "alien_ancient.png",        // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -683,7 +715,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                               // speaker
                 "Where am I???",            // message
-                "bin/images/Portraits/alien_ancient.png",        // portraitPath
+                basePath + "alien_ancient.png",        // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -699,7 +731,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                               // speaker
                 "After jumping into that black hole..",            // message
-                "bin/images/Portraits/alien_ancient.png",        // portraitPath
+                basePath + "alien_ancient.png",        // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -712,7 +744,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                               // speaker
                 "could it be possible that I moved to the dark warrios..",            // message
-                "bin/images/Portraits/alien_ancient.png",        // portraitPath
+                basePath + "alien_ancient.png",        // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -725,7 +757,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                               // speaker
                 "PAST????",            // message
-                "bin/images/Portraits/alien_ancient.png",        // portraitPath
+                basePath + "alien_ancient.png",        // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::Red,
@@ -741,7 +773,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                               // speaker
                 "Oh, there are golden stairs up there..",            // message
-                "bin/images/Portraits/alien_ancient.png",        // portraitPath
+                basePath + "alien_ancient.png",        // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -754,7 +786,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                               // speaker
                 "They seem to lead to the black hole..",            // message
-                "bin/images/Portraits/alien_ancient.png",        // portraitPath
+                basePath + "alien_ancient.png",        // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -767,7 +799,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                               // speaker
                 "But how can I get there??",            // message
-                "bin/images/Portraits/alien_ancient.png",        // portraitPath
+                basePath + "alien_ancient.png",        // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -783,7 +815,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Ancient Legionary",                               // speaker
                 "WHO ARE YOU??",            // message
-                "bin/images/Portraits/ancient_normal.png",        // portraitPath
+                basePath + "ancient_normal.png",        // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Yellow,
                 sf::Color::White,
@@ -796,7 +828,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Ancient Legionary",                               // speaker
                 "GET OUT OF HERE!!!",            // message
-                "bin/images/Portraits/ancient_normal.png",        // portraitPath
+                basePath + "ancient_normal.png",        // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Yellow,
                 sf::Color::White,
@@ -812,7 +844,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Ancient Legionary",                               // speaker
                 "WE ARE BEING INVADED!",            // message
-                "bin/images/Portraits/ancient_normal.png",        // portraitPath
+                basePath + "ancient_normal.png",        // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Yellow,
                 sf::Color::White,
@@ -825,7 +857,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Ancient Legionary",                               // speaker
                 "SEND THE REINFORCEMENTS!!!",            // message
-                "bin/images/Portraits/ancient_normal.png",        // portraitPath
+                basePath + "ancient_normal.png",        // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Yellow,
                 sf::Color::White,
@@ -838,7 +870,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                               // speaker
                 "Oh no.. is this happening for REAL?!",            // message
-                "bin/images/Portraits/alien_ancient.png",        // portraitPath
+                basePath + "alien_ancient.png",        // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -856,7 +888,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                               // speaker
                 "I think I really am in the past..",            // message
-                "bin/images/Portraits/alien_ancient.png",        // portraitPath
+                basePath + "alien_ancient.png",        // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -869,7 +901,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                               // speaker
                 "I guess I should continue exploring..",            // message
-                "bin/images/Portraits/alien_ancient.png",        // portraitPath
+                basePath + "alien_ancient.png",        // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -882,7 +914,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                               // speaker
                 "..and find a way to go back to the present",            // message
-                "bin/images/Portraits/alien_ancient.png",        // portraitPath
+                basePath + "alien_ancient.png",        // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -898,7 +930,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Ancient Legionary",                                // speaker
                 "AAAAAH!",            // message
-                "bin/images/Portraits/ancient_normal.png",        // portraitPath
+                basePath + "ancient_normal.png",        // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Yellow,
                 sf::Color::White,
@@ -914,7 +946,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                               // speaker
                 "hahaha..",            // message
-                "bin/images/Portraits/alien_ancient.png",        // portraitPath
+                basePath + "alien_ancient.png",        // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -927,7 +959,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                               // speaker
                 "that was funny",            // message
-                "bin/images/Portraits/alien_ancient.png",        // portraitPath
+                basePath + "alien_ancient.png",        // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -945,7 +977,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Ancient Legionary (Elite)",                               // speaker
                 "Are you the invader?",            // message
-                "bin/images/Portraits/ancient_elite.png",        // portraitPath
+                basePath + "ancient_elite.png",        // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Red,
                 sf::Color::White,
@@ -958,7 +990,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Ancient Legionary (Elite)",                                // speaker
                 "How dare you trespass on imperial lands?",            // message
-                "bin/images/Portraits/ancient_elite.png",        // portraitPath
+                basePath + "ancient_elite.png",        // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Red,
                 sf::Color::White,
@@ -971,7 +1003,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Ancient Legionary (Elite)",                              // speaker
                 "We will protect the Emperor..",            // message
-                "bin/images/Portraits/ancient_elite.png",        // portraitPath
+                basePath + "ancient_elite.png",        // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Red,
                 sf::Color::White,
@@ -985,7 +1017,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Ancient Legionary (Elite)",                               // speaker
                 "AT ALL COSTS!!",            // message
-                "bin/images/Portraits/ancient_elite.png",        // portraitPath
+                basePath + "ancient_elite.png",        // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Red,
                 sf::Color::Red,
@@ -1001,7 +1033,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Ancient Legionary (Elite)",                               // speaker
                 "STOP THE INVADER!!",            // message
-                "bin/images/Portraits/ancient_elite.png",        // portraitPath
+                basePath + "ancient_elite.png",        // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Red,
                 sf::Color::Red,
@@ -1017,7 +1049,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                               // speaker
                 "Does this golden portal lead to the Emperor?!",            // message
-                "bin/images/Portraits/alien_ancient.png",        // portraitPath
+                basePath + "alien_ancient.png",        // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -1030,7 +1062,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                               // speaker
                 "There's only one way to find out!!",            // message
-                "bin/images/Portraits/alien_ancient.png",        // portraitPath
+                basePath + "alien_ancient.png",        // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -1049,7 +1081,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Ancient Emperor",                               // speaker
                 "...And so you eventually got here..",            // message
-                "bin/images/Portraits/ancient_emperor.png",        // portraitPath
+                basePath + "ancient_emperor.png",        // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Yellow,
                 sf::Color::White,
@@ -1062,7 +1094,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Ancient Emperor",                               // speaker
                 "..Alien Invader...",            // message
-                "bin/images/Portraits/ancient_emperor.png",        // portraitPath
+                basePath + "ancient_emperor.png",        // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Yellow,
                 sf::Color::White,
@@ -1075,7 +1107,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Ancient Emperor",                             // speaker
                 "I am the Emperor of this kingdom...",            // message
-                "bin/images/Portraits/ancient_emperor.png",        // portraitPath
+                basePath + "ancient_emperor.png",        // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Yellow,
                 sf::Color::White,
@@ -1088,7 +1120,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Ancient Emperor",                             // speaker
                 "How dare you come here!?",            // message
-                "bin/images/Portraits/ancient_emperor.png",        // portraitPath
+                basePath + "ancient_emperor.png",        // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Yellow,
                 sf::Color::White,
@@ -1102,7 +1134,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                               // speaker
                 "I came from the future...!!",            // message
-                "bin/images/Portraits/alien_ancient.png",       // portraitPath
+                basePath + "alien_ancient.png",       // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -1116,7 +1148,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                              // speaker
                 "Your future kingdom invaded my planet",            // message
-                "bin/images/Portraits/alien_ancient.png",       // portraitPath
+                basePath + "alien_ancient.png",       // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -1130,7 +1162,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                              // speaker
                 "And I came here through a black hole while escaping...",            // message
-                "bin/images/Portraits/alien_ancient.png",       // portraitPath
+                basePath + "alien_ancient.png",       // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -1144,7 +1176,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Ancient Emperor",                             // speaker
                 "What are you even talking about?!?",            // message
-                "bin/images/Portraits/ancient_emperor.png",        // portraitPath
+                basePath + "ancient_emperor.png",        // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Yellow,
                 sf::Color::White,
@@ -1157,7 +1189,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Ancient Emperor",                             // speaker
                 "Black holes?! What nonsense.",            // message
-                "bin/images/Portraits/ancient_emperor.png",        // portraitPath
+                basePath + "ancient_emperor.png",        // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Yellow,
                 sf::Color::White,
@@ -1171,7 +1203,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Ancient Emperor",                               // speaker
                 "YOU WILL PERISH!!!",            // message
-                "bin/images/Portraits/ancient_emperor.png",        // portraitPath
+                basePath + "ancient_emperor.png",        // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Yellow,
                 sf::Color::Red,
@@ -1187,7 +1219,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Ancient Emperor",                               // speaker
                 "I have no choice but to show you my true...",                           // message
-                "bin/images/Portraits/ancient_emperor.png", // portraitPath
+                basePath + "ancient_emperor.png", // portraitPath
                 false,                                   // portraitOnLeft
                 sf::Color::Cyan,                         // speakerColor
                 sf::Color::White,                          // messageColor
@@ -1200,7 +1232,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Ancient Emperor",                               // speaker
                 "POWER!",                           // message
-                "bin/images/Portraits/ancient_emperor.png", // portraitPath
+                basePath + "ancient_emperor.png", // portraitPath
                 false,                                   // portraitOnLeft
                 sf::Color::Cyan,                         // speakerColor
                 sf::Color::Red,                          // messageColor
@@ -1217,7 +1249,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Ancient Emperor",                              // speaker
                 "YOU.. DAMNED... ALIEN...",            // message
-                "bin/images/Portraits/ancient_emperor_defeated.png",       // portraitPath
+                basePath + "ancient_emperor_defeated.png",       // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Yellow,
                 sf::Color::White,
@@ -1230,7 +1262,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                             // speaker
                 "I can't get close to him...",            // message
-                "bin/images/Portraits/alien_ancient.png",        // portraitPath
+                basePath + "alien_ancient.png",        // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -1243,7 +1275,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                             // speaker
                 "but he seems exhausted...",            // message
-                "bin/images/Portraits/alien_ancient.png",        // portraitPath
+                basePath + "alien_ancient.png",        // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -1256,7 +1288,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                             // speaker
                 "Now's my chance to escape!",            // message
-                "bin/images/Portraits/alien_ancient.png",        // portraitPath
+                basePath + "alien_ancient.png",        // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -1273,7 +1305,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                               // speaker
                 "Ah! The barrier blocking the way is gone...",            // message
-               "bin/images/Portraits/alien_ancient.png",       // portraitPath
+               basePath + "alien_ancient.png",       // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -1289,7 +1321,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                               // speaker
                 "Lets go back home...",            // message
-               "bin/images/Portraits/alien_ancient.png",       // portraitPath
+               basePath + "alien_ancient.png",       // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -1307,7 +1339,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                               // speaker
                 "Oh, I've returned here...",            // message
-                "bin/images/Portraits/alien_ancient.png",       // portraitPath
+                basePath + "alien_ancient.png",       // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -1321,7 +1353,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                              // speaker
                 "Let's see if those golden stairs are accessible now... ",            // message
-                "bin/images/Portraits/alien_ancient.png",       // portraitPath
+                basePath + "alien_ancient.png",       // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -1337,7 +1369,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                               // speaker
                 "Oh, the stairs are finally accessible!",            // message
-                "bin/images/Portraits/alien_ancient.png",       // portraitPath
+                basePath + "alien_ancient.png",       // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -1351,7 +1383,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                              // speaker
                 "Lets see if I can go get back to the black hole..",            // message
-                "bin/images/Portraits/alien_ancient.png",       // portraitPath
+                basePath + "alien_ancient.png",       // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -1367,7 +1399,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                               // speaker
                 "Great! I can actually return now!",            // message
-                "bin/images/Portraits/alien_ancient.png",       // portraitPath
+                basePath + "alien_ancient.png",       // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -1381,7 +1413,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                              // speaker
                 "With the Emperor fallen, I wonder if...",            // message
-                "bin/images/Portraits/alien_ancient.png",       // portraitPath
+                basePath + "alien_ancient.png",       // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -1395,7 +1427,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                              // speaker
                 "..those dark warriors have been erased from time?",            // message
-                "bin/images/Portraits/alien_ancient.png",       // portraitPath
+                basePath + "alien_ancient.png",       // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -1409,7 +1441,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                              // speaker
                 "Only one way to find out!",            // message
-                "bin/images/Portraits/alien_ancient.png",       // portraitPath
+                basePath + "alien_ancient.png",       // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -1427,7 +1459,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                               // speaker
                 "Where am I???",            // message
-                "bin/images/Portraits/alien_ancient.png",       // portraitPath
+                basePath + "alien_ancient.png",       // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -1441,7 +1473,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                              // speaker
                 "What happened???",            // message
-                "bin/images/Portraits/alien_ancient.png",       // portraitPath
+                basePath + "alien_ancient.png",       // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -1454,7 +1486,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                               // speaker
                 "I entered the same black hole but...",            // message
-                "bin/images/Portraits/alien_ancient.png",       // portraitPath
+                basePath + "alien_ancient.png",       // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -1467,7 +1499,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                               // speaker
                 "...this present seem different",            // message
-                "bin/images/Portraits/alien_ancient.png",       // portraitPath
+                basePath + "alien_ancient.png",       // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -1483,7 +1515,7 @@ void Scene_Play::initializeDialogues()
                 {
                     "Alien Legionary",
                     "Let me think:",
-                    "bin/images/Portraits/alien_ancient.png",
+                    basePath + "alien_ancient.png",
                     true,
                     sf::Color::Magenta,
                     sf::Color::White,
@@ -1496,7 +1528,7 @@ void Scene_Play::initializeDialogues()
                 {
                     "Alien Legionary",
                     "I went through the black hole...",
-                    "bin/images/Portraits/alien_ancient.png",
+                    basePath + "alien_ancient.png",
                     true,
                     sf::Color::Magenta,
                     sf::Color::White,
@@ -1509,7 +1541,7 @@ void Scene_Play::initializeDialogues()
                 {
                     "Alien Legionary",
                     "And this was supposed to be their present...",
-                    "bin/images/Portraits/alien_ancient.png",
+                    basePath + "alien_ancient.png",
                     true,
                     sf::Color::Magenta,
                     sf::Color::White,
@@ -1522,7 +1554,7 @@ void Scene_Play::initializeDialogues()
                 {
                     "Alien Legionary",
                     "But I killed their Emperor in the past...",
-                    "bin/images/Portraits/alien_ancient.png",
+                    basePath + "alien_ancient.png",
                     true,
                     sf::Color::Magenta,
                     sf::Color::White,
@@ -1535,7 +1567,7 @@ void Scene_Play::initializeDialogues()
                 {
                     "Alien Legionary",
                     "And so they shouldn't exist anymore...",
-                    "bin/images/Portraits/alien_ancient.png",
+                    basePath + "alien_ancient.png",
                     true,
                     sf::Color::Magenta,
                     sf::Color::White,
@@ -1548,7 +1580,7 @@ void Scene_Play::initializeDialogues()
                 {
                     "Alien Legionary",
                     "Did I somehow change history...",
-                    "bin/images/Portraits/alien_ancient.png",
+                    basePath + "alien_ancient.png",
                     true,
                     sf::Color::Magenta,
                     sf::Color::White,
@@ -1561,7 +1593,7 @@ void Scene_Play::initializeDialogues()
                 {
                     "Alien Legionary",
                     "AND CREATED A NEW PRESENT?!",
-                    "bin/images/Portraits/alien_ancient.png",
+                    basePath + "alien_ancient.png",
                     true,
                     sf::Color::Magenta,
                     sf::Color::Red,
@@ -1577,7 +1609,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Legionary",                               // speaker
                 "Who are you??",            // message
-                "bin/images/Portraits/future_normal.png",       // portraitPath
+                basePath + "future_normal.png",       // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Cyan,
                 sf::Color::White,
@@ -1591,7 +1623,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                              // speaker
                 "Oh no..don't tell me that..",            // message
-                "bin/images/Portraits/alien_ancient.png",       // portraitPath
+                basePath + "alien_ancient.png",       // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -1605,7 +1637,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                              // speaker
                 "they are trying kill me??",            // message
-                "bin/images/Portraits/alien_ancient.png",       // portraitPath
+                basePath + "alien_ancient.png",       // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -1619,7 +1651,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                              // speaker
                 "AGAIN?!",            // message
-                "bin/images/Portraits/alien_ancient.png",       // portraitPath
+                basePath + "alien_ancient.png",       // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -1635,7 +1667,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Legionary",                              // speaker
                 "WHO ARE YOU???",            // message
-                "bin/images/Portraits/future_fast.png",       // portraitPath
+                basePath + "future_fast.png",       // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Cyan,
                 sf::Color::White,
@@ -1651,7 +1683,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                              // speaker
                 "Thinking about it...",            // message
-                "bin/images/Portraits/alien_ancient.png",       // portraitPath
+                basePath + "alien_ancient.png",       // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -1665,7 +1697,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                              // speaker
                 "these legionaries look familiar...",            // message
-                "bin/images/Portraits/alien_ancient.png",       // portraitPath
+                basePath + "alien_ancient.png",       // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -1679,7 +1711,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                              // speaker
                 "but how is that possible??",            // message
-                "bin/images/Portraits/alien_ancient.png",       // portraitPath
+                basePath + "alien_ancient.png",       // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -1695,7 +1727,7 @@ void Scene_Play::initializeDialogues()
         {
             "Alien Legionary",                              // speaker
             "They are too strong...",            // message
-            "bin/images/Portraits/alien_ancient.png",       // portraitPath
+            basePath + "alien_ancient.png",       // portraitPath
             true,                                            // portraitOnLeft
             sf::Color::Magenta,
             sf::Color::White,
@@ -1709,7 +1741,7 @@ void Scene_Play::initializeDialogues()
         {
             "Alien Legionary",                              // speaker
             "With my sword there is not much I can do...",            // message
-            "bin/images/Portraits/alien_ancient.png",       // portraitPath
+            basePath + "alien_ancient.png",       // portraitPath
             true,                                            // portraitOnLeft
             sf::Color::Magenta,
             sf::Color::White,
@@ -1723,7 +1755,7 @@ void Scene_Play::initializeDialogues()
         {
             "Alien Legionary",                              // speaker
             "What should I do??",            // message
-            "bin/images/Portraits/alien_ancient.png",       // portraitPath
+            basePath + "alien_ancient.png",       // portraitPath
             true,                                            // portraitOnLeft
             sf::Color::Magenta,
             sf::Color::White,
@@ -1737,7 +1769,7 @@ void Scene_Play::initializeDialogues()
         {
             "Alien Legionary",                              // speaker
             "I am in big trouble now...",            // message
-            "bin/images/Portraits/alien_ancient.png",       // portraitPath
+            basePath + "alien_ancient.png",       // portraitPath
             true,                                            // portraitOnLeft
             sf::Color::Magenta,
             sf::Color::White,
@@ -1753,7 +1785,7 @@ void Scene_Play::initializeDialogues()
         {
             "Alien Legionary",                              // speaker
             "Oh... what is that futuristic armor??",            // message
-            "bin/images/Portraits/alien_ancient.png",       // portraitPath
+            basePath + "alien_ancient.png",       // portraitPath
             true,                                            // portraitOnLeft
             sf::Color::Magenta,
             sf::Color::White,
@@ -1767,7 +1799,7 @@ void Scene_Play::initializeDialogues()
         {
             "Alien Legionary",                              // speaker
             "Maybe If I wear it I can shoot bullets like they do!",            // message
-            "bin/images/Portraits/alien_ancient.png",       // portraitPath
+            basePath + "alien_ancient.png",       // portraitPath
             true,                                            // portraitOnLeft
             sf::Color::Magenta,
             sf::Color::White,
@@ -1783,7 +1815,7 @@ void Scene_Play::initializeDialogues()
         {
             "Alien Legionary",                              // speaker
             "IT WORKED!!!",            // message
-            "bin/images/Portraits/alien_future.png",       // portraitPath
+            basePath + "alien_future.png",       // portraitPath
             true,                                            // portraitOnLeft
             sf::Color::Magenta,
             sf::Color::White,
@@ -1797,7 +1829,7 @@ void Scene_Play::initializeDialogues()
         {
             "Alien Legionary",                           // speaker
             "NOW I CAN SHOOT BULLETS!!",            // message
-            "bin/images/Portraits/alien_future.png",       // portraitPath
+            basePath + "alien_future.png",       // portraitPath
             true,                                            // portraitOnLeft
             sf::Color::Magenta,
             sf::Color::White,
@@ -1811,7 +1843,7 @@ void Scene_Play::initializeDialogues()
         {
             "Alien Legionary",                           // speaker
             "TAKE THESE YOU DAMN PARADOX PEOPLE!!!",            // message
-            "bin/images/Portraits/alien_future.png",       // portraitPath
+            basePath + "alien_future.png",       // portraitPath
             false,                                            // portraitOnLeft
             sf::Color::Magenta,
             sf::Color::White,
@@ -1825,7 +1857,7 @@ void Scene_Play::initializeDialogues()
         {
             "***GUIDE***",                           // speaker
             "(Keep SPACE pressed to shoot bursts of bullets!)",            // message
-            "bin/images/Portraits/alien_future.png",       // portraitPath
+            basePath + "alien_future.png",       // portraitPath
             false,                                            // portraitOnLeft
             sf::Color::Magenta,
             sf::Color::White,
@@ -1839,7 +1871,7 @@ void Scene_Play::initializeDialogues()
         {
             "***GUIDE***",                           // speaker
             "(Press ENTER to activate the supermove!!)",            // message
-            "bin/images/Portraits/alien_future.png",       // portraitPath
+            basePath + "alien_future.png",       // portraitPath
             false,                                            // portraitOnLeft
             sf::Color::Magenta,
             sf::Color::White,
@@ -1857,7 +1889,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Legionary (Elite)",                               // speaker
                 "You.. invader...",            // message
-                "bin/images/Portraits/future_elite.png",       // portraitPath
+                basePath + "future_elite.png",       // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Red,
                 sf::Color::White,
@@ -1871,7 +1903,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Legionary (Elite)",                             // speaker
                 "How dare you coming to this place??",            // message
-                "bin/images/Portraits/future_elite.png",       // portraitPath
+                basePath + "future_elite.png",       // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Red,
                 sf::Color::White,
@@ -1887,7 +1919,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Legionary (Elite)",                           // speaker
                 "Who is this strange legionary?",            // message
-                "bin/images/Portraits/future_elite.png",       // portraitPath
+                basePath + "future_elite.png",       // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Red,
                 sf::Color::White,
@@ -1901,7 +1933,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Legionary (Elite)",                           // speaker
                 "Wait... those violet and black colors...",            // message
-                "bin/images/Portraits/future_elite.png",       // portraitPath
+                basePath + "future_elite.png",       // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Red,
                 sf::Color::White,
@@ -1915,7 +1947,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Legionary (Elite)",                           // speaker
                 "IMPOSSIBLE",            // message
-                "bin/images/Portraits/future_elite.png",       // portraitPath
+                basePath + "future_elite.png",       // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Red,
                 sf::Color::Red,
@@ -1929,7 +1961,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Legionary (Elite)",                           // speaker
                 "You match the ancient records...",            // message
-                "bin/images/Portraits/future_elite.png",       // portraitPath
+                basePath + "future_elite.png",       // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Red,
                 sf::Color::White,
@@ -1943,7 +1975,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Legionary (Elite)",                             // speaker
                 "A warrior who wounded our emperor and then..",            // message
-                "bin/images/Portraits/future_elite.png",       // portraitPath
+                basePath + "future_elite.png",       // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Red,
                 sf::Color::White,
@@ -1957,7 +1989,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Legionary (Elite)",                             // speaker
                 "VANISHED...",            // message
-                "bin/images/Portraits/future_elite.png",       // portraitPath
+                basePath + "future_elite.png",       // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Red,
                 sf::Color::White,
@@ -1971,7 +2003,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Legionary (Elite)",                             // speaker
                 "could it be really you?!",            // message
-                "bin/images/Portraits/future_elite.png",       // portraitPath
+                basePath + "future_elite.png",       // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Red,
                 sf::Color::White,
@@ -1985,7 +2017,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                              // speaker
                 "Oh.. I think I really DID travel through time...",// message
-                "bin/images/Portraits/alien_future.png",       // portraitPath
+                basePath + "alien_future.png",       // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -2001,7 +2033,7 @@ void Scene_Play::initializeDialogues()
         {
             "Legionary (Elite)",                                // speaker
             "STOP THE INVADER!!!",// message
-            "bin/images/Portraits/future_elite.png",       // portraitPath
+            basePath + "future_elite.png",       // portraitPath
             true,                                            // portraitOnLeft
             sf::Color::Red,
             sf::Color::Red,
@@ -2014,7 +2046,7 @@ void Scene_Play::initializeDialogues()
         {
             "Legionary (Elite)",                                // speaker
             "STOP HIM NOW! HISTORY MUST NOT REPEAT ITSELF!",// message
-            "bin/images/Portraits/future_elite.png",       // portraitPath
+            basePath + "future_elite.png",       // portraitPath
             true,                                            // portraitOnLeft
             sf::Color::Red,
             sf::Color::Red,
@@ -2032,7 +2064,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Emperor",
                 "... And so you are back...",
-                "bin/images/Portraits/future_emperor.png",
+                basePath + "future_emperor.png",
                 false,                                    // portraitOnLeft (right side)
                 sf::Color::Cyan,                           // speakerColor
                 sf::Color::White,                         // messageColor
@@ -2045,7 +2077,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Emperor",
                 "I remember you... ",
-                "bin/images/Portraits/future_emperor.png",
+                basePath + "future_emperor.png",
                 false,
                 sf::Color::Cyan,
                 sf::Color::White,
@@ -2061,7 +2093,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Emperor",
                 "Thousands of years ago you came here.. ",
-                "bin/images/Portraits/future_emperor.png",
+                basePath + "future_emperor.png",
                 false,
                 sf::Color::Cyan,
                 sf::Color::White,
@@ -2075,7 +2107,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Emperor",
                 ".. and I barely survived your wrath.",
-                "bin/images/Portraits/future_emperor.png",
+                basePath + "future_emperor.png",
                 false,
                 sf::Color::Cyan,
                 sf::Color::White,
@@ -2089,7 +2121,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Emperor",
                 "But this time..",
-                "bin/images/Portraits/future_emperor.png",
+                basePath + "future_emperor.png",
                 false,
                 sf::Color::Cyan,
                 sf::Color::White,
@@ -2103,7 +2135,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Emperor",
                 "I will make you pay for it!!!",
-                "bin/images/Portraits/future_emperor.png",
+                basePath + "future_emperor.png",
                 false,
                 sf::Color::Cyan,
                 sf::Color::Red,
@@ -2119,7 +2151,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Emperor",                               // speaker
                 "You are stronger than I expected...",    // message
-                "bin/images/Portraits/future_emperor_2.png", // portraitPath (adjust path as needed)
+                basePath + "future_emperor_2.png", // portraitPath (adjust path as needed)
                 false,                                   // portraitOnLeft
                 sf::Color::Cyan,                         // speakerColor
                 sf::Color::White,                        // messageColor
@@ -2132,7 +2164,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Emperor",
                 "But this is just the beginning!!",
-                "bin/images/Portraits/future_emperor_2.png",
+                basePath + "future_emperor_2.png",
                 false,
                 sf::Color::Cyan,
                 sf::Color::Red,
@@ -2149,7 +2181,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Emperor",                               // speaker
                 "HOW IS THIS POSSIBLE??",                           // message
-                "bin/images/Portraits/future_emperor_3.png", // portraitPath
+                basePath + "future_emperor_3.png", // portraitPath
                 false,                                   // portraitOnLeft
                 sf::Color::Cyan,                         // speakerColor
                 sf::Color::Red,                          // messageColor
@@ -2162,7 +2194,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Emperor",
                 "IT'S NOT OVER YET!!!",
-                "bin/images/Portraits/future_emperor_3.png",
+                basePath + "future_emperor_3.png",
                 false,
                 sf::Color::Cyan,
                 sf::Color::Red,
@@ -2178,7 +2210,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Emperor",                               // speaker
                 "IMP055IBLE!!!",                           // message
-                "bin/images/Portraits/future_emperor_3.png", // portraitPath
+                basePath + "future_emperor_3.png", // portraitPath
                 false,                                   // portraitOnLeft
                 sf::Color::Cyan,                         // speakerColor
                 sf::Color::Red,                          // messageColor
@@ -2191,7 +2223,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Emperor",
                 "TIME T0 SH0W Y0U MY...",
-                "bin/images/Portraits/future_emperor_3.png",
+                basePath + "future_emperor_3.png",
                 false,
                 sf::Color::Cyan,
                 sf::Color::Red,
@@ -2204,7 +2236,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Emperor",
                 "TRUE POWER!",
-                "bin/images/Portraits/future_emperor_3.png",
+                basePath + "future_emperor_3.png",
                 false,
                 sf::Color::Cyan,
                 sf::Color::Red,
@@ -2219,7 +2251,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Emperor",                               // speaker
                 "...",                           // message
-                "bin/images/Portraits/future_emperor_3.png", // portraitPath
+                basePath + "future_emperor_3.png", // portraitPath
                 false,                                   // portraitOnLeft
                 sf::Color::Cyan,                         // speakerColor
                 sf::Color::White,                          // messageColor
@@ -2241,7 +2273,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                               // speaker
                 "Oh, I am back here...",            // message
-                "bin/images/Portraits/alien_ancient.png",       // portraitPath
+                basePath + "alien_ancient.png",       // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -2255,7 +2287,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                              // speaker
                 "..I am so tired.. ",            // message
-                "bin/images/Portraits/alien_ancient.png",       // portraitPath
+                basePath + "alien_ancient.png",       // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -2269,7 +2301,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                              // speaker
                 "I must go back to the black hole and hope i can get home..",            // message
-                "bin/images/Portraits/alien_ancient.png",       // portraitPath
+                basePath + "alien_ancient.png",       // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -2285,7 +2317,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                               // speaker
                 "Thinking about it..",            // message
-                "bin/images/Portraits/alien_ancient.png",       // portraitPath
+                basePath + "alien_ancient.png",       // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -2299,7 +2331,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                              // speaker
                 "I killed so many people...",            // message
-                "bin/images/Portraits/alien_ancient.png",       // portraitPath
+                basePath + "alien_ancient.png",       // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -2312,7 +2344,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                               // speaker
                 "but I had no other choices..",            // message
-                "bin/images/Portraits/alien_ancient.png",       // portraitPath
+                basePath + "alien_ancient.png",       // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -2326,7 +2358,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                              // speaker
                 "However.. am I really on the right side?...",            // message
-                "bin/images/Portraits/alien_ancient.png",       // portraitPath
+                basePath + "alien_ancient.png",       // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -2342,7 +2374,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                               // speaker
                 "Here are the stairs..",            // message
-                "bin/images/Portraits/alien_ancient.png",       // portraitPath
+                basePath + "alien_ancient.png",       // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -2358,7 +2390,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                               // speaker
                 "I am so scared...",            // message
-                "bin/images/Portraits/alien_ancient.png",       // portraitPath
+                basePath + "alien_ancient.png",       // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -2372,7 +2404,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                              // speaker
                 "Will I ever get back home?",            // message
-                "bin/images/Portraits/alien_ancient.png",       // portraitPath
+                basePath + "alien_ancient.png",       // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -2385,7 +2417,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                               // speaker
                 "Do I even exist anymore?",            // message
-                "bin/images/Portraits/alien_ancient.png",       // portraitPath
+                basePath + "alien_ancient.png",       // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -2399,7 +2431,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                              // speaker
                 "I have no other choice but to hope I can get home somehow...",            // message
-                "bin/images/Portraits/alien_ancient.png",       // portraitPath
+                basePath + "alien_ancient.png",       // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -2415,7 +2447,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Legionary (ALTERED PRESENT)",                               // speaker
                 "Here goes nothing!!",            // message
-                "bin/images/Portraits/alien_ancient.png",       // portraitPath
+                basePath + "alien_ancient.png",       // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -2428,7 +2460,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Legionary (ALTERED PRESENT)",                                // speaker
                 "HEY !!! STOP!!!",            // message
-                "bin/images/Portraits/future_fast.png",       // portraitPath
+                basePath + "future_fast.png",       // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Cyan,
                 sf::Color::White,
@@ -2442,7 +2474,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Legionary (ALTERED PRESENT)",                              // speaker
                 "YOU DAMNED ALIEN..",            // message
-                "bin/images/Portraits/future_fast.png",       // portraitPath
+                basePath + "future_fast.png",       // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Cyan,
                 sf::Color::White,
@@ -2456,7 +2488,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Legionary (ALTERED PRESENT)",                              // speaker
                 "I WILL FIND YOU!!! AND ILL MAKE YOU PAY FOR IT...",            // message
-                "bin/images/Portraits/future_fast.png",       // portraitPath
+                basePath + "future_fast.png",       // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Cyan,
                 sf::Color::White,
@@ -2470,7 +2502,7 @@ void Scene_Play::initializeDialogues()
             {
                 "Alien Legionary",                              // speaker
                 "AT ALL COST!!!!",            // message
-                "bin/images/Portraits/future_fast.png",        // portraitPath
+                basePath + "future_fast.png",        // portraitPath
                 false,                                            // portraitOnLeft
                 sf::Color::Cyan,
                 sf::Color::White,
@@ -2516,6 +2548,17 @@ void Scene_Play::sDoAction(const Action& action)
 
     static bool isMovingLeft  = false;
     static bool isMovingRight = false;
+
+    if (action.name() == "WINDOW_LOST_FOCUS") {
+        // When app loses focus, reset all movement flags
+        isMovingLeft = false;
+        isMovingRight = false;
+        vel.x = 0.f;
+        if (state.state != "air") {
+            state.state = "idle";
+        }
+        return;
+    }
     
 
     if (action.type() == "START")
@@ -2527,6 +2570,7 @@ void Scene_Play::sDoAction(const Action& action)
                 isMovingRight   = false;
                 PTrans.facingDirection = -1.f;
                 vel.x = -xSpeed;
+                std::cout << "[MOVEMENT] Starting left movement, vel.x = " << vel.x << std::endl;
                 if (state.state != "air") {
                     state.state = "run";
                 }
@@ -2536,6 +2580,7 @@ void Scene_Play::sDoAction(const Action& action)
                 isMovingLeft    = false;
                 PTrans.facingDirection = 1.f;
                 vel.x = xSpeed;
+                std::cout << "[MOVEMENT] Starting right movement, vel.x = " << vel.x << std::endl;
                 if (state.state != "air") {
                     state.state = "run";
                 }
@@ -2683,6 +2728,7 @@ void Scene_Play::sDoAction(const Action& action)
         if (!inDefense) {
             if (action.name() == "MOVE_LEFT") {
                 isMovingLeft = false;
+                std::cout << "[MOVEMENT] Stopping left movement, isMovingRight = " << isMovingRight << std::endl;
                 if (!isMovingRight) {
                     vel.x = 0.f;
                     if (state.state != "air") {
@@ -2692,6 +2738,7 @@ void Scene_Play::sDoAction(const Action& action)
             }
             else if (action.name() == "MOVE_RIGHT") {
                 isMovingRight = false;
+                std::cout << "[MOVEMENT] Stopping right movement, isMovingLeft = " << isMovingLeft << std::endl;
                 if (!isMovingLeft) {
                     vel.x = 0.f;
                     if (state.state != "air") {
@@ -2995,7 +3042,7 @@ void Scene_Play::lifeCheckEnemyDeath() {
                       << (isEmperor ? "Emperor" : "normal") << " grave...\n";
             
 
-            // ✅ Spawn the correct grave type
+            //Spawn the correct grave type
             m_spawner.spawnEnemyGrave(transform.pos, isEmperor);
 
             if (isEmperor) {

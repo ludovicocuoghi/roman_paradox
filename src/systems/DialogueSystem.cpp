@@ -1,6 +1,8 @@
 #include "DialogueSystem.h"
 #include "Components.hpp"
+#include "ResourcePath.h"
 #include <iostream>
+
 
 DialogueSystem::DialogueSystem(GameEngine& game, EntityManager& entityManager)
     : m_game(game),
@@ -28,7 +30,7 @@ DialogueSystem::DialogueSystem(GameEngine& game, EntityManager& entityManager)
       portraitSprite(),
       dialogueFont()
 {
-    if (!dialogueFont.loadFromFile("bin/font/font.ttf")) {
+    if (!dialogueFont.loadFromFile(getResourcePath("font/font.ttf"))) {
         std::cerr << "[ERROR] Could not load font!\n";
     }
 

@@ -1435,7 +1435,7 @@ void EnemyAISystem::update(float deltaTime)
         
         if (anim.animation.getName() != runAnimName) {
             if (m_game.assets().hasAnimation(runAnimName)) {
-                std::cout << "Setting run anim: " << runAnimName << std::endl;
+                //std::cout << "Setting run anim: " << runAnimName << std::endl;
                 const Animation& runAnim = m_game.assets().getAnimation(runAnimName);
                 anim.animation = runAnim;
                 anim.animation.reset();
@@ -1491,8 +1491,8 @@ void EnemyAISystem::update(float deltaTime)
                                                 m_entityManager)
                                     && (distance >= enemyAI.minShootDistance)
                                     && (distance <= enemyAI.maxShootDistance);
-                    std::cout << "[DEBUG] Enemy " << enemy->id()
-                            << " can shoot: " << canShoot << "\n";
+                    // std::cout << "[DEBUG] Enemy " << enemy->id()
+                    //         << " can shoot: " << canShoot << "\n";
                     // If super move ready + can shoot
                     if (enemyAI.superMoveReady && canShoot) {
                         enemyAI.superMoveReady = false;

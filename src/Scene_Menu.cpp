@@ -3,6 +3,7 @@
 #include "Scene_StoryText.h"
 #include "Scene_Play.h"
 #include "Scene_LevelEditor.h"
+#include "ResourcePath.h"
 
 #include <filesystem>
 #include <iostream>
@@ -37,13 +38,22 @@ Scene_Menu::Scene_Menu(GameEngine& game)
 }
 
 void Scene_Menu::loadLevelOptions() {
-    const std::string levelPath = "./bin/levels/";
+    // Use getResourcePath instead of hardcoded path
+    const std::string levelPath = getResourcePath("levels");
     m_levelOptions.clear();
 
-    for (const auto& entry : std::filesystem::directory_iterator(levelPath)) {
-        if (entry.path().extension() == ".txt") {
-            m_levelOptions.push_back(entry.path().stem().string());
+    try {
+        if (std::filesystem::exists(levelPath)) {
+            for (const auto& entry : std::filesystem::directory_iterator(levelPath)) {
+                if (entry.path().extension() == ".txt") {
+                    m_levelOptions.push_back(entry.path().stem().string());
+                }
+            }
+        } else {
+            std::cerr << "[ERROR] Levels directory not found at: " << levelPath << std::endl;
         }
+    } catch (const std::filesystem::filesystem_error& e) {
+        std::cerr << "[ERROR] Failed to access levels directory: " << e.what() << std::endl;
     }
 
     std::sort(m_levelOptions.begin(), m_levelOptions.end());
@@ -240,7 +250,7 @@ void Scene_Menu::handleSelectAction() {
             
         case MenuState::LEVEL_SELECT:
             {
-                std::string selectedLevel = "./bin/levels/" + m_levelOptions[m_selectedLevelIndex] + ".txt";
+                std::string selectedLevel = getResourcePath("levels") + "/" + m_levelOptions[m_selectedLevelIndex] + ".txt";
                 m_game.loadLevel(selectedLevel);
             }
             break;
