@@ -2520,37 +2520,118 @@ void Scene_Play::initializeDialogues()
     std::cout << "[DEBUG] Dialogue system initialized for level: " << levelName << std::endl;
 }
 // Action Processing (Input Handling)                        
-
 void Scene_Play::sDoAction(const Action& action)
 {
-    // Check if dialogue is active - if so, only process ATTACK to advance dialogue
-    if (m_dialogueSystem && m_dialogueSystem->isDialogueActive()) {
+    // First, track dialogue state changes
+    bool isDialogueActive = (m_dialogueSystem && m_dialogueSystem->isDialogueActive());
+    static bool wasInDialogue = false;
+    
+    // Track the ACTUAL key state (not just movement intent)
+    static bool leftKeyPressed = false;
+    static bool rightKeyPressed = false;
+    
+    // When dialogue starts, pause but remember key states
+    if (isDialogueActive && !wasInDialogue) {
+        std::cout << "[DEBUG] Dialogue started - pausing movement" << std::endl;
+        
+        // Pause velocity - key states remain tracked
+        auto playerEntities = m_entityManager.getEntities("player");
+        if (!playerEntities.empty()) {
+            auto player = playerEntities[0];
+            player->get<CTransform>().velocity.x = 0.f;
+        }
+    }
+    
+    // Track key state changes regardless of dialogue
+    if (action.name() == "MOVE_LEFT") {
+        if (action.type() == "START") {
+            leftKeyPressed = true;
+        } else if (action.type() == "END") {
+            leftKeyPressed = false;
+        }
+    }
+    else if (action.name() == "MOVE_RIGHT") {
+        if (action.type() == "START") {
+            rightKeyPressed = true;
+        } else if (action.type() == "END") {
+            rightKeyPressed = false;
+        }
+    }
+    
+    // Block gameplay effects during dialogue but keep tracking key states
+    if (isDialogueActive) {
         if (action.name() == "ATTACK" && action.type() == "START") {
-            // Direct call to advance dialogue
             m_dialogueSystem->handleAttackAction();
         }
-        // Block all other actions during dialogue
+        
+        wasInDialogue = true;
         return;
     }
-
-    // Normal gameplay actions - only process if dialogue is not active
+    
+    // When dialogue ends, apply movement based on CURRENT key states
+    if (!isDialogueActive && wasInDialogue) {
+        std::cout << "[DEBUG] Dialogue ended - applying current key states" << std::endl;
+        
+        auto playerEntities = m_entityManager.getEntities("player");
+        if (!playerEntities.empty()) {
+            auto player = playerEntities[0];
+            auto& PTrans = player->get<CTransform>();
+            auto& vel = PTrans.velocity;
+            auto& state = player->get<CState>();
+            
+            // Apply movement based on currently pressed keys
+            if (leftKeyPressed && !rightKeyPressed) {
+                PTrans.facingDirection = -1.f;
+                vel.x = -xSpeed;
+                if (state.state != "air") {
+                    state.state = "run";
+                }
+                std::cout << "[MOVEMENT] Continuing left movement after dialogue" << std::endl;
+            } 
+            else if (rightKeyPressed && !leftKeyPressed) {
+                PTrans.facingDirection = 1.f;
+                vel.x = xSpeed;
+                if (state.state != "air") {
+                    state.state = "run";
+                }
+                std::cout << "[MOVEMENT] Continuing right movement after dialogue" << std::endl;
+            }
+            else {
+                vel.x = 0.f;
+                if (state.state != "air") {
+                    state.state = "idle";
+                }
+            }
+        }
+    }
+    
+    wasInDialogue = isDialogueActive;
+    
+    // Normal gameplay actions
     auto playerEntities = m_entityManager.getEntities("player");
     if (playerEntities.empty()) return;
 
     auto player = playerEntities[0];
-    auto& PTrans   = player->get<CTransform>();
-    auto& vel      = PTrans.velocity;  
-    auto& state    = player->get<CState>();
+    auto& PTrans = player->get<CTransform>();
+    auto& vel = PTrans.velocity;  
+    auto& state = player->get<CState>();
 
     bool inDefense = (state.state == "defense");
     bool hasFutureArmor = player->has<CPlayerEquipment>() && 
                           player->get<CPlayerEquipment>().hasFutureArmor;
 
-    static bool isMovingLeft  = false;
+    // Static flags for original system compatibility
+    static bool isMovingLeft = false;
     static bool isMovingRight = false;
+
+    // Keep these flags in sync with key state for compatibility
+    isMovingLeft = leftKeyPressed;
+    isMovingRight = rightKeyPressed;
 
     if (action.name() == "WINDOW_LOST_FOCUS") {
         // When app loses focus, reset all movement flags
+        leftKeyPressed = false;
+        rightKeyPressed = false;
         isMovingLeft = false;
         isMovingRight = false;
         vel.x = 0.f;
@@ -2560,14 +2641,11 @@ void Scene_Play::sDoAction(const Action& action)
         return;
     }
     
-
     if (action.type() == "START")
     {
         if (!inDefense)
         {
             if (action.name() == "MOVE_LEFT") {
-                isMovingLeft    = true;
-                isMovingRight   = false;
                 PTrans.facingDirection = -1.f;
                 vel.x = -xSpeed;
                 std::cout << "[MOVEMENT] Starting left movement, vel.x = " << vel.x << std::endl;
@@ -2576,8 +2654,6 @@ void Scene_Play::sDoAction(const Action& action)
                 }
             }
             else if (action.name() == "MOVE_RIGHT") {
-                isMovingRight   = true;
-                isMovingLeft    = false;
                 PTrans.facingDirection = 1.f;
                 vel.x = xSpeed;
                 std::cout << "[MOVEMENT] Starting right movement, vel.x = " << vel.x << std::endl;
@@ -2727,24 +2803,36 @@ void Scene_Play::sDoAction(const Action& action)
     {
         if (!inDefense) {
             if (action.name() == "MOVE_LEFT") {
-                isMovingLeft = false;
-                std::cout << "[MOVEMENT] Stopping left movement, isMovingRight = " << isMovingRight << std::endl;
-                if (!isMovingRight) {
+                if (!rightKeyPressed) {
                     vel.x = 0.f;
                     if (state.state != "air") {
                         state.state = "idle";
                     }
+                } else {
+                    // Right is still pressed, so move right
+                    PTrans.facingDirection = 1.f;
+                    vel.x = xSpeed;
+                    if (state.state != "air") {
+                        state.state = "run";
+                    }
                 }
+                std::cout << "[MOVEMENT] Stopping left movement, rightKeyPressed = " << rightKeyPressed << std::endl;
             }
             else if (action.name() == "MOVE_RIGHT") {
-                isMovingRight = false;
-                std::cout << "[MOVEMENT] Stopping right movement, isMovingLeft = " << isMovingLeft << std::endl;
-                if (!isMovingLeft) {
+                if (!leftKeyPressed) {
                     vel.x = 0.f;
                     if (state.state != "air") {
                         state.state = "idle";
                     }
+                } else {
+                    // Left is still pressed, so move left
+                    PTrans.facingDirection = -1.f;
+                    vel.x = -xSpeed;
+                    if (state.state != "air") {
+                        state.state = "run";
+                    }
                 }
+                std::cout << "[MOVEMENT] Stopping right movement, leftKeyPressed = " << leftKeyPressed << std::endl;
             }
             else if (action.name() == "JUMP") {
                 state.isJumping = false;
