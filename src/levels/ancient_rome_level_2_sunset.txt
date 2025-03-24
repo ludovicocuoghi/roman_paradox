@@ -948,8 +948,6 @@ Tile Brick 48 13
 Tile Brick 47 13
 Tile Brick 46 13
 Tile Brick 46 14
-Tile Treasure 50 18
-Tile Treasure 51 18
 Tile Ground 110 13
 Tile Ground 110 14
 Tile Ground 110 15
@@ -994,6 +992,8 @@ Tile Ground 113 19
 Tile Ground 113 21
 Tile Ground 100 20
 Tile Ground 104 19
+Tile Treasure 50 17
+Tile Treasure 51 17
 Player 1 16
 Dec BushTall 0 19
 Dec BushTall 2 19

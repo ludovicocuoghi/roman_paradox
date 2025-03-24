@@ -1192,8 +1192,8 @@ void EnemyAISystem::update(float deltaTime)
         
                 if (isHorizontallyAligned && isInFront) {
                     enemyAI.tileDetected = true;
-                    std::cout << "[DEBUG] Enemy " << enemy->id()
-                              << " detected tile in front!\n";
+                    // std::cout << "[DEBUG] Enemy " << enemy->id()
+                    //           << " detected tile in front!\n";
                     break;
                 }
             }
@@ -1735,9 +1735,9 @@ void EnemyAISystem::update(float deltaTime)
                 }
                 
                 enemyAI.swordSpawned = true;
-                std::cout << "[DEBUG] Enemy " << enemy->id()
-                          << " spawning attack at AttackTimer: "
-                          << enemyAI.attackTimer << "\n";
+                // std::cout << "[DEBUG] Enemy " << enemy->id()
+                //           << " spawning attack at AttackTimer: "
+                //           << enemyAI.attackTimer << "\n";
             }
 
             // End Attack
@@ -1746,8 +1746,8 @@ void EnemyAISystem::update(float deltaTime)
                 enemyAI.enemyState     = EnemyState::Follow; // Switch back
                 enemyAI.attackTimer    = 0.f;
 
-                std::cout << "[DEBUG] Enemy " << enemy->id()
-                          << " Attack finished. Switching to Follow.\n";
+                // std::cout << "[DEBUG] Enemy " << enemy->id()
+                //           << " Attack finished. Switching to Follow.\n";
             }
         }
 

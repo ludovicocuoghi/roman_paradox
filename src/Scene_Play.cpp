@@ -18,6 +18,12 @@
 #include "systems/Spawner.h"
 #include "ResourcePath.h"
 
+//Booleans for keypresses, used to make smooth transactions between dialogue and gameplay
+bool leftKeyPressed = false;
+bool rightKeyPressed = false;
+bool wasInDialogue = false;
+
+
 void Scene_Play::initializeCamera()
 {
     // 1) Start with the window's default view
@@ -157,6 +163,11 @@ void Scene_Play::selectBackgroundFromLevel(const std::string& levelPath) {
 void Scene_Play::init()
 {
     std::cout << "[DEBUG] Scene_Play::init() - Start\n";
+
+    //Reset movement keys
+    leftKeyPressed = false;
+    rightKeyPressed = false;
+    wasInDialogue = false;
 
     registerCommonActions();
     registerAction(sf::Keyboard::A, "MOVE_LEFT");
@@ -2635,11 +2646,6 @@ void Scene_Play::sDoAction(const Action& action)
 {
     // First, track dialogue state changes
     bool isDialogueActive = (m_dialogueSystem && m_dialogueSystem->isDialogueActive());
-    static bool wasInDialogue = false;
-    
-    // Track the ACTUAL key state (not just movement intent)
-    static bool leftKeyPressed = false;
-    static bool rightKeyPressed = false;
     
     // When dialogue starts, pause but remember key states
     if (isDialogueActive && !wasInDialogue) {
@@ -2657,7 +2663,9 @@ void Scene_Play::sDoAction(const Action& action)
     if (action.name() == "MOVE_LEFT") {
         if (action.type() == "START") {
             leftKeyPressed = true;
+            std::cout << "[DEBUG] leftKeyPressed set to TRUE" << std::endl;
         } else if (action.type() == "END") {
+            std::cout << "[DEBUG] leftKeyPressed set to FALSE" << std::endl;
             leftKeyPressed = false;
         }
     }

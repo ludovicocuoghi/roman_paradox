@@ -1052,8 +1052,8 @@ void CollisionSystem::handleSwordCollisions() {
                 
                 // Don't let enemy's own sword hit itself
                 if (static_cast<size_t>(creatorId) != otherEnemy->id()) {
-                    std::cout << "[DEBUG] Enemy sword hit another enemy! Sword: " 
-                            << enemySword->id() << " Hit Enemy: " << otherEnemy->id() << "\n";
+                    // std::cout << "[DEBUG] Enemy sword hit another enemy! Sword: " 
+                    //         << enemySword->id() << " Hit Enemy: " << otherEnemy->id() << "\n";
                     
                     // Apply damage if needed
                     if (otherEnemy->has<CHealth>() && enemySword->has<CEnemyAI>()) {
