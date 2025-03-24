@@ -205,6 +205,13 @@ void GameEngine::sUserInput() {
     }
 }
 
+void GameEngine::setLanguage(const std::string& language) 
+{ 
+    std::cout << "[DEBUG] GameEngine::setLanguage() called with: " << language << std::endl;
+    m_language = language;
+    std::cout << "[DEBUG] Language set to: " << m_language << std::endl;
+}
+
 //  Change the active scene properly
 void GameEngine::changeScene(const std::string& sceneName, std::shared_ptr<Scene> scene) {
     if (!scene) {

@@ -529,6 +529,8 @@ Tile Treasure 25 19
 Tile Treasure 41 22
 Tile Treasure 43 22
 Tile Treasure 42 22
+Tile Treasure 62 4
+Tile Treasure 63 4
 Player 2 2
 Dec BushTall 130 5
 Dec BushTall 129 5

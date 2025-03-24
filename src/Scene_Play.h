@@ -108,7 +108,6 @@ private:
     Spawner m_spawner;
     EnemyAISystem m_enemyAISystem;
     bool m_wasDialogueActive = false;
-    
-    // Dialogue system (new)
     std::shared_ptr<DialogueSystem> m_dialogueSystem;
+    std::string m_language;
 };

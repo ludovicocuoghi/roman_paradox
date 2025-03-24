@@ -27,49 +27,96 @@ void Scene_StoryText::loadStoryText(StoryType type) {
     m_storyLines.clear();
     std::cout << "[DEBUG] Loading story text for " << (type == StoryType::INTRO ? "INTRO" : "ENDING") << std::endl;
     
+    // Get the language from the game engine
+    std::string language = m_game.getLanguage();
+    
     if (type == StoryType::INTRO) {
-        // Introduction text lines - shortened to reduce overlap risk
-        m_storyLines.push_back("ROME INTERGALACTIC PARADOX");
-        m_storyLines.push_back(" ");
-        m_storyLines.push_back("It is said that there are infinite universes");
-        m_storyLines.push_back("and multiple realities existing in parallel.");
-        m_storyLines.push_back(" ");
-        m_storyLines.push_back("Theoretical physics suggests that black holes");
-        m_storyLines.push_back("could allow travel between different dimensions,");
-        m_storyLines.push_back("connecting various multiverses together.");
-        m_storyLines.push_back(" ");
-        m_storyLines.push_back("In this game, you play as an alien in a universe");
-        m_storyLines.push_back("where the Roman Empire developed differently than on Earth.");
-        m_storyLines.push_back(" ");
-        m_storyLines.push_back("There are infinite Roman Empires across multiple universes,");
-        m_storyLines.push_back("each with its own history and development.");
-        m_storyLines.push_back(" ");
-        m_storyLines.push_back("During what seemed like a normal day,");
-        m_storyLines.push_back("you suddenly find yourself invaded by futuristic Legionaries.");
-        m_storyLines.push_back(" ");
-        m_storyLines.push_back("You must escape and discover the truth behind this invasion...");
-        
-        m_continueText = "Press SPACE to begin your journey";
+        if (language == "Japanese") {
+            // Improved Japanese intro text
+            m_storyLines.push_back("ローマ銀河パラドックス");
+            m_storyLines.push_back(" ");
+            m_storyLines.push_back("無限の宇宙と並行して存在する数多の現実があると言われています。");
+            m_storyLines.push_back(" ");
+            m_storyLines.push_back("理論物理学によれば、ブラックホールは異なる次元間の");
+            m_storyLines.push_back("移動を可能にし、様々なマルチバースを繋げる鍵となり得ます。");
+            m_storyLines.push_back(" ");
+            m_storyLines.push_back("このゲームでは、地球とは異なる発展を遂げた");
+            m_storyLines.push_back("ローマ帝国の宇宙に存在するエイリアンとして冒険します。");
+            m_storyLines.push_back(" ");
+            m_storyLines.push_back("無数の宇宙には無限のローマ帝国が存在し、");
+            m_storyLines.push_back("それぞれが独自の歴史と発展の道を歩んでいます。");
+            m_storyLines.push_back(" ");
+            m_storyLines.push_back("平穏な日常を過ごしていたある日、突如として");
+            m_storyLines.push_back("未来の軍団兵による侵略に見舞われることになります。");
+            m_storyLines.push_back(" ");
+            m_storyLines.push_back("あなたは脱出し、この謎めいた侵略の真相を解き明かさなければなりません...");
+            
+            m_continueText = "スペースキーを押して冒険を始める";
+        } else {
+            // Default English intro text
+            m_storyLines.push_back("ROME INTERGALACTIC PARADOX");
+            m_storyLines.push_back(" ");
+            m_storyLines.push_back("It is said that there are infinite universes");
+            m_storyLines.push_back("and multiple realities existing in parallel.");
+            m_storyLines.push_back(" ");
+            m_storyLines.push_back("Theoretical physics suggests that black holes");
+            m_storyLines.push_back("could allow travel between different dimensions,");
+            m_storyLines.push_back("connecting various multiverses together.");
+            m_storyLines.push_back(" ");
+            m_storyLines.push_back("In this game, you play as an alien in a universe");
+            m_storyLines.push_back("where the Roman Empire developed differently than on Earth.");
+            m_storyLines.push_back(" ");
+            m_storyLines.push_back("There are infinite Roman Empires across multiple universes,");
+            m_storyLines.push_back("each with its own history and development.");
+            m_storyLines.push_back(" ");
+            m_storyLines.push_back("During what seemed like a normal day,");
+            m_storyLines.push_back("you suddenly find yourself invaded by futuristic Legionaries.");
+            m_storyLines.push_back(" ");
+            m_storyLines.push_back("You must escape and discover the truth behind this invasion...");
+            
+            m_continueText = "Press SPACE to begin your journey";
+        }
     }
     else if (type == StoryType::ENDING) {
-        // Ending text lines - single title at the top
-        m_storyLines.push_back("ROME INTERGALACTIC PARADOX");
-        m_storyLines.push_back(" ");
-        m_storyLines.push_back("And so the history repeats itself...");
-        m_storyLines.push_back(" ");
-        m_storyLines.push_back("The future Legionary, determined for revenge,");
-        m_storyLines.push_back("travels through a black hole to another dimension.");
-        m_storyLines.push_back(" ");
-        m_storyLines.push_back("There, he will find a different alien,");
-        m_storyLines.push_back("a Roman alien who knows nothing of what happened.");
-        m_storyLines.push_back(" ");
-        m_storyLines.push_back("And so the cycle begins again...");
-        m_storyLines.push_back("The history will repeat infinitely,");
-        m_storyLines.push_back("across dimensions and time itself.");
-        m_storyLines.push_back(" ");
-        m_storyLines.push_back("Thank you for playing!");
-        
-        m_continueText = "Press SPACE to return to the main menu";
+        if (language == "Japanese") {
+            // Improved Japanese ending text
+            m_storyLines.push_back("ローマ銀河パラドックス");
+            m_storyLines.push_back(" ");
+            m_storyLines.push_back("そして歴史は繰り返される...");
+            m_storyLines.push_back(" ");
+            m_storyLines.push_back("復讐を胸に秘めた未来の軍団兵は、");
+            m_storyLines.push_back("ブラックホールを通じて別の次元へと旅立ちます。");
+            m_storyLines.push_back(" ");
+            m_storyLines.push_back("その先で彼は別のエイリアンと遭遇するでしょう。");
+            m_storyLines.push_back("何も知らないままのローマのエイリアンと。");
+            m_storyLines.push_back(" ");
+            m_storyLines.push_back("こうして循環は再び始まります...");
+            m_storyLines.push_back("歴史は永遠に繰り返され、");
+            m_storyLines.push_back("次元と時間を超えて続いていくのです。");
+            m_storyLines.push_back(" ");
+            m_storyLines.push_back("プレイしていただき、ありがとうございました！");
+            
+            m_continueText = "スペースキーを押してメインメニューに戻る";
+        } else {
+            // Default English ending text
+            m_storyLines.push_back("ROME INTERGALACTIC PARADOX");
+            m_storyLines.push_back(" ");
+            m_storyLines.push_back("And so the history repeats itself...");
+            m_storyLines.push_back(" ");
+            m_storyLines.push_back("The future Legionary, determined for revenge,");
+            m_storyLines.push_back("travels through a black hole to another dimension.");
+            m_storyLines.push_back(" ");
+            m_storyLines.push_back("There, he will find a different alien,");
+            m_storyLines.push_back("a Roman alien who knows nothing of what happened.");
+            m_storyLines.push_back(" ");
+            m_storyLines.push_back("And so the cycle begins again...");
+            m_storyLines.push_back("The history will repeat infinitely,");
+            m_storyLines.push_back("across dimensions and time itself.");
+            m_storyLines.push_back(" ");
+            m_storyLines.push_back("Thank you for playing!");
+            
+            m_continueText = "Press SPACE to return to the main menu";
+        }
     }
     
     std::cout << "[DEBUG] Loaded " << m_storyLines.size() << " lines of text" << std::endl;
@@ -93,7 +140,18 @@ void Scene_StoryText::renderStoryText() {
     float alpha = 255.0f;
     
     sf::Text text;
-    text.setFont(m_game.assets().getFont("Menu"));
+    
+    // Use Japanese font if language is set to Japanese
+    if (m_game.getLanguage() == "Japanese") {
+        std::cout << "[DEBUG] Using Japanese font for story text" << std::endl;
+        text.setFont(m_game.assets().getFont("Japanese"));
+    } else {
+        std::cout << "[DEBUG] Using default font for story text" << std::endl;
+        text.setFont(m_game.assets().getFont("Menu"));
+    }
+
+    
+    
     text.setCharacterSize(28);
     text.setStyle(sf::Text::Regular);
     
@@ -111,7 +169,10 @@ void Scene_StoryText::renderStoryText() {
     
     // Render story text
     for (size_t i = 0; i < m_storyLines.size(); ++i) {
-        text.setString(m_storyLines[i]);
+        text.setString(sf::String::fromUtf8(
+            m_storyLines[i].begin(),
+            m_storyLines[i].end()
+        ));
         text.setFillColor(sf::Color(255, 255, 255, static_cast<sf::Uint8>(alpha)));
         
         // Center align text
@@ -134,7 +195,10 @@ void Scene_StoryText::renderStoryText() {
     m_game.window().draw(separator);
     
     // Render continue prompt at the bottom with bright color and more space
-    text.setString(m_continueText);
+    text.setString(sf::String::fromUtf8(
+        m_continueText.begin(),
+        m_continueText.end()
+    ));
     text.setCharacterSize(32); // Larger size
     text.setFillColor(sf::Color::Yellow); // Bright color
     

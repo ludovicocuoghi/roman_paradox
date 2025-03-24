@@ -9,25 +9,37 @@
 #include <iostream>
 #include <algorithm>
 
+// Modify your Scene_Menu constructor as follows:
 Scene_Menu::Scene_Menu(GameEngine& game)
     : Scene(game)
     , m_state(MenuState::LANGUAGE)
     , m_selectedLanguageIndex(0)
     , m_selectedMainMenuIndex(0)
     , m_selectedLevelIndex(0)
-    , m_language("English")
 {
     loadLevelOptions();
 
     sf::View defaultView = m_game.window().getDefaultView();
-    defaultView.setSize(static_cast<float>(m_game.window().getSize().x), 
+    defaultView.setSize(static_cast<float>(m_game.window().getSize().x),
                         static_cast<float>(m_game.window().getSize().y));
     m_game.window().setView(defaultView);
     sf::Mouse::setPosition(sf::Vector2i(0, 0), m_game.window());
 
+    // 1) Grab whatever language the GameEngine already has
+    std::string currentLang = m_game.getLanguage();
+
+    // 2) If it’s empty, this must be the very start — default to English
+    if (currentLang.empty()) {
+        currentLang = "English";
+        m_game.setLanguage("English");
+    }
+
+    // 3) Store in Menu’s own field
+    m_language = currentLang;
+
     // Initialize language options
-    m_languageOptions = {"English", "Japanese"};
-    
+    m_languageOptions = {"English", "日本語"};
+
     // Initialize main menu options
     m_mainMenuOptions = {"PLAY MAIN STORY", "MANUAL LEVEL SELECTION", "LEVEL EDITOR", "QUIT"};
 
@@ -35,6 +47,25 @@ Scene_Menu::Scene_Menu(GameEngine& game)
     registerAction(sf::Keyboard::S, "DOWN");
     registerAction(sf::Keyboard::D, "SELECT");
     registerAction(sf::Keyboard::Escape, "BACK");
+
+    // 4) Update menu translations according to the *current* language
+    updateMenuTranslations();
+    
+    std::cout << "[DEBUG] Scene_Menu created; language = " << m_language << std::endl;
+}
+
+// Modify updateMenuTranslations to populate both arrays
+void Scene_Menu::updateMenuTranslations() {
+    // Always keep original English options for logic
+    m_mainMenuOptions = {"PLAY MAIN STORY", "MANUAL LEVEL SELECTION", "LEVEL EDITOR", "QUIT"};
+    
+    if (m_language == "Japanese") {
+        // Japanese display options
+        m_displayMenuOptions = {"メインストーリーをプレイ", "レベル選択", "レベルエディタ", "終了"};
+    } else {
+        // For English, display and logic options are the same
+        m_displayMenuOptions = m_mainMenuOptions;
+    }
 }
 
 void Scene_Menu::loadLevelOptions() {
@@ -63,7 +94,7 @@ void Scene_Menu::sRender() {
     m_game.window().clear(sf::Color(0, 0, 0));
 
     sf::Text text;
-    text.setFont(m_game.assets().getFont("Menu"));
+    text.setFont(m_game.assets().getFont("Japanese"));
     text.setCharacterSize(40);
     text.setStyle(sf::Text::Bold);
     text.setFillColor(sf::Color::White);
@@ -93,14 +124,42 @@ void Scene_Menu::sRender() {
     text.setCharacterSize(20);
     text.setFillColor(sf::Color::White);
     
-    // Customize controls display based on menu state
-    if (m_state == MenuState::LANGUAGE) {
-        text.setString("DOWN: S  SELECT: D");
-    } else if (m_state == MenuState::MAIN) {
-        text.setString("DOWN: S  SELECT: D  BACK: ESC");
-    } else { // LEVEL_SELECT
-        text.setString("DOWN: S  SELECT: D  BACK: ESC");
+    text.setCharacterSize(20);
+    text.setFillColor(sf::Color::White);
+    
+    std::string controlInstructions;
+    
+    if (m_game.getLanguage() == "Japanese")
+    {
+        // Japanese
+        if (m_state == MenuState::LANGUAGE) {
+            controlInstructions = "下: S   決定: D";
+        } 
+        else if (m_state == MenuState::MAIN) {
+            controlInstructions = "下: S   決定: D   戻る: ESC";
+        } 
+        else { // LEVEL_SELECT
+            controlInstructions = "下: S   決定: D   戻る: ESC";
+        }
     }
+    else
+    {
+        // English
+        if (m_state == MenuState::LANGUAGE) {
+            controlInstructions = "DOWN: S  SELECT: D";
+        } 
+        else if (m_state == MenuState::MAIN) {
+            controlInstructions = "DOWN: S  SELECT: D  BACK: ESC";
+        } 
+        else { // LEVEL_SELECT
+            controlInstructions = "DOWN: S  SELECT: D  BACK: ESC";
+        }
+    }
+    
+    text.setString(sf::String::fromUtf8(
+        controlInstructions.begin(),
+        controlInstructions.end()
+    ));
     
     text.setPosition(20.f, m_game.window().getSize().y - 40.f);
     m_game.window().draw(text);
@@ -112,7 +171,12 @@ void Scene_Menu::renderLanguageMenu(sf::Text& text, float startY, float spacing)
     // Increase vertical spacing for language menu
     startY = 150.f;  // Position the "SELECT LANGUAGE" text higher
     
-    text.setString("SELECT LANGUAGE:");
+    std::string langSelectText = "SELECT LANGUAGE / 言語を選択してください";
+    text.setString(sf::String::fromUtf8(
+        langSelectText.begin(),
+        langSelectText.end()
+    ));
+    
     text.setPosition(m_game.window().getSize().x / 2 - text.getLocalBounds().width / 2, startY);
     m_game.window().draw(text);
 
@@ -123,7 +187,10 @@ void Scene_Menu::renderLanguageMenu(sf::Text& text, float startY, float spacing)
     float languageSpacing = spacing * 2;  // Double the spacing between language options
     
     for (size_t i = 0; i < m_languageOptions.size(); ++i) {
-        text.setString(m_languageOptions[i]);
+        text.setString(sf::String::fromUtf8(
+            m_languageOptions[i].begin(),
+            m_languageOptions[i].end()
+        ));
         text.setPosition(m_game.window().getSize().x / 2 - text.getLocalBounds().width / 2, startY + i * languageSpacing);
         text.setFillColor((i == m_selectedLanguageIndex) ? sf::Color::Blue : sf::Color::White);
         m_game.window().draw(text);
@@ -131,12 +198,15 @@ void Scene_Menu::renderLanguageMenu(sf::Text& text, float startY, float spacing)
 }
 
 void Scene_Menu::renderMainMenu(sf::Text& text, float startY, float spacing) {
-    // Position for the centered "PLAY STORY" option
+    // Position for the centered first option
     startY = 250.f;
     
-    // Draw "PLAY STORY" much larger and centered
-    text.setString(m_mainMenuOptions[0]); // "PLAY STORY"
-    text.setCharacterSize(70); // Larger font size for PLAY STORY
+    // Draw first option much larger and centered
+    text.setString(sf::String::fromUtf8(
+        m_displayMenuOptions[0].begin(),
+        m_displayMenuOptions[0].end()
+    ));
+    text.setCharacterSize(70); // Larger font size for first option
     text.setPosition(m_game.window().getSize().x / 2 - text.getLocalBounds().width / 2, startY);
     text.setFillColor((0 == m_selectedMainMenuIndex) ? sf::Color::Blue : sf::Color::White);
     m_game.window().draw(text);
@@ -144,13 +214,16 @@ void Scene_Menu::renderMainMenu(sf::Text& text, float startY, float spacing) {
     // Reset character size for other options
     text.setCharacterSize(40);
     
-    // More space after PLAY STORY before showing other options
+    // More space after first option before showing other options
     startY += spacing * 4.5f;
     
     // Draw the rest of the menu options below with standard spacing
     float mainMenuSpacing = spacing * 1.5f;
-    for (size_t i = 1; i < m_mainMenuOptions.size(); ++i) {
-        text.setString(m_mainMenuOptions[i]);
+    for (size_t i = 1; i < m_displayMenuOptions.size(); ++i) {
+        text.setString(sf::String::fromUtf8(
+            m_displayMenuOptions[i].begin(),
+            m_displayMenuOptions[i].end()
+        ));
         text.setPosition(m_game.window().getSize().x / 2 - text.getLocalBounds().width / 2, startY + (i-1) * mainMenuSpacing);
         text.setFillColor((i == m_selectedMainMenuIndex) ? sf::Color::Blue : sf::Color::White);
         m_game.window().draw(text);
@@ -161,7 +234,13 @@ void Scene_Menu::renderLevelSelectMenu(sf::Text& text, float startY, float spaci
     // Start higher on the screen
     startY = 120.f;
     
-    text.setString("SELECT LEVEL:");
+    // Use the string directly for UTF-8 conversion
+    std::string levelSelectText = (m_language == "Japanese") ? "レベルを選択:" : "SELECT LEVEL:";
+    text.setString(sf::String::fromUtf8(
+        levelSelectText.begin(),
+        levelSelectText.end()
+    ));
+    
     text.setPosition(m_game.window().getSize().x / 2 - text.getLocalBounds().width / 2, startY);
     m_game.window().draw(text);
 
@@ -169,7 +248,6 @@ void Scene_Menu::renderLevelSelectMenu(sf::Text& text, float startY, float spaci
     startY += spacing * 2;
     
     // Don't use scrolling - show all levels with appropriate spacing
-    // Based on the screenshot, we want to fit all levels on one screen
     float levelSpacing = 35.f;  // Fixed spacing value to ensure all levels fit
     
     // Based on the number of levels, we might adjust the spacing
@@ -178,7 +256,10 @@ void Scene_Menu::renderLevelSelectMenu(sf::Text& text, float startY, float spaci
     }
     
     for (size_t i = 0; i < m_levelOptions.size(); ++i) {
-        text.setString(m_levelOptions[i]);
+        text.setString(sf::String::fromUtf8(
+            m_levelOptions[i].begin(),
+            m_levelOptions[i].end()
+        ));
         text.setPosition(m_game.window().getSize().x / 2 - text.getLocalBounds().width / 2, startY + i * levelSpacing);
         text.setFillColor((i == m_selectedLevelIndex) ? sf::Color::Blue : sf::Color::White);
         m_game.window().draw(text);
@@ -187,7 +268,6 @@ void Scene_Menu::renderLevelSelectMenu(sf::Text& text, float startY, float spaci
 
 void Scene_Menu::update(float deltaTime) {
     (void)deltaTime;
-    // You could add animation or other time-based updates here
 }
 
 void Scene_Menu::sDoAction(const Action& action) {
@@ -232,16 +312,37 @@ void Scene_Menu::handleDownAction() {
     }
 }
 
+
 void Scene_Menu::handleSelectAction() {
     switch (m_state) {
         case MenuState::LANGUAGE:
-            m_language = m_languageOptions[m_selectedLanguageIndex];
-            m_state = MenuState::MAIN;
+            {
+                // Get the selected language from options
+                std::string selectedLanguage = m_languageOptions[m_selectedLanguageIndex];
+                
+                // Convert 日本語 to Japanese for internal use
+                if (selectedLanguage == "日本語") {
+                    m_language = "Japanese";
+                } else {
+                    m_language = selectedLanguage;
+                }
+                
+                // Store language in GameEngine
+                m_game.setLanguage(m_language);
+                
+                // Update menu translations based on selected language
+                updateMenuTranslations();
+                m_state = MenuState::MAIN;
+            }
             break;
             
         case MenuState::MAIN:
             {
-                std::string selectedOption = m_mainMenuOptions[m_selectedMainMenuIndex];
+                // Get the index of the selected option, which is the same in both arrays
+                int selectedIndex = m_selectedMainMenuIndex;
+                
+                // Use the English option for logic checks
+                std::string selectedOption = m_mainMenuOptions[selectedIndex];
                 
                 if (selectedOption == "PLAY MAIN STORY") {
                     // Start with the intro story screen
@@ -251,7 +352,6 @@ void Scene_Menu::handleSelectAction() {
                     m_state = MenuState::LEVEL_SELECT;
                 } 
                 else if (selectedOption == "LEVEL EDITOR") {
-                    std::cout << "[DEBUG] Opening Level Editor...\n";
                     m_game.changeScene("EDITOR", std::make_shared<Scene_LevelEditor>(m_game));
                 } 
                 else if (selectedOption == "QUIT") {

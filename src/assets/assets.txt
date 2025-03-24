@@ -1,6 +1,5 @@
-Font Tech fonts/font.ttf
 Font Menu fonts/font.ttf
-Font Mario fonts/font.ttf
+Font Japanese fonts/jpn.ttf
 
 Texture TexStand Player/ancient_rome/a_stand100Anim.png
 Texture TexRun Player/ancient_rome/a_run1004.png

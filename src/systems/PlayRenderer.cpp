@@ -79,51 +79,101 @@ void PlayRenderer::renderDialogue(DialogueSystem* dialogueSystem)
                          boxWidth - (portraitSize + 30.f) : 
                          boxWidth - portraitSize - 30.f;
 
-    dialogueSystem->speakerText.setFont(m_game.assets().getFont("Menu"));
+    // Choose the right font based on language
+    const sf::Font& fontToUse = (m_game.getLanguage() == "Japanese") ? 
+                                m_game.assets().getFont("Japanese") : 
+                                m_game.assets().getFont("Menu");
+    
+    // Set the speaker text font
+    dialogueSystem->speakerText.setFont(fontToUse);
     dialogueSystem->speakerText.setCharacterSize(30);
     dialogueSystem->speakerText.setFillColor(message->speakerColor);
+    
     std::string speakerWithUniverse;
-    if (message->speaker == "????") {
-        speakerWithUniverse = message->speaker + " [Universe #" + std::to_string(m_game.alternateUniverseNumber) + "]";
-    } 
-    else if (message->speaker == "????????" || message->speaker.find("Future") != std::string::npos || message->speaker.find("Ancient") != std::string::npos || message->speaker== "Legionary" || message->speaker== "Legionary" || message->speaker== "Emperor" ) {
-        speakerWithUniverse = message->speaker + " [Universe #" + std::to_string(m_game.alternateUniverseNumber2) + "]";
-    }
-    else if (message->speaker.find("GUIDE") != std::string::npos) {
-        speakerWithUniverse = message->speaker;
+    if (m_game.getLanguage() == "English") {
+        // Original English logic
+        if (message->speaker == "????????" || (message->speaker.find("Alien Legionary") != std::string::npos)) {
+            speakerWithUniverse = message->speaker + " [Universe #" + std::to_string(m_game.universeNumber) + "]";
+        } 
+        else if (message->speaker.find("GUIDE") != std::string::npos) {
+            speakerWithUniverse = message->speaker;
+        } else {
+            speakerWithUniverse = message->speaker + " [Universe #" + std::to_string(m_game.alternateUniverseNumber2) + "]";
+        }
     } else {
-        speakerWithUniverse = message->speaker + " [Universe #" + std::to_string(m_game.universeNumber) + "]";
+        // Japanese localization
+        if (message->speaker == "????????" || (message->speaker.find("エイリアン兵士") != std::string::npos)) {
+            speakerWithUniverse = message->speaker + " [宇宙 #" + std::to_string(m_game.universeNumber) + "]";
+        } 
+        else if (message->speaker.find("ガイド") != std::string::npos) {
+            speakerWithUniverse = message->speaker;
+        } else {
+            speakerWithUniverse = message->speaker + " [宇宙 #" + std::to_string(m_game.alternateUniverseNumber2) + "]";
+        }
     }
-    dialogueSystem->speakerText.setString(speakerWithUniverse);
+    dialogueSystem->speakerText.setString(
+        sf::String::fromUtf8(
+            speakerWithUniverse.begin(), 
+            speakerWithUniverse.end()
+        )
+    );
     dialogueSystem->speakerText.setPosition(textX, boxY + 15.f);
 
-    dialogueSystem->messageText.setFont(m_game.assets().getFont("Menu"));
+    // Set the message text font
+    dialogueSystem->messageText.setFont(fontToUse);
     dialogueSystem->messageText.setCharacterSize(message->messageFontSize); 
     dialogueSystem->messageText.setFillColor(message->messageColor);
-    dialogueSystem->messageText.setString(dialogueSystem->getDisplayedText());
+    auto displayed = dialogueSystem->getDisplayedText();
+    dialogueSystem->messageText.setString(
+        sf::String::fromUtf8(
+            displayed.begin(), 
+            displayed.end()
+        )
+    );
     dialogueSystem->messageText.setPosition(textX, boxY + 50.f);
-
-    if (!dialogueSystem->isTyping()) {
-        dialogueSystem->continueText.setFont(m_game.assets().getFont("Menu"));
-        dialogueSystem->continueText.setCharacterSize(16);
-        dialogueSystem->continueText.setFillColor(sf::Color::White);
-
-        if (dialogueSystem->isWaitingAfterCompletion()) {
-            int remainingTime = static_cast<int>(5.0f - dialogueSystem->getCompletionTimer());
-            dialogueSystem->continueText.setString("Continuing in " + std::to_string(remainingTime) + " seconds...");
-        } else {
-            dialogueSystem->continueText.setString("Press ATTACK to continue...");
-        }
-
-        // Adjust continue text position based on box width
-        dialogueSystem->continueText.setPosition(boxX + boxWidth - 200.f, boxY - 25.f);
-        m_game.window().draw(dialogueSystem->continueText);
-    }
 
     m_game.window().draw(dialogueSystem->dialogueBox);
     m_game.window().draw(dialogueSystem->portraitSprite);
     m_game.window().draw(dialogueSystem->speakerText);
     m_game.window().draw(dialogueSystem->messageText);
+
+    if (!dialogueSystem->isTyping()) 
+    {
+        // Set up font once
+        dialogueSystem->continueText.setFont(fontToUse);
+        dialogueSystem->continueText.setCharacterSize(16);
+        dialogueSystem->continueText.setFillColor(sf::Color::White);
+    
+        // Calculate remaining time if we are waiting
+        int remainingTime = static_cast<int>(5.0f - dialogueSystem->getCompletionTimer());
+    
+        // Japanese texts
+        std::string japWaiting = std::to_string(remainingTime) + "秒後に続行します...";
+        std::string japPrompt  = "スペースキーで続行...";
+    
+        // English texts
+        std::string engWaiting = "Continuing in " + std::to_string(remainingTime) + " seconds...";
+        std::string engPrompt  = "Press SPACE to continue...";
+    
+        // Pick waiting or prompt version
+        std::string chosenText = dialogueSystem->isWaitingAfterCompletion()
+            ? (m_game.getLanguage() == "Japanese" ? japWaiting : engWaiting)
+            : (m_game.getLanguage() == "Japanese" ? japPrompt  : engPrompt);
+    
+        // Convert from UTF-8 so SFML renders correctly
+        dialogueSystem->continueText.setString(
+            sf::String::fromUtf8(chosenText.begin(), chosenText.end())
+        );
+    
+        float continueTextHeight = dialogueSystem->continueText.getLocalBounds().height;
+        float continueTextOffsetX = (message->speaker == "エイリアン兵士" || message->speaker == "***ガイド***" || message->speaker == "Alien Legionary" || message->speaker == "***GUIDE***") ? 150.f : 10.f;
+
+        dialogueSystem->continueText.setPosition(
+            boxX + continueTextOffsetX,
+            boxY + boxHeight - continueTextHeight - 10.f
+        );
+        m_game.window().draw(dialogueSystem->continueText);
+    }
 
     m_game.window().setView(currentView);
 }
@@ -782,13 +832,25 @@ void PlayRenderer::render() {
     
         // Determina l’era (PRESENT, PAST, ALTERED PRESENT) dal worldType
         std::string centerEra;
-        if      (m_game.worldType == "Alien")   centerEra = "PRESENT (YEAR: 2135)";
-        else if (m_game.worldType == "Ancient") centerEra = "PAST (YEAR: 225)";
-        else if (m_game.worldType == "Future")  centerEra = "ALTERED PRESENT (YEAR: 2135)";
-
-        // Add Universe number
-        m_game.worldType == "Alien" ? centerEra += " | Universe #" + std::to_string(m_game.universeNumber) : centerEra += " | Universe #" + std::to_string(m_game.alternateUniverseNumber2);
-    
+        if (m_game.getLanguage() == "English") {
+            // Original English era text
+            if      (m_game.worldType == "Alien")   centerEra = "PRESENT (YEAR: 2135)";
+            else if (m_game.worldType == "Ancient") centerEra = "PAST (YEAR: 225)";
+            else if (m_game.worldType == "Future")  centerEra = "ALTERED PRESENT (YEAR: 2135)";
+            
+            // Add Universe number in English
+            m_game.worldType == "Alien" ? centerEra += " | Universe #" + std::to_string(m_game.universeNumber) 
+                                        : centerEra += " | Universe #" + std::to_string(m_game.alternateUniverseNumber2);
+        } else {
+            // Japanese era text
+            if      (m_game.worldType == "Alien")   centerEra = "現在 (西暦: 2135年)";
+            else if (m_game.worldType == "Ancient") centerEra = "過去 (西暦: 225年)";
+            else if (m_game.worldType == "Future")  centerEra = "変化した現在 (西暦: 2135年)";
+            
+            // Add Universe number in Japanese
+            m_game.worldType == "Alien" ? centerEra += " | 宇宙 #" + std::to_string(m_game.universeNumber) 
+                                        : centerEra += " | 宇宙 #" + std::to_string(m_game.alternateUniverseNumber2);
+        }
         // ----- LATO SINISTRO: NOME LIVELLO + SCORE -----
         {
             // 1) Nome del livello (es. "ANCIENT ROME (NIGHT)")
@@ -816,10 +878,15 @@ void PlayRenderer::render() {
         // ----- CENTRO: ERA (PRESENT, PAST, ALTERED PRESENT) -----
         {
             sf::Text eraText;
-            eraText.setFont(m_game.assets().getFont("Menu"));
+            eraText.setFont(m_game.assets().getFont("Japanese"));
             eraText.setCharacterSize(28); // Più grande
             eraText.setFillColor(sf::Color::White);
-            eraText.setString(centerEra);
+            
+            // Set text with UTF-8 conversion for proper Japanese support
+            eraText.setString(sf::String::fromUtf8(
+                centerEra.begin(),
+                centerEra.end()
+            ));
     
             sf::FloatRect textRect = eraText.getLocalBounds();
             float centerX = (windowSize.x - textRect.width) * 0.5f;

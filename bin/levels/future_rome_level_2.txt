@@ -1,3 +1,4 @@
+# World: Future
 Tile Ground 0 0
 Tile Ground 1 0
 Tile Ground 2 0
@@ -42,8 +43,6 @@ Tile Ground 21 1
 Tile Ground 20 1
 Tile Ground 19 1
 Tile Ground 21 0
-Tile Brick 9 4
-Tile Brick 10 4
 Tile Brick 22 1
 Tile Brick 22 0
 Tile Brick 23 0
@@ -345,8 +344,6 @@ Tile Ground 138 2
 Tile Ground 137 3
 Tile Ground 137 0
 Tile Armor 6 2
-Tile Box1 15 7
-Tile Box1 16 7
 Tile Ground 51 2
 Tile Ground 51 3
 Tile Ground 50 2
@@ -405,8 +402,10 @@ Tile Box1 120 4
 Tile Box1 125 4
 Tile Treasure 115 7
 Tile Treasure 120 7
-Tile Box1 15 4
-Tile Box1 16 4
+Tile Treasure 15 7
+Tile Treasure 16 7
+Tile Treasure 15 4
+Tile Treasure 16 4
 Player 2 2
 Dec BushSmall 12 2
 Dec BushSmall 18 2

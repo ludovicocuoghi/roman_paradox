@@ -28,33 +28,68 @@ DialogueSystem::DialogueSystem(GameEngine& game, EntityManager& entityManager)
       speakerText(),
       messageText(),
       portraitSprite(),
-      dialogueFont()
+      dialogueFont(),
+      japaneseFontJpn(),
+      m_language(game.getLanguage())
 {
-    if (!dialogueFont.loadFromFile(getResourcePath("font/font.ttf"))) {
+    // Load default font
+    if (!dialogueFont.loadFromFile(getResourcePath("fonts/jpn.ttf"))) {
         std::cerr << "[ERROR] Could not load font!\n";
+    }
+    
+    // Load Japanese font
+    if (!japaneseFontJpn.loadFromFile(getResourcePath("fonts/jpn.ttf"))) {
+        std::cerr << "[ERROR] Could not load Japanese font!\n";
     }
 
     // Initialize with default values, actual dimensions will be set in renderDialogue
     dialogueBox.setSize(sf::Vector2f(600.f, 150.f));
     dialogueBox.setFillColor(sf::Color(0, 0, 0, 200));
 
-    continueText.setFont(dialogueFont);
-    continueText.setCharacterSize(14);
-    continueText.setString("Press ATTACK to continue...");
+    // Use the appropriate font based on language
+    sf::Font& currentFont = (m_language == "Japanese") ? japaneseFontJpn : dialogueFont;
 
-    speakerText.setFont(dialogueFont);
+    continueText.setFont(currentFont);
+    continueText.setCharacterSize(14);
+    continueText.setString((m_language == "Japanese") ? "続行するには スペースキー を押してください..." : "Press SPACE to continue...");
+
+    speakerText.setFont(currentFont);
     speakerText.setCharacterSize(20);
     speakerText.setFillColor(m_speakerColor);
 
-    messageText.setFont(dialogueFont);
+    messageText.setFont(currentFont);
     messageText.setCharacterSize(18);
     messageText.setFillColor(m_messageColor);
 
     portraitSprite.setTexture(m_portraitTexture);
 
-    (void)m_game; // Silence unused warning temporarily if m_game is not yet used
-
-    std::cout << "[DEBUG] DialogueSystem initialized\n";
+    std::cout << "[DEBUG] DialogueSystem initialized with language: " << m_language << "\n";
+}
+// Update your DialogueSystem::setLanguage method
+void DialogueSystem::setLanguage(const std::string& language)
+{
+    std::cout << "[DEBUG] DialogueSystem::setLanguage() called with: " << language << "\n";
+    
+    // Skip update if language is already set
+    if (m_language == language) {
+        std::cout << "[DEBUG] Language already set to: " << language << ", skipping update\n";
+        return;
+    }
+    
+    m_language = language;
+    
+    // Use the appropriate font based on language
+    sf::Font& currentFont = (m_language == "Japanese") ? japaneseFontJpn : dialogueFont;
+    
+    // Update all text elements with the new font
+    continueText.setFont(currentFont);
+    speakerText.setFont(currentFont);
+    messageText.setFont(currentFont);
+    
+    // Update continue text based on language
+    continueText.setString((m_language == "Japanese") ? "続行するには スペースキー を押してください..." : "Press SPACE to continue...");
+    
+    std::cout << "[DEBUG] DialogueSystem language updated to: " << language << "\n";
 }
 
 void DialogueSystem::addDialogueTrigger(float xPosition, const std::vector<DialogueMessage>& dialogue)
@@ -115,8 +150,10 @@ void DialogueSystem::startNewMessage(const DialogueMessage& message)
     dialogueBox.setPosition(message.dialogueBoxPosition);
     dialogueBox.setSize(sf::Vector2f(message.boxWidth, message.boxHeight));
 
-    continueText.setPosition(dialogueBox.getPosition().x + 10.f, dialogueBox.getPosition().y - 20.f);
-
+    continueText.setPosition(
+        dialogueBox.getPosition().x + dialogueBox.getSize().x - continueText.getLocalBounds().width - 10.f,
+        dialogueBox.getPosition().y + dialogueBox.getSize().y - continueText.getLocalBounds().height - 15.f
+    );
     if (!message.portraitPath.empty() && !m_portraitTexture.loadFromFile(message.portraitPath)) {
         std::cerr << "[WARNING] Could not load portrait: " << message.portraitPath << "\n";
     }
@@ -125,6 +162,11 @@ void DialogueSystem::startNewMessage(const DialogueMessage& message)
     m_speakerColor = message.speakerColor;
     m_messageColor = message.messageColor;
     m_portraitOnLeft = message.portraitOnLeft;
+
+    // Use the appropriate font based on language
+    sf::Font& currentFont = (m_language == "Japanese") ? japaneseFontJpn : dialogueFont;
+    speakerText.setFont(currentFont);
+    messageText.setFont(currentFont);
 
     messageText.setCharacterSize(message.messageFontSize);
 
@@ -238,10 +280,14 @@ void DialogueSystem::update(float deltaTime)
         // Get current message explicitly and update rendering positions/colors each frame
         const DialogueMessage* currentMessage = getCurrentMessage();
         if (currentMessage) {
+            // Use the appropriate font based on language
+            sf::Font& currentFont = (m_language == "Japanese") ? japaneseFontJpn : dialogueFont;
+            speakerText.setFont(currentFont);
+            messageText.setFont(currentFont);
+            continueText.setFont(currentFont);
+
             dialogueBox.setPosition(currentMessage->dialogueBoxPosition);
             dialogueBox.setSize(sf::Vector2f(currentMessage->boxWidth, currentMessage->boxHeight));
-
-            continueText.setPosition(dialogueBox.getPosition().x + 10.f, dialogueBox.getPosition().y - 20.f);
 
             // Update colors and font sizes explicitly per frame
             speakerText.setFillColor(currentMessage->speakerColor);
@@ -263,8 +309,10 @@ void DialogueSystem::update(float deltaTime)
                 messageText.setPosition(dialogueBox.getPosition().x + 10.f, dialogueBox.getPosition().y + 40.f);
             }
 
-            // Set continue text explicitly above box
-            continueText.setPosition(dialogueBox.getPosition().x + 10.f, dialogueBox.getPosition().y - 25.f);
+            continueText.setPosition(
+                dialogueBox.getPosition().x + dialogueBox.getSize().x - continueText.getLocalBounds().width - 10.f,
+                dialogueBox.getPosition().y + dialogueBox.getSize().y - continueText.getLocalBounds().height - 15.f
+            );
         }
     }
 }

@@ -7,6 +7,7 @@
 class Scene_GameOver : public Scene {
 private:
     std::string m_levelPath;
+    std::string m_language;  // Added language member variable
     int m_selectedOption;  // 0 = Restart, 1 = Level Selection
 
     void renderGameOverText();

@@ -27,6 +27,7 @@ private:
     void renderLanguageMenu(sf::Text& text, float startY, float spacing);
     void renderMainMenu(sf::Text& text, float startY, float spacing);
     void renderLevelSelectMenu(sf::Text& text, float startY, float spacing);
+    void updateMenuTranslations();
     
     void handleUpAction();
     void handleDownAction();
@@ -44,4 +45,7 @@ private:
     size_t m_selectedLevelIndex;
     
     std::string m_language;
+    std::vector<std::string> m_displayMenuOptions;  // For display only
+    std::map<std::string, std::string> m_menuOptionMap;  // Maps Japanese display options to English code options
+
 };

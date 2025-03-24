@@ -51,6 +51,8 @@ public:
     int universeNumber;
     int alternateUniverseNumber;
     int alternateUniverseNumber2;
+    void setLanguage(const std::string& language);
+    const std::string& getLanguage() const { return m_language; }
 
 private:
     void sUserInput();
@@ -72,4 +74,5 @@ private:
     std::string m_currentLevel;
     std::string m_pendingLevelChange;
     std::map<std::string, std::string> m_levelConnections;
+    std::string m_language = "English";
 };

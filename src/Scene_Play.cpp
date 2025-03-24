@@ -65,7 +65,8 @@ Scene_Play::Scene_Play(GameEngine& game, const std::string& levelPath)
       m_score(0),
       m_movementSystem(game, m_entityManager, m_cameraView, m_lastDirection),
       m_spawner(game, m_entityManager),
-      m_enemyAISystem(m_entityManager, m_spawner, m_game)
+      m_enemyAISystem(m_entityManager, m_spawner, m_game),
+      m_language(game.getLanguage())
 {
     std::cout << "[DEBUG] Scene_Play constructor: levelPath = " << levelPath << std::endl;
 
@@ -313,6 +314,8 @@ void Scene_Play::initializeDialogues()
     m_dialogueSystem = std::make_shared<DialogueSystem>(m_game, m_entityManager);
 
     m_enemyAISystem.setDialogueSystem(m_dialogueSystem);
+
+    m_dialogueSystem->setLanguage(m_game.getLanguage());
     
     // Add dialogue triggers based on the current level
     std::string levelName = extractLevelName(m_levelPath);
@@ -323,1153 +326,2638 @@ void Scene_Play::initializeDialogues()
     
     // Setup dialogue triggers based on level
     if (levelName == "alien_rome_level_1.txt") {
-        std::vector<DialogueMessage> Dialogue1 = {
-            {
-                "????",                          // speaker
-                "I HAVE FINALLY FOUND YOU!!",            // message
-                basePath + "future_fast.png",        // portraitPath
-                false,                                            // portraitOnLeft
-                sf::Color::Cyan,
-                sf::Color::Red,
-                sf::Vector2f(750.f, 450.f),
-                750.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                40,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            },
-            {
-                "????",                               // speaker
-                "YOU DAMNED ALIEN...",            // message
-                basePath + "future_fast.png",        // portraitPath
-                false,                                            // portraitOnLeft
-                sf::Color::Cyan,
-                sf::Color::Red,
-                sf::Vector2f(750.f, 450.f),
-                750.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                40,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            },
-            {
-                "????",                               // speaker
-                "I WILL MAKE YOU PAY FOR WHAT YOU DID!!!",            // message
-                basePath + "future_fast.png",        // portraitPath
-                false,                                            // portraitOnLeft
-                sf::Color::Cyan,
-                sf::Color::Red,
-                sf::Vector2f(500.f, 450.f),
-                1000.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                40,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            },
-            {
-                "Alien Legionary",                               // speaker
-                "Who are you ?!",            // message
-                basePath + "alien_ancient.png",        // portraitPath
-                true,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(250.f, 450.f),
-                650.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                40,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            },
-            {
-                "***GUIDE***",                               // speaker
-                "(Press SPACE to Attack)",            // message
-                basePath + "alien_ancient.png",        // portraitPath
-                true,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(50.f, 300.f),
-                850.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                50,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            },
-            {
-                "***GUIDE***",                               // speaker
-                "(Hold M to activate your shield)",            // message
-                basePath + "alien_ancient.png",        // portraitPath
-                true,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(50.f, 300.f),
-                900.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                50,                                               // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            },
-        };
-        m_dialogueSystem->addDialogueTrigger(1300, Dialogue1);
-        std::vector<DialogueMessage> Dialogue2 = {
-            {
-                "Alien Legionary",                               // speaker
-                "Have I met him before?",            // message
-                basePath + "alien_ancient.png",        // portraitPath
-                true,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(50.f, 450.f),
-                650.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                35,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            }
-        };
-        m_dialogueSystem->addDialogueTrigger(1700, Dialogue2);
-        std::vector<DialogueMessage> introDialogue = {
-            {
-                "Alien Legionary",                               // speaker
-                "HELP!!!",                                       // message
-                basePath + "alien_ancient_right.png",  // portraitPath
-                false,                                           // portraitOnLeft
-                sf::Color::Yellow,                               // speakerColor
-                sf::Color::Red,                                  // messageColor
-                sf::Vector2f(800.f, 450.f),                      // dialogueBoxPosition
-                650.f,                                           // boxWidth - compact for short message
-                150.f,                                           // boxHeight
-                50,                                              // messageFontSize - larger for emphasis
-                true                                            // useTypewriterEffect - immediate display
-            },
-            {
-                "Alien Legionary",
-                "WE ARE BEING INVADED!!",
-                basePath + "alien_ancient_right.png",
-                false,
-                sf::Color::Yellow,
-                sf::Color::Red,
-                sf::Vector2f(800.f, 450.f),
-                650.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                40,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            }
-        };
-        m_dialogueSystem->addDialogueTrigger(2000, introDialogue);
-        std::vector<DialogueMessage> Dialogue3 = {
-            {
-                "Alien Legionary",                               // speaker
-                "Who are these shadow legionnaires???",            // message
-                basePath + "alien_ancient_left.png",        // portraitPath
-                true,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(150.f, 450.f),
-                850.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                30,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            },
-            {
-                "Alien Legionary",                               // speaker
-                "And why are they invading us??",            // message
-                basePath + "alien_ancient_left.png",        // portraitPath
-                true,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(150.f, 450.f),
-                700.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                30,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            }
-        };
-        m_dialogueSystem->addDialogueTrigger(4300, Dialogue3);
-        std::vector<DialogueMessage> Dialogue4 = {
-            {
-                "Alien Legionary",                               // speaker
-                "They can destroy everything they hit...",            // message
-                basePath + "alien_ancient_left.png",        // portraitPath
-                true,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(50.f, 450.f),
-                700.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                25,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            },
-            {
-                "Alien Legionary",                               // speaker
-                "I must avoid them at all costs!",            // message
-                basePath + "alien_ancient_left.png",        // portraitPath
-                true,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(50.f, 450.f),
-                700.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                26,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            }
-        };
-        m_dialogueSystem->addDialogueTrigger(6500, Dialogue4);
-        std::vector<DialogueMessage> Dialogue5 = {
-            {
-                "Alien Legionary",                               // speaker
-                "AAAHH!!",            // message
-                basePath + "alien_ancient_right.png",        // portraitPath
-                false,                                            // portraitOnLeft
-                sf::Color::Yellow,
-                sf::Color::Red,
-                sf::Vector2f(800.f, 500.f),
-                650.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                40,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            },
-            {
-                "Alien Legionary",                               // speaker
-                "HELP!!!",            // message
-                basePath + "alien_ancient_right.png",        // portraitPath
-                false,                                            // portraitOnLeft
-                sf::Color::Yellow,
-                sf::Color::Red,
-                sf::Vector2f(800.f, 500.f),
-                650.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                40,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            }
-        };
-        m_dialogueSystem->addDialogueTrigger(10500, Dialogue5);
+        if (m_language == "English") {
+            std::vector<DialogueMessage> Dialogue0 = {
+                {
+                    "Alien Legionary (Comrade)",                               // speaker
+                    "HELP!!!",                                       // message
+                    basePath + "alien_ancient_right.png",  // portraitPath
+                    false,                                           // portraitOnLeft
+                    sf::Color::Yellow,                               // speakerColor
+                    sf::Color::Red,                                  // messageColor
+                    sf::Vector2f(800.f, 450.f),                      // dialogueBoxPosition
+                    650.f,                                           // boxWidth - compact for short message
+                    150.f,                                           // boxHeight
+                    50,                                              // messageFontSize - larger for emphasis
+                    true                                            // useTypewriterEffect - immediate display
+                },
+                {
+                    "Alien Legionary (Comrade)",
+                    "WE ARE BEING INVADED!!",
+                    basePath + "alien_ancient_right.png",
+                    false,
+                    sf::Color::Yellow,
+                    sf::Color::Red,
+                    sf::Vector2f(800.f, 450.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    40,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "***GUIDE**",                           // speaker
+                    "Press A or D to move LEFT or RIGHT",            // message
+                    basePath + "ancient_alien_right.png",       // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 200.f),
+                    1100.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    40,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "***GUIDE***",                           // speaker
+                    "Press W to JUMP",            // message
+                    basePath + "ancient_alien_right.png",       // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 200.f),
+                    1100.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    40,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+            };
+            m_dialogueSystem->addDialogueTrigger(100, Dialogue0);
+            std::vector<DialogueMessage> Dialogue1 = {
+                {
+                    "????",                          // speaker
+                    "I HAVE FINALLY FOUND YOU!!",            // message
+                    basePath + "future_fast.png",        // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Cyan,
+                    sf::Color::Red,
+                    sf::Vector2f(750.f, 450.f),
+                    750.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    40,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "????",                               // speaker
+                    "YOU DAMNED ALIEN...",            // message
+                    basePath + "future_fast.png",        // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Cyan,
+                    sf::Color::Red,
+                    sf::Vector2f(750.f, 450.f),
+                    750.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    40,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "????",                               // speaker
+                    "I WILL MAKE YOU PAY FOR WHAT YOU DID!!!",            // message
+                    basePath + "future_fast.png",        // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Cyan,
+                    sf::Color::Red,
+                    sf::Vector2f(500.f, 450.f),
+                    1000.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    40,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "Alien Legionary",                               // speaker
+                    "Who are you ?!",            // message
+                    basePath + "alien_ancient.png",        // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(250.f, 450.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    40,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+            };
+            m_dialogueSystem->addDialogueTrigger(1300, Dialogue1);
+            std::vector<DialogueMessage> Dialogue2 = {
+                {
+                    "Alien Legionary",                               // speaker
+                    "Have I met him before?",            // message
+                    basePath + "alien_ancient.png",        // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(50.f, 450.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    35,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+            };
+            m_dialogueSystem->addDialogueTrigger(1700, Dialogue2);
+            std::vector<DialogueMessage> introDialogue = {
+                {
+                    "Alien Legionary (Comrade)",                               // speaker
+                    "RUN!!!",                                       // message
+                    basePath + "alien_ancient_right.png",  // portraitPath
+                    false,                                           // portraitOnLeft
+                    sf::Color::Yellow,                               // speakerColor
+                    sf::Color::Red,                                  // messageColor
+                    sf::Vector2f(800.f, 450.f),                      // dialogueBoxPosition
+                    650.f,                                           // boxWidth - compact for short message
+                    150.f,                                           // boxHeight
+                    50,                                              // messageFontSize - larger for emphasis
+                    true                                            // useTypewriterEffect - immediate display
+                },
+                {
+                    "Alien Legionary (Comrade)",
+                    "THEY ARE INVINCIBLE!!",
+                    basePath + "alien_ancient_right.png",
+                    false,
+                    sf::Color::Yellow,
+                    sf::Color::Red,
+                    sf::Vector2f(800.f, 450.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    40,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+            };
+            m_dialogueSystem->addDialogueTrigger(2000, introDialogue);
+            std::vector<DialogueMessage> Dialogue3 = {
+                {
+                    "Alien Legionary",                               // speaker
+                    "Who are these shadow legionnaires???",            // message
+                    basePath + "alien_ancient_left.png",        // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(150.f, 450.f),
+                    850.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "Alien Legionary",                               // speaker
+                    "And why are they invading us??",            // message
+                    basePath + "alien_ancient_left.png",        // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(150.f, 450.f),
+                    700.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+            };
+            m_dialogueSystem->addDialogueTrigger(4300, Dialogue3);
+            std::vector<DialogueMessage> Dialogue4 = {
+                {
+                    "Alien Legionary",                               // speaker
+                    "They can destroy everything they hit...",            // message
+                    basePath + "alien_ancient_left.png",        // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(50.f, 450.f),
+                    700.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    25,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "Alien Legionary",                               // speaker
+                    "I must avoid them at all costs!",            // message
+                    basePath + "alien_ancient_left.png",        // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(50.f, 450.f),
+                    700.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    26,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+            };
+            m_dialogueSystem->addDialogueTrigger(6500, Dialogue4);
+            std::vector<DialogueMessage> Dialogue5 = {
+                {
+                    "Alien Legionary (Comrade)",                               // speaker
+                    "AAAHH!!",            // message
+                    basePath + "alien_ancient_right.png",        // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Yellow,
+                    sf::Color::Red,
+                    sf::Vector2f(800.f, 500.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    40,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "Alien Legionary (Comrade)",                               // speaker
+                    "HELP!!!",            // message
+                    basePath + "alien_ancient_right.png",        // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Yellow,
+                    sf::Color::Red,
+                    sf::Vector2f(800.f, 500.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    40,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+            };
+            m_dialogueSystem->addDialogueTrigger(10500, Dialogue5);
+        } else {
+                std::vector<DialogueMessage> Dialogue0 = {
+                    {
+                        "エイリアン兵士（仲間）",                               // speaker
+                        "助けて！！！",                                       // message
+                        basePath + "alien_ancient_right.png",  // portraitPath
+                        false,                                           // portraitOnLeft
+                        sf::Color::Yellow,                               // speakerColor
+                        sf::Color::Red,                                  // messageColor
+                        sf::Vector2f(800.f, 450.f),                      // dialogueBoxPosition
+                        700.f,                                           // boxWidth - compact for short message
+                        150.f,                                           // boxHeight
+                        50,                                              // messageFontSize - larger for emphasis
+                        true                                            // useTypewriterEffect - immediate display
+                    },
+                    {
+                        "エイリアン兵士（仲間）",
+                        "侵略されている！！",
+                        basePath + "alien_ancient_right.png",
+                        false,
+                        sf::Color::Yellow,
+                        sf::Color::Red,
+                        sf::Vector2f(800.f, 450.f),
+                        700.f,                                           // boxWidth - medium for medium message
+                        150.f,                                           // boxHeight
+                        50,                                              // messageFontSize - still emphasized
+                        true                                             // useTypewriterEffect
+                    },
+                    {
+                        "***ガイド***",                              // speaker (could also leave it as GUIDE)
+                        "AキーまたはDキーで左右に移動",               // message
+                        basePath + "ancient_alien_right.png",        // portraitPath
+                        true,                                       // portraitOnLeft
+                        sf::Color::Magenta,
+                        sf::Color::White,
+                        sf::Vector2f(0.f, 200.f),
+                        900.f,                                      // boxWidth
+                        150.f,                                       // boxHeight
+                        50,                                          // messageFontSize
+                        true                                         // useTypewriterEffect
+                    },
+                    {
+                        "***ガイド***",
+                        "Wキーでジャンプ",
+                        basePath + "ancient_alien_right.png",
+                        true,
+                        sf::Color::Magenta,
+                        sf::Color::White,
+                        sf::Vector2f(0.f, 200.f),
+                        750.f,
+                        150.f,
+                        50,
+                        true
+                    }
+                };
+                m_dialogueSystem->addDialogueTrigger(100, Dialogue0);
+                std::vector<DialogueMessage> Dialogue1 = {
+                    {
+                        "????",                          // speaker
+                        "ついに見つけたぞ！！",            // message
+                        basePath + "future_fast.png",        // portraitPath
+                        false,                                            // portraitOnLeft
+                        sf::Color::Cyan,
+                        sf::Color::Red,
+                        sf::Vector2f(750.f, 450.f),
+                        750.f,                                           // boxWidth - medium for medium message
+                        150.f,                                           // boxHeight
+                        40,                                              // messageFontSize - still emphasized
+                        true                                             // useTypewriterEffect
+                    },
+                    {
+                        "????",                               // speaker
+                        "貴様、呪われた異星人め...",            // message
+                        basePath + "future_fast.png",        // portraitPath
+                        false,                                            // portraitOnLeft
+                        sf::Color::Cyan,
+                        sf::Color::Red,
+                        sf::Vector2f(750.f, 450.f),
+                        750.f,                                           // boxWidth - medium for medium message
+                        150.f,                                           // boxHeight
+                        40,                                              // messageFontSize - still emphasized
+                        true                                             // useTypewriterEffect
+                    },
+                    {
+                        "????",                               // speaker
+                        "お前の所業の報いを受けさせてやる！！！",            // message
+                        basePath + "future_fast.png",        // portraitPath
+                        false,                                            // portraitOnLeft
+                        sf::Color::Cyan,
+                        sf::Color::Red,
+                        sf::Vector2f(500.f, 450.f),
+                        1000.f,                                           // boxWidth - medium for medium message
+                        150.f,                                           // boxHeight
+                        40,                                              // messageFontSize - still emphasized
+                        true                                             // useTypewriterEffect
+                    },
+                    {
+                        "エイリアン兵士",                               // speaker
+                        "お前は何者だ？！",            // message
+                        basePath + "alien_ancient.png",        // portraitPath
+                        true,                                            // portraitOnLeft
+                        sf::Color::Magenta,
+                        sf::Color::White,
+                        sf::Vector2f(250.f, 450.f),
+                        650.f,                                           // boxWidth - medium for medium message
+                        150.f,                                           // boxHeight
+                        40,                                              // messageFontSize - still emphasized
+                        true                                             // useTypewriterEffect
+                    }
+                };
+                m_dialogueSystem->addDialogueTrigger(1300, Dialogue1);
+                std::vector<DialogueMessage> Dialogue2 = {
+                    {
+                        "エイリアン兵士",                               // speaker
+                        "彼に前に会ったことがあるのか？",            // message
+                        basePath + "alien_ancient.png",        // portraitPath
+                        true,                                            // portraitOnLeft
+                        sf::Color::Magenta,
+                        sf::Color::White,
+                        sf::Vector2f(50.f, 450.f),
+                        650.f,                                           // boxWidth - medium for medium message
+                        150.f,                                           // boxHeight
+                        35,                                              // messageFontSize - still emphasized
+                        true                                             // useTypewriterEffect
+                    }
+                };
+                m_dialogueSystem->addDialogueTrigger(1700, Dialogue2);
+                std::vector<DialogueMessage> introDialogue = {
+                    {
+                        "エイリアン兵士（仲間）",                               // speaker
+                        "逃げろ！！！",                                       // message
+                        basePath + "alien_ancient_right.png",  // portraitPath
+                        false,                                           // portraitOnLeft
+                        sf::Color::Yellow,                               // speakerColor
+                        sf::Color::Red,                                  // messageColor
+                        sf::Vector2f(800.f, 450.f),                      // dialogueBoxPosition
+                        650.f,                                           // boxWidth - compact for short message
+                        150.f,                                           // boxHeight
+                        50,                                              // messageFontSize - larger for emphasis
+                        true                                            // useTypewriterEffect - immediate display
+                    },
+                    {
+                        "エイリアン兵士（仲間）",
+                        "奴らは無敵だ！！",
+                        basePath + "alien_ancient_right.png",
+                        false,
+                        sf::Color::Yellow,
+                        sf::Color::Red,
+                        sf::Vector2f(800.f, 450.f),
+                        650.f,                                           // boxWidth - medium for medium message
+                        150.f,                                           // boxHeight
+                        40,                                              // messageFontSize - still emphasized
+                        true                                             // useTypewriterEffect
+                    }
+                };
+                m_dialogueSystem->addDialogueTrigger(2000, introDialogue);
+            std::vector<DialogueMessage> Dialogue3 = {
+                {
+                    "エイリアン兵士",
+                    "あの黒い兵士たちは何者だ…？",
+                    basePath + "alien_ancient_left.png",
+                    true,
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(150.f, 450.f),
+                    850.f,
+                    150.f,
+                    30,
+                    true
+                },
+                {
+                    "エイリアン兵士",
+                    "なぜ我々を襲うんだ…？",
+                    basePath + "alien_ancient_left.png",
+                    true,
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(150.f, 450.f),
+                    700.f,
+                    150.f,
+                    30,
+                    true
+                }
+            };
+            m_dialogueSystem->addDialogueTrigger(4300, Dialogue3);
+        
+            std::vector<DialogueMessage> Dialogue4 = {
+                {
+                    "エイリアン兵士",
+                    "奴らの攻撃はすべてを破壊する…",
+                    basePath + "alien_ancient_left.png",
+                    true,
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(50.f, 450.f),
+                    700.f,
+                    150.f,
+                    25,
+                    true
+                },
+                {
+                    "エイリアン兵士",
+                    "絶対に近づけちゃダメだ！",
+                    basePath + "alien_ancient_left.png",
+                    true,
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(50.f, 450.f),
+                    700.f,
+                    150.f,
+                    26,
+                    true
+                }
+            };
+            m_dialogueSystem->addDialogueTrigger(6500, Dialogue4);
+        
+            std::vector<DialogueMessage> Dialogue5 = {
+                {
+                    "エイリアン兵士（仲間）",
+                    "うわぁぁぁ！！",
+                    basePath + "alien_ancient_right.png",
+                    false,
+                    sf::Color::Yellow,
+                    sf::Color::Red,
+                    sf::Vector2f(800.f, 500.f),
+                    650.f,
+                    150.f,
+                    40,
+                    true
+                },
+                {
+                    "エイリアン兵士（仲間）",
+                    "助けてくれ！！",
+                    basePath + "alien_ancient_right.png",
+                    false,
+                    sf::Color::Yellow,
+                    sf::Color::Red,
+                    sf::Vector2f(800.f, 500.f),
+                    650.f,
+                    150.f,
+                    40,
+                    true
+                }
+            };
+            m_dialogueSystem->addDialogueTrigger(10500, Dialogue5);
+        }
     }
     else if (levelName ==  "alien_rome_level_2.txt") {
-        std::vector<DialogueMessage> Dialogue0 = {
-            {
-                "????????",                               // speaker
-                "The Invaders must..",            // message
-                basePath + "alien_super2.png",        // portraitPath
-                false,                                            // portraitOnLeft
-                sf::Color::Red,
-                sf::Color::White,
-                sf::Vector2f(800.f, 300.f),
-                600.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                40,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            },
-            {
-                "????????",                               // speaker
-                "PERISH!!!!!",            // message
-                basePath + "alien_super2.png",        // portraitPath
-                false,                                            // portraitOnLeft
-                sf::Color::Red,
-                sf::Color::White,
-                sf::Vector2f(800.f, 300.f),
-                600.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                50,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            },
-            {
-                "Alien Legionary",                               // speaker
-                "Invaders??",            // message
-                basePath + "alien_ancient.png",        // portraitPath
-                true,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(100.f, 300.f),
-                650.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                40,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            }
-            ,
-            {
-                "Alien Legionary",                               // speaker
-                "What is he talking about??",            // message
-                basePath + "alien_ancient.png",        // portraitPath
-                true,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(100.f, 300.f),
-                650.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                35,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            }
-        };
-        m_dialogueSystem->addDialogueTrigger(1450, Dialogue0);
-        std::vector<DialogueMessage> Dialogue1 = {
-            {
-                "Alien Legionary",                               // speaker
-                "Those things look like black holes...",            // message
-                basePath + "alien_ancient.png",        // portraitPath
-                true,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(100.f, 300.f),
-                700.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                26,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            },
-            {
-                "Alien Legionary",                               // speaker
-                "Could those warriors be coming from the...",            // message
-                basePath + "alien_ancient.png",        // portraitPath
-                true,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(100.f, 300.f),
-                750.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                26,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            },
-            {
-                "Alien Legionary",                               // speaker
-                "...Future?!",            // message
-                basePath + "alien_ancient.png",        // portraitPath
-                true,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(100.f, 300.f),
-                650.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                60,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            }
-        };
-        m_dialogueSystem->addDialogueTrigger(2200, Dialogue1);
-        std::vector<DialogueMessage> Dialogue2 = {
-            {
-                "Alien Legionary",                               // speaker
-                "I SAW THEM COMING OUT OF THAT BLACK HOLE!!!",            // message
-                basePath + "alien_ancient_right.png",        // portraitPath
-                false,                                            // portraitOnLeft
-                sf::Color::Yellow,
-                sf::Color::Red,
-                sf::Vector2f(500.f, 400.f),
-                950.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                30,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            },
-            {
-                "Alien Legionary",                               // speaker
-                "I heard black holes allow travel through space-time...",            // message
-                basePath + "alien_ancient.png",        // portraitPath
-                true,                                            // portraitOnLeft
-                sf::Color::Yellow,
-                sf::Color::White,
-                sf::Vector2f(0.f, 400.f),
-                1000.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                30,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            },
-            {
-                "Alien Legionary",                               // speaker
-                "Could it be the only way to escape??",            // message
-                basePath + "alien_ancient.png",        // portraitPath
-                true,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(0.f, 400.f),
-                750.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                30,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            },
-        };
-        m_dialogueSystem->addDialogueTrigger(11300, Dialogue2);
-        std::vector<DialogueMessage> Dialogue3 = {
-            {
-                "????????",                               // speaker
-                "DESTROY HIM BEFORE HE ESCAPES!!!",            // message
-                basePath + "alien_super2.png",        // portraitPath
-                false,                                            // portraitOnLeft
-                sf::Color::Red,
-                sf::Color::White,
-                sf::Vector2f(0.f, 300.f),
-                850.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                40,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            },
-            {
-                "Alien Legionary",                               // speaker
-                "I have no other choice then!!!",            // message
-                basePath + "alien_ancient.png",        // portraitPath
-                true,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(150.f, 500.f),
-                700.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                35,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            },
-            {
-                "Alien Legionary",                               // speaker
-                "I MUST JUMP IN THE BLACK HOLE!!!!",            // message
-                basePath + "alien_ancient.png",        // portraitPath
-                true,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(150.f, 500.f),
-                850.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                40,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            }
-        };
-        m_dialogueSystem->addDialogueTrigger(13500, Dialogue3);
+        if (m_language == "English") {
+            std::vector<DialogueMessage> Dialogue0 = {
+                {
+                    "????????",                               // speaker
+                    "The Invaders must..",            // message
+                    basePath + "alien_super2.png",        // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Red,
+                    sf::Color::White,
+                    sf::Vector2f(800.f, 300.f),
+                    600.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    40,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "????????",                               // speaker
+                    "PERISH!!!!!",            // message
+                    basePath + "alien_super2.png",        // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Red,
+                    sf::Color::White,
+                    sf::Vector2f(800.f, 300.f),
+                    600.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    50,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "Alien Legionary",                               // speaker
+                    "Invaders??",            // message
+                    basePath + "alien_ancient.png",        // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(100.f, 300.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    40,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "Alien Legionary",                               // speaker
+                    "What is he talking about??",            // message
+                    basePath + "alien_ancient.png",        // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(100.f, 300.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    35,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+            };
+            m_dialogueSystem->addDialogueTrigger(1450, Dialogue0);
+            std::vector<DialogueMessage> Dialogue1 = {
+                {
+                    "Alien Legionary",                               // speaker
+                    "Those things look like black holes...",            // message
+                    basePath + "alien_ancient.png",        // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(100.f, 300.f),
+                    700.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    26,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "Alien Legionary",                               // speaker
+                    "Could those warriors be coming from the...",            // message
+                    basePath + "alien_ancient.png",        // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(100.f, 300.f),
+                    750.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    26,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "Alien Legionary",                               // speaker
+                    "...Future?!",            // message
+                    basePath + "alien_ancient.png",        // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(100.f, 300.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    60,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+            };
+            m_dialogueSystem->addDialogueTrigger(2200, Dialogue1);
+            std::vector<DialogueMessage> Dialogue2 = {
+                {
+                    "Alien Legionary (Comrade)",                               // speaker
+                    "I SAW THEM COMING OUT OF THAT BLACK HOLE!!!",            // message
+                    basePath + "alien_ancient_right.png",        // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Yellow,
+                    sf::Color::Red,
+                    sf::Vector2f(500.f, 400.f),
+                    950.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "Alien Legionary",                               // speaker
+                    "I heard black holes allow travel through space-time...",            // message
+                    basePath + "alien_ancient.png",        // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Yellow,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 400.f),
+                    1000.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "Alien Legionary",                               // speaker
+                    "Could it be the only way to escape??",            // message
+                    basePath + "alien_ancient.png",        // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 400.f),
+                    750.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+            };
+            m_dialogueSystem->addDialogueTrigger(11300, Dialogue2);
+            std::vector<DialogueMessage> Dialogue3 = {
+                {
+                    "????????",                               // speaker
+                    "DESTROY HIM BEFORE HE ESCAPES!!!",            // message
+                    basePath + "alien_super2.png",        // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Red,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 300.f),
+                    850.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    40,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "Alien Legionary",                               // speaker
+                    "I have no other choice then!!!",            // message
+                    basePath + "alien_ancient.png",        // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(150.f, 500.f),
+                    700.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    35,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "Alien Legionary",                               // speaker
+                    "I MUST JUMP IN THE BLACK HOLE!!!!",            // message
+                    basePath + "alien_ancient.png",        // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(150.f, 500.f),
+                    850.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    40,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+            };
+            m_dialogueSystem->addDialogueTrigger(13500, Dialogue3);
+        } else {
+            // Japanese translation
+            std::vector<DialogueMessage> Dialogue0 = {
+                {
+                    "????????",                               // speaker
+                    "侵入者どもは...",            // message
+                    basePath + "alien_super2.png",        // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Red,
+                    sf::Color::White,
+                    sf::Vector2f(800.f, 300.f),
+                    600.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    40,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "????????",                               // speaker
+                    "死滅せよ！！！！！",            // message
+                    basePath + "alien_super2.png",        // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Red,
+                    sf::Color::White,
+                    sf::Vector2f(800.f, 300.f),
+                    600.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    50,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "エイリアン兵士",                               // speaker
+                    "侵入者？？",            // message
+                    basePath + "alien_ancient.png",        // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(100.f, 300.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    40,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "エイリアン兵士",                               // speaker
+                    "彼は何を言っているんだ？？",            // message
+                    basePath + "alien_ancient.png",        // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(100.f, 300.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    35,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+            };
+            m_dialogueSystem->addDialogueTrigger(1450, Dialogue0);
+            std::vector<DialogueMessage> Dialogue1 = {
+                {
+                    "エイリアン兵士",                               // speaker
+                    "あれはブラックホールのように見えるが...",            // message
+                    basePath + "alien_ancient.png",        // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(100.f, 300.f),
+                    700.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    26,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "エイリアン兵士",                               // speaker
+                    "あの戦士たちは...",            // message
+                    basePath + "alien_ancient.png",        // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(100.f, 300.f),
+                    750.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    26,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "エイリアン兵士",                               // speaker
+                    "...未来から来たのか！？",            // message
+                    basePath + "alien_ancient.png",        // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(100.f, 300.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    60,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+            };
+            m_dialogueSystem->addDialogueTrigger(2200, Dialogue1);
+            std::vector<DialogueMessage> Dialogue2 = {
+                {
+                    "エイリアン兵士（仲間）",                               // speaker
+                    "奴らがブラックホールから出てくるのを見たぞ！！！",            // message
+                    basePath + "alien_ancient_right.png",        // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Yellow,
+                    sf::Color::Red,
+                    sf::Vector2f(500.f, 400.f),
+                    950.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "エイリアン兵士",                               // speaker
+                    "ブラックホールは時空を超える通路だと聞いたことがある...",            // message
+                    basePath + "alien_ancient.png",        // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Yellow,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 400.f),
+                    1000.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "エイリアン兵士",                               // speaker
+                    "逃げる唯一の方法かもしれない！？",            // message
+                    basePath + "alien_ancient.png",        // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 400.f),
+                    750.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+            };
+            m_dialogueSystem->addDialogueTrigger(11300, Dialogue2);
+            std::vector<DialogueMessage> Dialogue3 = {
+                {
+                    "????????",                               // speaker
+                    "奴が逃げる前に破壊しろ！！！",            // message
+                    basePath + "alien_super2.png",        // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Red,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 300.f),
+                    850.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    40,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "エイリアン兵士",                               // speaker
+                    "他に選択肢はなさそうだ！！！",            // message
+                    basePath + "alien_ancient.png",        // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(150.f, 500.f),
+                    700.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    35,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "エイリアン兵士",                               // speaker
+                    "ブラックホールに飛び込むしかない！！！！",            // message
+                    basePath + "alien_ancient.png",        // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(150.f, 500.f),
+                    850.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    40,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+            };
+            m_dialogueSystem->addDialogueTrigger(13500, Dialogue3);
+        }
     }
     else if (levelName ==  "ancient_rome_level_1_day.txt") {
-        std::vector<DialogueMessage> Dialogue0 = {
-            {
-                "Alien Legionary",                               // speaker
-                "Where am I???",            // message
-                basePath + "alien_ancient.png",        // portraitPath
-                true,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(0.f, 400.f),
-                700.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                35,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            }
-        };
-        m_dialogueSystem->addDialogueTrigger(850, Dialogue0);
-        std::vector<DialogueMessage> Dialogue1 = {
-            {
-                "Alien Legionary",                               // speaker
-                "After jumping into that black hole..",            // message
-                basePath + "alien_ancient.png",        // portraitPath
-                true,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(0.f, 400.f),
-                700.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                30,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            },
-            {
-                "Alien Legionary",                               // speaker
-                "could it be possible that I moved to the dark warrios..",            // message
-                basePath + "alien_ancient.png",        // portraitPath
-                true,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(0.f, 400.f),
-                1000.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                30,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            },
-            {
-                "Alien Legionary",                               // speaker
-                "PAST????",            // message
-                basePath + "alien_ancient.png",        // portraitPath
-                true,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::Red,
-                sf::Vector2f(0.f, 400.f),
-                700.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                60,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            },
-        };
-        m_dialogueSystem->addDialogueTrigger(1000, Dialogue1);
-        std::vector<DialogueMessage> Dialogue2 = {
-            {
-                "Alien Legionary",                               // speaker
-                "Oh, there are golden stairs up there..",            // message
-                basePath + "alien_ancient.png",        // portraitPath
-                true,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(50.f, 400.f),
-                700.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                26,                                              // messageFontSize - still emphasized
-               
-            },
-            {
-                "Alien Legionary",                               // speaker
-                "They seem to lead to the black hole..",            // message
-                basePath + "alien_ancient.png",        // portraitPath
-                true,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(50.f, 400.f),
-                700.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                26,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            },
-            {
-                "Alien Legionary",                               // speaker
-                "But how can I get there??",            // message
-                basePath + "alien_ancient.png",        // portraitPath
-                true,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(50.f, 400.f),
-                700.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                26,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            },
-        };
-        m_dialogueSystem->addDialogueTrigger(1800, Dialogue2);
-        std::vector<DialogueMessage> Dialogue4 = {
-            {
-                "Legionary",                               // speaker
-                "WHO ARE YOU??",            // message
-                basePath + "ancient_normal.png",        // portraitPath
-                false,                                            // portraitOnLeft
-                sf::Color::Yellow,
-                sf::Color::White,
-                sf::Vector2f(850.f, 450.f),
-                600.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                40,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            },
-            {
-                "Legionary",                               // speaker
-                "GET OUT OF HERE!!!",            // message
-                basePath + "ancient_normal.png",        // portraitPath
-                false,                                            // portraitOnLeft
-                sf::Color::Yellow,
-                sf::Color::White,
-                sf::Vector2f(850.f, 450.f),
-                600.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                40,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            },
-        };
-        m_dialogueSystem->addDialogueTrigger(2400, Dialogue4);
-        std::vector<DialogueMessage> Dialogue5 = {
-            {
-                "Legionary",                               // speaker
-                "WE ARE BEING INVADED!",            // message
-                basePath + "ancient_normal.png",        // portraitPath
-                false,                                            // portraitOnLeft
-                sf::Color::Yellow,
-                sf::Color::White,
-                sf::Vector2f(850.f, 450.f),
-                650.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                40,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            },
-            {
-                "Legionary",                               // speaker
-                "SEND THE REINFORCEMENTS!!!",            // message
-                basePath + "ancient_normal.png",        // portraitPath
-                false,                                            // portraitOnLeft
-                sf::Color::Yellow,
-                sf::Color::White,
-                sf::Vector2f(600.f, 450.f),
-                800.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                40,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            },
-            {
-                "Alien Legionary",                               // speaker
-                "Oh no.. is this happening for REAL?!",            // message
-                basePath + "alien_ancient.png",        // portraitPath
-                true,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(50.f, 450.f),
-                750.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                30,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            },
-        };
-        m_dialogueSystem->addDialogueTrigger(3000, Dialogue5);
+        if (m_language == "English") {
+            std::vector<DialogueMessage> Dialogue0 = {
+                {
+                    "Alien Legionary",                               // speaker
+                    "Where am I???",            // message
+                    basePath + "alien_ancient.png",        // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 400.f),
+                    700.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    35,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+            };
+            m_dialogueSystem->addDialogueTrigger(850, Dialogue0);
+            std::vector<DialogueMessage> Dialogue1 = {
+                {
+                    "Alien Legionary",                               // speaker
+                    "After jumping into that black hole..",            // message
+                    basePath + "alien_ancient.png",        // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 400.f),
+                    700.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "Alien Legionary",                               // speaker
+                    "could it be possible that I moved to the dark warrios..",            // message
+                    basePath + "alien_ancient.png",        // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 400.f),
+                    1000.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "Alien Legionary",                               // speaker
+                    "PAST????",            // message
+                    basePath + "alien_ancient.png",        // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::Red,
+                    sf::Vector2f(0.f, 400.f),
+                    700.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    60,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+            };
+            m_dialogueSystem->addDialogueTrigger(1000, Dialogue1);
+            std::vector<DialogueMessage> Dialogue2 = {
+                {
+                    "Alien Legionary",                               // speaker
+                    "Oh, there are golden stairs up there..",            // message
+                    basePath + "alien_ancient.png",        // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(50.f, 400.f),
+                    700.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    26,                                              // messageFontSize - still emphasized
+                
+                },
+                {
+                    "Alien Legionary",                               // speaker
+                    "They seem to lead to the black hole..",            // message
+                    basePath + "alien_ancient.png",        // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(50.f, 400.f),
+                    700.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    26,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "Alien Legionary",                               // speaker
+                    "But how can I get there??",            // message
+                    basePath + "alien_ancient.png",        // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(50.f, 400.f),
+                    700.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    26,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+            };
+            m_dialogueSystem->addDialogueTrigger(1800, Dialogue2);
+            std::vector<DialogueMessage> Dialogue4 = {
+                {
+                    "Legionary",                               // speaker
+                    "WHO ARE YOU??",            // message
+                    basePath + "ancient_normal.png",        // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Yellow,
+                    sf::Color::White,
+                    sf::Vector2f(850.f, 450.f),
+                    600.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    40,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "Legionary",                               // speaker
+                    "GET OUT OF HERE!!!",            // message
+                    basePath + "ancient_normal.png",        // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Yellow,
+                    sf::Color::White,
+                    sf::Vector2f(850.f, 450.f),
+                    600.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    40,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+            };
+            m_dialogueSystem->addDialogueTrigger(2400, Dialogue4);
+            std::vector<DialogueMessage> Dialogue5 = {
+                {
+                    "Legionary",                               // speaker
+                    "WE ARE BEING INVADED!",            // message
+                    basePath + "ancient_normal.png",        // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Yellow,
+                    sf::Color::White,
+                    sf::Vector2f(850.f, 450.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    40,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "Legionary",                               // speaker
+                    "SEND THE REINFORCEMENTS!!!",            // message
+                    basePath + "ancient_normal.png",        // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Yellow,
+                    sf::Color::White,
+                    sf::Vector2f(600.f, 450.f),
+                    800.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    40,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "Alien Legionary",                               // speaker
+                    "Oh no.. is this happening for REAL?!",            // message
+                    basePath + "alien_ancient.png",        // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(50.f, 450.f),
+                    750.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+            };
+            m_dialogueSystem->addDialogueTrigger(3000, Dialogue5);
+        } else {
+            // Japanese translation
+            std::vector<DialogueMessage> Dialogue0 = {
+                {
+                    "エイリアン兵士",                               // speaker
+                    "私はどこにいる？？？",            // message
+                    basePath + "alien_ancient.png",        // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 400.f),
+                    700.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    35,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+            };
+            m_dialogueSystem->addDialogueTrigger(850, Dialogue0);
+            std::vector<DialogueMessage> Dialogue1 = {
+                {
+                    "エイリアン兵士",                               // speaker
+                    "ブラックホールに飛び込んだ後...",            // message
+                    basePath + "alien_ancient.png",        // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 400.f),
+                    700.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "エイリアン兵士",                               // speaker
+                    "もしかして暗黒の戦士たちの...",            // message
+                    basePath + "alien_ancient.png",        // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 400.f),
+                    1000.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "エイリアン兵士",                               // speaker
+                    "過去！？",            // message
+                    basePath + "alien_ancient.png",        // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::Red,
+                    sf::Vector2f(0.f, 400.f),
+                    700.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    60,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+            };
+            m_dialogueSystem->addDialogueTrigger(1000, Dialogue1);
+            std::vector<DialogueMessage> Dialogue2 = {
+                {
+                    "エイリアン兵士",                               // speaker
+                    "おっ、あそこに金の階段がある...",            // message
+                    basePath + "alien_ancient.png",        // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(50.f, 400.f),
+                    700.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    26,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "エイリアン兵士",                               // speaker
+                    "ブラックホールへと続いているようだ...",            // message
+                    basePath + "alien_ancient.png",        // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(50.f, 400.f),
+                    700.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    26,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "エイリアン兵士",                               // speaker
+                    "どうやって登れるんだ？？",            // message
+                    basePath + "alien_ancient.png",        // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(50.f, 400.f),
+                    700.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    26,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+            };
+            m_dialogueSystem->addDialogueTrigger(1800, Dialogue2);
+            std::vector<DialogueMessage> Dialogue4 = {
+                {
+                    "兵士",                               // speaker
+                    "貴様は何者だ！？",            // message
+                    basePath + "ancient_normal.png",        // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Yellow,
+                    sf::Color::White,
+                    sf::Vector2f(850.f, 450.f),
+                    600.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    40,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "兵士",                               // speaker
+                    "立ち去れ！！！",            // message
+                    basePath + "ancient_normal.png",        // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Yellow,
+                    sf::Color::White,
+                    sf::Vector2f(850.f, 450.f),
+                    600.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    40,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+            };
+            m_dialogueSystem->addDialogueTrigger(2400, Dialogue4);
+            std::vector<DialogueMessage> Dialogue5 = {
+                {
+                    "兵士",                               // speaker
+                    "敵襲だ！",            // message
+                    basePath + "ancient_normal.png",        // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Yellow,
+                    sf::Color::White,
+                    sf::Vector2f(850.f, 450.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    40,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "兵士",                               // speaker
+                    "増援を呼べ！！！",            // message
+                    basePath + "ancient_normal.png",        // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Yellow,
+                    sf::Color::White,
+                    sf::Vector2f(600.f, 450.f),
+                    800.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    40,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "エイリアン兵士",                               // speaker
+                    "まさか...これが現実なのか！？",            // message
+                    basePath + "alien_ancient.png",        // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(50.f, 450.f),
+                    750.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+            };
+            m_dialogueSystem->addDialogueTrigger(3000, Dialogue5);
+        }
     }
     else if (levelName ==  "ancient_rome_level_2_sunset.txt") {
-        std::vector<DialogueMessage> Dialogue1 = {
-            {
-                "Alien Legionary",                               // speaker
-                "I think I really am in the past..",            // message
-                basePath + "alien_ancient.png",        // portraitPath
-                true,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(0.f, 200.f),
-                800.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                26,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            },
-            {
-                "Alien Legionary",                               // speaker
-                "I guess I should continue exploring..",            // message
-                basePath + "alien_ancient.png",        // portraitPath
-                true,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(0.f, 200.f),
-                800.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                26,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            },
-            {
-                "Alien Legionary",                               // speaker
-                "..and find a way to go back to the present",            // message
-                basePath + "alien_ancient.png",        // portraitPath
-                true,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(0.f, 200.f),
-                800.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                26,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            },
-        };
-        m_dialogueSystem->addDialogueTrigger(150, Dialogue1);
-        std::vector<DialogueMessage> Dialogue2 = {
-            {
-                "Legionary",                                // speaker
-                "AAAAAH!",            // message
-                basePath + "ancient_normal.png",        // portraitPath
-                false,                                            // portraitOnLeft
-                sf::Color::Yellow,
-                sf::Color::White,
-                sf::Vector2f(500.f, 650.f),
-                650.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                40,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            },
-        };
-        m_dialogueSystem->addDialogueTrigger(850, Dialogue2);
-        std::vector<DialogueMessage> Dialogue3 = {
-            {
-                "Alien Legionary",                               // speaker
-                "hahaha..",            // message
-                basePath + "alien_ancient.png",        // portraitPath
-                true,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(100.f, 300.f),
-                650.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                35,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            },
-            {
-                "Alien Legionary",                               // speaker
-                "that was funny",            // message
-                basePath + "alien_ancient.png",        // portraitPath
-                true,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(100.f, 300.f),
-                650.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                35,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            },
-        };
-        m_dialogueSystem->addDialogueTrigger(1000, Dialogue3);
+        if (m_language == "English") {
+            std::vector<DialogueMessage> Dialogue1 = {
+                {
+                    "Alien Legionary",                               // speaker
+                    "I think I really am in the past..",            // message
+                    basePath + "alien_ancient.png",        // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 200.f),
+                    800.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    26,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "Alien Legionary",                               // speaker
+                    "I guess I should continue exploring..",            // message
+                    basePath + "alien_ancient.png",        // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 200.f),
+                    800.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    26,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "Alien Legionary",                               // speaker
+                    "..and find a way to go back to the present",            // message
+                    basePath + "alien_ancient.png",        // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 200.f),
+                    800.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    26,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+            };
+            m_dialogueSystem->addDialogueTrigger(150, Dialogue1);
+            std::vector<DialogueMessage> Dialogue2 = {
+                {
+                    "Legionary",                                // speaker
+                    "AAAAAH!",            // message
+                    basePath + "ancient_normal.png",        // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Yellow,
+                    sf::Color::White,
+                    sf::Vector2f(500.f, 650.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    40,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+            };
+            m_dialogueSystem->addDialogueTrigger(850, Dialogue2);
+            std::vector<DialogueMessage> Dialogue3 = {
+                {
+                    "Alien Legionary",                               // speaker
+                    "hahaha..",            // message
+                    basePath + "alien_ancient.png",        // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(100.f, 300.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    35,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "Alien Legionary",                               // speaker
+                    "that was funny",            // message
+                    basePath + "alien_ancient.png",        // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(100.f, 300.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    35,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+            };
+            m_dialogueSystem->addDialogueTrigger(1000, Dialogue3);
+        }else {
+            std::vector<DialogueMessage> Dialogue1 = {
+                {
+                    "エイリアン兵士",                               // speaker
+                    "本当に過去にいるようだ...",            // message
+                    basePath + "alien_ancient.png",        // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 200.f),
+                    800.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    26,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "エイリアン兵士",                               // speaker
+                    "探索を続けるべきだな...",            // message
+                    basePath + "alien_ancient.png",        // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 200.f),
+                    800.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    26,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "エイリアン兵士",                               // speaker
+                    "..そして現代に戻る方法を見つけないと",            // message
+                    basePath + "alien_ancient.png",        // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 200.f),
+                    800.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    26,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+            };
+            m_dialogueSystem->addDialogueTrigger(150, Dialogue1);
+            std::vector<DialogueMessage> Dialogue2 = {
+                {
+                    "兵士",                                // speaker
+                    "ぎゃあああぁぁ！",            // message
+                    basePath + "ancient_normal.png",        // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Yellow,
+                    sf::Color::White,
+                    sf::Vector2f(500.f, 650.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    40,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+            };
+            m_dialogueSystem->addDialogueTrigger(850, Dialogue2);
+            std::vector<DialogueMessage> Dialogue3 = {
+                {
+                    "エイリアン兵士",                               // speaker
+                    "wwwww",            // message
+                    basePath + "alien_ancient.png",        // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(100.f, 300.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    35,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "エイリアン兵士",                               // speaker
+                    "今のは笑えるわ",            // message
+                    basePath + "alien_ancient.png",        // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(100.f, 300.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    35,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+            };
+            m_dialogueSystem->addDialogueTrigger(1000, Dialogue3);
+        }
     }
     else if (levelName ==  "ancient_rome_level_3_night.txt") {
-        std::vector<DialogueMessage> Dialogue0 = {
-            {
-                "Legionary (Elite)",                               // speaker
-                "Are you the invader?",            // message
-                basePath + "ancient_elite.png",        // portraitPath
-                false,                                            // portraitOnLeft
-                sf::Color::Red,
-                sf::Color::White,
-                sf::Vector2f(700.f, 450.f),
-                700.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                35,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            },
-            {
-                "Legionary (Elite)",                                // speaker
-                "How dare you trespass on imperial lands?",            // message
-                basePath + "ancient_elite.png",        // portraitPath
-                false,                                            // portraitOnLeft
-                sf::Color::Red,
-                sf::Color::White,
-                sf::Vector2f(700.f, 450.f),
-                800.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                30,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            },
-            {
-                "Legionary (Elite)",                              // speaker
-                "We will protect the Emperor..",            // message
-                basePath + "ancient_elite.png",        // portraitPath
-                false,                                            // portraitOnLeft
-                sf::Color::Red,
-                sf::Color::White,
-                sf::Vector2f(700.f, 450.f),
-                700.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                30,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            }
-            ,
-            {
-                "Legionary (Elite)",                               // speaker
-                "AT ALL COSTS!!",            // message
-                basePath + "ancient_elite.png",        // portraitPath
-                false,                                            // portraitOnLeft
-                sf::Color::Red,
-                sf::Color::Red,
-                sf::Vector2f(700.f, 450.f),
-                700.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                50,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            }
-        };
-        m_dialogueSystem->addDialogueTrigger(200, Dialogue0);
-        std::vector<DialogueMessage> Dialogue1 = {
-            {
-                "Legionary (Elite)",                               // speaker
-                "STOP THE INVADER!!",            // message
-                basePath + "ancient_elite.png",        // portraitPath
-                false,                                            // portraitOnLeft
-                sf::Color::Red,
-                sf::Color::Red,
-                sf::Vector2f(0.f, 400.f),
-                650.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                50,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            }
-        };
-        m_dialogueSystem->addDialogueTrigger(11000, Dialogue1);
-        std::vector<DialogueMessage> Dialogue2 = {
-            {
-                "Alien Legionary",                               // speaker
-                "Does this golden portal lead to the Emperor?!",            // message
-                basePath + "alien_ancient.png",        // portraitPath
-                true,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(750.f, 400.f),
-                750.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                26,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            },
-            {
-                "Alien Legionary",                               // speaker
-                "There's only one way to find out!!",            // message
-                basePath + "alien_ancient.png",        // portraitPath
-                true,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(750.f, 400.f),
-                650.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                26,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            }
+        if (m_language == "English") {
+            std::vector<DialogueMessage> Dialogue0 = {
+                {
+                    "Legionary (Elite)",                               // speaker
+                    "Are you the invader?",            // message
+                    basePath + "ancient_elite.png",        // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Red,
+                    sf::Color::White,
+                    sf::Vector2f(700.f, 450.f),
+                    700.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    35,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "Legionary (Elite)",                                // speaker
+                    "How dare you trespass on imperial lands?",            // message
+                    basePath + "ancient_elite.png",        // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Red,
+                    sf::Color::White,
+                    sf::Vector2f(700.f, 450.f),
+                    800.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "Legionary (Elite)",                              // speaker
+                    "We will protect the Emperor..",            // message
+                    basePath + "ancient_elite.png",        // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Red,
+                    sf::Color::White,
+                    sf::Vector2f(700.f, 450.f),
+                    700.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "Legionary (Elite)",                               // speaker
+                    "AT ALL COSTS!!",            // message
+                    basePath + "ancient_elite.png",        // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Red,
+                    sf::Color::Red,
+                    sf::Vector2f(700.f, 450.f),
+                    700.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    50,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+            };
+            m_dialogueSystem->addDialogueTrigger(200, Dialogue0);
+            std::vector<DialogueMessage> Dialogue1 = {
+                {
+                    "Legionary (Elite)",                               // speaker
+                    "STOP THE INVADER!!",            // message
+                    basePath + "ancient_elite.png",        // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Red,
+                    sf::Color::Red,
+                    sf::Vector2f(0.f, 400.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    50,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+            };
+            m_dialogueSystem->addDialogueTrigger(11000, Dialogue1);
+            std::vector<DialogueMessage> Dialogue2 = {
+                {
+                    "Alien Legionary",                               // speaker
+                    "Does this golden portal lead to the Emperor?!",            // message
+                    basePath + "alien_ancient.png",        // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(750.f, 400.f),
+                    750.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    26,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "Alien Legionary",                               // speaker
+                    "There's only one way to find out!!",            // message
+                    basePath + "alien_ancient.png",        // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(750.f, 400.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    26,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
 
-        };
-        m_dialogueSystem->addDialogueTrigger(11200, Dialogue2);
+            };
+            m_dialogueSystem->addDialogueTrigger(11200, Dialogue2);
+        } else {
+            // Japanese translation
+            std::vector<DialogueMessage> Dialogue0 = {
+                {
+                    "兵士（精鋭）",                               // speaker
+                    "貴様が侵入者か？",            // message
+                    basePath + "ancient_elite.png",        // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Red,
+                    sf::Color::White,
+                    sf::Vector2f(700.f, 450.f),
+                    700.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    35,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "兵士（精鋭）",                                // speaker
+                    "よくも帝国の地を踏む勇気があったな？",            // message
+                    basePath + "ancient_elite.png",        // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Red,
+                    sf::Color::White,
+                    sf::Vector2f(700.f, 450.f),
+                    800.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "兵士（精鋭）",                              // speaker
+                    "我々は皇帝を守る..",            // message
+                    basePath + "ancient_elite.png",        // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Red,
+                    sf::Color::White,
+                    sf::Vector2f(700.f, 450.f),
+                    700.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "兵士（精鋭）",                               // speaker
+                    "どんな犠牲を払っても！！",            // message
+                    basePath + "ancient_elite.png",        // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Red,
+                    sf::Color::Red,
+                    sf::Vector2f(700.f, 450.f),
+                    700.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    50,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+            };
+            m_dialogueSystem->addDialogueTrigger(200, Dialogue0);
+            std::vector<DialogueMessage> Dialogue1 = {
+                {
+                    "兵士（精鋭）",                               // speaker
+                    "侵入者を止めろ！！",            // message
+                    basePath + "ancient_elite.png",        // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Red,
+                    sf::Color::Red,
+                    sf::Vector2f(0.f, 400.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    50,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+            };
+            m_dialogueSystem->addDialogueTrigger(11000, Dialogue1);
+            std::vector<DialogueMessage> Dialogue2 = {
+                {
+                    "エイリアン兵士",                               // speaker
+                    "この黄金の門は皇帝のもとへ続いているのか？！",            // message
+                    basePath + "alien_ancient.png",        // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(750.f, 400.f),
+                    750.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    26,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "エイリアン兵士",                               // speaker
+                    "確かめる方法はひとつだ！！",            // message
+                    basePath + "alien_ancient.png",        // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(750.f, 400.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    26,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+        
+            };
+            m_dialogueSystem->addDialogueTrigger(11200, Dialogue2);
+        }
     }
     else if (levelName ==  "ancient_rome_level_4_emperor_room.txt") {
-        std::vector<DialogueMessage> Dialogue0 = {
-            {
-                "Emperor",                               // speaker
-                "...And so you eventually got here..",            // message
-                basePath + "ancient_emperor.png",        // portraitPath
-                false,                                            // portraitOnLeft
-                sf::Color::Yellow,
-                sf::Color::White,
-                sf::Vector2f(800.f, 500.f),
-                700.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                30,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            },
-            {
-                "Emperor",                               // speaker
-                "..Alien Invader...",            // message
-                basePath + "ancient_emperor.png",        // portraitPath
-                false,                                            // portraitOnLeft
-                sf::Color::Yellow,
-                sf::Color::White,
-                sf::Vector2f(800.f, 500.f),
-                650.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                40,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            },
-            {
-                "Emperor",                             // speaker
-                "I am the Emperor of this kingdom...",            // message
-                basePath + "ancient_emperor.png",        // portraitPath
-                false,                                            // portraitOnLeft
-                sf::Color::Yellow,
-                sf::Color::White,
-                sf::Vector2f(800.f, 500.f),
-                700.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                30,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            },
-            {
-                "Emperor",                             // speaker
-                "How dare you come here!?",            // message
-                basePath + "ancient_emperor.png",        // portraitPath
-                false,                                            // portraitOnLeft
-                sf::Color::Yellow,
-                sf::Color::White,
-                sf::Vector2f(800.f, 500.f),
-                700.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                35,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            }
-            ,
-            {
-                "Alien Legionary",                               // speaker
-                "I came from the future...!!",            // message
-                basePath + "alien_ancient.png",       // portraitPath
-                false,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(0.f, 500.f),
-                650.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                30,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            }
-            ,
-            {
-                "Alien Legionary",                              // speaker
-                "Your future kingdom invaded my planet",            // message
-                basePath + "alien_ancient.png",       // portraitPath
-                false,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(0.f, 500.f),
-                800.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                30,                                             // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            }
-            ,
-            {
-                "Alien Legionary",                              // speaker
-                "And I came here through a black hole while escaping...",            // message
-                basePath + "alien_ancient.png",       // portraitPath
-                false,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(0.f, 500.f),
-                1000.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                30,                                             // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            }
-            ,
-            {
-                "Emperor",                             // speaker
-                "What are you even talking about?!?",            // message
-                basePath + "ancient_emperor.png",        // portraitPath
-                false,                                            // portraitOnLeft
-                sf::Color::Yellow,
-                sf::Color::White,
-                sf::Vector2f(750.f, 500.f),
-                750.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                30,                                             // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            },
-            {
-                "Emperor",                             // speaker
-                "Black holes?! What nonsense.",            // message
-                basePath + "ancient_emperor.png",        // portraitPath
-                false,                                            // portraitOnLeft
-                sf::Color::Yellow,
-                sf::Color::White,
-                sf::Vector2f(800.f, 500.f),
-                650.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                30,                                             // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            }
-            ,
-            {
-                "Emperor",                               // speaker
-                "YOU WILL PERISH!!!",            // message
-                basePath + "ancient_emperor.png",        // portraitPath
-                false,                                            // portraitOnLeft
-                sf::Color::Yellow,
-                sf::Color::Red,
-                sf::Vector2f(800.f, 500.f),
-                650.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                50,                                               // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            }
-        };
-        m_dialogueSystem->addDialogueTrigger(400, Dialogue0);
-        std::vector<DialogueMessage> LowHPAncientEmperorDialogue = {
-            {
-                "Emperor",                               // speaker
-                "I have no choice but to show you my true...",                           // message
-                basePath + "ancient_emperor.png", // portraitPath
-                false,                                   // portraitOnLeft
-                sf::Color::Cyan,                         // speakerColor
-                sf::Color::White,                          // messageColor
-                sf::Vector2f(600.f, 550.f),              // dialogueBoxPosition
-                910.f,                                   // boxWidth
-                150.f,                                   // boxHeight
-                30,                                      // messageFontSize
-                true                                     // useTypewriterEffect
-            },
-            {
-                "Emperor",                               // speaker
-                "POWER!",                           // message
-                basePath + "ancient_emperor.png", // portraitPath
-                false,                                   // portraitOnLeft
-                sf::Color::Cyan,                         // speakerColor
-                sf::Color::Red,                          // messageColor
-                sf::Vector2f(800.f, 550.f),              // dialogueBoxPosition
-                600.f,                                   // boxWidth
-                150.f,                                   // boxHeight
-                60,                                      // messageFontSize
-                true                                     // useTypewriterEffect
-            }
-        };
-        // Add the named dialogues to our system
-        m_dialogueSystem->addNamedDialogue("emperor_lowHP", LowHPAncientEmperorDialogue);
-        std::vector<DialogueMessage> phasedefeatedAncientDialogue = {
-            {
-                "Emperor",                              // speaker
-                "YOU.. DAMNED... ALIEN...",            // message
-                basePath + "ancient_emperor_defeated.png",       // portraitPath
-                false,                                            // portraitOnLeft
-                sf::Color::Yellow,
-                sf::Color::White,
-                sf::Vector2f(100.f, 400.f),
-                650.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                30,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            },
-            {
-                "Alien Legionary",                             // speaker
-                "I can't get close to him...",            // message
-                basePath + "alien_ancient.png",        // portraitPath
-                true,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(600.f, 400.f),
-                650.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                30,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            },
-            {
-                "Alien Legionary",                             // speaker
-                "but he seems exhausted...",            // message
-                basePath + "alien_ancient.png",        // portraitPath
-                true,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(600.f, 400.f),
-                650.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                30,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            },
-            {
-                "Alien Legionary",                             // speaker
-                "Now's my chance to escape!",            // message
-                basePath + "alien_ancient.png",        // portraitPath
-                true,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(600.f, 400.f),
-                700.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                30,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            },
+        if (m_language == "English") {
+            std::vector<DialogueMessage> Dialogue0 = {
+                {
+                    "Emperor",                               // speaker
+                    "...And so you eventually got here..",            // message
+                    basePath + "ancient_emperor.png",        // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Yellow,
+                    sf::Color::White,
+                    sf::Vector2f(800.f, 500.f),
+                    700.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "Emperor",                               // speaker
+                    "..Alien Invader...",            // message
+                    basePath + "ancient_emperor.png",        // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Yellow,
+                    sf::Color::White,
+                    sf::Vector2f(800.f, 500.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    40,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "Emperor",                             // speaker
+                    "I am the Emperor of this kingdom...",            // message
+                    basePath + "ancient_emperor.png",        // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Yellow,
+                    sf::Color::White,
+                    sf::Vector2f(800.f, 500.f),
+                    700.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "Emperor",                             // speaker
+                    "How dare you come here!?",            // message
+                    basePath + "ancient_emperor.png",        // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Yellow,
+                    sf::Color::White,
+                    sf::Vector2f(800.f, 500.f),
+                    700.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    35,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "Alien Legionary",                               // speaker
+                    "I came from the future...!!",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "Alien Legionary",                              // speaker
+                    "Your future kingdom invaded my planet",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    800.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "Alien Legionary",                              // speaker
+                    "And I came here through a black hole while escaping...",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    1000.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "Emperor",                             // speaker
+                    "What are you even talking about?!?",            // message
+                    basePath + "ancient_emperor.png",        // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Yellow,
+                    sf::Color::White,
+                    sf::Vector2f(750.f, 500.f),
+                    750.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "Emperor",                             // speaker
+                    "Black holes?! What nonsense.",            // message
+                    basePath + "ancient_emperor.png",        // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Yellow,
+                    sf::Color::White,
+                    sf::Vector2f(800.f, 500.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "Emperor",                               // speaker
+                    "YOU WILL PERISH!!!",            // message
+                    basePath + "ancient_emperor.png",        // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Yellow,
+                    sf::Color::Red,
+                    sf::Vector2f(800.f, 500.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    50,                                               // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+            };
+            m_dialogueSystem->addDialogueTrigger(400, Dialogue0);
+            std::vector<DialogueMessage> LowHPAncientEmperorDialogue = {
+                {
+                    "Emperor",                               // speaker
+                    "I have no choice but to show you my true...",                           // message
+                    basePath + "ancient_emperor.png", // portraitPath
+                    false,                                   // portraitOnLeft
+                    sf::Color::Cyan,                         // speakerColor
+                    sf::Color::White,                          // messageColor
+                    sf::Vector2f(600.f, 550.f),              // dialogueBoxPosition
+                    910.f,                                   // boxWidth
+                    150.f,                                   // boxHeight
+                    30,                                      // messageFontSize
+                    true                                     // useTypewriterEffect
+                },
+                {
+                    "Emperor",                               // speaker
+                    "POWER!",                           // message
+                    basePath + "ancient_emperor.png", // portraitPath
+                    false,                                   // portraitOnLeft
+                    sf::Color::Cyan,                         // speakerColor
+                    sf::Color::Red,                          // messageColor
+                    sf::Vector2f(800.f, 550.f),              // dialogueBoxPosition
+                    600.f,                                   // boxWidth
+                    150.f,                                   // boxHeight
+                    60,                                      // messageFontSize
+                    true                                     // useTypewriterEffect
+                }
+            };
+            // Add the named dialogues to our system
+            m_dialogueSystem->addNamedDialogue("emperor_lowHP", LowHPAncientEmperorDialogue);
+            std::vector<DialogueMessage> phasedefeatedAncientDialogue = {
+                {
+                    "Emperor",                              // speaker
+                    "YOU.. DAMNED... ALIEN...",            // message
+                    basePath + "ancient_emperor_defeated.png",       // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Yellow,
+                    sf::Color::White,
+                    sf::Vector2f(100.f, 400.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "Alien Legionary",                             // speaker
+                    "I can't get close to him...",            // message
+                    basePath + "alien_ancient.png",        // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(600.f, 400.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "Alien Legionary",                             // speaker
+                    "but he seems exhausted...",            // message
+                    basePath + "alien_ancient.png",        // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(600.f, 400.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "Alien Legionary",                             // speaker
+                    "Now's my chance to escape!",            // message
+                    basePath + "alien_ancient.png",        // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(600.f, 400.f),
+                    700.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
 
-        };
-        m_dialogueSystem->addNamedDialogue("emperor_ancient_defeated", phasedefeatedAncientDialogue);
-        std::vector<DialogueMessage> DialogueFinalEmperorRoom0 = {
-            {
-                "Alien Legionary",                               // speaker
-                "Ah! The barrier blocking the way is gone...",            // message
-               basePath + "alien_ancient.png",       // portraitPath
-                true,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(0.f, 500.f),
-                900.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                30,                                             // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            }
-        };
-        m_dialogueSystem->addDialogueTrigger(4400, DialogueFinalEmperorRoom0);
-        std::vector<DialogueMessage> DialogueFinalEmperorRoom1 = {
-            {
-                "Alien Legionary",                               // speaker
-                "Lets go back home...",            // message
-               basePath + "alien_ancient.png",       // portraitPath
-                true,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(0.f, 500.f),
-                650.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                30,                                             // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            }
-        };
-        m_dialogueSystem->addDialogueTrigger(6000, DialogueFinalEmperorRoom1);
+            };
+            m_dialogueSystem->addNamedDialogue("emperor_ancient_defeated", phasedefeatedAncientDialogue);
+            std::vector<DialogueMessage> DialogueFinalEmperorRoom0 = {
+                {
+                    "Alien Legionary",                               // speaker
+                    "Ah! The barrier blocking the way is gone...",            // message
+                basePath + "alien_ancient.png",       // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    900.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+            };
+            m_dialogueSystem->addDialogueTrigger(4400, DialogueFinalEmperorRoom0);
+            std::vector<DialogueMessage> DialogueFinalEmperorRoom1 = {
+                {
+                    "Alien Legionary",                               // speaker
+                    "Lets go back home...",            // message
+                basePath + "alien_ancient.png",       // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+            };
+            m_dialogueSystem->addDialogueTrigger(6000, DialogueFinalEmperorRoom1);
+        } else {
+            // Japanese translation
+            std::vector<DialogueMessage> Dialogue0 = {
+                {
+                    "皇帝",                               // speaker
+                    "...ついにここまで来たか..",            // message
+                    basePath + "ancient_emperor.png",        // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Yellow,
+                    sf::Color::White,
+                    sf::Vector2f(800.f, 500.f),
+                    700.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "皇帝",                               // speaker
+                    "..異星の侵入者よ...",            // message
+                    basePath + "ancient_emperor.png",        // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Yellow,
+                    sf::Color::White,
+                    sf::Vector2f(800.f, 500.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    40,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "皇帝",                             // speaker
+                    "私はこの王国の皇帝だ...",            // message
+                    basePath + "ancient_emperor.png",        // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Yellow,
+                    sf::Color::White,
+                    sf::Vector2f(800.f, 500.f),
+                    700.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "皇帝",                             // speaker
+                    "よくもここへ来たな！？",            // message
+                    basePath + "ancient_emperor.png",        // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Yellow,
+                    sf::Color::White,
+                    sf::Vector2f(800.f, 500.f),
+                    700.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    35,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "エイリアン兵士",                               // speaker
+                    "私は未来から来た...！！",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "エイリアン兵士",                              // speaker
+                    "未来のあなたの王国が私の惑星を侵略した",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    800.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "エイリアン兵士",                              // speaker
+                    "そして逃げている途中でブラックホールを通ってここに...",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    1000.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "皇帝",                             // speaker
+                    "何を言っているのだ？！",            // message
+                    basePath + "ancient_emperor.png",        // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Yellow,
+                    sf::Color::White,
+                    sf::Vector2f(750.f, 500.f),
+                    750.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "皇帝",                             // speaker
+                    "ブラックホール？！馬鹿げた話だ。",            // message
+                    basePath + "ancient_emperor.png",        // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Yellow,
+                    sf::Color::White,
+                    sf::Vector2f(800.f, 500.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "皇帝",                               // speaker
+                    "死せよ！！！",            // message
+                    basePath + "ancient_emperor.png",        // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Yellow,
+                    sf::Color::Red,
+                    sf::Vector2f(800.f, 500.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    50,                                               // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+            };
+            m_dialogueSystem->addDialogueTrigger(400, Dialogue0);
+            std::vector<DialogueMessage> LowHPAncientEmperorDialogue = {
+                {
+                    "皇帝",                               // speaker
+                    "我が真の力を見せるしかないようだな...",                           // message
+                    basePath + "ancient_emperor.png", // portraitPath
+                    false,                                   // portraitOnLeft
+                    sf::Color::Cyan,                         // speakerColor
+                    sf::Color::White,                          // messageColor
+                    sf::Vector2f(600.f, 550.f),              // dialogueBoxPosition
+                    910.f,                                   // boxWidth
+                    150.f,                                   // boxHeight
+                    30,                                      // messageFontSize
+                    true                                     // useTypewriterEffect
+                },
+                {
+                    "皇帝",                               // speaker
+                    "力よ！",                           // message
+                    basePath + "ancient_emperor.png", // portraitPath
+                    false,                                   // portraitOnLeft
+                    sf::Color::Cyan,                         // speakerColor
+                    sf::Color::Red,                          // messageColor
+                    sf::Vector2f(800.f, 550.f),              // dialogueBoxPosition
+                    600.f,                                   // boxWidth
+                    150.f,                                   // boxHeight
+                    60,                                      // messageFontSize
+                    true                                     // useTypewriterEffect
+                }
+            };
+            // Add the named dialogues to our system
+            m_dialogueSystem->addNamedDialogue("emperor_lowHP", LowHPAncientEmperorDialogue);
+            std::vector<DialogueMessage> phasedefeatedAncientDialogue = {
+                {
+                    "皇帝",                              // speaker
+                    "貴様...この...異星人め...",            // message
+                    basePath + "ancient_emperor_defeated.png",       // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Yellow,
+                    sf::Color::White,
+                    sf::Vector2f(100.f, 400.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "エイリアン兵士",                             // speaker
+                    "近づけないな...",            // message
+                    basePath + "alien_ancient.png",        // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(600.f, 400.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "エイリアン兵士",                             // speaker
+                    "だが疲れ切っているようだ...",            // message
+                    basePath + "alien_ancient.png",        // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(600.f, 400.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "エイリアン兵士",                             // speaker
+                    "今こそ逃げるチャンスだ！",            // message
+                    basePath + "alien_ancient.png",        // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(600.f, 400.f),
+                    700.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+        
+            };
+            m_dialogueSystem->addNamedDialogue("emperor_ancient_defeated", phasedefeatedAncientDialogue);
+            std::vector<DialogueMessage> DialogueFinalEmperorRoom0 = {
+                {
+                    "エイリアン兵士",                               // speaker
+                    "あっ！道を塞いでいたバリアが消えた...",            // message
+                basePath + "alien_ancient.png",       // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    900.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+            };
+            m_dialogueSystem->addDialogueTrigger(4400, DialogueFinalEmperorRoom0);
+            std::vector<DialogueMessage> DialogueFinalEmperorRoom1 = {
+                {
+                    "エイリアン兵士",                               // speaker
+                    "家に帰ろう...",            // message
+                basePath + "alien_ancient.png",       // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+            };
+            m_dialogueSystem->addDialogueTrigger(6000, DialogueFinalEmperorRoom1);
+        }
     }
     else if (levelName ==  "ancient_rome_level_5_day_v2.txt") {
-        std::vector<DialogueMessage> Dialogue0 = {
-            {
-                "Alien Legionary",                               // speaker
-                "Oh, I've returned here...",            // message
-                basePath + "alien_ancient.png",       // portraitPath
-                false,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(0.f, 500.f),
-                650.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                30,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            }
-            ,
-            {
-                "Alien Legionary",                              // speaker
-                "Let's see if those golden stairs are accessible now... ",            // message
-                basePath + "alien_ancient.png",       // portraitPath
-                false,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(0.f, 500.f),
-                970.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                30,                                             // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            }
-        };
-        m_dialogueSystem->addDialogueTrigger(-10800, Dialogue0);
-        std::vector<DialogueMessage> Dialogue1 = {
-            {
-                "Alien Legionary",                               // speaker
-                "Oh, the stairs are finally accessible!",            // message
-                basePath + "alien_ancient.png",       // portraitPath
-                false,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(0.f, 500.f),
-                700.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                30,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            }
-            ,
-            {
-                "Alien Legionary",                              // speaker
-                "Lets see if I can go get back to the black hole..",            // message
-                basePath + "alien_ancient.png",       // portraitPath
-                false,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(0.f, 500.f),
-                900.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                30,                                             // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            }
-        };
-        m_dialogueSystem->addDialogueTrigger(-2750, Dialogue1);
-        std::vector<DialogueMessage> Dialogue2 = {
-            {
-                "Alien Legionary",                               // speaker
-                "Great! I can actually return now!",            // message
-                basePath + "alien_ancient.png",       // portraitPath
-                false,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(0.f, 500.f),
-                700.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                30,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            }
-            ,
-            {
-                "Alien Legionary",                              // speaker
-                "With the Emperor fallen, I wonder if...",            // message
-                basePath + "alien_ancient.png",       // portraitPath
-                false,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(0.f, 500.f),
-                720.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                30,                                             // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            }
-            ,
-            {
-                "Alien Legionary",                              // speaker
-                "..those dark warriors have been erased from time?",            // message
-                basePath + "alien_ancient.png",       // portraitPath
-                false,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(0.f, 500.f),
-                960.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                30,                                             // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            }
-            ,
-            {
-                "Alien Legionary",                              // speaker
-                "Only one way to find out!",            // message
-                basePath + "alien_ancient.png",       // portraitPath
-                false,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(0.f, 500.f),
-                650.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                30,                                             // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            }
-        };
-        m_dialogueSystem->addDialogueTrigger(-950, Dialogue2);
+        if (m_language == "English") {
+            std::vector<DialogueMessage> Dialogue0 = {
+                {
+                    "Alien Legionary",                               // speaker
+                    "Oh, I've returned here...",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "Alien Legionary",                              // speaker
+                    "Let's see if those golden stairs are accessible now... ",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    970.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+            };
+            m_dialogueSystem->addDialogueTrigger(-10800, Dialogue0);
+            std::vector<DialogueMessage> Dialogue1 = {
+                {
+                    "Alien Legionary",                               // speaker
+                    "Oh, the stairs are finally accessible!",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    700.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "Alien Legionary",                              // speaker
+                    "Lets see if I can go get back to the black hole..",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    900.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+            };
+            m_dialogueSystem->addDialogueTrigger(-2750, Dialogue1);
+            std::vector<DialogueMessage> Dialogue2 = {
+                {
+                    "Alien Legionary",                               // speaker
+                    "Great! I can actually return now!",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    700.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "Alien Legionary",                              // speaker
+                    "With the Emperor fallen, I wonder if...",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    720.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "Alien Legionary",                              // speaker
+                    "..those dark warriors have been erased from time?",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    960.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "Alien Legionary",                              // speaker
+                    "Only one way to find out!",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+            };
+            m_dialogueSystem->addDialogueTrigger(-950, Dialogue2);
+        } else {
+            // Japanese translation
+            std::vector<DialogueMessage> Dialogue0 = {
+                {
+                    "エイリアン兵士",                               // speaker
+                    "ここに戻ってきたか...",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "エイリアン兵士",                              // speaker
+                    "あの黄金の階段に今は登れるかな...",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    970.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+            };
+            m_dialogueSystem->addDialogueTrigger(-10800, Dialogue0);
+            std::vector<DialogueMessage> Dialogue1 = {
+                {
+                    "エイリアン兵士",                               // speaker
+                    "おお、ついに階段に登れるようになった！",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    700.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "エイリアン兵士",                              // speaker
+                    "ブラックホールに戻れるかどうか見てみよう..",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    900.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+            };
+            m_dialogueSystem->addDialogueTrigger(-2750, Dialogue1);
+            std::vector<DialogueMessage> Dialogue2 = {
+                {
+                    "エイリアン兵士",                               // speaker
+                    "よし！これで帰れるぞ！",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    700.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "エイリアン兵士",                              // speaker
+                    "皇帝が倒れたことで...",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    720.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "エイリアン兵士",                              // speaker
+                    "..あの暗黒の戦士たちは時間軸から消えたのかな？",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    960.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "エイリアン兵士",                              // speaker
+                    "確かめる方法はひとつだけだ！",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+            };
+            m_dialogueSystem->addDialogueTrigger(-950, Dialogue2);
+        }
     }
     else if (levelName ==  "future_rome_level_1.txt") {
-        std::vector<DialogueMessage> Dialogue0 = {
+        if (m_language == "English") {
+            std::vector<DialogueMessage> Dialogue0 = {
+                {
+                    "Alien Legionary",                               // speaker
+                    "Where am I???",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    40,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "Alien Legionary",                              // speaker
+                    "What happened???",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    40,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "Alien Legionary",                               // speaker
+                    "I entered the same black hole but...",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    800.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "Alien Legionary",                               // speaker
+                    "...this present seem different",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    800.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                };
+                m_dialogueSystem->addDialogueTrigger(600, Dialogue0);
+                std::vector<DialogueMessage> Dialogue02 = {
+                {
+                    "Alien Legionary",
+                    "Let me think:",
+                    basePath + "alien_ancient.png",
+                    true,
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    750.f,
+                    150.f,
+                    30,
+                    true
+                },
+                {
+                    "Alien Legionary",
+                    "I went through the black hole...",
+                    basePath + "alien_ancient.png",
+                    true,
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    750.f,
+                    150.f,
+                    30,
+                    true
+                },
+                {
+                    "Alien Legionary",
+                    "And this was supposed to be their present...",
+                    basePath + "alien_ancient.png",
+                    true,
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    850.f,
+                    150.f,
+                    30,
+                    true
+                },
+                {
+                    "Alien Legionary",
+                    "But I killed their Emperor in the past...",
+                    basePath + "alien_ancient.png",
+                    true,
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    850.f,
+                    150.f,
+                    30,
+                    true
+                },
+                {
+                    "Alien Legionary",
+                    "And so they shouldn't exist anymore...",
+                    basePath + "alien_ancient.png",
+                    true,
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    850.f,
+                    150.f,
+                    30,
+                    true
+                },
+                {
+                    "Alien Legionary",
+                    "Did I somehow change history...",
+                    basePath + "alien_ancient.png",
+                    true,
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    750.f,
+                    150.f,
+                    30,
+                    true
+                },
+                {
+                    "Alien Legionary",
+                    "AND CREATED A NEW PRESENT?!",
+                    basePath + "alien_ancient.png",
+                    true,
+                    sf::Color::Magenta,
+                    sf::Color::Red,
+                    sf::Vector2f(0.f, 500.f),
+                    800.f,
+                    150.f,
+                    40,
+                    true
+                }
+            };
+            m_dialogueSystem->addDialogueTrigger(900, Dialogue02);
+            std::vector<DialogueMessage> Dialogue1 = {
+                {
+                    "Legionary",                               // speaker
+                    "Who are you??",            // message
+                    basePath + "future_normal.png",       // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Cyan,
+                    sf::Color::White,
+                    sf::Vector2f(700.f, 500.f),
+                    600.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "Alien Legionary",                              // speaker
+                    "Oh no..don't tell me that..",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    700.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "Alien Legionary",                              // speaker
+                    "they are trying kill me??",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    700.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "Alien Legionary",                              // speaker
+                    "AGAIN?!",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    700.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    50,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+            };
+            m_dialogueSystem->addDialogueTrigger(1500, Dialogue1);
+            std::vector<DialogueMessage> Dialogue21 = {
+                {
+                    "Legionary",                              // speaker
+                    "WHO ARE YOU???",            // message
+                    basePath + "future_fast.png",       // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Cyan,
+                    sf::Color::White,
+                    sf::Vector2f(800.f, 300.f),
+                    600.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    50,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+            };
+            m_dialogueSystem->addDialogueTrigger(3000, Dialogue21);
+            std::vector<DialogueMessage> Dialogue2 = {
+                {
+                    "Alien Legionary",                              // speaker
+                    "Thinking about it...",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "Alien Legionary",                              // speaker
+                    "these legionaries look familiar...",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    700.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "Alien Legionary",                              // speaker
+                    "but how is that possible??",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+            };
+            m_dialogueSystem->addDialogueTrigger(3900, Dialogue2);
+            std::vector<DialogueMessage> Dialogue3 = {
             {
-                "Alien Legionary",                               // speaker
-                "Where am I???",            // message
+                "Alien Legionary",                              // speaker
+                "They are too strong...",            // message
                 basePath + "alien_ancient.png",       // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,
@@ -1477,14 +2965,88 @@ void Scene_Play::initializeDialogues()
                 sf::Vector2f(0.f, 500.f),
                 650.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
-                40,                                              // messageFontSize - still emphasized
+                30,                                             // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
             }
             ,
             {
                 "Alien Legionary",                              // speaker
-                "What happened???",            // message
+                "With my sword there is not much I can do...",            // message
                 basePath + "alien_ancient.png",       // portraitPath
+                true,                                            // portraitOnLeft
+                sf::Color::Magenta,
+                sf::Color::White,
+                sf::Vector2f(0.f, 500.f),
+                950.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                30,                                             // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
+            }
+            ,
+            {
+                "Alien Legionary",                              // speaker
+                "What should I do??",            // message
+                basePath + "alien_ancient.png",       // portraitPath
+                true,                                            // portraitOnLeft
+                sf::Color::Magenta,
+                sf::Color::White,
+                sf::Vector2f(0.f, 500.f),
+                700.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                30,                                             // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
+            }
+            ,
+            {
+                "Alien Legionary",                              // speaker
+                "I am in big trouble now...",            // message
+                basePath + "alien_ancient.png",       // portraitPath
+                true,                                            // portraitOnLeft
+                sf::Color::Magenta,
+                sf::Color::White,
+                sf::Vector2f(0.f, 500.f),
+                700.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                30,                                             // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
+            }
+            };
+            m_dialogueSystem->addDialogueTrigger(4800, Dialogue3);
+        std::vector<DialogueMessage> Dialogue4 = {
+            {
+                "Alien Legionary",                              // speaker
+                "Oh... what is that futuristic looking armor??",            // message
+                basePath + "alien_ancient.png",       // portraitPath
+                true,                                            // portraitOnLeft
+                sf::Color::Magenta,
+                sf::Color::White,
+                sf::Vector2f(0.f, 500.f),
+                950.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                30,                                             // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
+            }
+            ,
+            {
+                "Alien Legionary",                              // speaker
+                "Maybe If I wear it I can shoot bullets like they do!",            // message
+                basePath + "alien_ancient.png",       // portraitPath
+                true,                                            // portraitOnLeft
+                sf::Color::Magenta,
+                sf::Color::White,
+                sf::Vector2f(0.f, 500.f),
+                950.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                30,                                             // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
+            }
+        };
+        m_dialogueSystem->addDialogueTrigger(5700, Dialogue4);
+        std::vector<DialogueMessage> Dialogue5 = {
+            {
+                "Alien Legionary",                              // speaker
+                "IT WORKED!!!",            // message
+                basePath + "alien_future.png",       // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -1493,1029 +3055,339 @@ void Scene_Play::initializeDialogues()
                 150.f,                                           // boxHeight
                 40,                                             // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
-            },
-            {
-                "Alien Legionary",                               // speaker
-                "I entered the same black hole but...",            // message
-                basePath + "alien_ancient.png",       // portraitPath
-                true,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(0.f, 500.f),
-                800.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                30,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            },
-            {
-                "Alien Legionary",                               // speaker
-                "...this present seem different",            // message
-                basePath + "alien_ancient.png",       // portraitPath
-                true,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(0.f, 500.f),
-                800.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                30,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            }
-            };
-            m_dialogueSystem->addDialogueTrigger(600, Dialogue0);
-            std::vector<DialogueMessage> Dialogue02 = {
-            {
-                "Alien Legionary",
-                "Let me think:",
-                basePath + "alien_ancient.png",
-                true,
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(0.f, 500.f),
-                750.f,
-                150.f,
-                30,
-                true
-            },
-            {
-                "Alien Legionary",
-                "I went through the black hole...",
-                basePath + "alien_ancient.png",
-                true,
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(0.f, 500.f),
-                750.f,
-                150.f,
-                30,
-                true
-            },
-            {
-                "Alien Legionary",
-                "And this was supposed to be their present...",
-                basePath + "alien_ancient.png",
-                true,
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(0.f, 500.f),
-                850.f,
-                150.f,
-                30,
-                true
-            },
-            {
-                "Alien Legionary",
-                "But I killed their Emperor in the past...",
-                basePath + "alien_ancient.png",
-                true,
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(0.f, 500.f),
-                850.f,
-                150.f,
-                30,
-                true
-            },
-            {
-                "Alien Legionary",
-                "And so they shouldn't exist anymore...",
-                basePath + "alien_ancient.png",
-                true,
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(0.f, 500.f),
-                850.f,
-                150.f,
-                30,
-                true
-            },
-            {
-                "Alien Legionary",
-                "Did I somehow change history...",
-                basePath + "alien_ancient.png",
-                true,
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(0.f, 500.f),
-                750.f,
-                150.f,
-                30,
-                true
-            },
-            {
-                "Alien Legionary",
-                "AND CREATED A NEW PRESENT?!",
-                basePath + "alien_ancient.png",
-                true,
-                sf::Color::Magenta,
-                sf::Color::Red,
-                sf::Vector2f(0.f, 500.f),
-                800.f,
-                150.f,
-                40,
-                true
-            }
-        };
-        m_dialogueSystem->addDialogueTrigger(900, Dialogue02);
-        std::vector<DialogueMessage> Dialogue1 = {
-            {
-                "Legionary",                               // speaker
-                "Who are you??",            // message
-                basePath + "future_normal.png",       // portraitPath
-                false,                                            // portraitOnLeft
-                sf::Color::Cyan,
-                sf::Color::White,
-                sf::Vector2f(700.f, 500.f),
-                600.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                30,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
             }
             ,
             {
-                "Alien Legionary",                              // speaker
-                "Oh no..don't tell me that..",            // message
-                basePath + "alien_ancient.png",       // portraitPath
-                true,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(0.f, 500.f),
-                700.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                30,                                             // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            }
-            ,
-            {
-                "Alien Legionary",                              // speaker
-                "they are trying kill me??",            // message
-                basePath + "alien_ancient.png",       // portraitPath
-                true,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(0.f, 500.f),
-                700.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                30,                                             // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            }
-            ,
-            {
-                "Alien Legionary",                              // speaker
-                "AGAIN?!",            // message
-                basePath + "alien_ancient.png",       // portraitPath
-                true,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(0.f, 500.f),
-                700.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                50,                                             // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            }
-        };
-        m_dialogueSystem->addDialogueTrigger(1500, Dialogue1);
-        std::vector<DialogueMessage> Dialogue21 = {
-            {
-                "Legionary",                              // speaker
-                "WHO ARE YOU???",            // message
-                basePath + "future_fast.png",       // portraitPath
-                false,                                            // portraitOnLeft
-                sf::Color::Cyan,
-                sf::Color::White,
-                sf::Vector2f(800.f, 300.f),
-                600.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                50,                                             // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            }
-        };
-        m_dialogueSystem->addDialogueTrigger(3000, Dialogue21);
-        std::vector<DialogueMessage> Dialogue2 = {
-            {
-                "Alien Legionary",                              // speaker
-                "Thinking about it...",            // message
-                basePath + "alien_ancient.png",       // portraitPath
-                true,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(0.f, 500.f),
-                650.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                30,                                             // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            }
-            ,
-            {
-                "Alien Legionary",                              // speaker
-                "these legionaries look familiar...",            // message
-                basePath + "alien_ancient.png",       // portraitPath
-                true,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(0.f, 500.f),
-                700.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                30,                                             // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            }
-            ,
-            {
-                "Alien Legionary",                              // speaker
-                "but how is that possible??",            // message
-                basePath + "alien_ancient.png",       // portraitPath
-                true,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(0.f, 500.f),
-                650.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                30,                                             // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            }
-        };
-        m_dialogueSystem->addDialogueTrigger(3900, Dialogue2);
-        std::vector<DialogueMessage> Dialogue3 = {
-        {
-            "Alien Legionary",                              // speaker
-            "They are too strong...",            // message
-            basePath + "alien_ancient.png",       // portraitPath
-            true,                                            // portraitOnLeft
-            sf::Color::Magenta,
-            sf::Color::White,
-            sf::Vector2f(0.f, 500.f),
-            650.f,                                           // boxWidth - medium for medium message
-            150.f,                                           // boxHeight
-            30,                                             // messageFontSize - still emphasized
-            true                                             // useTypewriterEffect
-        }
-        ,
-        {
-            "Alien Legionary",                              // speaker
-            "With my sword there is not much I can do...",            // message
-            basePath + "alien_ancient.png",       // portraitPath
-            true,                                            // portraitOnLeft
-            sf::Color::Magenta,
-            sf::Color::White,
-            sf::Vector2f(0.f, 500.f),
-            950.f,                                           // boxWidth - medium for medium message
-            150.f,                                           // boxHeight
-            30,                                             // messageFontSize - still emphasized
-            true                                             // useTypewriterEffect
-        }
-        ,
-        {
-            "Alien Legionary",                              // speaker
-            "What should I do??",            // message
-            basePath + "alien_ancient.png",       // portraitPath
-            true,                                            // portraitOnLeft
-            sf::Color::Magenta,
-            sf::Color::White,
-            sf::Vector2f(0.f, 500.f),
-            700.f,                                           // boxWidth - medium for medium message
-            150.f,                                           // boxHeight
-            30,                                             // messageFontSize - still emphasized
-            true                                             // useTypewriterEffect
-        }
-        ,
-        {
-            "Alien Legionary",                              // speaker
-            "I am in big trouble now...",            // message
-            basePath + "alien_ancient.png",       // portraitPath
-            true,                                            // portraitOnLeft
-            sf::Color::Magenta,
-            sf::Color::White,
-            sf::Vector2f(0.f, 500.f),
-            700.f,                                           // boxWidth - medium for medium message
-            150.f,                                           // boxHeight
-            30,                                             // messageFontSize - still emphasized
-            true                                             // useTypewriterEffect
-        }
-        };
-        m_dialogueSystem->addDialogueTrigger(4800, Dialogue3);
-    std::vector<DialogueMessage> Dialogue4 = {
-        {
-            "Alien Legionary",                              // speaker
-            "Oh... what is that futuristic looking armor??",            // message
-            basePath + "alien_ancient.png",       // portraitPath
-            true,                                            // portraitOnLeft
-            sf::Color::Magenta,
-            sf::Color::White,
-            sf::Vector2f(0.f, 500.f),
-            950.f,                                           // boxWidth - medium for medium message
-            150.f,                                           // boxHeight
-            30,                                             // messageFontSize - still emphasized
-            true                                             // useTypewriterEffect
-        }
-        ,
-        {
-            "Alien Legionary",                              // speaker
-            "Maybe If I wear it I can shoot bullets like they do!",            // message
-            basePath + "alien_ancient.png",       // portraitPath
-            true,                                            // portraitOnLeft
-            sf::Color::Magenta,
-            sf::Color::White,
-            sf::Vector2f(0.f, 500.f),
-            950.f,                                           // boxWidth - medium for medium message
-            150.f,                                           // boxHeight
-            30,                                             // messageFontSize - still emphasized
-            true                                             // useTypewriterEffect
-        }
-    };
-    m_dialogueSystem->addDialogueTrigger(5700, Dialogue4);
-    std::vector<DialogueMessage> Dialogue5 = {
-        {
-            "Alien Legionary",                              // speaker
-            "IT WORKED!!!",            // message
-            basePath + "alien_future.png",       // portraitPath
-            true,                                            // portraitOnLeft
-            sf::Color::Magenta,
-            sf::Color::White,
-            sf::Vector2f(0.f, 500.f),
-            650.f,                                           // boxWidth - medium for medium message
-            150.f,                                           // boxHeight
-            40,                                             // messageFontSize - still emphasized
-            true                                             // useTypewriterEffect
-        }
-        ,
-        {
-            "Alien Legionary",                           // speaker
-            "NOW I CAN SHOOT BULLETS!!",            // message
-            basePath + "alien_future.png",       // portraitPath
-            true,                                            // portraitOnLeft
-            sf::Color::Magenta,
-            sf::Color::White,
-            sf::Vector2f(0.f, 500.f),
-            700.f,                                           // boxWidth - medium for medium message
-            150.f,                                           // boxHeight
-            40,                                             // messageFontSize - still emphasized
-            true                                             // useTypewriterEffect
-        }
-        ,
-        {
-            "Alien Legionary",                           // speaker
-            "TAKE THESE YOU DAMN PARADOX PEOPLE!!!",            // message
-            basePath + "alien_future.png",       // portraitPath
-            false,                                            // portraitOnLeft
-            sf::Color::Magenta,
-            sf::Color::White,
-            sf::Vector2f(0.f, 500.f),
-            1100.f,                                           // boxWidth - medium for medium message
-            150.f,                                           // boxHeight
-            40,                                             // messageFontSize - still emphasized
-            true                                             // useTypewriterEffect
-        }
-        ,
-        {
-            "***GUIDE***",                           // speaker
-            "(Hold SPACE to shoot bursts of bullets!)",            // message
-            basePath + "alien_future.png",       // portraitPath
-            false,                                            // portraitOnLeft
-            sf::Color::Magenta,
-            sf::Color::White,
-            sf::Vector2f(0.f, 200.f),
-            1100.f,                                           // boxWidth - medium for medium message
-            150.f,                                           // boxHeight
-            40,                                             // messageFontSize - still emphasized
-            true                                             // useTypewriterEffect
-        }
-        ,
-        {
-            "***GUIDE***",                           // speaker
-            "(Press ENTER to activate the supermove!!)",            // message
-            basePath + "alien_future.png",       // portraitPath
-            false,                                            // portraitOnLeft
-            sf::Color::Magenta,
-            sf::Color::White,
-            sf::Vector2f(0.f, 200.f),
-            1100.f,                                           // boxWidth - medium for medium message
-            150.f,                                           // boxHeight
-            40,                                             // messageFontSize - still emphasized
-            true                                             // useTypewriterEffect
-        }
-    };
-    m_dialogueSystem->addDialogueTrigger(6400, Dialogue5);
-    }
-    else if (levelName ==  "future_rome_level_3.txt") {
-        std::vector<DialogueMessage> Dialogue0 = {
-            {
-                "Legionary (Elite)",                               // speaker
-                "You.. invader...",            // message
-                basePath + "future_elite.png",       // portraitPath
-                false,                                            // portraitOnLeft
-                sf::Color::Red,
-                sf::Color::White,
-                sf::Vector2f(700.f, 450.f),
-                700.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                30,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            }
-            ,
-            {
-                "Legionary (Elite)",                             // speaker
-                "How dare you coming to this place??",            // message
-                basePath + "future_elite.png",       // portraitPath
-                false,                                            // portraitOnLeft
-                sf::Color::Red,
-                sf::Color::White,
-                sf::Vector2f(700.f, 450.f),
-                750.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                30,                                             // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            },
-            };
-            m_dialogueSystem->addDialogueTrigger(600, Dialogue0);
-            std::vector<DialogueMessage> Dialogue1 = {
-            {
-                "Alien Legionary",                               // speaker
-                "These legionnaries look danegrous..",            // message
+                "Alien Legionary",                           // speaker
+                "NOW I CAN SHOOT BULLETS!!",            // message
                 basePath + "alien_future.png",       // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
-                sf::Vector2f(50.f, 450.f),
-                800.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                30,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            }
-            ,
-            {
-                "Alien Legionary",                             // speaker
-                "I can barely see them...",            // message
-                basePath + "alien_future.png",       // portraitPath
-                true,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(50.f, 450.f),
-                750.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                30,                                             // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            }
-            ,
-            {
-                "Alien Legionary",                             // speaker
-                "Like fighting shadows... or ghosts...",            // message
-                basePath + "alien_future.png",        // portraitPath
-                true,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(50.f, 450.f),
-                750.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                30,                                             // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            }
-            ,
-            {
-                "Alien Legionary",                             // speaker
-                "Gotta be very careful",            // message
-                basePath + "alien_future.png",       // portraitPath
-                true,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(50.f, 450.f),
-                750.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                30,                                             // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            },
-            };
-            m_dialogueSystem->addDialogueTrigger(2600, Dialogue1);
-            std::vector<DialogueMessage> Dialogue02 = {
-            {
-                "Legionary (Elite)",                           // speaker
-                "Who is this strange legionary?",            // message
-                basePath + "future_elite.png",       // portraitPath
-                true,                                            // portraitOnLeft
-                sf::Color::Red,
-                sf::Color::White,
-                sf::Vector2f(500.f, 400.f),
-                750.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                30,                                             // messageFontSize - still emphasized
-                true                                               // useTypewriterEffect
-            }
-            ,
-            {
-                "Legionary (Elite)",                           // speaker
-                "Wait... those violet and black colors...",            // message
-                basePath + "future_elite.png",       // portraitPath
-                false,                                            // portraitOnLeft
-                sf::Color::Red,
-                sf::Color::White,
-                sf::Vector2f(600.f, 400.f),
-                780.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                30,                                                 // messageFontSize - still emphasized
-                true                                               // useTypewriterEffect
-            }
-            ,
-            {
-                "Legionary (Elite)",                           // speaker
-                "IMPOSSIBLE",            // message
-                basePath + "future_elite.png",       // portraitPath
-                true,                                            // portraitOnLeft
-                sf::Color::Red,
-                sf::Color::Red,
-                sf::Vector2f(500.f, 400.f),
-                780.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                45,                                                  // messageFontSize - still emphasized
-                true                                               // useTypewriterEffect
-            }
-            ,
-            {
-                "Legionary (Elite)",                           // speaker
-                "You match the ancient records...",            // message
-                basePath + "future_elite.png",       // portraitPath
-                false,                                            // portraitOnLeft
-                sf::Color::Red,
-                sf::Color::White,
-                sf::Vector2f(600.f, 400.f),
-                780.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                30,                                                  // messageFontSize - still emphasized
-                true                                               // useTypewriterEffect
-            }
-            ,
-            {
-                "Legionary (Elite)",                             // speaker
-                "A warrior who wounded our emperor and then..",            // message
-                basePath + "future_elite.png",       // portraitPath
-                false,                                            // portraitOnLeft
-                sf::Color::Red,
-                sf::Color::White,
-                sf::Vector2f(500.f, 400.f),
-                900.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                30,                                                // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            }
-            ,
-            {
-                "Legionary (Elite)",                             // speaker
-                "VANISHED...",            // message
-                basePath + "future_elite.png",       // portraitPath
-                true,                                            // portraitOnLeft
-                sf::Color::Red,
-                sf::Color::White,
-                sf::Vector2f(600.f, 400.f),
-                650.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                50,                                                // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            }
-            ,
-            {
-                "Legionary (Elite)",                             // speaker
-                "could it be really you?!",            // message
-                basePath + "future_elite.png",       // portraitPath
-                false,                                            // portraitOnLeft
-                sf::Color::Red,
-                sf::Color::White,
-                sf::Vector2f(500.f, 400.f),
+                sf::Vector2f(0.f, 500.f),
                 700.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
-                30,                                                // messageFontSize - still emphasized
-                true                                              // useTypewriterEffect
+                40,                                             // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
             }
             ,
             {
-                "Alien Legionary",                              // speaker
-                "Oh.. I think I really DID travel through time...",// message
+                "Alien Legionary",                           // speaker
+                "TAKE THESE YOU DAMN PARADOX PEOPLE!!!",            // message
                 basePath + "alien_future.png",       // portraitPath
-                true,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(0.f, 400.f),
-                900.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                30,                                             // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            }
-        };
-        m_dialogueSystem->addDialogueTrigger(5700, Dialogue02);
-        std::vector<DialogueMessage> Dialoguelast = {
-        {
-            "Legionary (Elite)",                                // speaker
-            "STOP THE INVADER!!!",// message
-            basePath + "future_elite.png",       // portraitPath
-            true,                                            // portraitOnLeft
-            sf::Color::Red,
-            sf::Color::Red,
-            sf::Vector2f(0.f, 400.f),
-            800.f,                                           // boxWidth - medium for medium message
-            150.f,                                           // boxHeight
-            40,                                             // messageFontSize - still emphasized
-            true                                             // useTypewriterEffect
-        },
-        {
-            "Legionary (Elite)",                                // speaker
-            "STOP HIM NOW! HISTORY MUST NOT REPEAT ITSELF!",// message
-            basePath + "future_elite.png",       // portraitPath
-            true,                                            // portraitOnLeft
-            sf::Color::Red,
-            sf::Color::Red,
-            sf::Vector2f(0.f, 400.f),
-            1100.f,                                           // boxWidth - medium for medium message
-            150.f,                                           // boxHeight
-            35,                                             // messageFontSize - still emphasized
-            true                                             // useTypewriterEffect
-        }
-        };
-        m_dialogueSystem->addDialogueTrigger(12500, Dialoguelast);
-    }
-    else if (levelName == "future_rome_level_4_emperor_room.txt") {
-        std::vector<DialogueMessage> bossDialogue = {
-            {
-                "Emperor",
-                "... And so you are back...",
-                basePath + "future_emperor.png",
-                false,                                    // portraitOnLeft (right side)
-                sf::Color::Cyan,                           // speakerColor
-                sf::Color::White,                         // messageColor
-                sf::Vector2f(800.f, 550.f),                // dialogueBoxPosition
-                650.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                30,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            },
-            {
-                "Emperor",
-                "I remember you... ",
-                basePath + "future_emperor.png",
-                false,
-                sf::Color::Cyan,
-                sf::Color::White,
-                sf::Vector2f(800.f, 550.f),
-                650.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                30,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            }
-        };
-        m_dialogueSystem->addDialogueTrigger(500, bossDialogue);
-        std::vector<DialogueMessage> bossDialogue2 = {
-            {
-                "Emperor",
-                "Thousands of years ago you came here.. ",
-                basePath + "future_emperor.png",
-                false,
-                sf::Color::Cyan,
-                sf::Color::White,
-                sf::Vector2f(800.f, 550.f),
-                650.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                26,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            }
-            ,
-            {
-                "Emperor",
-                ".. and I barely survived your wrath.",
-                basePath + "future_emperor.png",
-                false,
-                sf::Color::Cyan,
-                sf::Color::White,
-                sf::Vector2f(800.f, 550.f),
-                650.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                26,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            }
-            ,
-            {
-                "Emperor",
-                "But this time..",
-                basePath + "future_emperor.png",
-                false,
-                sf::Color::Cyan,
-                sf::Color::White,
-                sf::Vector2f(800.f, 550.f),
-                650.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                30,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            }
-            ,
-            {
-                "Emperor",
-                "YOU WILL NOT SURVIVE!!!",
-                basePath + "future_emperor.png",
-                false,
-                sf::Color::Cyan,
-                sf::Color::Red,
-                sf::Vector2f(800.f, 550.f),
-                650.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                40,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            }
-        };
-        m_dialogueSystem->addDialogueTrigger(700, bossDialogue2);
-        std::vector<DialogueMessage> phase2Dialogue = {
-            {
-                "Emperor",                               // speaker
-                "You are stronger than I expected...",    // message
-                basePath + "future_emperor_2.png", // portraitPath (adjust path as needed)
-                false,                                   // portraitOnLeft
-                sf::Color::Cyan,                         // speakerColor
-                sf::Color::White,                        // messageColor
-                sf::Vector2f(800.f, 550.f),              // dialogueBoxPosition
-                650.f,                                   // boxWidth
-                150.f,                                   // boxHeight
-                30,                                      // messageFontSize
-                true                                     // useTypewriterEffect
-            },
-            {
-                "Emperor",
-                "But this is just the beginning!!",
-                basePath + "future_emperor_2.png",
-                false,
-                sf::Color::Cyan,
-                sf::Color::Red,
-                sf::Vector2f(800.f, 550.f),
-                650.f,
-                150.f,
-                35,
-                true
-            }
-        };
-        
-        // Phase 3 dialogue (30% health)
-        std::vector<DialogueMessage> phase3Dialogue = {
-            {
-                "Emperor",                               // speaker
-                "HOW IS THIS POSSIBLE??",                           // message
-                basePath + "future_emperor_3.png", // portraitPath
-                false,                                   // portraitOnLeft
-                sf::Color::Cyan,                         // speakerColor
-                sf::Color::Red,                          // messageColor
-                sf::Vector2f(800.f, 550.f),              // dialogueBoxPosition
-                650.f,                                   // boxWidth
-                150.f,                                   // boxHeight
-                30,                                      // messageFontSize
-                true                                     // useTypewriterEffect
-            },
-            {
-                "Emperor",
-                "IT'S NOT OVER YET!!!",
-                basePath + "future_emperor_3.png",
-                false,
-                sf::Color::Cyan,
-                sf::Color::Red,
-                sf::Vector2f(800.f, 550.f),
-                650.f,
-                150.f,
-                40,
-                true
-            }
-        };
-        // Phase 3 dialogue (30% health)
-        std::vector<DialogueMessage> phasefinalDialogue = {
-            {
-                "Emperor",                               // speaker
-                "IMP055IBLE!!!",                           // message
-                basePath + "future_emperor_3.png", // portraitPath
-                false,                                   // portraitOnLeft
-                sf::Color::Cyan,                         // speakerColor
-                sf::Color::Red,                          // messageColor
-                sf::Vector2f(800.f, 550.f),              // dialogueBoxPosition
-                650.f,                                   // boxWidth
-                150.f,                                   // boxHeight
-                30,                                      // messageFontSize
-                true                                     // useTypewriterEffect
-            },
-            {
-                "Emperor",
-                "TIME T0 SH0W Y0U MY...",
-                basePath + "future_emperor_3.png",
-                false,
-                sf::Color::Cyan,
-                sf::Color::Red,
-                sf::Vector2f(800.f, 550.f),
-                650.f,
-                150.f,
-                40,
-                true
-            },
-            {
-                "Emperor",
-                "TRUE POWER!",
-                basePath + "future_emperor_3.png",
-                false,
-                sf::Color::Cyan,
-                sf::Color::Red,
-                sf::Vector2f(800.f, 550.f),
-                650.f,
-                150.f,
-                50,
-                true
-            }
-        };
-        std::vector<DialogueMessage> phasedefeatedFutureDialogue = {
-            {
-                "Emperor",                               // speaker
-                "...",                           // message
-                basePath + "future_emperor_3.png", // portraitPath
-                false,                                   // portraitOnLeft
-                sf::Color::Cyan,                         // speakerColor
-                sf::Color::White,                          // messageColor
-                sf::Vector2f(800.f, 550.f),              // dialogueBoxPosition
-                650.f,                                   // boxWidth
-                150.f,                                   // boxHeight
-                30,                                      // messageFontSize
-                true                                     // useTypewriterEffect
-            }
-        };
-        // Add the named dialogues to our system
-        m_dialogueSystem->addNamedDialogue("emperor_phase2", phase2Dialogue);
-        m_dialogueSystem->addNamedDialogue("emperor_phase3", phase3Dialogue);
-        m_dialogueSystem->addNamedDialogue("emperor_future_final", phasefinalDialogue);
-        m_dialogueSystem->addNamedDialogue("emperor_future_defeated", phasedefeatedFutureDialogue);
-    }
-    else if (levelName ==  "future_rome_level_5_day_v2.txt") {
-        std::vector<DialogueMessage> Dialogue0 = {
-            {
-                "Alien Legionary",                               // speaker
-                "Oh, I am back here...",            // message
-                basePath + "alien_ancient.png",       // portraitPath
-                true,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(0.f, 500.f),
-                650.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                30,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            }
-            ,
-            {
-                "Alien Legionary",                              // speaker
-                "..I am so tired.. ",            // message
-                basePath + "alien_ancient.png",       // portraitPath
-                true,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(0.f, 500.f),
-                650.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                30,                                             // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            }
-            ,
-            {
-                "Alien Legionary",                              // speaker
-                "I must go back to the black hole and hope i can get home..",            // message
-                basePath + "alien_ancient.png",       // portraitPath
-                true,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(0.f, 500.f),
-                1050.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                30,                                             // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            }
-        };
-        m_dialogueSystem->addDialogueTrigger(-13900, Dialogue0);
-        std::vector<DialogueMessage> Dialogue1 = {
-            {
-                "Alien Legionary",                               // speaker
-                "Thinking about it..",            // message
-                basePath + "alien_ancient.png",       // portraitPath
-                true,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(0.f, 500.f),
-                650.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                30,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            }
-            ,
-            {
-                "Alien Legionary",                              // speaker
-                "I killed so many people...",            // message
-                basePath + "alien_ancient.png",       // portraitPath
-                true,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(0.f, 500.f),
-                650.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                30,                                             // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            },
-            {
-                "Alien Legionary",                               // speaker
-                "but I had no other choices..",            // message
-                basePath + "alien_ancient.png",       // portraitPath
-                true,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(0.f, 500.f),
-                650.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                30,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            }
-            ,
-            {
-                "Alien Legionary",                              // speaker
-                "But.. did I really do the right thing?...",            // message
-                basePath + "alien_ancient.png",       // portraitPath
-                true,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(0.f, 500.f),
-                700.f,                                           // boxWidth - medium for medium messageN
-                150.f,                                           // boxHeight
-                30,                                             // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            }
-        };
-        m_dialogueSystem->addDialogueTrigger(-11000, Dialogue1);
-        std::vector<DialogueMessage> Dialogue2 = {
-            {
-                "Alien Legionary",                               // speaker
-                "Here are the stairs..",            // message
-                basePath + "alien_ancient.png",       // portraitPath
-                true,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(0.f, 500.f),
-                650.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                30,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            }
-        };
-        m_dialogueSystem->addDialogueTrigger(-3800, Dialogue2);
-        std::vector<DialogueMessage> Dialogue3 = {
-            {
-                "Alien Legionary",                               // speaker
-                "I am so afraid...",            // message
-                basePath + "alien_ancient.png",       // portraitPath
-                true,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(0.f, 500.f),
-                650.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                30,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            }
-            ,
-            {
-                "Alien Legionary",                              // speaker
-                "Will I ever see my home again?",            // message
-                basePath + "alien_ancient.png",       // portraitPath
-                true,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(0.f, 500.f),
-                650.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                30,                                             // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            },
-            {
-                "Alien Legionary",                               // speaker
-                "Am I even real anymore?",            // message
-                basePath + "alien_ancient.png",       // portraitPath
-                true,                                            // portraitOnLeft
-                sf::Color::Magenta,
-                sf::Color::White,
-                sf::Vector2f(0.f, 500.f),
-                650.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                30,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            }
-            ,
-            {
-                "Alien Legionary",                              // speaker
-                "I must keep fighting... it's my only hope of finding a way back...",            // message
-                basePath + "alien_ancient.png",       // portraitPath
-                true,                                            // portraitOnLeft
+                false,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
                 sf::Vector2f(0.f, 500.f),
                 1100.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
-                30,                                             // messageFontSize - still emphasized
+                40,                                             // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
+            }
+            ,
+            {
+                "***GUIDE***",                           // speaker
+                "(Hold SPACE to shoot bursts of bullets!)",            // message
+                basePath + "alien_future.png",       // portraitPath
+                false,                                            // portraitOnLeft
+                sf::Color::Magenta,
+                sf::Color::White,
+                sf::Vector2f(0.f, 200.f),
+                1100.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                40,                                             // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
+            }
+            ,
+            {
+                "***GUIDE***",                           // speaker
+                "(Press ENTER to activate the supermove!!)",            // message
+                basePath + "alien_future.png",       // portraitPath
+                false,                                            // portraitOnLeft
+                sf::Color::Magenta,
+                sf::Color::White,
+                sf::Vector2f(0.f, 200.f),
+                1100.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                40,                                             // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
             }
         };
-        m_dialogueSystem->addDialogueTrigger(-1100, Dialogue3);
-        std::vector<DialogueMessage> Dialogue4 = {
+        m_dialogueSystem->addDialogueTrigger(6400, Dialogue5);
+        } else {
+            // Japanese translation
+            std::vector<DialogueMessage> Dialogue0 = {
+                {
+                    "エイリアン兵士",                               // speaker
+                    "ここはどこだ？？？",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    40,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "エイリアン兵士",                              // speaker
+                    "何が起きた？？？",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    40,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "エイリアン兵士",                               // speaker
+                    "同じブラックホールに入ったはずなのに...",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    800.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "エイリアン兵士",                               // speaker
+                    "...この現在は違う場所のようだ",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    800.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                };
+                m_dialogueSystem->addDialogueTrigger(600, Dialogue0);
+                std::vector<DialogueMessage> Dialogue02 = {
+                {
+                    "エイリアン兵士",
+                    "考えてみよう：",
+                    basePath + "alien_ancient.png",
+                    true,
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    750.f,
+                    150.f,
+                    30,
+                    true
+                },
+                {
+                    "エイリアン兵士",
+                    "ブラックホールを通り抜けて...",
+                    basePath + "alien_ancient.png",
+                    true,
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    750.f,
+                    150.f,
+                    30,
+                    true
+                },
+                {
+                    "エイリアン兵士",
+                    "ここは彼らの現在のはずだったが...",
+                    basePath + "alien_ancient.png",
+                    true,
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    850.f,
+                    150.f,
+                    30,
+                    true
+                },
+                {
+                    "エイリアン兵士",
+                    "過去で皇帝を倒したから...",
+                    basePath + "alien_ancient.png",
+                    true,
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    850.f,
+                    150.f,
+                    30,
+                    true
+                },
+                {
+                    "エイリアン兵士",
+                    "彼らはもう存在しないはずなのに...",
+                    basePath + "alien_ancient.png",
+                    true,
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    850.f,
+                    150.f,
+                    30,
+                    true
+                },
+                {
+                    "エイリアン兵士",
+                    "まさか歴史を変えてしまったのか...",
+                    basePath + "alien_ancient.png",
+                    true,
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    750.f,
+                    150.f,
+                    30,
+                    true
+                },
+                {
+                    "エイリアン兵士",
+                    "新たな現在を作り出してしまった！？",
+                    basePath + "alien_ancient.png",
+                    true,
+                    sf::Color::Magenta,
+                    sf::Color::Red,
+                    sf::Vector2f(0.f, 500.f),
+                    800.f,
+                    150.f,
+                    40,
+                    true
+                }
+            };
+            m_dialogueSystem->addDialogueTrigger(900, Dialogue02);
+            std::vector<DialogueMessage> Dialogue1 = {
+                {
+                    "兵士",                               // speaker
+                    "お前は誰だ？？",            // message
+                    basePath + "future_normal.png",       // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Cyan,
+                    sf::Color::White,
+                    sf::Vector2f(700.f, 500.f),
+                    600.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "エイリアン兵士",                              // speaker
+                    "まさか...そんな...",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    700.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "エイリアン兵士",                              // speaker
+                    "また殺そうとしてるのか？",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    700.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "エイリアン兵士",                              // speaker
+                    "また！？",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    700.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    50,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+            };
+            m_dialogueSystem->addDialogueTrigger(1500, Dialogue1);
+            std::vector<DialogueMessage> Dialogue21 = {
+                {
+                    "兵士",                              // speaker
+                    "お前は何者だ！？",            // message
+                    basePath + "future_fast.png",       // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Cyan,
+                    sf::Color::White,
+                    sf::Vector2f(800.f, 300.f),
+                    600.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    50,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+            };
+            m_dialogueSystem->addDialogueTrigger(3000, Dialogue21);
+            std::vector<DialogueMessage> Dialogue2 = {
+                {
+                    "エイリアン兵士",                              // speaker
+                    "そういえば...",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "エイリアン兵士",                              // speaker
+                    "この兵士たち、見覚えがある...",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    700.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "エイリアン兵士",                              // speaker
+                    "どうしてそんなことが？？",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+            };
+            m_dialogueSystem->addDialogueTrigger(3900, Dialogue2);
+            std::vector<DialogueMessage> Dialogue3 = {
             {
-                "Alien Legionary",                               // speaker
-                "Here goes nothing!!",            // message
+                "エイリアン兵士",                              // speaker
+                "あいつら強すぎる...",            // message
                 basePath + "alien_ancient.png",       // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,
@@ -2523,122 +3395,1645 @@ void Scene_Play::initializeDialogues()
                 sf::Vector2f(0.f, 500.f),
                 650.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
-                40,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            },
-            {
-                "Legionary",                                // speaker
-                "HEY !!! STOP!!!",            // message
-                basePath + "future_fast.png",       // portraitPath
-                false,                                            // portraitOnLeft
-                sf::Color::Cyan,
-                sf::Color::White,
-                sf::Vector2f(600.f, 400.f),
-                700.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                35,                                              // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            },
-            {
-                "Legionary",                              // speaker
-                "YOU DAMNED PARADOX ALIEN..",            // message
-                basePath + "future_fast.png",       // portraitPath
-                false,                                            // portraitOnLeft
-                sf::Color::Cyan,
-                sf::Color::White,
-                sf::Vector2f(600.f, 400.f),
-                700.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                35,                                             // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            },
-            {
-                "Legionary",                              // speaker
-                "NOW I GET IT...",            // message
-                basePath + "future_fast.png",       // portraitPath
-                false,                                            // portraitOnLeft
-                sf::Color::Cyan,
-                sf::Color::White,
-                sf::Vector2f(600.f, 400.f),
-                700.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                35,                                             // messageFontSize - still emphasized
+                30,                                             // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
             }
             ,
             {
-                "Legionary",                              // speaker
-                "YOU CAME HERE THROUGH THAT BLACK HOLE...",            // message
-                basePath + "future_fast.png",       // portraitPath
-                false,                                            // portraitOnLeft
-                sf::Color::Cyan,
+                "エイリアン兵士",                              // speaker
+                "この剣だけでは太刀打ちできない...",            // message
+                basePath + "alien_ancient.png",       // portraitPath
+                true,                                            // portraitOnLeft
+                sf::Color::Magenta,
                 sf::Color::White,
-                sf::Vector2f(500.f, 400.f),
+                sf::Vector2f(0.f, 500.f),
                 950.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
-                35,                                             // messageFontSize - still emphasized
-                true                                             // useTypewriterEffect
-            },
-            {
-                "Legionary",                              // speaker
-                "AND TRAVELED THROUGH DIMENSIONS..",            // message
-                basePath + "future_fast.png",        // portraitPath
-                false,                                            // portraitOnLeft
-                sf::Color::Cyan,
-                sf::Color::White,
-                sf::Vector2f(600.f, 400.f),
-                850.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
-                35,                                             // messageFontSize - still emphasized
+                30,                                             // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
             }
             ,
             {
-                "Legionary",                              // speaker
-                "I'LL HUNT YOU ACROSS EVERY UNIVERSE!!",            // message
-                basePath + "future_fast.png",        // portraitPath
-                false,                                            // portraitOnLeft
-                sf::Color::Cyan,
+                "エイリアン兵士",                              // speaker
+                "どうすればいい？？",            // message
+                basePath + "alien_ancient.png",       // portraitPath
+                true,                                            // portraitOnLeft
+                sf::Color::Magenta,
                 sf::Color::White,
-                sf::Vector2f(600.f, 400.f),
-                880.f,                                           // boxWidth - medium for medium message
+                sf::Vector2f(0.f, 500.f),
+                700.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
-                35,                                             // messageFontSize - still emphasized
+                30,                                             // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
             }
             ,
             {
-                "Legionary",                              // speaker
-                "AND I WILL MAKE YOU PAY FOR IT...",            // message
-                basePath + "future_fast.png",        // portraitPath
-                false,                                            // portraitOnLeft
-                sf::Color::Cyan,
+                "エイリアン兵士",                              // speaker
+                "大変なことになった...",            // message
+                basePath + "alien_ancient.png",       // portraitPath
+                true,                                            // portraitOnLeft
+                sf::Color::Magenta,
                 sf::Color::White,
-                sf::Vector2f(600.f, 400.f),
-                750.f,                                           // boxWidth - medium for medium message
+                sf::Vector2f(0.f, 500.f),
+                700.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
-                35,                                             // messageFontSize - still emphasized
+                30,                                             // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
+            }
+            };
+            m_dialogueSystem->addDialogueTrigger(4800, Dialogue3);
+        std::vector<DialogueMessage> Dialogue4 = {
+            {
+                "エイリアン兵士",                              // speaker
+                "あれは...未来的な装甲？？",            // message
+                basePath + "alien_ancient.png",       // portraitPath
+                true,                                            // portraitOnLeft
+                sf::Color::Magenta,
+                sf::Color::White,
+                sf::Vector2f(0.f, 500.f),
+                950.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                30,                                             // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
             }
             ,
             {
-                "Legionary",                              // speaker
-                "AT ALL COSTS!!!",            // message
-                basePath + "future_fast.png",        // portraitPath
-                false,                                            // portraitOnLeft
-                sf::Color::Cyan,
-                sf::Color::Red,
-                sf::Vector2f(600.f, 400.f),
-                650.f,                                           // boxWidth - medium for medium message
+                "エイリアン兵士",                              // speaker
+                "着てみたら彼らのように弾を撃てるかも！",            // message
+                basePath + "alien_ancient.png",       // portraitPath
+                true,                                            // portraitOnLeft
+                sf::Color::Magenta,
+                sf::Color::White,
+                sf::Vector2f(0.f, 500.f),
+                950.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
-                50,                                             // messageFontSize - still emphasized
+                30,                                             // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
             }
         };
-        m_dialogueSystem->addDialogueTrigger(-400, Dialogue4);
+        m_dialogueSystem->addDialogueTrigger(5700, Dialogue4);
+        std::vector<DialogueMessage> Dialogue5 = {
+            {
+                "エイリアン兵士",                              // speaker
+                "できた！！！",            // message
+                basePath + "alien_future.png",       // portraitPath
+                true,                                            // portraitOnLeft
+                sf::Color::Magenta,
+                sf::Color::White,
+                sf::Vector2f(0.f, 500.f),
+                650.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                40,                                             // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
+            }
+            ,
+            {
+                "エイリアン兵士",                           // speaker
+                "弾を撃てるぞ！！",            // message
+                basePath + "alien_future.png",       // portraitPath
+                true,                                            // portraitOnLeft
+                sf::Color::Magenta,
+                sf::Color::White,
+                sf::Vector2f(0.f, 500.f),
+                700.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                40,                                             // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
+            }
+            ,
+            {
+                "エイリアン兵士",                           // speaker
+                "食らえ、この時空の矛盾め！！！",            // message
+                basePath + "alien_future.png",       // portraitPath
+                false,                                            // portraitOnLeft
+                sf::Color::Magenta,
+                sf::Color::White,
+                sf::Vector2f(0.f, 500.f),
+                1100.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                40,                                             // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
+            }
+            ,
+            {
+                "***ガイド***",                           // speaker
+                "(スペースキーを長押しで連射！)",            // message
+                basePath + "alien_future.png",       // portraitPath
+                false,                                            // portraitOnLeft
+                sf::Color::Magenta,
+                sf::Color::White,
+                sf::Vector2f(0.f, 200.f),
+                1100.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                40,                                             // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
+            }
+            ,
+            {
+                "***ガイド***",                           // speaker
+                "(エンターキーで必殺技！！)",            // message
+                basePath + "alien_future.png",       // portraitPath
+                false,                                            // portraitOnLeft
+                sf::Color::Magenta,
+                sf::Color::White,
+                sf::Vector2f(0.f, 200.f),
+                1100.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                40,                                             // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
+            }
+        };
+        m_dialogueSystem->addDialogueTrigger(6400, Dialogue5);
+        }
     }
-    
-    
+    else if (levelName ==  "future_rome_level_3.txt") {
+        if (m_language == "English") {
+            std::vector<DialogueMessage> Dialogue0 = {
+                {
+                    "Legionary (Elite)",                               // speaker
+                    "You.. invader...",            // message
+                    basePath + "future_elite.png",       // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Red,
+                    sf::Color::White,
+                    sf::Vector2f(700.f, 450.f),
+                    700.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "Legionary (Elite)",                             // speaker
+                    "How dare you coming to this place??",            // message
+                    basePath + "future_elite.png",       // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Red,
+                    sf::Color::White,
+                    sf::Vector2f(700.f, 450.f),
+                    750.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                };
+                m_dialogueSystem->addDialogueTrigger(600, Dialogue0);
+                std::vector<DialogueMessage> Dialogue1 = {
+                {
+                    "Alien Legionary",                               // speaker
+                    "These legionnaries look danegrous..",            // message
+                    basePath + "alien_future.png",       // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(50.f, 450.f),
+                    800.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "Alien Legionary",                             // speaker
+                    "I can barely see them...",            // message
+                    basePath + "alien_future.png",       // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(50.f, 450.f),
+                    750.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "Alien Legionary",                             // speaker
+                    "Like fighting shadows... or ghosts...",            // message
+                    basePath + "alien_future.png",        // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(50.f, 450.f),
+                    750.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "Alien Legionary",                             // speaker
+                    "Gotta be very careful",            // message
+                    basePath + "alien_future.png",       // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(50.f, 450.f),
+                    750.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                };
+                m_dialogueSystem->addDialogueTrigger(2600, Dialogue1);
+                std::vector<DialogueMessage> Dialogue02 = {
+                {
+                    "Legionary (Elite)",                           // speaker
+                    "Who is this strange legionary?",            // message
+                    basePath + "future_elite.png",       // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Red,
+                    sf::Color::White,
+                    sf::Vector2f(500.f, 400.f),
+                    750.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                             // messageFontSize - still emphasized
+                    true                                               // useTypewriterEffect
+                }
+                ,
+                {
+                    "Legionary (Elite)",                           // speaker
+                    "Wait... those violet and black colors...",            // message
+                    basePath + "future_elite.png",       // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Red,
+                    sf::Color::White,
+                    sf::Vector2f(600.f, 400.f),
+                    780.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                                 // messageFontSize - still emphasized
+                    true                                               // useTypewriterEffect
+                }
+                ,
+                {
+                    "Legionary (Elite)",                           // speaker
+                    "IMPOSSIBLE",            // message
+                    basePath + "future_elite.png",       // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Red,
+                    sf::Color::Red,
+                    sf::Vector2f(500.f, 400.f),
+                    780.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    45,                                                  // messageFontSize - still emphasized
+                    true                                               // useTypewriterEffect
+                }
+                ,
+                {
+                    "Legionary (Elite)",                           // speaker
+                    "You match the ancient records...",            // message
+                    basePath + "future_elite.png",       // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Red,
+                    sf::Color::White,
+                    sf::Vector2f(600.f, 400.f),
+                    780.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                                  // messageFontSize - still emphasized
+                    true                                               // useTypewriterEffect
+                }
+                ,
+                {
+                    "Legionary (Elite)",                             // speaker
+                    "A warrior who wounded our emperor and then..",            // message
+                    basePath + "future_elite.png",       // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Red,
+                    sf::Color::White,
+                    sf::Vector2f(500.f, 400.f),
+                    900.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                                // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "Legionary (Elite)",                             // speaker
+                    "VANISHED...",            // message
+                    basePath + "future_elite.png",       // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Red,
+                    sf::Color::White,
+                    sf::Vector2f(600.f, 400.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    50,                                                // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "Legionary (Elite)",                             // speaker
+                    "could it be really you?!",            // message
+                    basePath + "future_elite.png",       // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Red,
+                    sf::Color::White,
+                    sf::Vector2f(500.f, 400.f),
+                    700.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                                // messageFontSize - still emphasized
+                    true                                              // useTypewriterEffect
+                }
+                ,
+                {
+                    "Alien Legionary",                              // speaker
+                    "Oh.. I think I really DID travel through time...",// message
+                    basePath + "alien_future.png",       // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 400.f),
+                    900.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+            };
+            m_dialogueSystem->addDialogueTrigger(5700, Dialogue02);
+            std::vector<DialogueMessage> Dialoguelast = {
+            {
+                "Legionary (Elite)",                                // speaker
+                "STOP THE INVADER!!!",// message
+                basePath + "future_elite.png",       // portraitPath
+                true,                                            // portraitOnLeft
+                sf::Color::Red,
+                sf::Color::Red,
+                sf::Vector2f(0.f, 400.f),
+                800.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                40,                                             // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
+            },
+            {
+                "Legionary (Elite)",                                // speaker
+                "STOP HIM NOW! HISTORY MUST NOT REPEAT ITSELF!",// message
+                basePath + "future_elite.png",       // portraitPath
+                true,                                            // portraitOnLeft
+                sf::Color::Red,
+                sf::Color::Red,
+                sf::Vector2f(0.f, 400.f),
+                1100.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                35,                                             // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
+            }
+            };
+            m_dialogueSystem->addDialogueTrigger(12500, Dialoguelast);
+        } else {
+            // Japanese translation
+            std::vector<DialogueMessage> Dialogue0 = {
+                {
+                    "兵士（精鋭）",                               // speaker
+                    "貴様...侵入者...",            // message
+                    basePath + "future_elite.png",       // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Red,
+                    sf::Color::White,
+                    sf::Vector2f(700.f, 450.f),
+                    700.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "兵士（精鋭）",                             // speaker
+                    "よくもここへ来たな？？",            // message
+                    basePath + "future_elite.png",       // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Red,
+                    sf::Color::White,
+                    sf::Vector2f(700.f, 450.f),
+                    750.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                };
+                m_dialogueSystem->addDialogueTrigger(600, Dialogue0);
+                std::vector<DialogueMessage> Dialogue1 = {
+                {
+                    "エイリアン兵士",                               // speaker
+                    "この兵士たちは危険そうだ...",            // message
+                    basePath + "alien_future.png",       // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(50.f, 450.f),
+                    800.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "エイリアン兵士",                             // speaker
+                    "ほとんど見えないほどだ...",            // message
+                    basePath + "alien_future.png",       // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(50.f, 450.f),
+                    750.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "エイリアン兵士",                             // speaker
+                    "影か幽霊と戦っているようだ...",            // message
+                    basePath + "alien_future.png",        // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(50.f, 450.f),
+                    750.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "エイリアン兵士",                             // speaker
+                    "かなり注意しないと",            // message
+                    basePath + "alien_future.png",       // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(50.f, 450.f),
+                    750.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                };
+                m_dialogueSystem->addDialogueTrigger(2600, Dialogue1);
+                std::vector<DialogueMessage> Dialogue02 = {
+                {
+                    "兵士（精鋭）",                           // speaker
+                    "この奇妙な兵士は誰だ？",            // message
+                    basePath + "future_elite.png",       // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Red,
+                    sf::Color::White,
+                    sf::Vector2f(500.f, 400.f),
+                    750.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                             // messageFontSize - still emphasized
+                    true                                               // useTypewriterEffect
+                }
+                ,
+                {
+                    "兵士（精鋭）",                           // speaker
+                    "待て...あの紫と黒の色...",            // message
+                    basePath + "future_elite.png",       // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Red,
+                    sf::Color::White,
+                    sf::Vector2f(600.f, 400.f),
+                    780.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                                 // messageFontSize - still emphasized
+                    true                                               // useTypewriterEffect
+                }
+                ,
+                {
+                    "兵士（精鋭）",                           // speaker
+                    "ありえない",            // message
+                    basePath + "future_elite.png",       // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Red,
+                    sf::Color::Red,
+                    sf::Vector2f(500.f, 400.f),
+                    780.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    45,                                                  // messageFontSize - still emphasized
+                    true                                               // useTypewriterEffect
+                }
+                ,
+                {
+                    "兵士（精鋭）",                           // speaker
+                    "古代の記録に一致している...",            // message
+                    basePath + "future_elite.png",       // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Red,
+                    sf::Color::White,
+                    sf::Vector2f(600.f, 400.f),
+                    780.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                                  // messageFontSize - still emphasized
+                    true                                               // useTypewriterEffect
+                }
+                ,
+                {
+                    "兵士（精鋭）",                             // speaker
+                    "我らが皇帝に傷を負わせ、そして...",            // message
+                    basePath + "future_elite.png",       // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Red,
+                    sf::Color::White,
+                    sf::Vector2f(500.f, 400.f),
+                    900.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                                // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "兵士（精鋭）",                             // speaker
+                    "消え去った戦士...",            // message
+                    basePath + "future_elite.png",       // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Red,
+                    sf::Color::White,
+                    sf::Vector2f(600.f, 400.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    50,                                                // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "兵士（精鋭）",                             // speaker
+                    "本当にお前なのか！？",            // message
+                    basePath + "future_elite.png",       // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Red,
+                    sf::Color::White,
+                    sf::Vector2f(500.f, 400.f),
+                    700.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                                // messageFontSize - still emphasized
+                    true                                              // useTypewriterEffect
+                }
+                ,
+                {
+                    "エイリアン兵士",                              // speaker
+                    "なるほど...本当に時間を超えたんだな...",// message
+                    basePath + "alien_future.png",       // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 400.f),
+                    900.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+            };
+            m_dialogueSystem->addDialogueTrigger(5700, Dialogue02);
+            std::vector<DialogueMessage> Dialoguelast = {
+            {
+                "兵士（精鋭）",                                // speaker
+                "侵入者を止めろ！！！",// message
+                basePath + "future_elite.png",       // portraitPath
+                true,                                            // portraitOnLeft
+                sf::Color::Red,
+                sf::Color::Red,
+                sf::Vector2f(0.f, 400.f),
+                800.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                40,                                             // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
+            },
+            {
+                "兵士（精鋭）",                                // speaker
+                "今すぐ止めろ！歴史は繰り返してはならない！",// message
+                basePath + "future_elite.png",       // portraitPath
+                true,                                            // portraitOnLeft
+                sf::Color::Red,
+                sf::Color::Red,
+                sf::Vector2f(0.f, 400.f),
+                1100.f,                                           // boxWidth - medium for medium message
+                150.f,                                           // boxHeight
+                35,                                             // messageFontSize - still emphasized
+                true                                             // useTypewriterEffect
+            }
+            };
+            m_dialogueSystem->addDialogueTrigger(12500, Dialoguelast);
+        }
+    }
+    else if (levelName == "future_rome_level_4_emperor_room.txt") {
+        if (m_language == "English") {
+            std::vector<DialogueMessage> bossDialogue = {
+                {
+                    "Emperor",
+                    "... And so you are back...",
+                    basePath + "future_emperor.png",
+                    false,                                    // portraitOnLeft (right side)
+                    sf::Color::Cyan,                           // speakerColor
+                    sf::Color::White,                         // messageColor
+                    sf::Vector2f(800.f, 550.f),                // dialogueBoxPosition
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "Emperor",
+                    "I remember you... ",
+                    basePath + "future_emperor.png",
+                    false,
+                    sf::Color::Cyan,
+                    sf::Color::White,
+                    sf::Vector2f(800.f, 550.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+            };
+            m_dialogueSystem->addDialogueTrigger(500, bossDialogue);
+            std::vector<DialogueMessage> bossDialogue2 = {
+                {
+                    "Emperor",
+                    "Thousands of years ago you came here.. ",
+                    basePath + "future_emperor.png",
+                    false,
+                    sf::Color::Cyan,
+                    sf::Color::White,
+                    sf::Vector2f(800.f, 550.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    26,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "Emperor",
+                    ".. and I barely survived your wrath.",
+                    basePath + "future_emperor.png",
+                    false,
+                    sf::Color::Cyan,
+                    sf::Color::White,
+                    sf::Vector2f(800.f, 550.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    26,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "Emperor",
+                    "But this time..",
+                    basePath + "future_emperor.png",
+                    false,
+                    sf::Color::Cyan,
+                    sf::Color::White,
+                    sf::Vector2f(800.f, 550.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "Emperor",
+                    "YOU WILL NOT SURVIVE!!!",
+                    basePath + "future_emperor.png",
+                    false,
+                    sf::Color::Cyan,
+                    sf::Color::Red,
+                    sf::Vector2f(800.f, 550.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    40,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+            };
+            m_dialogueSystem->addDialogueTrigger(700, bossDialogue2);
+            std::vector<DialogueMessage> phase2Dialogue = {
+                {
+                    "Emperor",                               // speaker
+                    "You are stronger than I expected...",    // message
+                    basePath + "future_emperor_2.png", // portraitPath (adjust path as needed)
+                    false,                                   // portraitOnLeft
+                    sf::Color::Cyan,                         // speakerColor
+                    sf::Color::White,                        // messageColor
+                    sf::Vector2f(800.f, 550.f),              // dialogueBoxPosition
+                    650.f,                                   // boxWidth
+                    150.f,                                   // boxHeight
+                    30,                                      // messageFontSize
+                    true                                     // useTypewriterEffect
+                },
+                {
+                    "Emperor",
+                    "But this is just the beginning!!",
+                    basePath + "future_emperor_2.png",
+                    false,
+                    sf::Color::Cyan,
+                    sf::Color::Red,
+                    sf::Vector2f(800.f, 550.f),
+                    650.f,
+                    150.f,
+                    35,
+                    true
+                }
+            };
+            
+            // Phase 3 dialogue (30% health)
+            std::vector<DialogueMessage> phase3Dialogue = {
+                {
+                    "Emperor",                               // speaker
+                    "HOW IS THIS POSSIBLE??",                           // message
+                    basePath + "future_emperor_3.png", // portraitPath
+                    false,                                   // portraitOnLeft
+                    sf::Color::Cyan,                         // speakerColor
+                    sf::Color::Red,                          // messageColor
+                    sf::Vector2f(800.f, 550.f),              // dialogueBoxPosition
+                    650.f,                                   // boxWidth
+                    150.f,                                   // boxHeight
+                    30,                                      // messageFontSize
+                    true                                     // useTypewriterEffect
+                },
+                {
+                    "Emperor",
+                    "IT'S NOT OVER YET!!!",
+                    basePath + "future_emperor_3.png",
+                    false,
+                    sf::Color::Cyan,
+                    sf::Color::Red,
+                    sf::Vector2f(800.f, 550.f),
+                    650.f,
+                    150.f,
+                    40,
+                    true
+                }
+            };
+            // Phase 3 dialogue (30% health)
+            std::vector<DialogueMessage> phasefinalDialogue = {
+                {
+                    "Emperor",                               // speaker
+                    "IMP055IBLE!!!",                           // message
+                    basePath + "future_emperor_3.png", // portraitPath
+                    false,                                   // portraitOnLeft
+                    sf::Color::Cyan,                         // speakerColor
+                    sf::Color::Red,                          // messageColor
+                    sf::Vector2f(800.f, 550.f),              // dialogueBoxPosition
+                    650.f,                                   // boxWidth
+                    150.f,                                   // boxHeight
+                    30,                                      // messageFontSize
+                    true                                     // useTypewriterEffect
+                },
+                {
+                    "Emperor",
+                    "TIME T0 SH0W Y0U MY...",
+                    basePath + "future_emperor_3.png",
+                    false,
+                    sf::Color::Cyan,
+                    sf::Color::Red,
+                    sf::Vector2f(800.f, 550.f),
+                    650.f,
+                    150.f,
+                    40,
+                    true
+                },
+                {
+                    "Emperor",
+                    "TRUE POWER!",
+                    basePath + "future_emperor_3.png",
+                    false,
+                    sf::Color::Cyan,
+                    sf::Color::Red,
+                    sf::Vector2f(800.f, 550.f),
+                    650.f,
+                    150.f,
+                    50,
+                    true
+                }
+            };
+            std::vector<DialogueMessage> phasedefeatedFutureDialogue = {
+                {
+                    "Emperor",                               // speaker
+                    "...",                           // message
+                    basePath + "future_emperor_3.png", // portraitPath
+                    false,                                   // portraitOnLeft
+                    sf::Color::Cyan,                         // speakerColor
+                    sf::Color::White,                          // messageColor
+                    sf::Vector2f(800.f, 550.f),              // dialogueBoxPosition
+                    650.f,                                   // boxWidth
+                    150.f,                                   // boxHeight
+                    30,                                      // messageFontSize
+                    true                                     // useTypewriterEffect
+                }
+            };
+            // Add the named dialogues to our system
+            m_dialogueSystem->addNamedDialogue("emperor_phase2", phase2Dialogue);
+            m_dialogueSystem->addNamedDialogue("emperor_phase3", phase3Dialogue);
+            m_dialogueSystem->addNamedDialogue("emperor_future_final", phasefinalDialogue);
+            m_dialogueSystem->addNamedDialogue("emperor_future_defeated", phasedefeatedFutureDialogue);
+        } if (m_language == "Japanese") {
+            std::vector<DialogueMessage> bossDialogue = {
+                {
+                    "皇帝",
+                    "...そして戻ってきたか...",
+                    basePath + "future_emperor.png",
+                    false,                                    // portraitOnLeft (right side)
+                    sf::Color::Cyan,                           // speakerColor
+                    sf::Color::White,                         // messageColor
+                    sf::Vector2f(800.f, 550.f),                // dialogueBoxPosition
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "皇帝",
+                    "お前のことは覚えている...",
+                    basePath + "future_emperor.png",
+                    false,
+                    sf::Color::Cyan,
+                    sf::Color::White,
+                    sf::Vector2f(800.f, 550.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+            };
+            m_dialogueSystem->addDialogueTrigger(500, bossDialogue);
+            std::vector<DialogueMessage> bossDialogue2 = {
+                {
+                    "皇帝",
+                    "数千年前、お前はここに来た...",
+                    basePath + "future_emperor.png",
+                    false,
+                    sf::Color::Cyan,
+                    sf::Color::White,
+                    sf::Vector2f(800.f, 550.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    26,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "皇帝",
+                    "...私はかろうじてお前の怒りから生き延びた",
+                    basePath + "future_emperor.png",
+                    false,
+                    sf::Color::Cyan,
+                    sf::Color::White,
+                    sf::Vector2f(800.f, 550.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    26,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "皇帝",
+                    "だが今回は...",
+                    basePath + "future_emperor.png",
+                    false,
+                    sf::Color::Cyan,
+                    sf::Color::White,
+                    sf::Vector2f(800.f, 550.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "皇帝",
+                    "お前は生き残れん！！！",
+                    basePath + "future_emperor.png",
+                    false,
+                    sf::Color::Cyan,
+                    sf::Color::Red,
+                    sf::Vector2f(800.f, 550.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    40,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+            };
+            m_dialogueSystem->addDialogueTrigger(700, bossDialogue2);
+            std::vector<DialogueMessage> phase2Dialogue = {
+                {
+                    "皇帝",                               // speaker
+                    "予想以上に強いようだな...",    // message
+                    basePath + "future_emperor_2.png", // portraitPath (adjust path as needed)
+                    false,                                   // portraitOnLeft
+                    sf::Color::Cyan,                         // speakerColor
+                    sf::Color::White,                        // messageColor
+                    sf::Vector2f(800.f, 550.f),              // dialogueBoxPosition
+                    650.f,                                   // boxWidth
+                    150.f,                                   // boxHeight
+                    30,                                      // messageFontSize
+                    true                                     // useTypewriterEffect
+                },
+                {
+                    "皇帝",
+                    "だがこれはほんの始まりだ！！",
+                    basePath + "future_emperor_2.png",
+                    false,
+                    sf::Color::Cyan,
+                    sf::Color::Red,
+                    sf::Vector2f(800.f, 550.f),
+                    650.f,
+                    150.f,
+                    35,
+                    true
+                }
+            };
+            
+            // Phase 3 dialogue (30% health)
+            std::vector<DialogueMessage> phase3Dialogue = {
+                {
+                    "皇帝",                               // speaker
+                    "どうしてこれが可能だ！？",                           // message
+                    basePath + "future_emperor_3.png", // portraitPath
+                    false,                                   // portraitOnLeft
+                    sf::Color::Cyan,                         // speakerColor
+                    sf::Color::Red,                          // messageColor
+                    sf::Vector2f(800.f, 550.f),              // dialogueBoxPosition
+                    650.f,                                   // boxWidth
+                    150.f,                                   // boxHeight
+                    30,                                      // messageFontSize
+                    true                                     // useTypewriterEffect
+                },
+                {
+                    "皇帝",
+                    "まだ終わっていない！！！",
+                    basePath + "future_emperor_3.png",
+                    false,
+                    sf::Color::Cyan,
+                    sf::Color::Red,
+                    sf::Vector2f(800.f, 550.f),
+                    650.f,
+                    150.f,
+                    40,
+                    true
+                }
+            };
+            // Phase 3 dialogue (30% health)
+            std::vector<DialogueMessage> phasefinalDialogue = {
+                {
+                    "皇帝",                               // speaker
+                    "あり得ない！！！",                           // message
+                    basePath + "future_emperor_3.png", // portraitPath
+                    false,                                   // portraitOnLeft
+                    sf::Color::Cyan,                         // speakerColor
+                    sf::Color::Red,                          // messageColor
+                    sf::Vector2f(800.f, 550.f),              // dialogueBoxPosition
+                    650.f,                                   // boxWidth
+                    150.f,                                   // boxHeight
+                    30,                                      // messageFontSize
+                    true                                     // useTypewriterEffect
+                },
+                {
+                    "皇帝",
+                    "今こそ見せてやろう...",
+                    basePath + "future_emperor_3.png",
+                    false,
+                    sf::Color::Cyan,
+                    sf::Color::Red,
+                    sf::Vector2f(800.f, 550.f),
+                    650.f,
+                    150.f,
+                    40,
+                    true
+                },
+                {
+                    "皇帝",
+                    "真の力を！",
+                    basePath + "future_emperor_3.png",
+                    false,
+                    sf::Color::Cyan,
+                    sf::Color::Red,
+                    sf::Vector2f(800.f, 550.f),
+                    650.f,
+                    150.f,
+                    50,
+                    true
+                }
+            };
+            std::vector<DialogueMessage> phasedefeatedFutureDialogue = {
+                {
+                    "皇帝",                               // speaker
+                    "...",                           // message
+                    basePath + "future_emperor_3.png", // portraitPath
+                    false,                                   // portraitOnLeft
+                    sf::Color::Cyan,                         // speakerColor
+                    sf::Color::White,                          // messageColor
+                    sf::Vector2f(800.f, 550.f),              // dialogueBoxPosition
+                    650.f,                                   // boxWidth
+                    150.f,                                   // boxHeight
+                    30,                                      // messageFontSize
+                    true                                     // useTypewriterEffect
+                }
+            };
+            // Add the named dialogues to our system
+            m_dialogueSystem->addNamedDialogue("emperor_phase2", phase2Dialogue);
+            m_dialogueSystem->addNamedDialogue("emperor_phase3", phase3Dialogue);
+            m_dialogueSystem->addNamedDialogue("emperor_future_final", phasefinalDialogue);
+            m_dialogueSystem->addNamedDialogue("emperor_future_defeated", phasedefeatedFutureDialogue);
+        }
+    }
+    else if (levelName ==  "future_rome_level_5_day_v2.txt") {
+        if (m_language == "English") {
+            std::vector<DialogueMessage> Dialogue0 = {
+                {
+                    "Alien Legionary",                               // speaker
+                    "Oh, I am back here...",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "Alien Legionary",                              // speaker
+                    "..I am so tired.. ",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "Alien Legionary",                              // speaker
+                    "I must go back to the black hole and hope i can get home..",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    1050.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+            };
+            m_dialogueSystem->addDialogueTrigger(-13900, Dialogue0);
+            std::vector<DialogueMessage> Dialogue1 = {
+                {
+                    "Alien Legionary",                               // speaker
+                    "Thinking about it..",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "Alien Legionary",                              // speaker
+                    "I killed so many people...",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "Alien Legionary",                               // speaker
+                    "but I had no other choices..",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "Alien Legionary",                              // speaker
+                    "But.. did I really do the right thing?...",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    700.f,                                           // boxWidth - medium for medium messageN
+                    150.f,                                           // boxHeight
+                    30,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+            };
+            m_dialogueSystem->addDialogueTrigger(-11000, Dialogue1);
+            std::vector<DialogueMessage> Dialogue2 = {
+                {
+                    "Alien Legionary",                               // speaker
+                    "Here are the stairs..",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+            };
+            m_dialogueSystem->addDialogueTrigger(-3800, Dialogue2);
+            std::vector<DialogueMessage> Dialogue3 = {
+                {
+                    "Alien Legionary",                               // speaker
+                    "I am so afraid...",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "Alien Legionary",                              // speaker
+                    "Will I ever see my home again?",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "Alien Legionary",                               // speaker
+                    "Am I even real anymore?",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "Alien Legionary",                              // speaker
+                    "I must keep fighting... it's my only hope of finding a way back...",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    1100.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+            };
+            m_dialogueSystem->addDialogueTrigger(-1100, Dialogue3);
+            std::vector<DialogueMessage> Dialogue4 = {
+                {
+                    "Alien Legionary",                               // speaker
+                    "Here goes nothing!!",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    40,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "Legionary",                                // speaker
+                    "HEY !!! STOP!!!",            // message
+                    basePath + "future_fast.png",       // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Cyan,
+                    sf::Color::White,
+                    sf::Vector2f(600.f, 400.f),
+                    700.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    35,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "Legionary",                              // speaker
+                    "YOU DAMNED PARADOX ALIEN..",            // message
+                    basePath + "future_fast.png",       // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Cyan,
+                    sf::Color::White,
+                    sf::Vector2f(600.f, 400.f),
+                    700.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    35,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "Legionary",                              // speaker
+                    "NOW I GET IT...",            // message
+                    basePath + "future_fast.png",       // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Cyan,
+                    sf::Color::White,
+                    sf::Vector2f(600.f, 400.f),
+                    700.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    35,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "Legionary",                              // speaker
+                    "YOU CAME HERE THROUGH THAT BLACK HOLE...",            // message
+                    basePath + "future_fast.png",       // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Cyan,
+                    sf::Color::White,
+                    sf::Vector2f(500.f, 400.f),
+                    950.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    35,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "Legionary",                              // speaker
+                    "AND TRAVELED THROUGH DIMENSIONS..",            // message
+                    basePath + "future_fast.png",        // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Cyan,
+                    sf::Color::White,
+                    sf::Vector2f(600.f, 400.f),
+                    850.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    35,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "Legionary",                              // speaker
+                    "I'LL HUNT YOU ACROSS EVERY UNIVERSE!!",            // message
+                    basePath + "future_fast.png",        // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Cyan,
+                    sf::Color::White,
+                    sf::Vector2f(600.f, 400.f),
+                    880.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    35,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "Legionary",                              // speaker
+                    "AND I WILL MAKE YOU PAY FOR IT...",            // message
+                    basePath + "future_fast.png",        // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Cyan,
+                    sf::Color::White,
+                    sf::Vector2f(600.f, 400.f),
+                    750.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    35,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "Legionary",                              // speaker
+                    "AT ALL COSTS!!!",            // message
+                    basePath + "future_fast.png",        // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Cyan,
+                    sf::Color::Red,
+                    sf::Vector2f(600.f, 400.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    50,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+            };
+            m_dialogueSystem->addDialogueTrigger(-400, Dialogue4);
+        } else {
+            std::vector<DialogueMessage> Dialogue0 = {
+                {
+                    "エイリアン兵士",                               // speaker
+                    "ああ、またここに戻ってきたのか...",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "エイリアン兵士",                              // speaker
+                    "..とても疲れた..",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "エイリアン兵士",                              // speaker
+                    "ブラックホールに戻って、家に帰れることを祈るしかない..",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    1050.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+            };
+            m_dialogueSystem->addDialogueTrigger(-13900, Dialogue0);
+            std::vector<DialogueMessage> Dialogue1 = {
+                {
+                    "エイリアン兵士",                               // speaker
+                    "考えてみれば..",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "エイリアン兵士",                              // speaker
+                    "私はあんなにも多くの人を殺してしまった...",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "エイリアン兵士",                               // speaker
+                    "でも他に選択肢はなかった..",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "エイリアン兵士",                              // speaker
+                    "だが...本当に正しいことをしたのだろうか？...",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    700.f,                                           // boxWidth - medium for medium messageN
+                    150.f,                                           // boxHeight
+                    30,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+            };
+            m_dialogueSystem->addDialogueTrigger(-11000, Dialogue1);
+            std::vector<DialogueMessage> Dialogue2 = {
+                {
+                    "エイリアン兵士",                               // speaker
+                    "階段はここか..",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+            };
+            m_dialogueSystem->addDialogueTrigger(-3800, Dialogue2);
+            std::vector<DialogueMessage> Dialogue3 = {
+                {
+                    "エイリアン兵士",                               // speaker
+                    "怖くてたまらない...",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "エイリアン兵士",                              // speaker
+                    "もう二度と故郷を見ることはできないのか？",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "エイリアン兵士",                               // speaker
+                    "私はもう本当の自分なのだろうか？",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "エイリアン兵士",                              // speaker
+                    "戦い続けるしかない...帰る道を見つける唯一の希望なのだから...",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    1100.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+            };
+            m_dialogueSystem->addDialogueTrigger(-1100, Dialogue3);
+            std::vector<DialogueMessage> Dialogue4 = {
+                {
+                    "エイリアン兵士",                               // speaker
+                    "やるしかない！！",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 500.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    40,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "兵士",                                // speaker
+                    "おい！！！止まれ！！！",            // message
+                    basePath + "future_fast.png",       // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Cyan,
+                    sf::Color::White,
+                    sf::Vector2f(600.f, 400.f),
+                    700.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    35,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "兵士",                              // speaker
+                    "貴様、パラドックスの異星人め..",            // message
+                    basePath + "future_fast.png",       // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Cyan,
+                    sf::Color::White,
+                    sf::Vector2f(600.f, 400.f),
+                    700.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    35,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "兵士",                              // speaker
+                    "今わかったぞ...",            // message
+                    basePath + "future_fast.png",       // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Cyan,
+                    sf::Color::White,
+                    sf::Vector2f(600.f, 400.f),
+                    700.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    35,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "兵士",                              // speaker
+                    "お前はそのブラックホールを通ってここに来たんだな...",            // message
+                    basePath + "future_fast.png",       // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Cyan,
+                    sf::Color::White,
+                    sf::Vector2f(500.f, 400.f),
+                    950.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    35,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                },
+                {
+                    "兵士",                              // speaker
+                    "そして次元を超えて旅をしていたのか..",            // message
+                    basePath + "future_fast.png",        // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Cyan,
+                    sf::Color::White,
+                    sf::Vector2f(600.f, 400.f),
+                    850.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    35,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "兵士",                              // speaker
+                    "あらゆる宇宙でお前を追い詰めてやる！！",            // message
+                    basePath + "future_fast.png",        // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Cyan,
+                    sf::Color::White,
+                    sf::Vector2f(600.f, 400.f),
+                    880.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    35,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "兵士",                              // speaker
+                    "そしてその報いを受けさせる...",            // message
+                    basePath + "future_fast.png",        // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Cyan,
+                    sf::Color::White,
+                    sf::Vector2f(600.f, 400.f),
+                    750.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    35,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "兵士",                              // speaker
+                    "どんな犠牲を払ってでも！！！",            // message
+                    basePath + "future_fast.png",        // portraitPath
+                    false,                                            // portraitOnLeft
+                    sf::Color::Cyan,
+                    sf::Color::Red,
+                    sf::Vector2f(600.f, 400.f),
+                    650.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    50,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+            };
+            m_dialogueSystem->addDialogueTrigger(-400, Dialogue4);
+        }
+    }
     std::cout << "[DEBUG] Dialogue system initialized for level: " << levelName << std::endl;
 }
 // Action Processing (Input Handling)                        
