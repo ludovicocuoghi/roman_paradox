@@ -29,7 +29,7 @@ class CTransform : public Component {
     
         // Rotate velocity vector by a given angle in degrees
         void rotate(float angleDegrees) {
-            float radians = angleDegrees * (M_PI / 180.f); // Convert degrees to radians
+            float radians = angleDegrees * (3.14 / 180.f); // Convert degrees to radians
             float cosA = cos(radians);
             float sinA = sin(radians);
     
