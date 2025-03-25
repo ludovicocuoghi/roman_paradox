@@ -120,6 +120,7 @@ public:
     CBoundingBox(const Vec2<float>& s = {0, 0}, const Vec2<float>& hs = {0, 0})
         : size(s), halfSize(hs) {}
 
+    // Returns collision rectangle at given position
     sf::FloatRect getRect(const Vec2<float>& pos) const {
         return sf::FloatRect(pos.x - halfSize.x, pos.y - halfSize.y, size.x, size.y);
     }
@@ -183,36 +184,36 @@ class CState : public Component {
         float bulletCooldown    = 0.f; 
         float bulletCooldownMax = 0.5f; 
     
-        float defenseTimer      = 0.f;  // Timer per la difesa
+        float defenseTimer      = 0.f;  // Timer for defense
         float shieldStamina;
         float maxshieldStamina;
     
         // Sword and bullet parameters
-        int   maxConsecutiveSwordAttacks; // Numero massimo di attacchi consecutivi con spada
-        float bulletDamage;               // Danno dei proiettili
-        int   bulletBurstCount;           // Numero di proiettili sparati in un burst
-        int   superBulletCount;           // Numero di super proiettili sparati in un burst
-        float superBulletDamage;          // Danno dei super proiettili
+        int   maxConsecutiveSwordAttacks; // Maximum consecutive sword attacks
+        float bulletDamage;               // Bullet damage
+        int   bulletBurstCount;           // Number of bullets in a burst
+        int   superBulletCount;           // Number of super bullets in a burst
+        float superBulletDamage;          // Super bullet damage
     
         //====================================================
         //  NEW: Sword Cooldown (Separate from bulletCooldown)
         //====================================================
-        float swordCooldown    = 0.f;  // Tempo corrente di cooldown per la spada
-        float swordCooldownMax = 0.3f; // Valore di default (ad es. 0.3 secondi)
+        float swordCooldown    = 0.f;  // Current sword cooldown
+        float swordCooldownMax = 0.3f; // Default value (e.g., 0.3 seconds)
     
         //====================================================
         //  NEW Fields for BURST + SUPER MOVE
         //====================================================
-        bool  inBurst         = false; // True se il player spara in burst
-        float burstTimer      = 0.f;   // Timer che conta la durata del burst
-        float burstDuration   = 5.f;   // Durata massima del burst
-        float burstInterval   = 0.3f;  // Intervallo tra un proiettile e l'altro
-        float burstFireTimer  = 0.f;   // Timer dal precedente proiettile
-        int   bulletsShot     = 0;     // Contatore di quanti proiettili sparati
+        bool  inBurst         = false; // True if player is in burst mode
+        float burstTimer      = 0.f;   // Timer for burst duration
+        float burstDuration   = 5.f;   // Maximum burst duration
+        float burstInterval   = 0.3f;  // Interval between bullets in burst
+        float burstFireTimer  = 0.f;   // Timer since last bullet in burst
+        int   bulletsShot     = 0;     // Count of bullets shot in burst
     
-        float superBulletTimer   = 0.f;   // Timer per la super mossa
-        float superBulletCooldown= 6.f;   // Cooldown totale per la super mossa
-        bool  superMoveReady     = false; // Diventa true quando superBulletTimer >= superBulletCooldown
+        float superBulletTimer   = 0.f;   // Timer for super move
+        float superBulletCooldown= 6.f;   // Total cooldown for super move
+        bool  superMoveReady     = false; // True when superBulletTimer >= superBulletCooldown
     
         //====================================================
         //  Constructor
@@ -365,10 +366,10 @@ class CUniqueID : public Component {
     public:
         std::string id;
     
-        // Costruttore di default richiesto dal tuple
+        // Default constructor required by tuple
         CUniqueID() = default;
     
-        // Costruttore che inizializza con una stringa
+        // Constructor that initializes with a string
         CUniqueID(const std::string& idString)
             : id(idString)
         {}
@@ -420,109 +421,109 @@ class CBossPhase : public Component {
 class CEnemyAI : public Component {
     public:
         // ------------------------------------------------------
-        // 1) Proprietà di base e comportamento
+        // 1) Basic properties and behavior
         // ------------------------------------------------------
-        EnemyType     enemyType;      // Tipo di nemico (Normal, Elite, ecc.)
-        EnemyBehavior enemyBehavior;  // Comportamento (FollowOne, FollowTwo, ecc.)
-        EnemyState    enemyState;     // Stato corrente (Idle, Attack, ecc.)
+        EnemyType     enemyType;      // Type of enemy (Normal, Elite, etc.)
+        EnemyBehavior enemyBehavior;  // Behavior (FollowOne, FollowTwo, etc.)
+        EnemyState    enemyState;     // Current state (Idle, Attack, etc.)
     
         // ------------------------------------------------------
-        // 2) Parametri di movimento e combattimento
+        // 2) Movement and combat parameters
         // ------------------------------------------------------
-        float speedMultiplier;        // Moltiplicatore di velocità di movimento
-        int   damage;                 // Danno inflitto dal nemico
+        float speedMultiplier;        // Movement speed multiplier
+        int   damage;                 // Damage inflicted by the enemy
     
         // ------------------------------------------------------
-        // 3) Parametri di visione e attacco
+        // 3) Vision and attack parameters
         // ------------------------------------------------------
-        float lineOfSightRange;       // Raggio di vista del nemico
-        float attackRadius;           // Distanza entro la quale attacca
+        float lineOfSightRange;       // Enemy's line of sight range
+        float attackRadius;           // Distance within which it attacks
     
         // ------------------------------------------------------
-        // 4) Gestione del salto e del movimento
+        // 4) Jump and movement handling
         // ------------------------------------------------------
-        float facingDirection;        // 1.f o -1.f per direzione
+        float facingDirection;        // 1.f or -1.f for direction
         float jumpCooldown;
         bool  isJumping;
         float jumpTimer;
-        float blockedHorizontallyTime; // Tempo bloccato orizzontalmente
+        float blockedHorizontallyTime; // Time blocked horizontally
     
         // ------------------------------------------------------
-        // 5) Gestione dell'attacco standard
+        // 5) Standard attack handling
         // ------------------------------------------------------
         bool  swordSpawned;
         float attackCooldown;
         float attackTimer;
     
         // ------------------------------------------------------
-        // 6) Gestione del knockback
+        // 6) Knockback handling
         // ------------------------------------------------------
         float knockbackTimer;
     
         // ------------------------------------------------------
-        // 7) Riconoscimento del giocatore
+        // 7) Player recognition
         // ------------------------------------------------------
-        float recognitionTimer;       // Timer di riconoscimento
-        float maxRecognitionTime;     // Tempo massimo di inseguimento dopo aver perso di vista il player
-        bool  inRecognitionArea;      // Se il player è nell'area di riconoscimento
-        Vec2<float> lastSeenPlayerPos;// Ultima posizione vista del giocatore
+        float recognitionTimer;       // Recognition timer
+        float maxRecognitionTime;     // Maximum follow time after losing sight of player
+        bool  inRecognitionArea;      // If player is in recognition area
+        Vec2<float> lastSeenPlayerPos;// Last seen player position
     
         // ------------------------------------------------------
-        // 8) Timer di attacco "radiale" e "shooting"
+        // 8) Radial and shooting attack timers
         // ------------------------------------------------------
-        float radialAttackTimer;      // Timer per l'attacco radiale
+        float radialAttackTimer;      // Timer for radial attack
         float protectionPulseTimer = 0.f;
         bool protectionSwordsActive = false;
-        float horizontalShootTimer;   // Timer per l'attacco orizzontale
-        bool  TileInFront;            // Se c'è un tile di fronte (per logiche di salto/blocco)
-        float shootTimer;             // Timer per gli intervalli di tiro "normale"
+        float horizontalShootTimer;   // Timer for horizontal attack
+        bool  TileInFront;            // If there's a tile in front (for jump/block logic)
+        float shootTimer;             // Timer for normal shooting intervals
     
         // ------------------------------------------------------
-        // 9) Parametri per Emperor Attack Scaling
+        // 9) Parameters for Emperor Attack Scaling
         // ------------------------------------------------------
-        float radialAttackMultiplier; // Moltiplicatore per il numero di spade in attacco radiale
-        float radialAttackCooldown;   // Cooldown tra un attacco radiale e l'altro
-        float radialAttackTimerSuper; // Timer per super attacco radiale
-        float radialAttackDamage; // Timer per super attacco radiale
-        float finalBurstTimer;        // Timer per la fase finale di burst
-        float defeatTimer;            // Timer per la sconfitta
-        int   burstCount;             // Quanti burst sono stati fatti nella fase finale
-        bool  burstCooldownActive;    // Se il burst è in cooldown
-        float burstCooldownTimer;     // Timer per il cooldown del burst
-        bool  isInBurstMode;          // Se il nemico è in fase finale di burst
+        float radialAttackMultiplier; // Multiplier for number of swords in radial attack
+        float radialAttackCooldown;   // Cooldown between radial attacks
+        float radialAttackTimerSuper; // Timer for super radial attack
+        float radialAttackDamage; // Timer for super radial attack
+        float finalBurstTimer;        // Timer for final burst phase
+        float defeatTimer;            // Timer for defeat
+        int   burstCount;             // Number of bursts in final phase
+        bool  burstCooldownActive;    // If burst is in cooldown
+        float burstCooldownTimer;     // Timer for burst cooldown
+        bool  isInBurstMode;          // If enemy is in final burst phase
 
     
         // ------------------------------------------------------
-        // 10) Parametri per il "Bullet Burst" e la "Super Move"
+        // 10) Parameters for "Bullet Burst" and "Super Move"
         // ------------------------------------------------------
-        bool  inBurst;          // True se sta sparando un burst di proiettili
-        int   bulletsShot;      // Quanti proiettili sono stati sparati in questo burst
-        float burstInterval;    // Ritardo tra i proiettili di un burst
-        float burstTimer;       // Timer per lo spacing dei proiettili in un burst
-        int   bulletCount;      // Numero totale di proiettili per burst
+        bool  inBurst;          // True if shooting a burst of bullets
+        int   bulletsShot;      // Number of bullets shot in this burst
+        float burstInterval;    // Delay between bullets in a burst
+        float burstTimer;       // Timer for spacing bullets in a burst
+        int   bulletCount;      // Total number of bullets per burst
     
-        bool  superMoveReady;   // Se è pronto a eseguire una super mossa
-        float superMoveTimer;   // Timer accumulato per la super move
-        float superMoveCooldown;// Tempo di cooldown tra le super move
-    
-        // ------------------------------------------------------
-        // 11) Distanza di shooting e cooldown
-        // ------------------------------------------------------
-        float minShootDistance; // Distanza minima per sparare
-        float maxShootDistance; // Distanza massima per sparare
-        float shootCooldown;    // Cooldown tra un colpo e l'altro
+        bool  superMoveReady;   // If ready to perform a super move
+        float superMoveTimer;   // Accumulated timer for super move
+        float superMoveCooldown;// Cooldown time between super moves
     
         // ------------------------------------------------------
-        // 12) Cooldown forzato dopo X attacchi consecutivi
+        // 11) Shooting distance and cooldown
         // ------------------------------------------------------
-        int   consecutiveAttacks;       // Quanti attacchi consecutivi ha fatto il nemico
-        int   maxAttacksBeforeCooldown; // Quanti attacchi prima del cooldown
-        float forcedCooldownDuration;   // Durata del cooldown (in secondi)
-        float forcedCooldownTimer;      // Timer per il cooldown
-        bool  isInForcedCooldown;       // Se il nemico è in cooldown
+        float minShootDistance; // Minimum distance to shoot
+        float maxShootDistance; // Maximum distance to shoot
+        float shootCooldown;    // Cooldown between shots
     
         // ------------------------------------------------------
-        // 13) Parametri aggiuntivi per collisioni e gestione stato
+        // 12) Forced cooldown after X consecutive attacks
+        // ------------------------------------------------------
+        int   consecutiveAttacks;       // Number of consecutive attacks
+        int   maxAttacksBeforeCooldown; // Number of attacks before cooldown
+        float forcedCooldownDuration;   // Cooldown duration (in seconds)
+        float forcedCooldownTimer;      // Timer for cooldown
+        bool  isInForcedCooldown;       // If enemy is in cooldown
+    
+        // ------------------------------------------------------
+        // 13) Additional parameters for collision and state management
         // ------------------------------------------------------
         bool tileDetected;
         bool isAttackingTile;
@@ -533,7 +534,7 @@ class CEnemyAI : public Component {
         float blackHoleCooldown;
     
         // ------------------------------------------------------
-        // Costruttore
+        // Constructor
         // ------------------------------------------------------
         CEnemyAI(EnemyType type = EnemyType::Normal, EnemyBehavior behavior = EnemyBehavior::FollowOne)
             :   enemyType(type),

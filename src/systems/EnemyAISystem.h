@@ -41,7 +41,7 @@ public:
 private:
     EntityManager& m_entityManager;
     Spawner* m_spawner;
-    GameEngine& m_game; // Added member to access assets
+    GameEngine& m_game; 
     std::shared_ptr<DialogueSystem> m_dialogueSystem;
     std::map<std::string, bool> m_triggeredDialogues;
 };

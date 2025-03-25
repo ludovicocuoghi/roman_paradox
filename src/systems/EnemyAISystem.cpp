@@ -6,9 +6,7 @@
 #include <iostream>
 #include <limits>
 
-// ----------------------------------------------------------------------
-// 1) Utility Functions (unchanged)
-// ----------------------------------------------------------------------
+// Utility Functions 
 
 static bool segmentsIntersect(const Vec2<float>& p1, const Vec2<float>& p2,
                               const Vec2<float>& q1, const Vec2<float>& q2)
@@ -57,10 +55,7 @@ bool checkLineOfSight(const Vec2<float>& enemyCenter,
     return true;
 }
 
-// ----------------------------------------------------------------------
-// 2) EnemyAISystem Constructor
-// ----------------------------------------------------------------------
-
+// EnemyAISystem Implementation
 EnemyAISystem::EnemyAISystem(EntityManager& entityManager,
                              Spawner& spawner,
                              GameEngine& game)
@@ -70,10 +65,8 @@ EnemyAISystem::EnemyAISystem(EntityManager& entityManager,
 {
 }
 
-// ----------------------------------------------------------------------
-// 3) update() - The Main Logic
-// ----------------------------------------------------------------------
 
+// Update the AI for all enemies
 void EnemyAISystem::update(float deltaTime)
 {
     // Early checks: No enemies or players -> Nothing to do
@@ -90,9 +83,7 @@ void EnemyAISystem::update(float deltaTime)
     updateCitizens(deltaTime, playerTrans);
 
 
-    // ============================================================
-    // Loop Through All Enemies
-    // ============================================================
+    // Loop through all enemies
     for (auto& enemy : enemies) {
         // Must have these components or skip
         if (!enemy->has<CTransform>() ||
@@ -102,7 +93,7 @@ void EnemyAISystem::update(float deltaTime)
             continue;
         }
 
-        // Shorthand references
+        // references
         auto& enemyTrans = enemy->get<CTransform>();
         auto& enemyAI    = enemy->get<CEnemyAI>();
         auto& anim       = enemy->get<CAnimation>();
@@ -216,9 +207,7 @@ void EnemyAISystem::update(float deltaTime)
             enemyTrans.velocity.y = 0.f;
             continue; // Skip to the next enemy
         }
-        // ----------------------------------------------------
-        // 1) Forced Cooldown Check
-        // ----------------------------------------------------
+        // Force cooldown logic
         if (enemyAI.isInForcedCooldown) {
             enemyAI.forcedCooldownTimer -= deltaTime;
             if (enemyAI.forcedCooldownTimer <= 0.f) {
@@ -235,9 +224,7 @@ void EnemyAISystem::update(float deltaTime)
                 skipAttack = true;
             }
             }
-            // ----------------------------------------------------
             // 2) Emperor-Specific Logic
-            // ----------------------------------------------------
             if (enemyAI.enemyType == EnemyType::Emperor)
             {
                 float dx = playerTrans.pos.x - enemyTrans.pos.x;
@@ -423,7 +410,7 @@ void EnemyAISystem::update(float deltaTime)
                 }
                 // Ancient Emperor final attack logic
                 else if (m_game.worldType != "Future" && healthPercentage <= 0.1f) {
-                    // ANCIENT EMPEROR FINAL ATTACK - Original implementation
+                    // ANCIENT EMPEROR FINAL ATTACK LOGIC
                     if (enemyAI.enemyState != EnemyState::FinalAttack) {
                         enemyAI.enemyState = EnemyState::FinalAttack;
                         enemyAI.finalBurstTimer = 0.f;
@@ -1024,9 +1011,7 @@ void EnemyAISystem::update(float deltaTime)
                 }
             }
         }
-        // ----------------------------------------------------
         // 3) Knockback Handling
-        // ----------------------------------------------------
         if (enemyAI.enemyState == EnemyState::Knockback) {
             std::cout << "[DEBUG] Knockback: vel.x=" << enemyTrans.velocity.x
                       << " pos.x=" << enemyTrans.pos.x
@@ -1054,9 +1039,7 @@ void EnemyAISystem::update(float deltaTime)
             }
         }
 
-        // ----------------------------------------------------
         // 4) Gravity & Ground Check
-        // ----------------------------------------------------
         bool isOnGround = false;
         if (enemy->has<CBoundingBox>()) {
             auto& bb = enemy->get<CBoundingBox>();
@@ -1087,9 +1070,7 @@ void EnemyAISystem::update(float deltaTime)
             enemyTrans.velocity.y = 0.f;
         }
 
-        // ----------------------------------------------------
         // 5) Distance & Visibility
-        // ----------------------------------------------------
         float dx       = playerTrans.pos.x - enemyTrans.pos.x;
         float dy       = playerTrans.pos.y - enemyTrans.pos.y;
         float distance = std::sqrt(dx*dx + dy*dy);
@@ -1198,15 +1179,13 @@ void EnemyAISystem::update(float deltaTime)
                 }
             }
         }
-        // ----------------------------------------------------
         // 6) FOLLOW State
-        // ----------------------------------------------------
         if (enemyAI.enemyState == EnemyState::Follow) {
-            const float xThreshold = 5.0f; // Previene flip ripetuti
+            const float xThreshold = 5.0f; // Minimum horizontal distance to player
 
-            // Esegue il rilevamento dei tile solo se il giocatore è entro 1000 pixel
+            // Always face the player
             if (distance <= 100.f) {
-                enemyAI.tileDetected = false; // Reset del flag
+                enemyAI.tileDetected = false; // Reset flag
                 
                 auto& bb = enemy->get<CBoundingBox>();
                 sf::FloatRect enemyRect = bb.getRect(enemyTrans.pos);
@@ -1214,7 +1193,7 @@ void EnemyAISystem::update(float deltaTime)
                                     ? enemyRect.left + enemyRect.width
                                     : enemyRect.left;
                 
-                // Controlla i tile davanti al nemico
+                // Check for tile in front
                 for (auto& tile : m_entityManager.getEntities("tile")) {
                     if (!tile->has<CTransform>() || !tile->has<CBoundingBox>() || !tile->has<CAnimation>())
                         continue;
@@ -1225,7 +1204,7 @@ void EnemyAISystem::update(float deltaTime)
                 
                     sf::FloatRect tileRect = tileBB.getRect(tileTrans.pos);
                 
-                    // Salta il buco nero
+                    // Skip black hole
                     std::string animName = tileAnim.getName();
                     if (animName.find("AlienBlackHoleAttack") != std::string::npos)
                         continue;
@@ -1252,14 +1231,14 @@ void EnemyAISystem::update(float deltaTime)
                 }
             }
             
-            // Se il nemico di tipo Super rileva un tile, passa allo stato Attack
+            // Special logic for Super enemies
             if ((enemyAI.enemyType == EnemyType::Super) &&
             enemyAI.tileDetected &&
             (enemyAI.enemyState == EnemyState::Follow || enemyAI.enemyState == EnemyState::Idle))
         {
             enemyAI.enemyState = EnemyState::Attack;
             
-            // Imposta l'animazione di attacco, resetta la velocità, ecc.
+            // Set attack animation
             if (enemy->has<CAnimation>()) {
                 std::string attackAnimName;
                 if (enemyAI.enemyType == EnemyType::Super) {
@@ -1355,7 +1334,7 @@ void EnemyAISystem::update(float deltaTime)
                     enemyTrans.velocity.x = 0.f;
                 }
             }
-            // Original movement logic for non-Future enemies
+            //movement logic for non-Future enemies
             else {
                 if (std::abs(dx) > xThreshold) {
                     float followSpeed = FOLLOW_MOVE_SPEED;
@@ -1374,9 +1353,7 @@ void EnemyAISystem::update(float deltaTime)
             }
         }
 
-        // ----------------------------------------------------
         // (Animation) Running State
-        // ----------------------------------------------------
        
         float healthPercentage = 1.f;
         if (enemy->has<CHealth>()) {
@@ -1444,9 +1421,7 @@ void EnemyAISystem::update(float deltaTime)
             }
         }
 
-        // ----------------------------------------------------
         // 7) FUTURE-WORLD Ranged Attacks (Bullets)
-        // ----------------------------------------------------
 
         if (m_game.worldType == "Future" || enemyAI.enemyType == EnemyType::Super2 || (enemyAI.enemyType == EnemyType::Fast && m_game.worldType == "Alien")) {
             enemyAI.shootTimer += deltaTime;
@@ -1491,9 +1466,6 @@ void EnemyAISystem::update(float deltaTime)
                                                 m_entityManager)
                                     && (distance >= enemyAI.minShootDistance)
                                     && (distance <= enemyAI.maxShootDistance);
-                    // std::cout << "[DEBUG] Enemy " << enemy->id()
-                    //         << " can shoot: " << canShoot << "\n";
-                    // If super move ready + can shoot
                     if (enemyAI.superMoveReady && canShoot) {
                         enemyAI.superMoveReady = false;
                         std::cout << "[DEBUG] Enemy " << enemy->id()
@@ -1600,9 +1572,8 @@ void EnemyAISystem::update(float deltaTime)
                 }
             } // end of shooting logic
         } // end of Future/Super2 ranged attacks
-        // ----------------------------------------------------
+
         // 8) Melee Attack (Non-Future)
-        // ----------------------------------------------------
         float currentAttackRange =
             (enemyAI.enemyType == EnemyType::Emperor)
             ? EMPEROR_ATTACK_RANGE
@@ -1676,9 +1647,7 @@ void EnemyAISystem::update(float deltaTime)
             }
         }
 
-        // ----------------------------------------------------
         // 9) Handling Attack State (Melee)
-        // ----------------------------------------------------
         if (enemyAI.enemyState == EnemyState::Attack) {
             enemyTrans.velocity.x  = 0.f;
             enemyAI.attackTimer   -= deltaTime;
@@ -1751,17 +1720,13 @@ void EnemyAISystem::update(float deltaTime)
             }
         }
 
-        // ----------------------------------------------------
-        // 10) Idle State
-        // ----------------------------------------------------
+        //  10) Idle State
         if (enemyAI.enemyState == EnemyState::Idle) {
             enemyTrans.velocity.x = 0.f;
             anim.animation.reset();
         }
 
-        // ----------------------------------------------------
         // 11) Update Position + Flip
-        // ----------------------------------------------------
         enemyTrans.pos.x += enemyTrans.velocity.x * deltaTime;
         enemyTrans.pos.y += enemyTrans.velocity.y * deltaTime;
 

@@ -10,12 +10,11 @@ Spawner::Spawner(GameEngine& game, EntityManager& entityManager)
 {
 }
 
-// Spawn della spada del player
 std::shared_ptr<Entity> Spawner::spawnSword(std::shared_ptr<Entity> player) {
     auto sword = m_entityManager.addEntity("sword");
     auto& pTrans = player->get<CTransform>();
     sword->add<CTransform>(pTrans.pos);
-    sword->add<CLifeSpan>(PLAYER_SWORD_DURATION); // Durata della spada del player
+    sword->add<CLifeSpan>(PLAYER_SWORD_DURATION);
 
     if (m_game.assets().hasAnimation("Sword")) {
         auto& swordAnim = m_game.assets().getAnimation("Sword");
@@ -32,43 +31,38 @@ std::shared_ptr<Entity> Spawner::spawnSword(std::shared_ptr<Entity> player) {
     return sword;
 }
 std::shared_ptr<Entity> Spawner::spawnPlayerBullet(std::shared_ptr<Entity> player) {
-    // 1) Create the bullet entity
+    // Create the bullet entity
     auto bullet = m_entityManager.addEntity("playerBullet");
 
-    // 2) Get player's transform to figure out where to spawn the bullet
+    // Get player's transform to figure out where to spawn the bullet
     if (!player->has<CTransform>()) {
         std::cerr << "[ERROR] Player missing CTransform, cannot spawn bullet.\n";
         return nullptr;
     }
     auto& pTrans = player->get<CTransform>();
 
-    // FIXED: Get the facing direction DIRECTLY from the transform where it's maintained
+    // Get the facing direction from the transform where it's maintained
     float facingDir = pTrans.facingDirection;
     
     // Log the facing direction to debug
     std::cout << "[DEBUG] Player facing direction: " << facingDir << "\n";
 
-    // 3) Calculate bullet spawn position & velocity
+    // Calculate bullet spawn position & velocity
     float offsetX = facingDir * PLAYER_BULLET_OFFSET_X; // Simplified offset calculation
     float offsetY = PLAYER_BULLET_OFFSET_Y;
     Vec2<float> bulletPos = pTrans.pos + Vec2<float>(offsetX, offsetY);
 
     // Generate a random angle within a specified range
-    // For example, ±15 degrees (±0.26 radians) from the original direction
     float randomAngleRange = 0.12f; // approx 15 degrees in radians
     float randomAngle = ((static_cast<float>(rand()) / static_cast<float>(RAND_MAX)) * 2.0f - 1.0f) * randomAngleRange;
-    
-    // FIXED: Simplified angle calculation to avoid potential errors
-    //float baseAngle = (facingDir < 0) ? M_PI : 0.0f; // Base angle depending on facing direction
-    //float finalAngle = baseAngle + randomAngle;
-    
-    // FIXED: Add a sanity check to ensure valid facing direction
+
+    // Add a sanity check to ensure valid facing direction
     if (facingDir == 0.0f) {
         std::cout << "[WARNING] Zero facing direction detected, defaulting to right.\n";
         facingDir = 1.0f; // Default to facing right if somehow facingDir is 0
     }
     
-    // Calculate velocity - simpler approach
+    // Calculate velocity based on facing direction and random angle
     Vec2<float> bulletVelocity;
     if (facingDir > 0) {
         // Facing right
@@ -80,17 +74,17 @@ std::shared_ptr<Entity> Spawner::spawnPlayerBullet(std::shared_ptr<Entity> playe
         bulletVelocity.y = PLAYER_BULLET_SPEED * std::sin(randomAngle);
     }
 
-    // 4) Add components to the bullet
+    // Add components to the bullet
     bullet->add<CTransform>(bulletPos, bulletVelocity);
     bullet->add<CLifeSpan>(PLAYER_BULLET_DURATION);
 
-    // (Optional) If you want to store which player fired the bullet, add a CState or similar
+    // (Optional) to store which player fired the bullet, add to CState
     bullet->add<CState>("playerBullet"); 
 
-    // 5) Choose an animation name (e.g., "FuturePlayerBullet")
+    // Choose an animation name 
     std::string animationName = "FuturePurpleBullet";
 
-    // 6) Load & attach bullet animation
+    // Load & attach bullet animation
     if (m_game.assets().hasAnimation(animationName)) {
         auto& bulletAnim = m_game.assets().getAnimation(animationName);
         bullet->add<CAnimation>(bulletAnim, false);
@@ -126,7 +120,7 @@ std::shared_ptr<Entity> Spawner::spawnEnemyBullet(std::shared_ptr<Entity> enemy)
     // Bullet velocity goes left or right depending on dir
     float bulletSpeed = ENEMY_BULLET_SPEED;
     if (enemy->has<CEnemyAI>() && enemy->get<CEnemyAI>().enemyType == EnemyType::Super2) {
-        bulletSpeed = ENEMY_BULLET_SPEED * 0.5f; // 70% speed for Super2 black holes
+        bulletSpeed = ENEMY_BULLET_SPEED * 0.5f; 
     }
 
     // Bullet velocity goes left or right depending on dir
@@ -239,7 +233,6 @@ std::shared_ptr<Entity> Spawner::spawnEnemySword(std::shared_ptr<Entity> enemy) 
     return sword;
 }
 
-// Esempio: spada con offset Y casuale (singola spada)
 std::shared_ptr<Entity> Spawner::spawnEmperorSwordOffset(std::shared_ptr<Entity> enemy) {
     auto sword = m_entityManager.addEntity("EmperorSword");
 
@@ -439,7 +432,8 @@ void Spawner::spawnEmperorSwordArmorRadial(std::shared_ptr<Entity> enemy, int sw
         //           << " velocity=(" << vx << ", " << vy << ")\n";
     }
 }
-/// Item spawning function
+
+// Item spawning function
 std::shared_ptr<Entity> Spawner::spawnItem(const Vec2<float>& position, const std::string& tileType) {
     static std::random_device rd;
     static std::mt19937 gen(rd());
@@ -599,7 +593,7 @@ void Spawner::updateGraves(float deltaTime) {
     }
 }
 
-// Creazione dei frammenti del blocco
+// Create Fragments
 void Spawner::createBlockFragments(const Vec2<float>& position, const std::string & blockType) {
     std::vector<Vec2<float>> directions = {
         {-1, -1}, {0, -1}, {1, -1},
@@ -632,8 +626,6 @@ void Spawner::createBlockFragments(const Vec2<float>& position, const std::strin
         fragment->add<CLifeSpan>(FRAGMENT_DURATION);
     }
 }
-
-// Add this to your Spawner.cpp file
 
 // Spawns bullets in a radial pattern around the Emperor
 void Spawner::spawnEmperorBulletsRadial(std::shared_ptr<Entity> enemy, int bulletCount, 
@@ -689,7 +681,7 @@ void Spawner::spawnEmperorBulletsRadial(std::shared_ptr<Entity> enemy, int bulle
         } else if (bulletType == "Emperor") {
             animName = "FuturePurpleBullet";   // Default Emperor bullet (red)
         } else {
-            // Default to Emperor bullet type (red) if no valid type specified
+            // Default to purple bullet type if no valid type specified
             animName = "FuturePurpleBullet";
         }
         
@@ -716,6 +708,7 @@ void Spawner::spawnEmperorBulletsRadial(std::shared_ptr<Entity> enemy, int bulle
         bullet->get<CTransform>().velocity = Vec2<float>(vx, vy);
     }
 }
+
 // Spawns black holes in multiple directions that destroy tiles on impact
 void Spawner::spawnEmperorBlackHoles(std::shared_ptr<Entity> enemy, int blackHoleCount, 
                                      float radius, float blackHoleSpeed) {
@@ -724,11 +717,9 @@ void Spawner::spawnEmperorBlackHoles(std::shared_ptr<Entity> enemy, int blackHol
     float centerX = eTrans.pos.x;
     float centerY = eTrans.pos.y;
 
-    // Generate a random angle offset for this burst (between 0 and 36 degrees)
     float randomAngleOffset = (std::rand() % 36); 
 
     for (int i = 0; i < blackHoleCount; i++) {
-        // Apply random offset to the base angle calculation
         float angleDeg = (360.f / blackHoleCount) * i + randomAngleOffset;
         float angleRad = angleDeg * 3.1415926535f / 180.f;
 
