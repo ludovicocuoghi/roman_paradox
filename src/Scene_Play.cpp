@@ -5614,12 +5614,9 @@ void Scene_Play::handleEmperorDeath(std::shared_ptr<Entity> emperor) {
             
             std::string levelName = extractLevelName(m_levelPath);
             if (levelName.find("emperor_room") != std::string::npos) {
-                // This is specific to emperor room levels
-                std::cout << "[DEBUG] Emperor defeated in throne room, removing exit pipe...\n";
-                
                 // Check world type to find the appropriate pipe ID
                 if (m_game.worldType == "Future") {
-                    removeTileByID("PipeTall_152"); // Future emperor room pipe
+                    removeTileByID("PipeTall_151"); // Future emperor room pipe
                 } else {
                     removeTileByID("PipeTall_150"); // Ancient emperor room pipe
                 }

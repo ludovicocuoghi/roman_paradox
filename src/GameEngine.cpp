@@ -7,11 +7,16 @@
 #include "imgui.h"
 #include "imgui-SFML.h"
 #include <filesystem> 
+#include <ctime> 
 
 // Constructor
 GameEngine::GameEngine(const std::string& path) {
     m_window.create(sf::VideoMode(1920, 1080), "Game Window");
     m_window.setFramerateLimit(100);
+    
+    // Seed random number generator with current time
+    std::srand(static_cast<unsigned>(std::time(nullptr)));
+
     universeNumber = rand() % 900 + 100;
     alternateUniverseNumber = rand() % 900 + 100;
     alternateUniverseNumber2 = rand() % 900 + 100;

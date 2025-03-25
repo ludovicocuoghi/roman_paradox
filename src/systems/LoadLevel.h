@@ -96,7 +96,7 @@ public:
     static constexpr int   BULLET_DAMAGE_ENEMY_STRONG = 10;
     static constexpr int   BULLET_DAMAGE_ENEMY_ELITE = 12;
     static constexpr int   BULLET_DAMAGE_ENEMY_SUPER = 99999;
-    static constexpr int   BULLET_DAMAGE_ENEMY_EMPEROR = 7;
+    static constexpr int   BULLET_DAMAGE_ENEMY_EMPEROR = 12;
 
     // =======================================
     // Enemy attack parameters

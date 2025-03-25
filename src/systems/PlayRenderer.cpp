@@ -91,21 +91,21 @@ void PlayRenderer::renderDialogue(DialogueSystem* dialogueSystem)
     
     std::string speakerWithUniverse;
     if (m_game.getLanguage() == "English") {
-        // Original English logic
-        if (message->speaker == "????????" || (message->speaker.find("Alien Legionary") != std::string::npos)) {
+        if (message->speaker.find("Alien Legionary") != std::string::npos) {
             speakerWithUniverse = message->speaker + " [Universe #" + std::to_string(m_game.universeNumber) + "]";
-        } 
-        else if (message->speaker.find("GUIDE") != std::string::npos) {
+        } else if (message->speaker == "????") {
+            speakerWithUniverse = message->speaker + " [Universe #" + std::to_string(m_game.alternateUniverseNumber) + "]";
+        } else if (message->speaker.find("GUIDE") != std::string::npos) {
             speakerWithUniverse = message->speaker;
         } else {
             speakerWithUniverse = message->speaker + " [Universe #" + std::to_string(m_game.alternateUniverseNumber2) + "]";
         }
     } else {
-        // Japanese localization
-        if (message->speaker == "????????" || (message->speaker.find("エイリアン兵士") != std::string::npos)) {
+        if (message->speaker.find("エイリアン兵士") != std::string::npos) {
             speakerWithUniverse = message->speaker + " [宇宙 #" + std::to_string(m_game.universeNumber) + "]";
-        } 
-        else if (message->speaker.find("ガイド") != std::string::npos) {
+        } else if (message->speaker == "????") {
+            speakerWithUniverse = message->speaker + " [宇宙 #" + std::to_string(m_game.alternateUniverseNumber) + "]";
+        } else if (message->speaker.find("ガイド") != std::string::npos) {
             speakerWithUniverse = message->speaker;
         } else {
             speakerWithUniverse = message->speaker + " [宇宙 #" + std::to_string(m_game.alternateUniverseNumber2) + "]";
