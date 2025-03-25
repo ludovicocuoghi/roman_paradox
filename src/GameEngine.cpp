@@ -9,7 +9,6 @@
 #include <filesystem> 
 #include <ctime> 
 
-// Constructor
 GameEngine::GameEngine(const std::string& path) {
     m_window.create(sf::VideoMode(1920, 1080), "Game Window");
     m_window.setFramerateLimit(100);
@@ -244,7 +243,6 @@ void GameEngine::changeScene(const std::string& sceneName, std::shared_ptr<Scene
     }
 }
 
-// Add this to GameEngine.h
 void GameEngine::restartLevel(const std::string& levelPath) {
     std::cout << "[DEBUG] Restarting level: " << levelPath << std::endl;
     changeScene("PLAY", std::static_pointer_cast<Scene>(std::make_shared<Scene_Play>(*this, m_currentLevel)));
@@ -294,13 +292,13 @@ Assets& GameEngine::assets() {
     return m_assets;
 }
 
-//  NEW: Set the camera view
+// Set the camera view
 void GameEngine::setCameraView(const sf::View& view) {
     m_cameraView = view;
     m_window.setView(m_cameraView);
 }
 
-//  NEW: Get the camera view
+// Get the camera view
 sf::View& GameEngine::getCameraView() {
     return m_cameraView;
 }
@@ -321,7 +319,7 @@ void GameEngine::scheduleLevelChange(const std::string& levelPath) {
 }
 
 
-// New method to trigger the ending screen
+// method to trigger the ending screen
 void GameEngine::showEnding() {
     m_showEndingScreen = true;
 }
