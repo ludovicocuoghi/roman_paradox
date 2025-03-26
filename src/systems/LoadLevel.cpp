@@ -45,7 +45,8 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
             tileIndex++;
             std::string tileID = assetType + "_" + std::to_string(tileIndex);
             float realX = x * LoadLevel::GRID_SIZE + LoadLevel::HALF_GRID;
-            float realY = windowHeight - (y * LoadLevel::GRID_SIZE) - LoadLevel::HALF_GRID;
+            float referenceHeight = m_game.getReferenceResolution().y;
+            float realY = referenceHeight - (y * LoadLevel::GRID_SIZE) - LoadLevel::HALF_GRID;
             if (assetType == "PipeTall")
                 realY += LoadLevel::GRID_SIZE * LoadLevel::PIPETALL_REALY_OFFSET_MULTIPLIER;
             else if (assetType == "PipeBroken")
@@ -106,7 +107,8 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
             decIndex++;
             std::string decID = assetType + "_" + std::to_string(decIndex);
             float realX = x * LoadLevel::GRID_SIZE + LoadLevel::HALF_GRID;
-            float realY = windowHeight - (y * LoadLevel::GRID_SIZE) - LoadLevel::HALF_GRID;
+            float referenceHeight = m_game.getReferenceResolution().y;
+            float realY = referenceHeight - (y * LoadLevel::GRID_SIZE) - LoadLevel::HALF_GRID;
             auto decor = entityManager.addEntity("decoration");
             decor->add<CUniqueID>(decID);
             if (assetType == "GoldPipeTall" || "PipeTall")
@@ -145,17 +147,8 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
         
             float realX = x * LoadLevel::GRID_SIZE + LoadLevel::HALF_GRID;
 
-            // Calculate the real Y position based on the window height
-            // Get the reference height and actual window height
             float referenceHeight = m_game.getReferenceResolution().y;
-            float actualWindowHeight = m_game.window().getSize().y;
-            
-            // Calculate Y position using the reference resolution
-            float baseY = referenceHeight - (y * LoadLevel::GRID_SIZE) - LoadLevel::HALF_GRID;
-            
-            // Scale the Y position based on the ratio between actual and reference height
-            float scaleFactor = actualWindowHeight / referenceHeight;
-            float realY = baseY * scaleFactor;
+            float realY = referenceHeight - (y * LoadLevel::GRID_SIZE) - LoadLevel::HALF_GRID;
             
             auto player = entityManager.addEntity("player");
             if (m_game.assets().hasAnimation("PlayerStand"))
@@ -426,7 +419,8 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
                 std::cerr << "[ERROR] Missing animations for " << enemyTypeStr << " enemy!" << std::endl;
             }
             float realX = enemyX * LoadLevel::GRID_SIZE + LoadLevel::HALF_GRID;
-            float realY = windowHeight - (enemyY * LoadLevel::GRID_SIZE) - LoadLevel::HALF_GRID;
+            float referenceHeight = m_game.getReferenceResolution().y;
+            float realY = referenceHeight - (enemyY * LoadLevel::GRID_SIZE) - LoadLevel::HALF_GRID;
             if (enemyType == EnemyType::Emperor)
                 realY -= LoadLevel::GRID_SIZE * LoadLevel::EMPEROR_REALY_OFFSET_MULTIPLIER;
             enemy->add<CTransform>(Vec2<float>(realX, realY));
