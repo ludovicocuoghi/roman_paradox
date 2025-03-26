@@ -1,41 +1,47 @@
 # Compiler
 CXX = g++
 
+# Path to SFML installation
+SFML_DIR = C:/SFML
+
 # Compiler flags
-CXXFLAGS = -std=c++20 -Wall -Wextra -IC:/SFML/include -I./src/imgui -I./src/imgui-sfml -I./src
+CXXFLAGS = -std=c++20 -Wall -Wextra -I$(SFML_DIR)/include -I./src/imgui -I./src/imgui-sfml -I./src
 
-# SFML library flags (Windows version)
-LDFLAGS = -LC:/SFML/lib -lsfml-graphics -lsfml-window -lsfml-system -lopengl32 -lgdi32
+# SFML library flags
+LDFLAGS = -L$(SFML_DIR)/lib -lsfml-graphics -lsfml-window -lsfml-system -lopengl32 -lgdi32
 
-# Target executable
+# Output target
 TARGET = bin/rome_journey.exe
 
 # Source files
-SRC = main.cpp src/GameEngine.cpp src/Scene.cpp src/Scene_Play.cpp src/Scene_LevelEditor.cpp src/Scene_Menu.cpp src/systems/LoadLevel.cpp src/systems/PlayRenderer.cpp src/systems/CollisionSystem.cpp src/Scene_GameOver.cpp \
-      src/Assets.cpp src/systems/MovementSystem.cpp src/systems/AnimationSystem.cpp src/systems/EnemyAISystem.cpp src/systems/Spawner.cpp src/systems/DialogueSystem.cpp src/Scene_StoryText.cpp src/ResourcePath.cpp \
-      $(wildcard src/imgui/*.cpp) $(wildcard src/imgui-sfml/*.cpp)
+SRC = main.cpp \
+      src/GameEngine.cpp src/Scene.cpp src/Scene_Play.cpp src/Scene_LevelEditor.cpp src/Scene_Menu.cpp \
+      src/systems/LoadLevel.cpp src/systems/PlayRenderer.cpp src/systems/CollisionSystem.cpp src/Scene_GameOver.cpp \
+      src/Assets.cpp src/systems/MovementSystem.cpp src/systems/AnimationSystem.cpp src/systems/EnemyAISystem.cpp \
+      src/systems/Spawner.cpp src/systems/DialogueSystem.cpp src/Scene_StoryText.cpp src/ResourcePath.cpp \
+      $(wildcard src/imgui/*.cpp) \
+      $(wildcard src/imgui-sfml/*.cpp)
 
-# Object files directory
 OBJ_DIR = build
-
-# Convert .cpp files to .o files in build/
 OBJ = $(patsubst %.cpp, $(OBJ_DIR)/%.o, $(SRC))
 
-# Default target
-all: $(TARGET)
+all: $(TARGET) copy-dlls
 
-# Link object files into executable
 $(TARGET): $(OBJ)
-	if not exist "$(dir $@)" mkdir "$(dir $@)"
+	@mkdir -p $(dir $@)
 	$(CXX) $(OBJ) -o $(TARGET) $(LDFLAGS)
 
-# Compile source files to object files
 $(OBJ_DIR)/%.o: %.cpp
-	if not exist "$(dir $@)" mkdir "$(dir $@)"
+	@mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-# Clean build and bin folders
+copy-dlls:
+	@mkdir -p bin
+	cp -f $(SFML_DIR)/bin/sfml-graphics-2.dll bin/
+	cp -f $(SFML_DIR)/bin/sfml-window-2.dll bin/
+	cp -f $(SFML_DIR)/bin/sfml-system-2.dll bin/
+
 clean:
 	rm -rf $(OBJ_DIR) $(TARGET) bin
 
-.PHONY: all clean
+.PHONY: all clean copy-dlls

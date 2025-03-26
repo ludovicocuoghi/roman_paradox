@@ -9,6 +9,7 @@
 #include <iostream>
 #include <fstream>
 #include <random>
+#include <filesystem>
 #include <algorithm>
 #include "systems/PlayRenderer.h"
 #include "systems/AnimationSystem.h"
