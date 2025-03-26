@@ -1,0 +1,5 @@
+echo "# Build files" > .gitignore
+echo "build/" >> .gitignore
+echo "bin/*.exe" >> .gitignore
+echo "bin/*.dll" >> .gitignore
+echo "bin/imgui.ini" >> .gitignore
