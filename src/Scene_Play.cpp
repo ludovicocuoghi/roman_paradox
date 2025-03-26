@@ -202,7 +202,8 @@ void Scene_Play::init()
     // std::cout << "[DEBUG] Scene_Play::init() - Calling m_levelLoader.load()\n";
     m_levelLoader.load(m_levelPath, m_entityManager);
     // std::cout << "[DEBUG] Scene_Play::init() - Level loaded successfully!\n";
-}//
+}
+//
 // Main Update Function
 //
 void Scene_Play::update(float deltaTime)
@@ -246,7 +247,7 @@ void Scene_Play::update(float deltaTime)
     else
     {
         m_game.window().setView(m_game.window().getDefaultView());
-        std::cout << "[DEBUG] Transitioning to GameOver scene with level path: " << m_levelPath << std::endl;
+        // std::cout << "[DEBUG] Transitioning to GameOver scene with level path: " << m_levelPath << std::endl;
         m_game.changeScene("GAMEOVER", std::make_shared<Scene_GameOver>(m_game, m_levelPath));
     }
 
@@ -1345,6 +1346,48 @@ void Scene_Play::initializeDialogues()
                 },
             };
             m_dialogueSystem->addDialogueTrigger(3000, Dialogue5);
+            std::vector<DialogueMessage> Dialogue6 = {
+                {
+                    "***GUIDE***",
+                    "You can find items inside boxes and chests.",
+                    basePath + "ancient_alien_right.png",
+                    false,
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 200.f),
+                    1100.f,
+                    150.f,
+                    40,
+                    true
+                },
+                {
+                    "***GUIDE***",
+                    "Grapes restore health. Chicken refills stamina (Defense Time).",
+                    basePath + "ancient_alien_right.png",
+                    false,
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 200.f),
+                    1400.f,
+                    150.f,
+                    40,
+                    true
+                },
+                {
+                    "***GUIDE***",
+                    "Coins increase Score. Full HP is restored when score = 100.",
+                    basePath + "ancient_alien_right.png",
+                    false,
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 200.f),
+                    1400.f,
+                    150.f,
+                    40,
+                    true
+                }
+            };
+            m_dialogueSystem->addDialogueTrigger(5000, Dialogue6);
         } else {
             // Japanese translation
             std::vector<DialogueMessage> Dialogue0 = {
@@ -1518,6 +1561,49 @@ void Scene_Play::initializeDialogues()
                 },
             };
             m_dialogueSystem->addDialogueTrigger(3000, Dialogue5);
+            std::vector<DialogueMessage> Dialogue6 = {
+                {
+                    "***GUIDE***",
+                    "箱や宝箱の中にはアイテムが入っています。",
+                    basePath + "ancient_alien_right.png",
+                    false,
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 200.f),
+                    1100.f,
+                    150.f,
+                    40,
+                    true
+                },
+                {
+                    "***GUIDE***",
+                    "ぶどうは体力を回復します。チキンはスタミナ（防御時間）を回復します。",
+                    basePath + "ancient_alien_right.png",
+                    false,
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 200.f),
+                    1450.f,
+                    150.f,
+                    35,
+                    true
+                },
+                {
+                    "***GUIDE***",
+                    "コインを集めるとスコアが上がります。スコア100で体力が全回復します。",
+                    basePath + "ancient_alien_right.png",
+                    false,
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 200.f),
+                    1400.f,
+                    150.f,
+                    35,
+                    true
+                }
+            };
+            m_dialogueSystem->addDialogueTrigger(5000, Dialogue6);
+
         }
     }
     else if (levelName ==  "ancient_rome_level_2_sunset.txt") {
@@ -5085,7 +5171,7 @@ void Scene_Play::sDoAction(const Action& action)
                 if (state.state != "air") {
                     state.state = "run";
                 }
-                std::cout << "[MOVEMENT] Continuing left movement after dialogue" << std::endl;
+                // std::cout << "[MOVEMENT] Continuing left movement after dialogue" << std::endl;
             } 
             else if (rightKeyPressed && !leftKeyPressed) {
                 PTrans.facingDirection = 1.f;
@@ -5433,8 +5519,8 @@ void Scene_Play::sAmmoSystem(float dt)
     if (ammo.currentBullets <= 0 && !ammo.isReloading) {
         ammo.isReloading = true;
         ammo.currentReloadTime = 0.f;
-        ammo.reloadTime = 3.0f; // 5 seconds for reload
-        std::cout << "[DEBUG] Auto-reload started.\n";
+        ammo.reloadTime = 3.0f; 
+        // std::cout << "[DEBUG] Auto-reload started.\n";
     }
     
     // Handle reloading process
@@ -5523,7 +5609,6 @@ void Scene_Play::updateBurstFire(float deltaTime)
     }
 }
 
-// Wrapper: chiama il metodo updateFragments del Spawner
 void Scene_Play::UpdateFragments(float deltaTime) {
     m_spawner.updateFragments(deltaTime);
 }
@@ -5552,7 +5637,7 @@ void Scene_Play::lifeCheckPlayerDeath() {
 
 std::string Scene_Play::extractLevelName(const std::string& path) {
     auto pos = path.find_last_of("/\\");
-    if (pos == std::string::npos) return path; // nessuna slash
+    if (pos == std::string::npos) return path;
     return path.substr(pos + 1);
 }
 
@@ -5563,7 +5648,7 @@ void Scene_Play::removeTileByID(const std::string& tileID) {
             auto& uid = t->get<CUniqueID>();
             if (uid.id == tileID) {
                 t->destroy();
-                std::cout << "[DEBUG] Tile " << tileID << " distrutta!\n";
+                // std::cout << "[DEBUG] Tile " << tileID << " destroyed!\n";
                 break;
             }
         }
@@ -5672,7 +5757,7 @@ void Scene_Play::lifeCheckEnemyDeath() {
 
                 // Destroy the enemy
                 enemy->destroy();
-                std::cout << "[DEBUG] Enemy destroyed: ID = " << enemy->id() << "\n";
+                // std::cout << "[DEBUG] Enemy destroyed: ID = " << enemy->id() << "\n";
             }
         }
     }

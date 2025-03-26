@@ -848,13 +848,13 @@ void CollisionSystem::handleSwordCollisions() {
             sf::FloatRect tileRect = tileBB.getRect(tileTransform.pos);
 
             if (swordRect.intersects(tileRect)) {
-                std::cout << "[DEBUG] Player sword hit tile!\n";
+                // std::cout << "[DEBUG] Player sword hit tile!\n";
                 std::string animName = tileAnim.getName();
                 if (animName.find("Box") != std::string::npos) {
                     m_spawner->createBlockFragments(tileTransform.pos, animName);
                     m_spawner->spawnItem(tileTransform.pos, animName);
                     tile->destroy();
-                    std::cout << "[DEBUG] " << animName << " broken by player's sword!\n";
+                    // std::cout << "[DEBUG] " << animName << " broken by player's sword!\n";
                 }
             }
         }
@@ -869,7 +869,7 @@ void CollisionSystem::handleSwordCollisions() {
             sf::FloatRect enemyRect = enemyBB.getRect(enemyTrans.pos);
         
             if (swordRect.intersects(enemyRect)) {
-                std::cout << "[DEBUG] Player sword hit enemy!\n";
+                // std::cout << "[DEBUG] Player sword hit enemy!\n";
                 
                 // Direct check for Emperor
                 bool isEmperor = enemy->has<CEnemyAI>() && 
@@ -889,8 +889,8 @@ void CollisionSystem::handleSwordCollisions() {
                         if (!players.empty() && players.front()->has<CPlayerEquipment>()) {
                             if (!players.front()->get<CPlayerEquipment>().hasFutureArmor) {
                                 damage = static_cast<int>(damage / 3.f);
-                                std::cout << "[DEBUG] Future world + no FutureArmor: sword damage reduced to " 
-                                        << damage << "\n";
+                                // std::cout << "[DEBUG] Future world + no FutureArmor: sword damage reduced to " 
+                                //         << damage << "\n";
                             }
                         }
                     }
@@ -902,7 +902,7 @@ void CollisionSystem::handleSwordCollisions() {
                         if (newHealth < 1) newHealth = 1;
                         health.currentHealth = newHealth;
                         health.invulnerabilityTimer = 1.f; // Short invincibility
-                        std::cout << "[DEBUG] Emperor took damage. New Health: " << health.currentHealth << "\n";
+                        // std::cout << "[DEBUG] Emperor took damage. New Health: " << health.currentHealth << "\n";
                     } else {
                         health.takeDamage(damage);
                         health.invulnerabilityTimer = PLAYER_SWORD_INVULNERABILITY_TIME;
@@ -984,7 +984,7 @@ void CollisionSystem::handleSwordCollisions() {
                 if (player->has<CHealth>()) {
                     auto& health = player->get<CHealth>();
                     health.takeDamage(enemySword->get<CEnemyAI>().damage);
-                    std::cout << "[DEBUG] Enemy sword hit player! Damage: " << enemySword->get<CEnemyAI>().damage << "\n";
+                    // std::cout << "[DEBUG] Enemy sword hit player! Damage: " << enemySword->get<CEnemyAI>().damage << "\n";
                 }
                 enemySword->destroy(); // Destroy sword after hit
                 break; 
@@ -1006,7 +1006,7 @@ void CollisionSystem::handleSwordCollisions() {
                                 otherEnemy->get<CEnemyAI>().enemyType == EnemyType::Emperor;
                 
                 if (isEmperor) {
-                    std::cout << "[DEBUG] Emperor is immortal - limiting sword damage!\n";
+                    // std::cout << "[DEBUG] Emperor is immortal - limiting sword damage!\n";
                 }
 
                 // Get the enemy that created this sword
@@ -1091,9 +1091,9 @@ void CollisionSystem::handleSwordCollisions() {
                 }
                 health.takeDamage(empSwordDamage);
                 health.invulnerabilityTimer = PLAYER_HIT_INVULNERABILITY_TIME;
-                std::cout << "[DEBUG] Player hit by emperor sword! Damage: " 
-                        << empSwordDamage 
-                        << " Health: " << health.currentHealth << "\n";
+                // std::cout << "[DEBUG] Player hit by emperor sword! Damage: " 
+                //         << empSwordDamage 
+                //         << " Health: " << health.currentHealth << "\n";
             }
 
             // Destroy sword on impact
@@ -1155,9 +1155,9 @@ void CollisionSystem::handleSwordCollisions() {
                 int empSwordDamage = 1; // default
                 health.takeDamage(empSwordDamage);
                 health.invulnerabilityTimer = PLAYER_HIT_INVULNERABILITY_TIME;
-                std::cout << "[DEBUG] Player hit by emperor sword! Damage: " 
-                        << empSwordDamage 
-                        << " Health: " << health.currentHealth << "\n";
+                // std::cout << "[DEBUG] Player hit by emperor sword! Damage: " 
+                //         << empSwordDamage 
+                //         << " Health: " << health.currentHealth << "\n";
             }
         }
     }
@@ -1203,9 +1203,9 @@ void CollisionSystem::handleSwordCollisions() {
                 }
                 health.takeDamage(empSwordDamage);
                 health.invulnerabilityTimer = PLAYER_HIT_INVULNERABILITY_TIME;
-                std::cout << "[DEBUG] Player hit by emperor sword! Damage: " 
-                        << empSwordDamage 
-                        << " Health: " << health.currentHealth << "\n";
+                // std::cout << "[DEBUG] Player hit by emperor sword! Damage: " 
+                //         << empSwordDamage 
+                //        << " Health: " << health.currentHealth << "\n";
             }
 
             // Destroy sword on impact
@@ -1273,12 +1273,12 @@ void CollisionSystem::handlePlayerCollectibleCollisions() {
                     if (itemType.find("Small") != std::string::npos) {
                         // Aggiunge 5 secondi alla stamina dello scudo
                         playerState.shieldStamina += CollisionSystem::SMALLCHICKEN_POINTS;
-                        std::cout << "[DEBUG] Player picked up ChickenSmall: +5s shield stamina.\n";
+                        // std::cout << "[DEBUG] Player picked up ChickenSmall: +5s shield stamina.\n";
                     } 
                     else if (itemType.find("Big") != std::string::npos) {
                         // Aggiunge 10 secondi alla stamina dello scudo
                         playerState.shieldStamina += CollisionSystem::BIGCHICKEN_POINTS;
-                        std::cout << "[DEBUG] Player picked up ChickenBig: +10s shield stamina.\n";
+                        // std::cout << "[DEBUG] Player picked up ChickenBig: +10s shield stamina.\n";
                     }
                 
                     // Se la stamina supera il limite, clamp al massimo

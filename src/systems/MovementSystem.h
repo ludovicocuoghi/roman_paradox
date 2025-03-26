@@ -6,17 +6,17 @@
 
 class MovementSystem {
 public:
-    // Costanti per il movimento del giocatore
-    static constexpr float MAX_JUMP_HOLD_TIME = 0.11f;        // Durata massima per mantenere il salto
-    static constexpr float JUMP_BOOST_ACCELERATION = 4500.f;       // Accelerazione aggiuntiva durante il salto
-    static constexpr float MAX_UPWARD_VELOCITY = -1900.f;          // Velocità massima verso l'alto (valore negativo)
-    static constexpr float GRAVITY_MULTIPLIER = 1.5f;             // Moltiplicatore della gravità durante la caduta
-    static constexpr float MAX_FALL_SPEED = 3000.f;                // Velocità massima di caduta
-    static constexpr float X_SPEED = 350.f;                       // Velocità orizzontale del giocatore
+    // Constants for player movement
+    static constexpr float MAX_JUMP_HOLD_TIME = 0.04f;        // Maximum duration to hold jump
+    static constexpr float JUMP_BOOST_ACCELERATION = 11000.f;  // Additional acceleration during jump
+    static constexpr float MAX_UPWARD_VELOCITY = -1600.f;      // Maximum upward velocity (negative value)
+    static constexpr float GRAVITY_MULTIPLIER = 3.f;          // Gravity multiplier during fall
+    static constexpr float MAX_FALL_SPEED = 11000.f;           // Maximum fall speed
+    static constexpr float X_SPEED = 350.f;                    // Player's horizontal speed
 
-    // Costanti per il movimento della telecamera
+    // Constants for camera movement
     void updateCamera();
-    // Costanti per il posizionamento della spada (che segue il giocatore)
+    // Constants for sword positioning (which follows the player)
     static constexpr float SWORD_OFFSET_X_LEFT = -80.f;
     static constexpr float SWORD_OFFSET_X_RIGHT = 30.f;
     static constexpr float SWORD_OFFSET_Y = 10.f;
