@@ -782,7 +782,7 @@ void Scene_LevelEditor::loadLevel(const std::string& filePath) {
             if (m_game.assets().hasAnimation(fullAsset)) {
                 entity->add<CAnimation>(m_game.assets().getAnimation(fullAsset), true);
             } else {
-                std::cerr << "[ERROR] Missing animation for " << fullAsset << "\n";
+                // std::cerr << "[ERROR] Missing animation for " << fullAsset << "\n";
             }
         }
         else if (token == "Dec") {
@@ -794,11 +794,12 @@ void Scene_LevelEditor::loadLevel(const std::string& filePath) {
             auto entity = m_entityManager.addEntity("decoration");
             entity->add<CTransform>(Vec2<float>(gridX * tileSize, gridY * tileSize));
             std::string fullAsset = worldcategory + assetType;
-            if (m_game.assets().hasAnimation(fullAsset))
+            if (m_game.assets().hasAnimation(fullAsset)) {
                 entity->add<CAnimation>(m_game.assets().getAnimation(fullAsset), true);
-            else
-                std::cerr << "[ERROR] Missing animation for " << fullAsset << "\n";
-            std::cout << "[DEBUG] Loaded Dec: " << fullAsset << " at (" << gridX << ", " << gridY << ")\n";
+            } else {
+            //     std::cerr << "[ERROR] Missing animation for " << fullAsset << "\n";
+            }
+            // std::cout << "[DEBUG] Loaded Dec: " << fullAsset << " at (" << gridX << ", " << gridY << ")\n";
         }
         else if (token == "Player") {
             int fileGridX, fileGridY;
@@ -814,9 +815,9 @@ void Scene_LevelEditor::loadLevel(const std::string& filePath) {
             } else if (m_game.assets().hasAnimation("PlayerStand")) {
                 entity->add<CAnimation>(m_game.assets().getAnimation("PlayerStand"), true);
             } else {
-                std::cerr << "[ERROR] Missing animation for player: " << standAnim << "\n";
+                // std::cerr << "[ERROR] Missing animation for player: " << standAnim << "\n";
             }
-            std::cout << "[DEBUG] Loaded Player at (" << gridX << ", " << gridY << ")\n";
+            // std::cout << "[DEBUG] Loaded Player at (" << gridX << ", " << gridY << ")\n";
         }
         else if (token == "Enemy") {
             std::string enemyType;
@@ -832,7 +833,7 @@ void Scene_LevelEditor::loadLevel(const std::string& filePath) {
             if (m_game.assets().hasAnimation(standAnim))
                 entity->add<CAnimation>(m_game.assets().getAnimation(standAnim), true);
             else
-                std::cerr << "[ERROR] Missing animation for enemy type: " << standAnim << "\n";
+                // std::cerr << "[ERROR] Missing animation for enemy type: " << standAnim << "\n";
             std::cout << "[DEBUG] Loaded Enemy: " << worldcategory + enemyType << " at (" << gridX << ", " << gridY << ")\n";
         }
         else if (token == "Player") {

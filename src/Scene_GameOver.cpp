@@ -16,15 +16,15 @@ Scene_GameOver::Scene_GameOver(GameEngine& game, const std::string& levelPath)
     
     // Store the current language from GameEngine
     m_language = game.getLanguage();
-    std::cout << "[DEBUG] Game Over scene using language: " << m_language << std::endl;
+    // std::cout << "[DEBUG] Game Over scene using language: " << m_language << std::endl;
     
     // If the provided level path is empty, use the one from GameEngine
     if (m_levelPath.empty()) {
         m_levelPath = game.getCurrentLevel();
-        std::cout << "[DEBUG] Updated level path from GameEngine: " << m_levelPath << std::endl;
+        // std::cout << "[DEBUG] Updated level path from GameEngine: " << m_levelPath << std::endl;
     }
     
-    std::cout << "[DEBUG] Game Over scene created with level path: " << m_levelPath << std::endl;
+    // std::cout << "[DEBUG] Game Over scene created with level path: " << m_levelPath << std::endl;
 }
 
 Scene_GameOver::~Scene_GameOver() {}

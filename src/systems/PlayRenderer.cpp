@@ -542,7 +542,7 @@ void PlayRenderer::render() {
                             animation.animation.reset();
                             //std::cout << "[DEBUG] Emperor animation updated to: " << desiredAnimName << std::endl;
                         } else {
-                            std::cerr << "[ERROR] Missing animation: " << desiredAnimName << " for Emperor enemy!" << std::endl;
+                            // std::cerr << "[ERROR] Missing animation: " << desiredAnimName << " for Emperor enemy!" << std::endl;
                             
                             // Fallback to the stand animation for this phase if available
                             std::string fallbackAnim = "FutureStandEmperor" + phaseNumber;

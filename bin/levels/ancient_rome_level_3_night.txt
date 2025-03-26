@@ -1,3 +1,4 @@
+# World: Ancient
 Tile Ground 0 1
 Tile Ground 1 1
 Tile Ground 2 1
@@ -625,7 +626,6 @@ Enemy EnemyElite 67 2
 Enemy EnemyElite 84 2
 Enemy EnemyElite 64 2
 Enemy EnemyElite 11 27
-Enemy EnemyElite 48 11
 Enemy EnemyElite 50 14
 Enemy EnemyElite 47 17
 Enemy EnemyElite 50 20

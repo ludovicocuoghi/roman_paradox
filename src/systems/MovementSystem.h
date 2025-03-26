@@ -7,7 +7,7 @@
 class MovementSystem {
 public:
     // Costanti per il movimento del giocatore
-    static constexpr float MAX_JUMP_HOLD_TIME = 0.09f;        // Durata massima per mantenere il salto
+    static constexpr float MAX_JUMP_HOLD_TIME = 0.11f;        // Durata massima per mantenere il salto
     static constexpr float JUMP_BOOST_ACCELERATION = 4500.f;       // Accelerazione aggiuntiva durante il salto
     static constexpr float MAX_UPWARD_VELOCITY = -1900.f;          // Velocità massima verso l'alto (valore negativo)
     static constexpr float GRAVITY_MULTIPLIER = 1.5f;             // Moltiplicatore della gravità durante la caduta

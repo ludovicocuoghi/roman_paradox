@@ -273,7 +273,7 @@ void GameEngine::clearActions() {
     while (!m_actionQueue.empty()) {
         m_actionQueue.pop();
     }
-    std::cout << "[DEBUG] Cleared all actions.\n";
+    // std::cout << "[DEBUG] Cleared all actions.\n";
 }
 
 // Check if there are pending actions

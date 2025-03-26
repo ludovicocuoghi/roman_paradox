@@ -741,17 +741,17 @@ void CollisionSystem::handleBulletPlayerCollisions() {
                     
                     if (!hasFutureArmor) {
                         bulletDamage = static_cast<int>(bulletDamage * 1.5f);
-                        std::cout << "[DEBUG] Player without FutureArmor => bulletDamage x1.5 => " 
-                                  << bulletDamage << "\n";
+                        // std::cout << "[DEBUG] Player without FutureArmor => bulletDamage x1.5 => " 
+                        //           << bulletDamage << "\n";
                     }
                     
                     // Apply the damage
                     health.takeDamage(bulletDamage);
                     health.invulnerabilityTimer = PLAYER_HIT_INVULNERABILITY_TIME;
-                    std::cout << "[DEBUG] Player hit by bullet! Damage: " 
-                              << bulletDamage << " Health: " << health.currentHealth << "\n";
+                    // std::cout << "[DEBUG] Player hit by bullet! Damage: " 
+                    //           << bulletDamage << " Health: " << health.currentHealth << "\n";
                 } else {
-                    std::cout << "[DEBUG] Player already invincible, ignoring bullet.\n";
+                    // std::cout << "[DEBUG] Player already invincible, ignoring bullet.\n";
                 }
             }
 
@@ -789,8 +789,8 @@ void CollisionSystem::handleBlackHoleTileCollisions() {
                     continue;
                 }
                 
-                std::cout << "[DEBUG] Black hole destroyed a tile at position (" 
-                          << tileTrans.pos.x << "," << tileTrans.pos.y << ")\n";
+                // std::cout << "[DEBUG] Black hole destroyed a tile at position (" 
+                //           << tileTrans.pos.x << "," << tileTrans.pos.y << ")\n";
                 
                 auto& tileAnim      = tile->get<CAnimation>().animation;
                 std::string animName = tileAnim.getName();
@@ -817,7 +817,6 @@ void CollisionSystem::handleBlackHoleTileCollisions() {
                     // Force health to 0 for instant death
                     health.currentHealth = 0;
                     
-                    std::cout << "[DEBUG] Player hit by black hole! INSTANT DEATH.\n";
                 }
 
                 // Destroy the black hole after hitting player
@@ -944,10 +943,10 @@ void CollisionSystem::handleSwordCollisions() {
                 auto& swordAI = enemySword->get<CEnemyAI>();
 
                 if (swordAI.enemyType == EnemyType::Super) {
-                    std::cout << "[DEBUG] Super enemy sword destroyed a tile!\n";
+                    // std::cout << "[DEBUG] Super enemy sword destroyed a tile!\n";
                     shouldDestroyTile = true;  // Super enemy destroys any tile
                 } else if (tileAnim.getName().find("Box") != std::string::npos) {
-                    std::cout << "[DEBUG] Non-super enemy sword destroyed a tile containing 'Box'!\n";
+                    // std::cout << "[DEBUG] Non-super enemy sword destroyed a tile containing 'Box'!\n";
                     shouldDestroyTile = true;  // Other enemies destroy only tiles containing "Box"
                 }
             }
@@ -955,7 +954,7 @@ void CollisionSystem::handleSwordCollisions() {
             if (shouldDestroyTile) {
                 // Create block fragments & spawn item
                 std::string animName = tileAnim.getName();
-                std::cout << "[DEBUG] Spawning black hole!!!\n";
+                // std::cout << "[DEBUG] Spawning black hole!!!\n";
                 m_spawner->createBlockFragments(tileTransform.pos, animName);
                 tile->destroy();  // Destroy tile
             }

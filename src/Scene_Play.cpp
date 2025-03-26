@@ -69,7 +69,7 @@ Scene_Play::Scene_Play(GameEngine& game, const std::string& levelPath)
       m_enemyAISystem(m_entityManager, m_spawner, m_game),
       m_language(game.getLanguage())
 {
-    std::cout << "[DEBUG] Scene_Play constructor: levelPath = " << levelPath << std::endl;
+    // std::cout << "[DEBUG] Scene_Play constructor: levelPath = " << levelPath << std::endl;
 
     if (m_levelPath.empty()) {
         std::cerr << "[ERROR] Scene_Play received an empty level path!" << std::endl;
@@ -77,7 +77,7 @@ Scene_Play::Scene_Play(GameEngine& game, const std::string& levelPath)
     }
 
     selectBackgroundFromLevel(m_levelPath);
-    std::cout << "[DEBUG] Selected background: " << m_backgroundPath << std::endl;
+    // std::cout << "[DEBUG] Selected background: " << m_backgroundPath << std::endl;
 
     if (!m_backgroundTexture.loadFromFile(m_backgroundPath)) {
         std::cerr << "[ERROR] Could not load background image: " << m_backgroundPath << std::endl;
@@ -86,17 +86,17 @@ Scene_Play::Scene_Play(GameEngine& game, const std::string& levelPath)
         m_backgroundSprite.setTexture(m_backgroundTexture);
     }
 
-    std::cout << "[DEBUG] Initializing Camera...\n";
+    // std::cout << "[DEBUG] Initializing Camera...\n";
     initializeCamera();
 
     // Add dialogue system initialization here, right after camera initialization
-    std::cout << "[DEBUG] Initializing Dialogue System...\n";
+    // std::cout << "[DEBUG] Initializing Dialogue System...\n";
     initializeDialogues();
 
-    std::cout << "[DEBUG] Calling init()...\n";
+    // std::cout << "[DEBUG] Calling init()...\n";
     init();
 
-    std::cout << "[DEBUG] Scene_Play initialized successfully!\n";
+    // std::cout << "[DEBUG] Scene_Play initialized successfully!\n";
 }
 
 void Scene_Play::selectBackgroundFromLevel(const std::string& levelPath) {
@@ -199,9 +199,9 @@ void Scene_Play::init()
 
     m_game.setCurrentLevel(m_levelPath);
 
-    std::cout << "[DEBUG] Scene_Play::init() - Calling m_levelLoader.load()\n";
+    // std::cout << "[DEBUG] Scene_Play::init() - Calling m_levelLoader.load()\n";
     m_levelLoader.load(m_levelPath, m_entityManager);
-    std::cout << "[DEBUG] Scene_Play::init() - Level loaded successfully!\n";
+    // std::cout << "[DEBUG] Scene_Play::init() - Level loaded successfully!\n";
 }//
 // Main Update Function
 //
@@ -5293,7 +5293,7 @@ void Scene_Play::sDoAction(const Action& action)
             // Activate defense only if there's stamina left
             if (state.shieldStamina > 0.f && state.state != "defense") {
                 // std::cout << "[DEBUG] Defense activated.\n";
-                // state.state = "defense";
+                state.state = "defense";
             }
         }
     }
@@ -5468,7 +5468,7 @@ void Scene_Play::updateBurstFire(float deltaTime)
     if (state.state != "attack") {
         state.state = "attack";
         state.attackTime = 0.1f; // Small value to keep animation running
-        std::cout << "[DEBUG] Restored attack state during burst fire" << std::endl;
+        // std::cout << "[DEBUG] Restored attack state during burst fire" << std::endl;
     }
 
     // 1) Update timers
@@ -5483,7 +5483,7 @@ void Scene_Play::updateBurstFire(float deltaTime)
         state.burstFireTimer = 0.f;
         state.bulletsShot    = 0;
         // Let the animation system handle transitioning back to idle/run
-        std::cout << "[DEBUG] Burst ended (time limit reached).\n";
+        // std::cout << "[DEBUG] Burst ended (time limit reached).\n";
         return;
     }
 
@@ -5496,7 +5496,7 @@ void Scene_Play::updateBurstFire(float deltaTime)
             if (ammo.currentBullets <= 0) {
                 // End the burst if out of ammo
                 state.inBurst = false;
-                std::cout << "[DEBUG] Burst ended - out of ammo.\n";
+                // std::cout << "[DEBUG] Burst ended - out of ammo.\n";
                 return;
             }
             
@@ -5516,9 +5516,9 @@ void Scene_Play::updateBurstFire(float deltaTime)
         
         if (player->has<CAmmo>()) {
             auto& ammo = player->get<CAmmo>();
-            std::cout << "[DEBUG] Burst bullet #" << state.bulletsShot << ", Ammo left: " << ammo.currentBullets << "\n";
+            // std::cout << "[DEBUG] Burst bullet #" << state.bulletsShot << ", Ammo left: " << ammo.currentBullets << "\n";
         } else {
-            std::cout << "[DEBUG] Burst bullet #" << state.bulletsShot << "\n";
+            // std::cout << "[DEBUG] Burst bullet #" << state.bulletsShot << "\n";
         }
     }
 }
@@ -5638,8 +5638,8 @@ void Scene_Play::lifeCheckEnemyDeath() {
         if (isOutOfBounds || isDead) {
             bool isEmperor = (enemy->has<CEnemyAI>() && enemy->get<CEnemyAI>().enemyType == EnemyType::Emperor);
 
-            std::cout << "[DEBUG] Enemy ID " << enemy->id() << " is dead! Spawning " 
-                      << (isEmperor ? "Emperor" : "normal") << " grave...\n";
+            // std::cout << "[DEBUG] Enemy ID " << enemy->id() << " is dead! Spawning " 
+            //           << (isEmperor ? "Emperor" : "normal") << " grave...\n";
             
 
             //Spawn the correct grave type
@@ -5654,17 +5654,17 @@ void Scene_Play::lifeCheckEnemyDeath() {
                     auto& uniqueID = enemy->get<CUniqueID>();
                     std::string levelName = extractLevelName(m_levelPath);
 
-                    std::cout << "[DEBUG] Checking tile removal for enemy ID: " << uniqueID.id << "\n";
+                    // std::cout << "[DEBUG] Checking tile removal for enemy ID: " << uniqueID.id << "\n";
                     
                     if (levelName == "ancient_rome_level_1_day.txt") {
                         if (uniqueID.id == "EnemyFast_4") {
-                            std::cout << "[DEBUG] Removing tile PipeTall_275\n";
+                            // std::cout << "[DEBUG] Removing tile PipeTall_275\n";
                             removeTileByID("PipeTall_275");
                         }
                     }
                     else if (levelName == "ancient_rome_level_2_sunset.txt") {
                         if (uniqueID.id == "EnemyStrong_12") {
-                            std::cout << "[DEBUG] Removing tile PipeTall_900\n";
+                            // std::cout << "[DEBUG] Removing tile PipeTall_900\n";
                             removeTileByID("PipeTall_900");
                         }
                     }

@@ -63,12 +63,12 @@ DialogueSystem::DialogueSystem(GameEngine& game, EntityManager& entityManager)
 
     portraitSprite.setTexture(m_portraitTexture);
 
-    std::cout << "[DEBUG] DialogueSystem initialized with language: " << m_language << "\n";
+    // std::cout << "[DEBUG] DialogueSystem initialized with language: " << m_language << "\n";
 }
 // Update your DialogueSystem::setLanguage method
 void DialogueSystem::setLanguage(const std::string& language)
 {
-    std::cout << "[DEBUG] DialogueSystem::setLanguage() called with: " << language << "\n";
+    // std::cout << "[DEBUG] DialogueSystem::setLanguage() called with: " << language << "\n";
     
     // Skip update if language is already set
     if (m_language == language) {

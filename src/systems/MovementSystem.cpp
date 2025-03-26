@@ -82,12 +82,12 @@ void MovementSystem::updateCamera()
                 }
                 
                 // Otherwise use health-based zoom levels
-                if (healthPercentage <= 0.3f) {
+                if (healthPercentage < 0.3f) {
                     // Zoom out more for final attack phase
-                    targetZoomStrength = 5.0f;
+                    targetZoomStrength = 3.0f;
                 } else if (healthPercentage <= 0.5f) {
                     // Medium zoom out for phase 2
-                    targetZoomStrength = 3.0f;
+                    targetZoomStrength = 1.5f;
                 }
                 
                 break; // No need to check other enemies once we found the Emperor

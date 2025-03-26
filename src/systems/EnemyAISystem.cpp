@@ -360,9 +360,9 @@ void EnemyAISystem::update(float deltaTime)
                                 direction.y * blackHoleSpeed
                             );
                             
-                            std::cout << "[DEBUG] FIRING PHASE: Emperor launched massive black hole attack!\n";
+                            // std::cout << "[DEBUG] FIRING PHASE: Emperor launched massive black hole attack!\n";
                         } else {
-                            std::cout << "[ERROR] Missing animation: " << animName << " for black hole!\n";
+                            // std::cout << "[ERROR] Missing animation: " << animName << " for black hole!\n";
                         }
                     }
                     else if (enemyAI.burstCount == 2 && enemyAI.phaseTimer >= 10.0f) {
@@ -640,7 +640,7 @@ void EnemyAISystem::update(float deltaTime)
                                 enemyAI.phaseTimer = 0.f;
                                 enemyAI.burstCooldownActive = true;
                                 enemyAI.radialAttackTimer = 0.f; // Reset the attack timer
-                                std::cout << "[DEBUG] Emperor Phase 1: 3-second firing complete, entering cooldown\n";
+                                // std::cout << "[DEBUG] Emperor Phase 1: 3-second firing complete, entering cooldown\n";
                             }
                         } else {
                             // COOLDOWN PHASE - lasts for 10 seconds
@@ -649,7 +649,7 @@ void EnemyAISystem::update(float deltaTime)
                             if (enemyAI.phaseTimer >= 10.0f) {
                                 enemyAI.phaseTimer = 0.f;
                                 enemyAI.burstCooldownActive = false;
-                                std::cout << "[DEBUG] Emperor Phase 1: 10-second cooldown ended, resuming firing\n";
+                                // std::cout << "[DEBUG] Emperor Phase 1: 10-second cooldown ended, resuming firing\n";
                             }
                         }
                     }
@@ -684,7 +684,7 @@ void EnemyAISystem::update(float deltaTime)
                                 enemyAI.phaseTimer = 0.f;
                                 enemyAI.burstCooldownActive = true;
                                 enemyAI.radialAttackTimer = 0.f;
-                                std::cout << "[DEBUG] Emperor Phase 2: 4-second firing complete, entering cooldown\n";
+                                // std::cout << "[DEBUG] Emperor Phase 2: 4-second firing complete, entering cooldown\n";
                             }
                         } else {
                             // COOLDOWN PHASE - lasts for 8 seconds
@@ -693,7 +693,7 @@ void EnemyAISystem::update(float deltaTime)
                             if (enemyAI.phaseTimer >= 8.0f) {
                                 enemyAI.phaseTimer = 0.f;
                                 enemyAI.burstCooldownActive = false;
-                                std::cout << "[DEBUG] Emperor Phase 2: 8-second cooldown ended, resuming firing\n";
+                                // std::cout << "[DEBUG] Emperor Phase 2: 8-second cooldown ended, resuming firing\n";
                             }
                         }
                         
@@ -766,7 +766,7 @@ void EnemyAISystem::update(float deltaTime)
                                 blackHole->get<CTransform>().velocity = Vec2<float>(vx, vy);
                             }
                             
-                            std::cout << "[DEBUG] Emperor Phase 2 (70-50%): Black hole attack - 2 directions\n";
+                            // std::cout << "[DEBUG] Emperor Phase 2 (70-50%): Black hole attack - 2 directions\n";
                         }
                     }
                     // Phase 3: Alternating bullet types with increased firing rate (50-30% health)
@@ -804,7 +804,7 @@ void EnemyAISystem::update(float deltaTime)
                                 enemyAI.burstCooldownActive = true;
                                 enemyAI.radialAttackTimer = 0.f;
                                 // Keep burstCount as is (don't reset) to maintain bullet type alternation
-                                std::cout << "[DEBUG] Emperor Phase 3: 5-second firing complete, entering cooldown\n";
+                                // std::cout << "[DEBUG] Emperor Phase 3: 5-second firing complete, entering cooldown\n";
                             }
                         } else {
                             // COOLDOWN PHASE - lasts for 6 seconds
@@ -813,7 +813,7 @@ void EnemyAISystem::update(float deltaTime)
                             if (enemyAI.phaseTimer >= 6.0f) {
                                 enemyAI.phaseTimer = 0.f;
                                 enemyAI.burstCooldownActive = false;
-                                std::cout << "[DEBUG] Emperor Phase 3: 6-second cooldown ended, resuming firing\n";
+                                // std::cout << "[DEBUG] Emperor Phase 3: 6-second cooldown ended, resuming firing\n";
                             }
                         }
                         
@@ -866,7 +866,7 @@ void EnemyAISystem::update(float deltaTime)
                                 blackHole->get<CTransform>().velocity = Vec2<float>(vx, vy);
                             }
                             
-                            std::cout << "[DEBUG] Emperor Phase 3 (50-30%): Black hole attack - 6 directions\n";
+                            // std::cout << "[DEBUG] Emperor Phase 3 (50-30%): Black hole attack - 6 directions\n";
                         }
                     }
                     // Phase 4: Black hole attacks every 10 seconds (50-30% health)
@@ -930,9 +930,9 @@ void EnemyAISystem::update(float deltaTime)
                                     direction.y * blackHoleSpeed
                                 );
                                 
-                                std::cout << "[DEBUG] Emperor Phase 4 (50-30%): Launched massive black hole attack at player!\n";
+                                // std::cout << "[DEBUG] Emperor Phase 4 (50-30%): Launched massive black hole attack at player!\n";
                             } else {
-                                std::cout << "[ERROR] Missing animation: " << animName << " for black hole!\n";
+                                // std::cout << "[ERROR] Missing animation: " << animName << " for black hole!\n";
                             }
                         }
                     }
@@ -1224,8 +1224,8 @@ void EnemyAISystem::update(float deltaTime)
                 
                     if (isHorizontallyAligned && isInFront) {
                         enemyAI.tileDetected = true;
-                        std::cout << "[DEBUG] Enemy " << enemy->id()
-                                << " detected tile in front!\n";
+                        // std::cout << "[DEBUG] Enemy " << enemy->id()
+                        //         << " detected tile in front!\n";
                         break;
                     }
                 }
@@ -1285,16 +1285,16 @@ void EnemyAISystem::update(float deltaTime)
                 if (horizontalDistance < TOO_CLOSE_DISTANCE_X) {
                     // Too close horizontally - back up!
                     enemyTrans.velocity.x = -enemyAI.facingDirection * FOLLOW_MOVE_SPEED * 0.8f;
-                    std::cout << "[DEBUG] " << (enemyAI.enemyType == EnemyType::Super2 ? "Super2" : "Future") 
-                            << " enemy " << enemy->id() 
-                            << " backing away (too close horizontally: " << horizontalDistance << ")\n";
+                    // std::cout << "[DEBUG] " << (enemyAI.enemyType == EnemyType::Super2 ? "Super2" : "Future") 
+                    //         << " enemy " << enemy->id() 
+                    //         << " backing away (too close horizontally: " << horizontalDistance << ")\n";
                 }
                 else if (horizontalDistance < OPTIMAL_MIN_DISTANCE_X && hasLineOfSight) {
                     // A bit too close horizontally but has line of sight - back up slightly
                     enemyTrans.velocity.x = -enemyAI.facingDirection * FOLLOW_MOVE_SPEED * 0.5f;
-                    std::cout << "[DEBUG] " << (enemyAI.enemyType == EnemyType::Super2 ? "Super2" : "Future") 
-                            << " enemy " << enemy->id() 
-                            << " backing to optimal horizontal range (distance: " << horizontalDistance << ")\n";
+                    // std::cout << "[DEBUG] " << (enemyAI.enemyType == EnemyType::Super2 ? "Super2" : "Future") 
+                    //         << " enemy " << enemy->id() 
+                    //         << " backing to optimal horizontal range (distance: " << horizontalDistance << ")\n";
                 }
                 else if (horizontalDistance > OPTIMAL_MAX_DISTANCE_X || !hasLineOfSight) {
                     // Too far horizontally or no line of sight - approach slowly
@@ -1326,9 +1326,9 @@ void EnemyAISystem::update(float deltaTime)
                         }
                     }
                     
-                    std::cout << "[DEBUG] " << (enemyAI.enemyType == EnemyType::Super2 ? "Super2" : "Future") 
-                            << " enemy " << enemy->id() 
-                            << " at optimal shooting range (distance: " << distance << ")\n";
+                    // std::cout << "[DEBUG] " << (enemyAI.enemyType == EnemyType::Super2 ? "Super2" : "Future") 
+                    //         << " enemy " << enemy->id() 
+                    //         << " at optimal shooting range (distance: " << distance << ")\n";
                 }
                 } else {
                     enemyTrans.velocity.x = 0.f;
@@ -1417,7 +1417,7 @@ void EnemyAISystem::update(float deltaTime)
                 anim.animation = runAnim;
                 anim.animation.reset();
             } else {
-                std::cout << "[ERROR] Missing animation: " << runAnimName << " for Emperor enemy!\n";
+                // std::cout << "[ERROR] Missing animation: " << runAnimName << " for Emperor enemy!\n";
             }
         }
 
@@ -1449,8 +1449,8 @@ void EnemyAISystem::update(float deltaTime)
                 if (enemyAI.burstCooldownTimer >= postBurstCooldown) {
                     enemyAI.burstCooldownActive = false;
                     enemyAI.burstCooldownTimer = 0.0f;
-                    std::cout << "[DEBUG] Enemy " << enemy->id()
-                            << " post-burst cooldown ended.\n";
+                    // std::cout << "[DEBUG] Enemy " << enemy->id()
+                    //         << " post-burst cooldown ended.\n";
                 } else {
                     // Skip shooting logic while in cooldown, but don't skip movement
                     skipShooting = true;

@@ -95,7 +95,7 @@ std::shared_ptr<Entity> Spawner::spawnPlayerBullet(std::shared_ptr<Entity> playe
         float h = static_cast<float>(animSize.y);
         bullet->add<CBoundingBox>(Vec2<float>(w, h), Vec2<float>(w * 0.5f, h * 0.5f));
     } else {
-        std::cerr << "[ERROR] Missing animation for " << animationName << "!\n";
+        // std::cerr << "[ERROR] Missing animation for " << animationName << "!\n";
     }
 
     // std::cout << "[DEBUG] Spawned player bullet at (" 
@@ -483,7 +483,7 @@ std::shared_ptr<Entity> Spawner::spawnItem(const Vec2<float>& position, const st
         spawnPos.y -= TREASURE_BOX_TILE_SIZE;
     } 
     else {
-        std::cerr << "[ERROR] Unknown tile type in spawnItem: " << tileType << std::endl;
+        // std::cerr << "[ERROR] Unknown tile type in spawnItem: " << tileType << std::endl;
         return nullptr;
     }
 
@@ -496,7 +496,7 @@ std::shared_ptr<Entity> Spawner::spawnItem(const Vec2<float>& position, const st
         auto& anim = m_game.assets().getAnimation(itemName);
         item->add<CAnimation>(anim, true);
     } else {
-        std::cerr << "[ERROR] Missing animation for item: " << itemName << std::endl;
+        // std::cerr << "[ERROR] Missing animation for item: " << itemName << std::endl;
         item->destroy();
         return nullptr;
     }

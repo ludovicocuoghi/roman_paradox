@@ -136,7 +136,7 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
             }
             else
             {
-                std::cerr << "[WARNING] Missing animation for decoration: " << assetType << std::endl;
+                // std::cerr << "[WARNING] Missing animation for decoration: " << assetType << std::endl;
             }
         }
         else if (type == "Player")
@@ -410,13 +410,13 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
             }
             else if (m_game.assets().hasAnimation(standAnimName))
             {
-                std::cerr << "[WARNING] Missing " << runAnimName << " animation, falling back to " << standAnimName << std::endl;
+                // std::cerr << "[WARNING] Missing " << runAnimName << " animation, falling back to " << standAnimName << std::endl;
                 const Animation& anim = m_game.assets().getAnimation(standAnimName);
                 enemy->add<CAnimation>(anim, true);
             }
             else
             {
-                std::cerr << "[ERROR] Missing animations for " << enemyTypeStr << " enemy!" << std::endl;
+                // std::cerr << "[ERROR] Missing animations for " << enemyTypeStr << " enemy!" << std::endl;
             }
 
             float realX = x * LoadLevel::GRID_SIZE + LoadLevel::HALF_GRID;
