@@ -53,6 +53,9 @@ public:
     int alternateUniverseNumber2;
     void setLanguage(const std::string& language);
     const std::string& getLanguage() const { return m_language; }
+    float getScaleX() const;
+    float getScaleY() const;
+    sf::Vector2f getReferenceResolution() const;
 
 private:
     void sUserInput();
@@ -65,8 +68,6 @@ private:
     bool m_running = true;
     bool m_showEndingScreen = false;
     
-
-
     std::shared_ptr<Scene> m_currentScene;
     std::map<std::string, std::shared_ptr<Scene>> m_scenes;
     std::queue<Action> m_actionQueue;
@@ -75,4 +76,7 @@ private:
     std::string m_pendingLevelChange;
     std::map<std::string, std::string> m_levelConnections;
     std::string m_language = "English";
+    sf::Vector2f m_referenceResolution;
+    float m_scaleX = 1.0f;
+    float m_scaleY = 1.0f;
 };

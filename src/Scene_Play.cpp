@@ -227,6 +227,12 @@ void Scene_Play::update(float deltaTime)
         if (!playerEntities.empty()) {
             auto player = playerEntities[0];
             if (player->has<CTransform>()) {
+                auto& transform = player->get<CTransform>();
+
+                // Debug: Print player's current Y position
+                std::cout << "[DEBUG] Player Y position: " << transform.pos.y << " Player X position: " << transform.pos.x << std::endl;
+
+
                 static float lastVelX = 0.0f;
                 float currentVelX = player->get<CTransform>().velocity.x;
                 

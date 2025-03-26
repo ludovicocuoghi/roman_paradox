@@ -6,13 +6,13 @@
 #include "Animation.hpp"
 #include <vector>
 
-// Base Component.
+// Base Component
 class Component {
 public:
     virtual ~Component() = default;
 };
 
-// Transform Component.
+// Transform Component
 class CTransform : public Component {
     public:
         Vec2<float> pos;
@@ -166,9 +166,7 @@ class CStopAfterTime : public Component {
 
 class CState : public Component {
     public:
-        //====================================================
-        //  Original Fields
-        //====================================================
+
         std::string state;           // "idle", "run", "attack", "defense", etc.
         bool  isInvincible;
         float invincibilityTimer;
@@ -196,13 +194,13 @@ class CState : public Component {
         float superBulletDamage;          // Super bullet damage
     
         //====================================================
-        //  NEW: Sword Cooldown (Separate from bulletCooldown)
+        //  Sword Cooldown (Separate from bulletCooldown)
         //====================================================
         float swordCooldown    = 0.f;  // Current sword cooldown
         float swordCooldownMax = 0.3f; // Default value (e.g., 0.3 seconds)
     
         //====================================================
-        //  NEW Fields for BURST + SUPER MOVE
+        //  Fields for BURST + SUPER MOVE
         //====================================================
         bool  inBurst         = false; // True if player is in burst mode
         float burstTimer      = 0.f;   // Timer for burst duration
@@ -237,7 +235,7 @@ class CState : public Component {
               superBulletCount(4),
               superBulletDamage(2.f)
         {
-            // Optionally set any default you prefer for swordCooldownMax, bulletCooldownMax, etc.
+            // Optionally set any default for swordCooldownMax, bulletCooldownMax, etc.
             // e.g., swordCooldownMax = 0.3f; bulletCooldownMax = 0.5f;
         }
     
@@ -247,7 +245,7 @@ class CState : public Component {
         void update(float deltaTime) 
         {
             //===============================
-            // Original Timers
+            // Timers
             //===============================
             if (isInvincible && invincibilityTimer > 0.f) {
                 invincibilityTimer -= deltaTime;
@@ -281,7 +279,7 @@ class CState : public Component {
             }
         
             //===============================
-            // Sword Cooldown (NEW)
+            // Sword Cooldown
             //===============================
             if (swordCooldown > 0.f) {
                 swordCooldown -= deltaTime;
@@ -312,7 +310,7 @@ class CState : public Component {
             }
         
             //===============================
-            //  SUPER MOVE Timer (OPPOSITE APPROACH)
+            //  SUPER MOVE Timer 
             //===============================
             if (superBulletTimer > 0.f) {
                 superBulletTimer -= deltaTime;
@@ -387,8 +385,8 @@ enum class EnemyType {
 };
 
 enum class EnemyBehavior {
-    FollowOne,  // Only follows when player is in line-of-sight
-    FollowTwo,   // Keeps following once the player is spotted
+    FollowOne,  
+    FollowTwo,  
     FollowThree,
     FollowFour,
     Flee
@@ -398,7 +396,7 @@ enum class EnemyState {
     Idle,
     Follow,     // The enemy is following the player
     Attack,     // The enemy is attacking
-    Knockback,   // The enemy is being pushed back,
+    Knockback,  
     FinalAttack,
     BlockedByTile,
     Defeated,

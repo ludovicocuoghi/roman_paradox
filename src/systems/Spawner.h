@@ -10,10 +10,10 @@
 
 class Spawner {
 public:
-    // Costanti per lo spawn della spada del player
+    // Constants for player sword spawn
     static constexpr float PLAYER_SWORD_DURATION = 0.2f;
 
-    // Costanti per lo spawn della spada del nemico
+    // Constants for enemy sword spawn
     static constexpr float ENEMY_SWORD_OFFSET_X = 60.f;
     static constexpr float ENEMY_SWORD_OFFSET_Y = 15.f;
     static constexpr float ENEMY_SWORD_DURATION = 0.3f;
@@ -22,30 +22,30 @@ public:
     static constexpr float EMPEROR_SWORD_OFFSET_Y = 10.f;
     static constexpr float EMPEROR_ROTATING_SWORD_DURATION = 7.f;
 
-    // Costanti per lo spawn dei proiettili nemici (bullets)
-    static constexpr float ENEMY_BULLET_SPEED = 900.f; // Velocità del proiettile
-    static constexpr float ENEMY_BULLET_DURATION = 3.0f; // Durata prima di scomparire
-    static constexpr float ENEMY_BULLET_OFFSET_X = 30.0f; // Posizione iniziale rispetto al nemico
-    static constexpr float ENEMY_BULLET_OFFSET_Y = 5.0f; // Leggermente sopra il nemico
+    // Constants for enemy projectile spawning (bullets)
+    static constexpr float ENEMY_BULLET_SPEED = 900.f; // Bullet speed
+    static constexpr float ENEMY_BULLET_DURATION = 3.0f; // Duration before disappearing
+    static constexpr float ENEMY_BULLET_OFFSET_X = 30.0f; // Initial position relative to enemy
+    static constexpr float ENEMY_BULLET_OFFSET_Y = 5.0f; // Slightly above the enemy
 
-    // Costanti per lo spawn degli item da box
+    // Constants for item spawning from boxes
     static constexpr int BOX_ITEM_DIST_MIN = 0;
     static constexpr int BOX_ITEM_DIST_MAX = 9;
     static constexpr int BOX_ITEM_THRESHOLD_COINBRONZE = 5;
     static constexpr int BOX_ITEM_THRESHOLD_GRAPESMALL = 9;
 
-    // Costanti per lo spawn degli item da TreasureBox
+    // Constants for item spawning from TreasureBox
     static constexpr int TREASURE_BOX_DIST_MIN = 0;
     static constexpr int TREASURE_BOX_DIST_MAX = 1;
     static constexpr float TREASURE_BOX_TILE_SIZE = 96.f;
 
-    // Costante per lo scale dei collectible
+    // Constant for collectible scale
     static constexpr float COLLECTABLE_SCALE_FACTOR = 0.3f;
 
-    // Costante per il valore massimo dell'alpha (opacità)
+    // Constant for maximum alpha value (opacity)
     static constexpr float ALPHA_MAX = 255.f;
 
-    // Costanti per la creazione dei frammenti
+    // Constants for fragment creation
     static constexpr float FRAGMENT_SPREAD_SPEED = 400.f;
     static constexpr int FRAGMENT_ANGLE_MIN = 0;
     static constexpr int FRAGMENT_ANGLE_MAX = 359;
@@ -84,10 +84,10 @@ public:
 
     Spawner(GameEngine& game, EntityManager& entityManager);
 
-    // Funzioni di spawn
+    // Spawn functions
     std::shared_ptr<Entity> spawnSword(std::shared_ptr<Entity> player);
     std::shared_ptr<Entity> spawnEnemySword(std::shared_ptr<Entity> enemy);
-    std::shared_ptr<Entity> spawnEnemyBullet(std::shared_ptr<Entity> enemy); // Aggiunto
+    std::shared_ptr<Entity> spawnEnemyBullet(std::shared_ptr<Entity> enemy); // Added
     
     std::shared_ptr<Entity> spawnItem(const Vec2<float>& position, const std::string& tileType);
     std::shared_ptr<Entity> spawnEmperorSwordOffset(std::shared_ptr<Entity> enemy);

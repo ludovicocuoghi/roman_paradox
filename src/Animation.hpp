@@ -11,7 +11,7 @@ private:
     std::vector<sf::IntRect> m_frames;
     int m_currentFrame  = 0;
 
-    // Now interpret this as *frames per second* (FPS), not ms/frame!
+    // frames per second (FPS) (not ms/frame)
     int   m_speed       = 0;      
     float m_elapsedTime = 0.f;  
     bool  m_repeat      = true;
@@ -24,7 +24,7 @@ public:
               int frameWidth, 
               int frameHeight, 
               int frameCount, 
-              int speed,        // <== FRAMES PER SECOND
+              int speed,      // frames per second
               bool repeat = true, 
               const std::string& name = "")
         : m_speed(speed), m_repeat(repeat), m_name(name)
@@ -44,7 +44,7 @@ public:
                   << " with " << frameCount << " frames.\n";
     }
 
-    // --- KEY PART: interpret 'speed' as frames/second ---
+    // interpret 'speed' as frames/second ---
     void update(float deltaTime) {
         if (m_frames.empty() || m_speed <= 0) {
             return;

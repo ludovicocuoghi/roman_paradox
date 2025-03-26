@@ -22,7 +22,7 @@ public:
     void addTexture(const std::string& name, const std::string& path);
     void addFont(const std::string& name, const std::string& path);
     void addAnimation(const std::string& name, const std::string& textureName, int frameWidth, int frameHeight, int frameCount, int speed);
-    bool hasFont(const std::string& name) const; // Add this line
+    bool hasFont(const std::string& name) const;
 
     bool hasAnimation(const std::string& name) const;
 
@@ -32,5 +32,5 @@ public:
 
     void loadFromFile(const std::string& filePath);
 
-    const Animation& getDefaultAnimation() const;  // Fix: Marked as const
+    const Animation& getDefaultAnimation() const; 
 };

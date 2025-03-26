@@ -4,16 +4,16 @@
 #include <string>
 #include "EntityManager.hpp"
 #include "GameEngine.h"
-#include "Vec2.hpp"         // Assicurati di includere la definizione di Vec2
-#include "Components.hpp"   // Per CTransform, CAnimation, CBoundingBox, ecc.
+#include "Vec2.hpp"         // Make sure to include Vec2 definition
+#include "Components.hpp"   // For CTransform, CAnimation, CBoundingBox, etc.
 
-class CAnimation; // Forward declaration se necessario
+class CAnimation; // Forward declaration if necessary
 
 class DialogueSystem;
 
 class PlayRenderer {
 public:
-    // Costruttore: riceve i riferimenti necessari per il rendering
+    // Constructor: receives necessary references for rendering
     PlayRenderer(GameEngine& game,
                  EntityManager& entityManager,
                  sf::Sprite& backgroundSprite,
@@ -21,16 +21,16 @@ public:
                  sf::View& cameraView,
                  int& score);
 
-    // Setter per le variabili di configurazione
+    // Setters for configuration variables
     void setShowGrid(bool show);
     void setShowBoundingBoxes(bool show);
     void setScore(int score);
     void setTimeOfDay(const std::string& tod);
 
-    // Funzione principale di rendering (equivalente a sRender)
+    // Main rendering function (equivalent to sRender)
     void render();
 
-    // Funzioni di utilità
+    // Utility functions
     void drawGrid();
     void drawDebugLine(const Vec2<float>& start, const Vec2<float>& end, sf::Color color);
     void flipSpriteLeft(CAnimation& canim);
@@ -45,7 +45,7 @@ private:
     sf::Texture& m_backgroundTexture;
     sf::View& m_cameraView;
 
-    // Variabili di configurazione per il rendering
+    // Configuration variables for rendering
     bool m_showGrid;
     bool m_showBoundingBoxes;
     int m_score;

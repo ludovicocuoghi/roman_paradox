@@ -10,7 +10,22 @@
 #include <ctime> 
 
 GameEngine::GameEngine(const std::string& path) {
-    m_window.create(sf::VideoMode(1920, 1080), "Game Window");
+    // Get desktop resolution
+    sf::VideoMode desktopMode = sf::VideoMode::getDesktopMode();
+    
+    // Reference resolution (what the game was designed for)
+    m_referenceResolution = sf::Vector2f(1920.0f, 1080.0f);
+    
+    // Use desktop resolution or fall back to reference resolution if desktop is smaller
+    int windowWidth = std::min(desktopMode.width, 1920u);
+    int windowHeight = std::min(desktopMode.height, 1080u);
+    
+    m_window.create(sf::VideoMode(windowWidth, windowHeight), "Game Window");
+    
+    // Calculate resolution scale factors
+    m_scaleX = windowWidth / m_referenceResolution.x;
+    m_scaleY = windowHeight / m_referenceResolution.y;
+    
     m_window.setFramerateLimit(100);
     
     // Seed random number generator with current time
@@ -295,12 +310,29 @@ Assets& GameEngine::assets() {
 // Set the camera view
 void GameEngine::setCameraView(const sf::View& view) {
     m_cameraView = view;
+    
+    // Adjust view for the current window size
+    sf::FloatRect viewport(0, 0, 1, 1);
+    
+    // If needed, add letterboxing/pillarboxing to maintain aspect ratio
+    float windowRatio = m_window.getSize().x / static_cast<float>(m_window.getSize().y);
+    float viewRatio = m_referenceResolution.x / m_referenceResolution.y;
+    
+    if (windowRatio < viewRatio) {
+        // Window is taller than the view
+        float ratio = windowRatio / viewRatio;
+        viewport.top = (1 - ratio) / 2.f;
+        viewport.height = ratio;
+    }
+    else if (windowRatio > viewRatio) {
+        // Window is wider than the view
+        float ratio = viewRatio / windowRatio;
+        viewport.left = (1 - ratio) / 2.f;
+        viewport.width = ratio;
+    }
+    
+    m_cameraView.setViewport(viewport);
     m_window.setView(m_cameraView);
-}
-
-// Get the camera view
-sf::View& GameEngine::getCameraView() {
-    return m_cameraView;
 }
 
 void GameEngine::scheduleLevelChange(const std::string& levelPath) {
@@ -330,4 +362,17 @@ bool GameEngine::isFinalLevel(const std::string& levelPath) {
     
     std::string levelFile = levelPath.substr(levelPath.find_last_of("/\\") + 1);
     return levelFile == "future_rome_level_5_day_v2.txt";
+}
+
+// Add new methods for resolution scaling
+float GameEngine::getScaleX() const {
+    return m_scaleX;
+}
+
+float GameEngine::getScaleY() const {
+    return m_scaleY;
+}
+
+sf::Vector2f GameEngine::getReferenceResolution() const {
+    return m_referenceResolution;
 }
