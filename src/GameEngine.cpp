@@ -10,7 +10,7 @@
 #include <ctime> 
 
 GameEngine::GameEngine(const std::string& path) {
-    // Reference resolution (fixed, designed resolution)
+    // Reference resolution (fixed, designed resolution)ß
     m_referenceResolution = sf::Vector2f(1920.0f, 1080.0f);
 
     // Get desktop resolution
@@ -101,7 +101,6 @@ const std::string& GameEngine::getCurrentLevel() const {
 
 //  Load a new level and update the current level
 void GameEngine::loadLevel(const std::string& levelPath) {
-    std::cout << "[DEBUG] Attempting to load level: " << levelPath << std::endl;
     
     if (levelPath.empty()) {
         std::cerr << "[ERROR] Attempted to load an empty level path!\n";
@@ -192,20 +191,20 @@ void GameEngine::sUserInput() {
             bool isPlayScene = (currentSceneType == "PLAY" || currentSceneType == "EDITOR");
             
             // Debug the scene type
-            std::cout << "[DEBUG] Current scene type: " << currentSceneType << "\n";
+            // std::cout << "[DEBUG] Current scene type: " << currentSceneType << "\n";
             
             // Special handling for A/D keys in Play scene only
             if (isPlayScene) {
                 if (event.key.code == sf::Keyboard::A || event.key.code == sf::Keyboard::Left) {
                     std::string actionType = (event.type == sf::Event::KeyPressed) ? "START" : "END";
                     m_actionQueue.push(Action("MOVE_LEFT", actionType));
-                    std::cout << "[DEBUG] Play scene movement: MOVE_LEFT | Type: " << actionType << "\n";
+                    // std::cout << "[DEBUG] Play scene movement: MOVE_LEFT | Type: " << actionType << "\n";
                     continue; // Skip the normal mapping for these keys
                 }
                 else if (event.key.code == sf::Keyboard::D || event.key.code == sf::Keyboard::Right) {
                     std::string actionType = (event.type == sf::Event::KeyPressed) ? "START" : "END";
                     m_actionQueue.push(Action("MOVE_RIGHT", actionType));
-                    std::cout << "[DEBUG] Play scene movement: MOVE_RIGHT | Type: " << actionType << "\n";
+                    // std::cout << "[DEBUG] Play scene movement: MOVE_RIGHT | Type: " << actionType << "\n";
                     continue; // Skip the normal mapping for these keys
                 }
             }
@@ -216,7 +215,7 @@ void GameEngine::sUserInput() {
                     if (event.key.code == key) {
                         std::string actionType = (event.type == sf::Event::KeyPressed) ? "START" : "END";
                         m_actionQueue.push(Action(actionName, actionType));
-                        std::cout << "[DEBUG] Standard action: " << actionName << " | Type: " << actionType << "\n";
+                        // std::cout << "[DEBUG] Standard action: " << actionName << " | Type: " << actionType << "\n";
                     }
                 }
             }

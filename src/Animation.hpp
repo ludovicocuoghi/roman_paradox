@@ -40,8 +40,8 @@ public:
             m_sprite.setTextureRect(m_frames[0]);
         }
 
-        std::cout << "[DEBUG] Loaded Animation: " << m_name 
-                  << " with " << frameCount << " frames.\n";
+        // std::cout << "[DEBUG] Loaded Animation: " << m_name 
+        //           << " with " << frameCount << " frames.\n";
     }
 
     // interpret 'speed' as frames/second ---

@@ -128,37 +128,37 @@ void Assets::loadFromFile(const std::string& filePath) {
 
         if (type == "Texture") {
             addTexture(name, textureName);
-            std::cout << "[DEBUG] Loaded Texture: " << name 
-                      << " -> " << textureName << std::endl;
+            // std::cout << "[DEBUG] Loaded Texture: " << name 
+            //           << " -> " << textureName << std::endl;
         } 
         else if (type == "Font") {
             addFont(name, textureName);
-            std::cout << "[DEBUG] Loaded Font: " << name 
-                      << " -> " << textureName << std::endl;
+            // std::cout << "[DEBUG] Loaded Font: " << name 
+            //           << " -> " << textureName << std::endl;
         } 
         else if (type == "Animation") {
             int frameWidth, frameHeight, frameCount, fps;
             stream >> frameWidth >> frameHeight >> frameCount >> fps;
 
             if (m_textureMap.find(textureName) == m_textureMap.end()) {
-                std::cerr << "[WARNING] Missing texture: " 
-                          << textureName << " for animation: " 
-                          << name << std::endl;
+                // std::cerr << "[WARNING] Missing texture: " 
+                //           << textureName << " for animation: " 
+                //           << name << std::endl;
                 continue;
             }
 
             addAnimation(name, textureName, frameWidth, frameHeight, frameCount, fps);
 
-            std::cout << "[DEBUG] Loaded Animation: " << name 
-                      << " from " << textureName << " [" 
-                      << frameWidth << "x" << frameHeight << ", " 
-                      << frameCount << " frames, FPS: " << fps << "]" 
-                      << std::endl;
+            // std::cout << "[DEBUG] Loaded Animation: " << name 
+            //           << " from " << textureName << " [" 
+            //           << frameWidth << "x" << frameHeight << ", " 
+            //           << frameCount << " frames, FPS: " << fps << "]" 
+            //           << std::endl;
         }
     }
 
-    std::cout << "[DEBUG] Asset Loading Completed. Textures: " 
-              << m_textureMap.size() << " | Animations: " 
-              << m_animationMap.size() << " | Fonts: " 
-              << m_fontMap.size() << std::endl;
+    // std::cout << "[DEBUG] Asset Loading Completed. Textures: " 
+    //           << m_textureMap.size() << " | Animations: " 
+    //           << m_animationMap.size() << " | Fonts: " 
+    //           << m_fontMap.size() << std::endl;
 }

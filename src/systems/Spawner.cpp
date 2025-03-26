@@ -45,7 +45,7 @@ std::shared_ptr<Entity> Spawner::spawnPlayerBullet(std::shared_ptr<Entity> playe
     float facingDir = pTrans.facingDirection;
     
     // Log the facing direction to debug
-    std::cout << "[DEBUG] Player facing direction: " << facingDir << "\n";
+    // std::cout << "[DEBUG] Player facing direction: " << facingDir << "\n";
 
     // Calculate bullet spawn position & velocity
     float offsetX = facingDir * PLAYER_BULLET_OFFSET_X; // Simplified offset calculation
@@ -98,9 +98,9 @@ std::shared_ptr<Entity> Spawner::spawnPlayerBullet(std::shared_ptr<Entity> playe
         std::cerr << "[ERROR] Missing animation for " << animationName << "!\n";
     }
 
-    std::cout << "[DEBUG] Spawned player bullet at (" 
-              << bulletPos.x << ", " << bulletPos.y << ") with velocity (" 
-              << bulletVelocity.x << ", " << bulletVelocity.y << ")\n";
+    // std::cout << "[DEBUG] Spawned player bullet at (" 
+    //           << bulletPos.x << ", " << bulletPos.y << ") with velocity (" 
+    //           << bulletVelocity.x << ", " << bulletVelocity.y << ")\n";
     return bullet;
 }
 
@@ -136,7 +136,7 @@ std::shared_ptr<Entity> Spawner::spawnEnemyBullet(std::shared_ptr<Entity> enemy)
     bullet->add<CLifeSpan>(ENEMY_BULLET_DURATION);
     bullet->add<CState>(std::to_string(enemy->id()));
 
-    std::cout << "[DEBUG] Spawned enemy bullet at (" << bulletPos.x << ", " << bulletPos.y << ")\n";
+    // std::cout << "[DEBUG] Spawned enemy bullet at (" << bulletPos.x << ", " << bulletPos.y << ")\n";
 
     // Pick bullet animation based on enemy type
     std::string animationName;
@@ -198,14 +198,14 @@ std::shared_ptr<Entity> Spawner::spawnEnemySword(std::shared_ptr<Entity> enemy) 
     sword->add<CLifeSpan>(ENEMY_SWORD_DURATION);
     sword->add<CState>(std::to_string(enemy->id()));
 
-    std::cout << "[DEBUG] Spawned enemy sword at (" << swordPos.x << ", " << swordPos.y << ")\n";
+    // std::cout << "[DEBUG] Spawned enemy sword at (" << swordPos.x << ", " << swordPos.y << ")\n";
 
     // Determine sword animation based on world and enemy type
     std::string animationName;
 
     animationName = (enemyAI.enemyType == EnemyType::Super || enemyAI.enemyType == EnemyType::Super2) ? "SuperSword" : "EnemySword";
 
-    std::cout << "[DEBUG] Using " << animationName << " animation for enemy sword.\n";
+    // std::cout << "[DEBUG] Using " << animationName << " animation for enemy sword.\n";
 
     if (m_game.assets().hasAnimation(animationName)) {
         auto& swordAnim = m_game.assets().getAnimation(animationName);
@@ -276,8 +276,8 @@ std::shared_ptr<Entity> Spawner::spawnEmperorSwordOffset(std::shared_ptr<Entity>
         sword->add<CEnemyAI>(enemy->get<CEnemyAI>());
     }
 
-    std::cout << "[DEBUG] Spawned Emperor sword with random Y offset at (" 
-              << swordPos.x << ", " << swordPos.y << ")\n";
+    // std::cout << "[DEBUG] Spawned Emperor sword with random Y offset at (" 
+    //           << swordPos.x << ", " << swordPos.y << ")\n";
 
     return sword;
 }
@@ -368,8 +368,8 @@ void Spawner::spawnEnemyGrave(const Vec2<float>& position, bool isEmperor) {
         std::cerr << "[ERROR] Missing grave animation: " << graveAnimName << "!\n";
     }
 
-    std::cout << "[DEBUG] Spawned " << (isEmperor ? "Emperor" : "Enemy") 
-              << " grave at (" << spawnPos.x << ", " << spawnPos.y << "), affected by gravity.\n";
+    // std::cout << "[DEBUG] Spawned " << (isEmperor ? "Emperor" : "Enemy") 
+    //           << " grave at (" << spawnPos.x << ", " << spawnPos.y << "), affected by gravity.\n";
 }
 
 void Spawner::spawnEmperorSwordArmorRadial(std::shared_ptr<Entity> enemy, int swordCount, float radius, float swordSpeed, float initialStopTime, float stopTimeIncrement)
@@ -459,7 +459,7 @@ std::shared_ptr<Entity> Spawner::spawnItem(const Vec2<float>& position, const st
         } else if (roll < 90) {
             itemName = m_game.worldType + "ChickenSmall";
         } else {
-            std::cout << "[DEBUG] Box is empty, no item spawned.\n";
+            // std::cout << "[DEBUG] Box is empty, no item spawned.\n";
             return nullptr; 
         }
     } 
@@ -511,8 +511,8 @@ std::shared_ptr<Entity> Spawner::spawnItem(const Vec2<float>& position, const st
     // Add a CState with the item name (optional)
     item->add<CState>(itemName);
 
-    std::cout << "[DEBUG] Spawned " << itemName << " from " << tileType
-              << " at (" << spawnPos.x << ", " << spawnPos.y << ")" << std::endl;
+    // std::cout << "[DEBUG] Spawned " << itemName << " from " << tileType
+    //           << " at (" << spawnPos.x << ", " << spawnPos.y << ")" << std::endl;
     return item;
 }
 
@@ -552,8 +552,8 @@ std::shared_ptr<Entity> Spawner::spawnBlackHoleAfterTileDestruction(const Vec2<f
         std::cerr << "[ERROR] Missing AlienBlackHoleRedSmall animation!\n";
     }
 
-    std::cout << "[DEBUG] Spawned BlackHoleVanish + lethal BlackHoleTilc at (" 
-              << position.x << ", " << position.y << ")\n";
+    // std::cout << "[DEBUG] Spawned BlackHoleVanish + lethal BlackHoleTilc at (" 
+    //           << position.x << ", " << position.y << ")\n";
 
     return blackHoleTile;
 }
@@ -757,11 +757,11 @@ void Spawner::spawnEmperorBlackHoles(std::shared_ptr<Entity> enemy, int blackHol
         float vy = std::sin(angleRad) * blackHoleSpeed;
         blackHole->get<CTransform>().velocity = Vec2<float>(vx, vy);
 
-        std::cout << "[DEBUG] Spawned Emperor black hole " << i 
-                  << " angle=" << angleDeg 
-                  << " deg (random offset=" << randomAngleOffset << ")"
-                  << " pos(" << spawnPos.x << "," << spawnPos.y 
-                  << ") velocity(" << vx << "," << vy << ")\n";
+        // std::cout << "[DEBUG] Spawned Emperor black hole " << i 
+        //           << " angle=" << angleDeg 
+        //           << " deg (random offset=" << randomAngleOffset << ")"
+        //           << " pos(" << spawnPos.x << "," << spawnPos.y 
+        //           << ") velocity(" << vx << "," << vy << ")\n";
     }
 }
 

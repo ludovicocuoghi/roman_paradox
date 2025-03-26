@@ -89,14 +89,14 @@ void DialogueSystem::setLanguage(const std::string& language)
     // Update continue text based on language
     continueText.setString((m_language == "Japanese") ? "続行するには スペースキー を押してください..." : "Press SPACE to continue...");
     
-    std::cout << "[DEBUG] DialogueSystem language updated to: " << language << "\n";
+    // std::cout << "[DEBUG] DialogueSystem language updated to: " << language << "\n";
 }
 
 void DialogueSystem::addDialogueTrigger(float xPosition, const std::vector<DialogueMessage>& dialogue)
 {
     m_dialogueTriggers[xPosition] = dialogue;
-    std::cout << "[DEBUG] Added dialogue trigger at x=" << xPosition << " with " 
-              << dialogue.size() << " messages\n";
+    // std::cout << "[DEBUG] Added dialogue trigger at x=" << xPosition << " with " 
+    //           << dialogue.size() << " messages\n";
 }
 
 void DialogueSystem::checkTriggers()
@@ -129,8 +129,8 @@ void DialogueSystem::checkTriggers()
                 startNewMessage(m_currentDialogue[0]);
             }
 
-            std::cout << "[DEBUG] Triggered dialogue at x=" << trigger.first 
-                      << " (type: " << (greaterThanOrEqual ? "player >= position" : "player <= position") << ")\n";
+            // std::cout << "[DEBUG] Triggered dialogue at x=" << trigger.first 
+            //           << " (type: " << (greaterThanOrEqual ? "player >= position" : "player <= position") << ")\n";
             break;
         }
     }
@@ -176,7 +176,7 @@ void DialogueSystem::startNewMessage(const DialogueMessage& message)
     speakerText.setString(message.speaker);
     messageText.setString(m_displayedText);
 
-    std::cout << "[DEBUG] Started new message from " << message.speaker << "\n";
+    // std::cout << "[DEBUG] Started new message from " << message.speaker << "\n";
 }
 
 void DialogueSystem::updateTypewriterEffect(float deltaTime)
@@ -223,7 +223,7 @@ void DialogueSystem::advanceDialogue()
     if (m_currentMessageIndex >= m_currentDialogue.size()) {
         m_dialogueActive = false;
         m_waitingAfterCompletion = false;
-        std::cout << "[DEBUG] Dialogue ended, game resumed\n";
+        // std::cout << "[DEBUG] Dialogue ended, game resumed\n";
     } else {
         startNewMessage(m_currentDialogue[m_currentMessageIndex]);
     }

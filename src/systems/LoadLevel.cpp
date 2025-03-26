@@ -24,7 +24,7 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
     int enemyIndex = 0;
     std::string type, assetType;
     int x, y;
-    std::cout << "[DEBUG] Loading level from: " << levelPath << std::endl;
+    // std::cout << "[DEBUG] Loading level from: " << levelPath << std::endl;
 
     if (levelPath.find("ancient") != std::string::npos)
         m_game.worldType = "Ancient";
@@ -62,9 +62,9 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
             auto tile = entityManager.addEntity("tile");
             tile->add<CUniqueID>(tileID);
             std::string fullAssetName =  m_game.worldType + assetType;
-            std::cout << "[DEBUG] Loaded Tile: " << assetType
-                      << " at (" << x << ", " << y << ")"
-                      << " with ID: " << tileID << std::endl;
+            // std::cout << "[DEBUG] Loaded Tile: " << assetType
+            //           << " at (" << x << ", " << y << ")"
+            //           << " with ID: " << tileID << std::endl;
             if (m_game.assets().hasAnimation(fullAssetName))
             {
                 const Animation& anim = m_game.assets().getAnimation(fullAssetName);
@@ -130,9 +130,9 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
                     realY -= LoadLevel::GRID_SIZE * 1.5f;
                 decor->add<CAnimation>(anim, true);
                 decor->add<CTransform>(Vec2<float>(realX, realY));
-                std::cout << "[DEBUG] Loaded Decoration: " << assetType
-                          << " at (" << x << ", " << y << ")"
-                          << " with ID: " << decID << std::endl;
+                // std::cout << "[DEBUG] Loaded Decoration: " << assetType
+                //           << " at (" << x << ", " << y << ")"
+                //           << " with ID: " << decID << std::endl;
             }
             else
             {
@@ -221,7 +221,7 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
                 // e.g., 6.f or something else
                 state.superMoveReady      = false;
         
-                std::cout << "[DEBUG] Player Spawned at (" << x << ", " << y << ")" << std::endl;
+                // std::cout << "[DEBUG] Player Spawned at (" << x << ", " << y << ")" << std::endl;
             }
             else
             {
@@ -231,7 +231,7 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
         else if (type == "Enemy")
         {
             std::string enemyTypeStr;
-            int enemyX, enemyY;
+            int x, y;
             if (!(file >> enemyTypeStr >> x >> y))
             {
                 std::cerr << "[WARNING] Incomplete Enemy entry. Skipping.\n";
@@ -400,8 +400,8 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
             {
                 standAnimName = m_game.worldType + "StandAnim" + enemyTypeStr;
                 runAnimName = m_game.worldType + "Run" + enemyTypeStr;
-                std::cout << "[DEBUG] Stand Animation: " << standAnimName << std::endl;
-                std::cout << "[DEBUG] Run Animation: " << runAnimName << std::endl;
+                // std::cout << "[DEBUG] Stand Animation: " << standAnimName << std::endl;
+                // std::cout << "[DEBUG] Run Animation: " << runAnimName << std::endl;
             }
             if (m_game.assets().hasAnimation(runAnimName))
             {
@@ -437,10 +437,10 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
             }
             enemy->add<CGravity>(LoadLevel::GRAVITY_VAL);
             
-            std::cout << "[DEBUG] Enemy Damage: " << enemy->get<CEnemyAI>().damage
-                     << " | Bullet Damage: " << enemy->get<CState>().bulletDamage << std::endl;
-            std::cout << "[DEBUG] Spawned " << enemyTypeStr << " Enemy at ("
-                     << enemyX << ", " << enemyY << ")" << std::endl;
+            // std::cout << "[DEBUG] Enemy Damage: " << enemy->get<CEnemyAI>().damage
+            //          << " | Bullet Damage: " << enemy->get<CState>().bulletDamage << std::endl;
+            // std::cout << "[DEBUG] Spawned " << enemyTypeStr << " Enemy at ("
+            //          << x << ", " << y << ")" << std::endl;
         }
         else
         {

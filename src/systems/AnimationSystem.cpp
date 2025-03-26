@@ -58,7 +58,6 @@ void AnimationSystem::update(float deltaTime) {
                 std::string defenseAnim = prefix + "PlayerDefense";
                 if (m_game.assets().hasAnimation(defenseAnim)) {
                     if (canim.animation.getName() != defenseAnim) {
-                        std::cout << "[DEBUG] Defense animation activated.\n";
                         canim.animation = m_game.assets().getAnimation(defenseAnim);
                         canim.repeat = true; // Loop defense animation
                         if (m_lastDirection < 0)
@@ -106,7 +105,6 @@ void AnimationSystem::update(float deltaTime) {
             if (m_game.assets().hasAnimation("TexTreasureBoxHit")) {
                 anim.animation = m_game.assets().getAnimation("TexTreasureBoxHit");
                 anim.repeat = false;
-                std::cout << "[DEBUG] Question block hit, animation changed.\n";
             }
         }
         anim.animation.update(deltaTime);

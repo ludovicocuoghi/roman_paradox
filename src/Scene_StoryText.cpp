@@ -123,7 +123,6 @@ void Scene_StoryText::loadStoryText(StoryType type) {
 }
 
 void Scene_StoryText::update(float deltaTime) {
-    std::cout << "[DEBUG] StoryText update, delta: " << deltaTime << std::endl;
     
     // Handle text fade effect
     if (m_fadingIn) {
@@ -143,10 +142,10 @@ void Scene_StoryText::renderStoryText() {
     
     // Use Japanese font if language is set to Japanese
     if (m_game.getLanguage() == "Japanese") {
-        std::cout << "[DEBUG] Using Japanese font for story text" << std::endl;
+        // std::cout << "[DEBUG] Using Japanese font for story text" << std::endl;
         text.setFont(m_game.assets().getFont("Japanese"));
     } else {
-        std::cout << "[DEBUG] Using default font for story text" << std::endl;
+        // std::cout << "[DEBUG] Using default font for story text" << std::endl;
         text.setFont(m_game.assets().getFont("Menu"));
     }
 

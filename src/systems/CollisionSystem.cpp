@@ -74,8 +74,6 @@ void CollisionSystem::handlePlayerTileCollisions() {
             
                     // Force health to 0
                     health.currentHealth = 0;
-            
-                    std::cout << "[DEBUG] Player touched black hole tile! Forcing kill.\n";
                     
                     // Return to stop further collision checks
                     return;
@@ -91,13 +89,11 @@ void CollisionSystem::handlePlayerTileCollisions() {
 
             // If tile is a LevelDoor/BlackHole
             if (animName == worldLevelDoor || animName == worldLevelDoorGold || animName == worldLevelBlackHole) {
-                std::cout << "[DEBUG] Player entered " << animName << ". Scheduling level change...\n";
                 m_game.scheduleLevelChange(m_game.getNextLevelPath());
                 return;
             }
             // If tile is FutureArmor, mark it for destruction AFTER overlap resolution
             if (animName == "FutureArmor") {
-                std::cout << "[DEBUG] Player picked up Future Armor!\n";
                 
                 if (player->has<CPlayerEquipment>()) {
                     player->get<CPlayerEquipment>().hasFutureArmor = true;
@@ -117,7 +113,6 @@ void CollisionSystem::handlePlayerTileCollisions() {
 
             // Next-level path check
             if (!nextLevelPath.empty()) {
-                std::cout << "[DEBUG] Transitioning to next level: " << nextLevelPath << std::endl;
                 
                 std::string resourcePath = getResourcePath("levels");
                 if (nextLevelPath == resourcePath + "/") {
@@ -244,7 +239,6 @@ void CollisionSystem::handleMassiveBlackHoleCollisions() {
                 // Instant kill
                 if (player->has<CHealth>()) {
                     player->get<CHealth>().currentHealth = 0;
-                    std::cout << "[DEBUG] Player consumed by massive black hole! GAME OVER.\n";
                 }
             }
         }
@@ -293,11 +287,9 @@ void CollisionSystem::handleEnemyTileCollisions() {
                     // Kill the citizen if it touches a black hole
                     if (enemy->has<CHealth>()) {
                         enemy->get<CHealth>().currentHealth = 0;
-                        std::cout << "[DEBUG] Citizen killed by Black Hole!\n";
                     } else {
                         // If no health component, just destroy the entity
                         enemy->destroy();
-                        std::cout << "[DEBUG] Citizen destroyed by Black Hole!\n";
                     }
                     break; // Stop checking other tiles for this enemy
                 }
@@ -554,13 +546,11 @@ void CollisionSystem::handlePlayerBulletCollisions() {
             if (!bulletRect.intersects(tileRect))
                 continue;
 
-            std::cout << "[DEBUG] Player bullet hit a tile! Destroying bullet.\n";
             bullet->destroy();
 
             // If the tile is a "Box", destroy it
             std::string animName = tileAnim.getName();
             if (animName.find("Box") != std::string::npos) {
-                std::cout << "[DEBUG] Player bullet destroyed a box tile!\n";
                 // If you want to spawn items or fragments:
                 m_spawner->createBlockFragments(tileTrans.pos, animName);
                 m_spawner->spawnItem(tileTrans.pos, animName);
@@ -581,7 +571,6 @@ void CollisionSystem::handlePlayerBulletCollisions() {
             if (!bulletRect.intersects(enemyRect))
                 continue; 
 
-            std::cout << "[DEBUG] Player bullet hit an enemy! Destroying bullet.\n";
 
             if (enemy->has<CHealth>()) {
                 // Get bullet damage from player's CState
@@ -598,7 +587,6 @@ void CollisionSystem::handlePlayerBulletCollisions() {
                 int damageToApply = static_cast<int>(bulletDamage);
                 health.takeDamage(damageToApply);
                 
-                std::cout << "[DEBUG] Enemy hit by player bullet with damage: " << damageToApply << "\n";
             }
             
             bullet->destroy();
@@ -671,7 +659,6 @@ void CollisionSystem::handleBulletPlayerCollisions() {
                 if (citizen->has<CHealth>()) {
                     auto& health = citizen->get<CHealth>();
                     health.currentHealth = 0;
-                    std::cout << "[DEBUG] Citizen killed by enemy bullet!\n";
                 } else {
                     citizen->destroy();
                 }
@@ -741,10 +728,7 @@ void CollisionSystem::handleBulletPlayerCollisions() {
                         // Apply 0.6 multiplier if the enemy is Emperor
                         if (enemy->get<CEnemyAI>().enemyType == EnemyType::Emperor) {
                             bulletDamage = static_cast<int>(bulletDamage * 0.6f);
-                            std::cout << "[DEBUG] Emperor bullet damage reduced (x0.6): " << bulletDamage << "\n";
                         }
-                            std::cout << "[DEBUG] Found source enemy (ID: " << enemyId 
-                                        << ") with damage: " << bulletDamage << "\n";
                             break;
                         }
                     }

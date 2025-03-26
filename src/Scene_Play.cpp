@@ -151,7 +151,7 @@ void Scene_Play::selectBackgroundFromLevel(const std::string& levelPath) {
     }
     
     // Add debug output to verify the path
-    std::cout << "[DEBUG] Background path set to: " << m_backgroundPath << std::endl;
+    // std::cout << "[DEBUG] Background path set to: " << m_backgroundPath << std::endl;
     
     // Check if the file exists
     std::ifstream file(m_backgroundPath);
@@ -223,28 +223,6 @@ void Scene_Play::update(float deltaTime)
         // Update dialogue system first
         if (m_dialogueSystem) {
             m_dialogueSystem->update(deltaTime);
-        }
-        auto playerEntities = m_entityManager.getEntities("player");
-        if (!playerEntities.empty()) {
-            auto player = playerEntities[0];
-            if (player->has<CTransform>()) {
-                auto& transform = player->get<CTransform>();
-
-                // Debug: Print player's current Y position
-                std::cout << "[DEBUG] Player Y position: " << transform.pos.y << " Player X position: " << transform.pos.x << std::endl;
-
-
-                static float lastVelX = 0.0f;
-                float currentVelX = player->get<CTransform>().velocity.x;
-                
-                // If velocity changed significantly without action
-                if (std::abs(lastVelX) > 0.1f && std::abs(currentVelX) < 0.1f) {
-                    std::cout << "[DEBUG] Velocity reset unexpectedly from " << lastVelX 
-                              << " to " << currentVelX << std::endl;
-                }
-                
-                lastVelX = currentVelX;
-            }
         }
         
         // Only process game mechanics if dialogue is not active
@@ -5041,7 +5019,7 @@ void Scene_Play::initializeDialogues()
             m_dialogueSystem->addDialogueTrigger(-400, Dialogue4);
         }
     }
-    std::cout << "[DEBUG] Dialogue system initialized for level: " << levelName << std::endl;
+    // std::cout << "[DEBUG] Dialogue system initialized for level: " << levelName << std::endl;
 }
 // Action Processing (Input Handling)                        
 void Scene_Play::sDoAction(const Action& action)
@@ -5051,7 +5029,7 @@ void Scene_Play::sDoAction(const Action& action)
     
     // When dialogue starts, pause but remember key states
     if (isDialogueActive && !wasInDialogue) {
-        std::cout << "[DEBUG] Dialogue started - pausing movement" << std::endl;
+        std::cout << "- pausing movement" << std::endl;
         
         // Pause velocity - key states remain tracked
         auto playerEntities = m_entityManager.getEntities("player");
@@ -5065,9 +5043,9 @@ void Scene_Play::sDoAction(const Action& action)
     if (action.name() == "MOVE_LEFT") {
         if (action.type() == "START") {
             leftKeyPressed = true;
-            std::cout << "[DEBUG] leftKeyPressed set to TRUE" << std::endl;
+            // std::cout << "[DEBUG] leftKeyPressed set to TRUE" << std::endl;
         } else if (action.type() == "END") {
-            std::cout << "[DEBUG] leftKeyPressed set to FALSE" << std::endl;
+            // std::cout << "[DEBUG] leftKeyPressed set to FALSE" << std::endl;
             leftKeyPressed = false;
         }
     }
@@ -5091,7 +5069,7 @@ void Scene_Play::sDoAction(const Action& action)
     
     // When dialogue ends, apply movement based on CURRENT key states
     if (!isDialogueActive && wasInDialogue) {
-        std::cout << "[DEBUG] Dialogue ended - applying current key states" << std::endl;
+        // std::cout << "[DEBUG] Dialogue ended - applying current key states" << std::endl;
         
         auto playerEntities = m_entityManager.getEntities("player");
         if (!playerEntities.empty()) {
@@ -5115,7 +5093,7 @@ void Scene_Play::sDoAction(const Action& action)
                 if (state.state != "air") {
                     state.state = "run";
                 }
-                std::cout << "[MOVEMENT] Continuing right movement after dialogue" << std::endl;
+                // std::cout << "[MOVEMENT] Continuing right movement after dialogue" << std::endl;
             }
             else {
                 vel.x = 0.f;
@@ -5169,7 +5147,7 @@ void Scene_Play::sDoAction(const Action& action)
             if (action.name() == "MOVE_LEFT") {
                 PTrans.facingDirection = -1.f;
                 vel.x = -xSpeed;
-                std::cout << "[MOVEMENT] Starting left movement, vel.x = " << vel.x << std::endl;
+                // std::cout << "[MOVEMENT] Starting left movement, vel.x = " << vel.x << std::endl;
                 if (state.state != "air") {
                     state.state = "run";
                 }
@@ -5177,7 +5155,7 @@ void Scene_Play::sDoAction(const Action& action)
             else if (action.name() == "MOVE_RIGHT") {
                 PTrans.facingDirection = 1.f;
                 vel.x = xSpeed;
-                std::cout << "[MOVEMENT] Starting right movement, vel.x = " << vel.x << std::endl;
+                // std::cout << "[MOVEMENT] Starting right movement, vel.x = " << vel.x << std::endl;
                 if (state.state != "air") {
                     state.state = "run";
                 }
@@ -5205,7 +5183,7 @@ void Scene_Play::sDoAction(const Action& action)
         else if (action.name() == "ATTACK") {
             // Check cooldowns first
             if (state.bulletCooldown > 0.f) {
-                std::cout << "[DEBUG] Attack on cooldown! " << state.bulletCooldown << "s left.\n";
+                // std::cout << "[DEBUG] Attack on cooldown! " << state.bulletCooldown << "s left.\n";
                 return;
             }
             
@@ -5224,12 +5202,12 @@ void Scene_Play::sDoAction(const Action& action)
                     if (player->has<CAmmo>()) {
                         auto& ammo = player->get<CAmmo>();
                         if (ammo.currentBullets <= 0) {
-                            std::cout << "[DEBUG] Out of ammo! Cannot attack.\n";
+                            // std::cout << "[DEBUG] Out of ammo! Cannot attack.\n";
                             return;
                         }
                         // Consume a bullet
                         ammo.currentBullets--;
-                        std::cout << "[DEBUG] Bullet fired. Ammo left: " << ammo.currentBullets << "\n";
+                        // std::cout << "[DEBUG] Bullet fired. Ammo left: " << ammo.currentBullets << "\n";
                     }
                     
                     // Fire a bullet immediately for feedback
@@ -5241,7 +5219,7 @@ void Scene_Play::sDoAction(const Action& action)
                     state.burstTimer     = 0.f;
                     state.burstFireTimer = 0.f;
                     state.bulletsShot    = 1;
-                    std::cout << "[DEBUG] Burst started.\n";
+                    // std::cout << "[DEBUG] Burst started.\n";
                 }
                 else {
                     // First, destroy any existing sword
@@ -5253,14 +5231,13 @@ void Scene_Play::sDoAction(const Action& action)
                     // Then spawn a new sword and store the reference
                     m_activeSword = m_spawner.spawnSword(player);
                     state.bulletCooldown = 0.5f;
-                    std::cout << "[DEBUG] Sword attack. Cooldown: 0.5s\n";
                 }
             }
         }
         else if (action.name() == "SUPERMOVE") {
             // Super move logic
             if (state.bulletCooldown > 0.f) {
-                std::cout << "[DEBUG] Super Move on cooldown! " << state.bulletCooldown << "s left.\n";
+                // std::cout << "[DEBUG] Super Move on cooldown! " << state.bulletCooldown << "s left.\n";
                 return;
             }
             
@@ -5291,16 +5268,16 @@ void Scene_Play::sDoAction(const Action& action)
                     state.superBulletTimer = state.superBulletCooldown; // Reset super move cooldown
                     state.superMoveReady = false; // No longer ready
                     
-                    std::cout << "[DEBUG] Super Move! Fired " << bulletCount << " bullets. Super cooldown reset to " 
-                              << state.superBulletCooldown << "s\n";
+                    // std::cout << "[DEBUG] Super Move! Fired " << bulletCount << " bullets. Super cooldown reset to " 
+                    //           << state.superBulletCooldown << "s\n";
                 } 
                 else {
-                    std::cout << "[DEBUG] No future armor, can't perform Super Move.\n";
+                    // std::cout << "[DEBUG] No future armor, can't perform Super Move.\n";
                 }
             } else if (state.superBulletTimer > 0.f) {
                 // Provide feedback that super move isn't ready yet
-                std::cout << "[DEBUG] Super Move not ready yet. Cooldown remaining: " 
-                          << state.superBulletTimer << "s\n";
+                // std::cout << "[DEBUG] Super Move not ready yet. Cooldown remaining: " 
+                //           << state.superBulletTimer << "s\n";
             }
         }
         else if (action.name() == "DEFENSE") {
@@ -5310,13 +5287,13 @@ void Scene_Play::sDoAction(const Action& action)
                 state.burstTimer = 0.f;
                 state.burstFireTimer = 0.f;
                 state.bulletsShot = 0;
-                std::cout << "[DEBUG] Burst canceled by DEFENSE.\n";
+                // std::cout << "[DEBUG] Burst canceled by DEFENSE.\n";
             }
             
             // Activate defense only if there's stamina left
             if (state.shieldStamina > 0.f && state.state != "defense") {
-                std::cout << "[DEBUG] Defense activated.\n";
-                state.state = "defense";
+                // std::cout << "[DEBUG] Defense activated.\n";
+                // state.state = "defense";
             }
         }
     }
@@ -5337,7 +5314,7 @@ void Scene_Play::sDoAction(const Action& action)
                         state.state = "run";
                     }
                 }
-                std::cout << "[MOVEMENT] Stopping left movement, rightKeyPressed = " << rightKeyPressed << std::endl;
+                // std::cout << "[MOVEMENT] Stopping left movement, rightKeyPressed = " << rightKeyPressed << std::endl;
             }
             else if (action.name() == "MOVE_RIGHT") {
                 if (!leftKeyPressed) {
@@ -5353,7 +5330,7 @@ void Scene_Play::sDoAction(const Action& action)
                         state.state = "run";
                     }
                 }
-                std::cout << "[MOVEMENT] Stopping right movement, leftKeyPressed = " << leftKeyPressed << std::endl;
+                // std::cout << "[MOVEMENT] Stopping right movement, leftKeyPressed = " << leftKeyPressed << std::endl;
             }
             else if (action.name() == "JUMP") {
                 state.isJumping = false;
@@ -5366,7 +5343,7 @@ void Scene_Play::sDoAction(const Action& action)
                     state.burstTimer     = 0.f;
                     state.burstFireTimer = 0.f;
                     state.bulletsShot    = 0;
-                    std::cout << "[DEBUG] Burst ended by releasing ATTACK.\n";
+                    // std::cout << "[DEBUG] Burst ended by releasing ATTACK.\n";
                 }
             }
         }
@@ -5378,18 +5355,18 @@ void Scene_Play::sDoAction(const Action& action)
                     PTrans.facingDirection = -1.f;
                     vel.x = -xSpeed;
                     state.state = "run";
-                    std::cout << "[MOVEMENT] Continuing left movement after defense" << std::endl;
+                    // std::cout << "[MOVEMENT] Continuing left movement after defense" << std::endl;
                 } 
                 else if (rightKeyPressed && !leftKeyPressed) {
                     PTrans.facingDirection = 1.f;
                     vel.x = xSpeed;
                     state.state = "run";
-                    std::cout << "[MOVEMENT] Continuing right movement after defense" << std::endl;
+                    // std::cout << "[MOVEMENT] Continuing right movement after defense" << std::endl;
                 }
                 else {
                     vel.x = 0.f;
                     state.state = "idle";
-                    std::cout << "[MOVEMENT] Returning to idle after defense" << std::endl;
+                    // std::cout << "[MOVEMENT] Returning to idle after defense" << std::endl;
                 }
             }
         }

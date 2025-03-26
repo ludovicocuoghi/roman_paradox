@@ -165,7 +165,7 @@ void EnemyAISystem::update(float deltaTime)
                                 if (citizen->has<CHealth>()) {
                                     auto& health = citizen->get<CHealth>();
                                     health.currentHealth = 0; // Kill the citizen
-                                    std::cout << "[DEBUG] Citizen killed by Super/Super2 enemy's attack!\n";
+                                    // std::cout << "[DEBUG] Citizen killed by Super/Super2 enemy's attack!\n";
                                 } else {
                                     // If no health component, just destroy the entity
                                     citizen->destroy();
@@ -216,8 +216,8 @@ void EnemyAISystem::update(float deltaTime)
                 enemyAI.consecutiveAttacks  = 0;
                 enemyAI.isInForcedCooldown  = false;
 
-                std::cout << "[DEBUG] Enemy " << enemy->id()
-                          << " forced cooldown ended.\n";
+                // std::cout << "[DEBUG] Enemy " << enemy->id()
+                //           << " forced cooldown ended.\n";
             } else {
                 // Still in forced cooldown:
                 // can move, but cannot attack
@@ -1468,8 +1468,8 @@ void EnemyAISystem::update(float deltaTime)
                                     && (distance <= enemyAI.maxShootDistance);
                     if (enemyAI.superMoveReady && canShoot) {
                         enemyAI.superMoveReady = false;
-                        std::cout << "[DEBUG] Enemy " << enemy->id()
-                                << " uses SUPER MOVE!\n";
+                        // std::cout << "[DEBUG] Enemy " << enemy->id()
+                        //         << " uses SUPER MOVE!\n";
                     
                         if (enemyAI.enemyType == EnemyType::Super2) {
                             // Super2 fires one large black hole as super move
@@ -1496,7 +1496,7 @@ void EnemyAISystem::update(float deltaTime)
                                     }
                                 }
                             }
-                            std::cout << "[DEBUG] Super2 enemy fired super black hole!\n";
+                            // std::cout << "[DEBUG] Super2 enemy fired super black hole!\n";
                             
                             // Longer cooldown after super move for Super2
                             enemyAI.superMoveCooldown = 15.0f; // Longer cooldown between super moves
@@ -1529,8 +1529,8 @@ void EnemyAISystem::update(float deltaTime)
                         enemyAI.bulletsShot = 0;
                         enemyAI.burstTimer  = 0.f;
 
-                        std::cout << "[DEBUG] Enemy " << enemy->id()
-                                << " starts bullet burst.\n";
+                        // std::cout << "[DEBUG] Enemy " << enemy->id()
+                        //         << " starts bullet burst.\n";
                     }
                 }
                 // (C) If already bursting
@@ -1546,8 +1546,8 @@ void EnemyAISystem::update(float deltaTime)
                         if (enemyAI.enemyType == EnemyType::Super2 && bullet && bullet->has<CAnimation>()) {
                             std::cout << "[DEBUG] Super2 enemy fired small black hole #" << enemyAI.bulletsShot << "\n";
                         } else {
-                            std::cout << "[DEBUG] Enemy " << enemy->id()
-                                    << " fires bullet #" << enemyAI.bulletsShot << "\n";
+                            // std::cout << "[DEBUG] Enemy " << enemy->id()
+                            //         << " fires bullet #" << enemyAI.bulletsShot << "\n";
                         }
 
                         // Slight random angle for all enemies
@@ -1565,8 +1565,8 @@ void EnemyAISystem::update(float deltaTime)
                             enemyAI.burstCooldownActive = true;
                             enemyAI.burstCooldownTimer = 0.0f;
                             
-                            std::cout << "[DEBUG] Burst finished for enemy "
-                                    << enemy->id() << ". Starting post-burst cooldown.\n";
+                            // std::cout << "[DEBUG] Burst finished for enemy "
+                            //         << enemy->id() << ". Starting post-burst cooldown.\n";
                         }
                     }
                 }
@@ -1594,18 +1594,18 @@ void EnemyAISystem::update(float deltaTime)
             {
                 // (A) Increase consecutiveAttacks
                 enemyAI.consecutiveAttacks++;
-                std::cout << "[DEBUG] Enemy " << enemy->id()
-                          << " consecutiveAttacks = "
-                          << enemyAI.consecutiveAttacks << "\n";
+                // std::cout << "[DEBUG] Enemy " << enemy->id()
+                //           << " consecutiveAttacks = "
+                //           << enemyAI.consecutiveAttacks << "\n";
         
                 // (B) If reached limit -> forced cooldown
                 // Use maxConsecutiveSwordAttacks from CEnemyAI
                 if (enemyAI.consecutiveAttacks >= enemyState.maxConsecutiveSwordAttacks) {
                     enemyAI.isInForcedCooldown  = true;
                     enemyAI.forcedCooldownTimer = enemyAI.forcedCooldownDuration;
-                    std::cout << "[DEBUG] Enemy " << enemy->id()
-                              << " forced cooldown started after "
-                              << enemyAI.consecutiveAttacks << " attacks.\n";
+                    // std::cout << "[DEBUG] Enemy " << enemy->id()
+                    //           << " forced cooldown started after "
+                    //           << enemyAI.consecutiveAttacks << " attacks.\n";
                     // We let it move still
                 }
                 else {
@@ -1614,9 +1614,9 @@ void EnemyAISystem::update(float deltaTime)
                         enemyAI.enemyState   = EnemyState::Attack;
                         enemyAI.attackTimer  = ATTACK_TIMER_DEFAULT;
                         enemyAI.swordSpawned = false;
-                        std::cout << "[DEBUG] Enemy " << enemy->id()
-                                  << " entering Attack state (cooldown="
-                                  << enemyAI.attackCooldown << ")\n";
+                        // std::cout << "[DEBUG] Enemy " << enemy->id()
+                        //           << " entering Attack state (cooldown="
+                        //           << enemyAI.attackCooldown << ")\n";
                     }
                 }
             }
@@ -1686,10 +1686,10 @@ void EnemyAISystem::update(float deltaTime)
                     float distance = std::fabs(dx);
 
                     if (distance < 100.f) {
-                        std::cout << "[DEBUG] Emperor spawns static sword (close)!\n";
+                        // std::cout << "[DEBUG] Emperor spawns static sword (close)!\n";
                         m_spawner->spawnEmperorSwordOffset(enemy);
                     } else {
-                        std::cout << "[DEBUG] Emperor spawns horizontal sword!\n";
+                        // std::cout << "[DEBUG] Emperor spawns horizontal sword!\n";
                         auto sword = m_spawner->spawnEmperorSwordOffset(enemy);
                         if (sword->has<CTransform>()) {
                             auto& swTrans = sword->get<CTransform>();
