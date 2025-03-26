@@ -44,9 +44,10 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
             }
             tileIndex++;
             std::string tileID = assetType + "_" + std::to_string(tileIndex);
+
             float realX = x * LoadLevel::GRID_SIZE + LoadLevel::HALF_GRID;
-            float referenceHeight = m_game.getReferenceResolution().y;
-            float realY = referenceHeight - (y * LoadLevel::GRID_SIZE) - LoadLevel::HALF_GRID;
+            float realY = m_game.getReferenceResolution().y - (y * LoadLevel::GRID_SIZE) - LoadLevel::HALF_GRID;
+
             if (assetType == "PipeTall")
                 realY += LoadLevel::GRID_SIZE * LoadLevel::PIPETALL_REALY_OFFSET_MULTIPLIER;
             else if (assetType == "PipeBroken")
@@ -106,9 +107,10 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
             }
             decIndex++;
             std::string decID = assetType + "_" + std::to_string(decIndex);
+
             float realX = x * LoadLevel::GRID_SIZE + LoadLevel::HALF_GRID;
-            float referenceHeight = m_game.getReferenceResolution().y;
-            float realY = referenceHeight - (y * LoadLevel::GRID_SIZE) - LoadLevel::HALF_GRID;
+            float realY = m_game.getReferenceResolution().y - (y * LoadLevel::GRID_SIZE) - LoadLevel::HALF_GRID;
+
             auto decor = entityManager.addEntity("decoration");
             decor->add<CUniqueID>(decID);
             if (assetType == "GoldPipeTall" || "PipeTall")
@@ -146,9 +148,7 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
             }
         
             float realX = x * LoadLevel::GRID_SIZE + LoadLevel::HALF_GRID;
-
-            float referenceHeight = m_game.getReferenceResolution().y;
-            float realY = referenceHeight - (y * LoadLevel::GRID_SIZE) - LoadLevel::HALF_GRID;
+            float realY = m_game.getReferenceResolution().y - (y * LoadLevel::GRID_SIZE) - LoadLevel::HALF_GRID;
             
             auto player = entityManager.addEntity("player");
             if (m_game.assets().hasAnimation("PlayerStand"))
@@ -232,7 +232,7 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
         {
             std::string enemyTypeStr;
             int enemyX, enemyY;
-            if (!(file >> enemyTypeStr >> enemyX >> enemyY))
+            if (!(file >> enemyTypeStr >> x >> y))
             {
                 std::cerr << "[WARNING] Incomplete Enemy entry. Skipping.\n";
                 continue;
@@ -418,9 +418,10 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
             {
                 std::cerr << "[ERROR] Missing animations for " << enemyTypeStr << " enemy!" << std::endl;
             }
-            float realX = enemyX * LoadLevel::GRID_SIZE + LoadLevel::HALF_GRID;
-            float referenceHeight = m_game.getReferenceResolution().y;
-            float realY = referenceHeight - (enemyY * LoadLevel::GRID_SIZE) - LoadLevel::HALF_GRID;
+
+            float realX = x * LoadLevel::GRID_SIZE + LoadLevel::HALF_GRID;
+            float realY = m_game.getReferenceResolution().y - (y * LoadLevel::GRID_SIZE) - LoadLevel::HALF_GRID;
+
             if (enemyType == EnemyType::Emperor)
                 realY -= LoadLevel::GRID_SIZE * LoadLevel::EMPEROR_REALY_OFFSET_MULTIPLIER;
             enemy->add<CTransform>(Vec2<float>(realX, realY));

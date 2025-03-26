@@ -10,25 +10,25 @@
 #include <ctime> 
 
 GameEngine::GameEngine(const std::string& path) {
+    // Reference resolution (fixed, designed resolution)
+    m_referenceResolution = sf::Vector2f(1920.0f, 1080.0f);
+
     // Get desktop resolution
     sf::VideoMode desktopMode = sf::VideoMode::getDesktopMode();
-    
-    // Reference resolution (what the game was designed for)
-    m_referenceResolution = sf::Vector2f(1920.0f, 1080.0f);
-    
-    // Use desktop resolution or fall back to reference resolution if desktop is smaller
-    int windowWidth = std::min(desktopMode.width, 1920u);
-    int windowHeight = std::min(desktopMode.height, 1080u);
-    
+
+    // Window uses desktop resolution, capped to your reference resolution if smaller
+    int windowWidth = std::min(desktopMode.width, static_cast<unsigned>(m_referenceResolution.x));
+    int windowHeight = std::min(desktopMode.height, static_cast<unsigned>(m_referenceResolution.y));
+
     m_window.create(sf::VideoMode(windowWidth, windowHeight), "Game Window");
-    
-    // Calculate resolution scale factors
-    m_scaleX = windowWidth / m_referenceResolution.x;
-    m_scaleY = windowHeight / m_referenceResolution.y;
-    
+
+    // Set view explicitly to the reference resolution (no scaling calculation needed!)
+    m_cameraView = sf::View(sf::FloatRect(0.f, 0.f, m_referenceResolution.x, m_referenceResolution.y));
+    m_window.setView(m_cameraView);
+
     m_window.setFramerateLimit(100);
-    
-    // Seed random number generator with current time
+
+    // Seed random number generator
     std::srand(static_cast<unsigned>(std::time(nullptr)));
 
     universeNumber = rand() % 900 + 100;
@@ -362,15 +362,6 @@ bool GameEngine::isFinalLevel(const std::string& levelPath) {
     
     std::string levelFile = levelPath.substr(levelPath.find_last_of("/\\") + 1);
     return levelFile == "future_rome_level_5_day_v2.txt";
-}
-
-// Add new methods for resolution scaling
-float GameEngine::getScaleX() const {
-    return m_scaleX;
-}
-
-float GameEngine::getScaleY() const {
-    return m_scaleY;
 }
 
 sf::Vector2f GameEngine::getReferenceResolution() const {
