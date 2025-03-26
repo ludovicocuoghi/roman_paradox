@@ -5115,7 +5115,7 @@ void Scene_Play::sDoAction(const Action& action)
     
     // When dialogue starts, pause but remember key states
     if (isDialogueActive && !wasInDialogue) {
-        std::cout << "- pausing movement" << std::endl;
+        // std::cout << "- pausing movement" << std::endl;
         
         // Pause velocity - key states remain tracked
         auto playerEntities = m_entityManager.getEntities("player");
