@@ -9,9 +9,9 @@ public:
     // Constants for player movement
     static constexpr float MAX_JUMP_HOLD_TIME = 0.04f;        // Maximum duration to hold jump
     static constexpr float JUMP_BOOST_ACCELERATION = 11000.f;  // Additional acceleration during jump
-    static constexpr float MAX_UPWARD_VELOCITY = -1600.f;      // Maximum upward velocity (negative value)
-    static constexpr float GRAVITY_MULTIPLIER = 3.f;          // Gravity multiplier during fall
-    static constexpr float MAX_FALL_SPEED = 11000.f;           // Maximum fall speed
+    static constexpr float MAX_UPWARD_VELOCITY = -2000.f;      // Maximum upward velocity (negative value)
+    static constexpr float GRAVITY_MULTIPLIER = 2.f;          // Gravity multiplier during fall
+    static constexpr float MAX_FALL_SPEED = 9000.f;           // Maximum fall speed
     static constexpr float X_SPEED = 350.f;                    // Player's horizontal speed
 
     // Constants for camera movement

@@ -1344,6 +1344,32 @@ void Scene_Play::initializeDialogues()
                     30,                                              // messageFontSize - still emphasized
                     true                                             // useTypewriterEffect
                 },
+                {
+                    "***GUIDE***",
+                    "Press SPACE to attack.",
+                    basePath + "ancient_alien_right.png",
+                    false,
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 200.f),
+                    900.f,
+                    150.f,
+                    50,
+                    true
+                },
+                {
+                    "***GUIDE***",
+                    "Hold M to defend (uses stamina).",
+                    basePath + "ancient_alien_right.png",
+                    false,
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 200.f),
+                    1000.f,
+                    150.f,
+                    50,
+                    true
+                }
             };
             m_dialogueSystem->addDialogueTrigger(3000, Dialogue5);
             std::vector<DialogueMessage> Dialogue6 = {
@@ -1559,6 +1585,32 @@ void Scene_Play::initializeDialogues()
                     30,                                              // messageFontSize - still emphasized
                     true                                             // useTypewriterEffect
                 },
+                {
+                    "***GUIDE***",
+                    "スペースキーで攻撃。",
+                    basePath + "ancient_alien_right.png",
+                    false,
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 200.f),
+                    900.f,
+                    150.f,
+                    50,
+                    true
+                },
+                {
+                    "***GUIDE***",
+                    "Mキー長押しで防御 （スタミナ消費）。",
+                    basePath + "ancient_alien_right.png",
+                    false,
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 200.f),
+                    1100.f,
+                    150.f,
+                    50,
+                    true
+                }
             };
             m_dialogueSystem->addDialogueTrigger(3000, Dialogue5);
             std::vector<DialogueMessage> Dialogue6 = {

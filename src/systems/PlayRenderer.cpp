@@ -199,6 +199,17 @@ void PlayRenderer::render() {
         drawGrid();
     }
 
+    bool useDarkPalette = (m_game.getCurrentLevel().find("night") != std::string::npos);
+    
+    sf::Color normalFilter(255, 255, 255, 255);
+    
+    sf::Color darkFilterLevel1 = useDarkPalette ? sf::Color(150, 150, 150, 255) : normalFilter;
+    
+    sf::Color darkFilterLevel2 = useDarkPalette ? sf::Color(100, 100, 100, 255) : normalFilter;
+    
+    sf::Color darkFilterLevel3 = useDarkPalette ? sf::Color(70, 70, 70, 255) : normalFilter;
+
+
     // Render decorations
     for (auto& dec : m_entityManager.getEntities("decoration")) {
         auto& transform = dec->get<CTransform>();
@@ -208,6 +219,8 @@ void PlayRenderer::render() {
             sprite.setPosition(transform.pos.x, transform.pos.y);
             sprite.setOrigin(anim.animation.getSize().x / 2.f,
                              anim.animation.getSize().y / 2.f);
+            // Apply dark palette if needed
+            sprite.setColor(darkFilterLevel2);
             m_game.window().draw(sprite);
         }
     }
@@ -215,12 +228,26 @@ void PlayRenderer::render() {
     // Render tiles
     for (auto& tile : m_entityManager.getEntities("tile")) {
         auto& transform = tile->get<CTransform>();
+    
         if (tile->has<CAnimation>()) {
             auto& animation = tile->get<CAnimation>();
             sf::Sprite sprite = animation.animation.getSprite();
             sprite.setPosition(transform.pos.x, transform.pos.y);
             sprite.setOrigin(animation.animation.getSize().x / 2.f,
                              animation.animation.getSize().y / 2.f);
+    
+            // Default to level 3
+            sf::Color appliedColor = darkFilterLevel3;
+    
+            const std::string& animName = animation.animation.getName();  // Assuming your animation has a getName()
+    
+            if (animName.find("Treasure") != std::string::npos) {
+                appliedColor = darkFilterLevel1;
+            } else if (animName.find("Box") != std::string::npos) {
+                appliedColor = darkFilterLevel2;
+            }
+    
+            sprite.setColor(appliedColor);
             m_game.window().draw(sprite);
         }
         if (m_showBoundingBoxes && tile->has<CBoundingBox>()) {
@@ -243,8 +270,10 @@ void PlayRenderer::render() {
             sf::Sprite sprite = anim.animation.getSprite();
             sprite.setPosition(transform.pos.x, transform.pos.y);
             sprite.setOrigin(anim.animation.getSize().x / 2.f,
-                             anim.animation.getSize().y / 2.f);
+                            anim.animation.getSize().y / 2.f);
             sprite.setScale(0.5f, 0.5f);
+            // Apply dark palette if needed
+            sprite.setColor(darkFilterLevel2);
             m_game.window().draw(sprite);
         }
     }
@@ -258,7 +287,9 @@ void PlayRenderer::render() {
             sf::Sprite sprite = anim.animation.getSprite();
             sprite.setPosition(transform.pos.x, transform.pos.y);
             sprite.setOrigin(anim.animation.getSize().x / 2.f,
-                             anim.animation.getSize().y / 2.f);
+                            anim.animation.getSize().y / 2.f);
+            // Apply dark palette if needed
+            sprite.setColor(darkFilterLevel1);
             m_game.window().draw(sprite);
         }
         if (m_showBoundingBoxes && item->has<CBoundingBox>()) {
@@ -482,6 +513,7 @@ void PlayRenderer::render() {
             sf::RectangleShape healthRect(sf::Vector2f(barWidth * healthRatio, barHeight));
             healthRect.setFillColor(healthColor);
             healthRect.setPosition(barX, barY);
+            
             m_game.window().draw(healthRect);
         }
 
@@ -589,6 +621,7 @@ void PlayRenderer::render() {
                     sf::Sprite sprite = animation.animation.getSprite();
                     sprite.setPosition(eTrans.pos);
                     sprite.setOrigin(animation.animation.getSize().x * 0.5f, animation.animation.getSize().y * 0.5f);
+                    sprite.setColor(darkFilterLevel1);
                     m_game.window().draw(sprite);
                 }
             }

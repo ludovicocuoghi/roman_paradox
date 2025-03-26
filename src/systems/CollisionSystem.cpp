@@ -158,7 +158,7 @@ void CollisionSystem::handlePlayerTileCollisions() {
                             m_spawner->createBlockFragments(tileTransform.pos, animName);
                             m_spawner->spawnItem(tileTransform.pos, animName);
                             tileToDestroy = tile;
-                            std::cout << "[DEBUG] " << animName << " broken from below!\n";
+                            // std::cout << "[DEBUG] " << animName << " broken from below!\n";
                         } 
                         else if (animName == m_game.worldType + "Treasure") {
                             auto& tileState = tile->get<CState>();
@@ -169,7 +169,7 @@ void CollisionSystem::handlePlayerTileCollisions() {
                                 if (m_game.assets().hasAnimation(treasureHitAnim)) {
                                     tile->get<CAnimation>().animation = m_game.assets().getAnimation(treasureHitAnim);
                                     tile->get<CAnimation>().repeat = false;
-                                    std::cout << "[DEBUG] " << animName << " hit from below.\n";
+                                    // std::cout << "[DEBUG] " << animName << " hit from below.\n";
                                 }
                                 m_spawner->spawnItem(tileTransform.pos, treasureHitAnim);
                             }

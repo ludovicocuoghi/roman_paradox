@@ -468,7 +468,7 @@ std::shared_ptr<Entity> Spawner::spawnItem(const Vec2<float>& position, const st
         //  1) GoldCoin - 20%
         //  2) BigGrape - 40%
         //  3) BigChicken - 40%
-        std::cout << "Hit treasure box\n";
+        // std::cout << "Hit treasure box\n";
         std::uniform_int_distribution<int> dist(0, 99);
         int roll = dist(gen);
 
