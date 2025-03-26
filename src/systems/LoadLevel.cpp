@@ -144,7 +144,18 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
             }
         
             float realX = x * LoadLevel::GRID_SIZE + LoadLevel::HALF_GRID;
-            float realY = windowHeight - (y * LoadLevel::GRID_SIZE) - LoadLevel::HALF_GRID;
+
+            // Calculate the real Y position based on the window height
+            // Get the reference height and actual window height
+            float referenceHeight = m_game.getReferenceResolution().y;
+            float actualWindowHeight = m_game.window().getSize().y;
+            
+            // Calculate Y position using the reference resolution
+            float baseY = referenceHeight - (y * LoadLevel::GRID_SIZE) - LoadLevel::HALF_GRID;
+            
+            // Scale the Y position based on the ratio between actual and reference height
+            float scaleFactor = actualWindowHeight / referenceHeight;
+            float realY = baseY * scaleFactor;
             
             auto player = entityManager.addEntity("player");
             if (m_game.assets().hasAnimation("PlayerStand"))
@@ -162,9 +173,9 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
         
                 auto& state = player->get<CState>();
                 
-                // -------------------
+
                 // Original initialization
-                // -------------------
+
                 state.isInvincible = false;
                 state.invincibilityTimer = 0.0f;
                 state.isJumping = false;
@@ -193,20 +204,15 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
                 state.superBulletCount         = LoadLevel::PLAYER_SUPER_BULLET_COUNT;
                 state.superBulletDamage        = LoadLevel::PLAYER_SUPER_BULLET_DAMAGE;
         
-                // -------------------
-                // NEW: Initialize separate cooldowns + burst fields
-                // -------------------
+                // Initialize separate cooldowns + burst fields
 
                 player->add<CAmmo>(LoadLevel::PLAYER_BULLET_COUNT, LoadLevel::PLAYER_BULLET_COUNT);
                 
-                // If you want bulletCooldown to start at 0, you can set it:
                 state.bulletCooldown    = 0.f;
                 state.bulletCooldownMax = LoadLevel::PLAYER_BULLET_COOLDOWN; 
-                // e.g., 0.2f or 0.5f depending on your design
         
                 state.swordCooldown     = 0.f; 
                 state.swordCooldownMax  = LoadLevel::PLAYER_SWORD_COOLDOWN;
-                // e.g., 0.3f so we can't spam sword instantly
         
                 // Burst logic
                 state.inBurst           = false;

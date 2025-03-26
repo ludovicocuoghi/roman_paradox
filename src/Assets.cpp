@@ -48,15 +48,6 @@ void Assets::addFont(const std::string& name, const std::string& path) {
     m_fontMap[name] = std::move(font);
 }
 
-/**
- * addAnimation:
- *    @param name        = string key for this animation
- *    @param textureName = key of the already-loaded texture
- *    @param frameWidth  = width of each frame in px
- *    @param frameHeight = height of each frame in px
- *    @param frameCount  = total number of frames (across one row)
- *    @param fps         = frames per second (NOT ms/frame)
- */
 void Assets::addAnimation(const std::string& name, 
                           const std::string& textureName,
                           int frameWidth, 
