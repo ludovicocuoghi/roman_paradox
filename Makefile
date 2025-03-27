@@ -19,31 +19,51 @@ SRC = main.cpp src/GameEngine.cpp src/Scene.cpp src/Scene_Play.cpp src/Scene_Lev
 # Object files directory
 OBJ_DIR = build
 
-# Object files (convert source file names to object files in the build directory)
+# Object files
 OBJ = $(patsubst %.cpp, $(OBJ_DIR)/%.o, $(SRC))
 
 # Default target
 all: $(TARGET)
 
-# Link object files into the final executable
+# Link object files into executable
 $(TARGET): $(OBJ)
 	@mkdir -p $(dir $@)
 	$(CXX) $(OBJ) -o $(TARGET) $(LDFLAGS)
 
-# Ensure asset directories exist and copy all assets
-	@mkdir -p bin
-	# Copy and preserve full directory structure for each resource folder
-	rsync -a src/images/ bin/images/
-	rsync -a src/fonts/ bin/fonts/
-	rsync -a src/assets/ bin/assets/
-	rsync -a src/levels/ bin/levels/
+# Copy assets cleanly
+	# Clean old resource folders before copying
+	@rm -rf bin/images
+	@rm -rf bin/fonts
+	@rm -rf bin/assets
+	@rm -rf bin/levels
 
-# Rule to compile source files into object files
+	# Recreate needed directories
+	@mkdir -p bin/images
+	@mkdir -p bin/fonts
+	@mkdir -p bin/assets
+	@mkdir -p bin/levels
+
+	# Copy only whitelisted resource folders
+	cp -r src/images/Player      bin/images/
+	cp -r src/images/Collectables bin/images/
+	cp -r src/images/Tile        bin/images/
+	cp -r src/images/Background  bin/images/
+	cp -r src/images/Bullet      bin/images/
+	cp -r src/images/Dec         bin/images/
+	cp -r src/images/Enemy       bin/images/
+	cp -r src/images/Portraits   bin/images/
+	cp -r src/images/sword       bin/images/
+
+	cp -r src/fonts/*    bin/fonts/
+	cp -r src/assets/*   bin/assets/
+	cp -r src/levels/*   bin/levels/
+
+# Compile rule
 $(OBJ_DIR)/%.o: %.cpp
 	@mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-# Clean up build files
+# Clean everything
 clean:
 	rm -rf $(OBJ_DIR) $(TARGET) bin
 
