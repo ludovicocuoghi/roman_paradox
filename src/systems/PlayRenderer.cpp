@@ -199,15 +199,21 @@ void PlayRenderer::render() {
         drawGrid();
     }
 
-    bool useDarkPalette = (m_game.getCurrentLevel().find("night") != std::string::npos);
-    
     sf::Color normalFilter(255, 255, 255, 255);
+
+    sf::Color darkFilterLevel1 = normalFilter;
+    sf::Color darkFilterLevel2 = normalFilter;
+    sf::Color darkFilterLevel3 = normalFilter;
     
-    sf::Color darkFilterLevel1 = useDarkPalette ? sf::Color(150, 150, 150, 255) : normalFilter;
-    
-    sf::Color darkFilterLevel2 = useDarkPalette ? sf::Color(100, 100, 100, 255) : normalFilter;
-    
-    sf::Color darkFilterLevel3 = useDarkPalette ? sf::Color(70, 70, 70, 255) : normalFilter;
+    if (m_game.getCurrentLevel().find("night") != std::string::npos) {
+        darkFilterLevel1 = sf::Color(150, 150, 150, 255);
+        darkFilterLevel2 = sf::Color(100, 100, 100, 255);
+        darkFilterLevel3 = sf::Color(70, 70, 70, 255);
+    } else if (m_game.getCurrentLevel().find("sunset") != std::string::npos) {
+        darkFilterLevel1 = sf::Color(255, 220, 180, 255); 
+        darkFilterLevel2 = sf::Color(240, 180, 130, 255); 
+        darkFilterLevel3 = sf::Color(200, 140, 100, 255); 
+    }
 
 
     // Render decorations
@@ -239,10 +245,10 @@ void PlayRenderer::render() {
             // Default to level 3
             sf::Color appliedColor = darkFilterLevel3;
     
-            const std::string& animName = animation.animation.getName();  // Assuming your animation has a getName()
+            const std::string& animName = animation.animation.getName();
     
             if (animName.find("Treasure") != std::string::npos) {
-                appliedColor = darkFilterLevel1;
+                appliedColor = normalFilter;
             } else if (animName.find("Box") != std::string::npos) {
                 appliedColor = darkFilterLevel2;
             }
