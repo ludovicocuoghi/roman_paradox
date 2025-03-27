@@ -15,6 +15,7 @@ TARGET = bin/sfml_app
 SRC = main.cpp src/GameEngine.cpp src/Scene.cpp src/Scene_Play.cpp src/Scene_LevelEditor.cpp src/Scene_Menu.cpp src/systems/LoadLevel.cpp src/systems/PlayRenderer.cpp src/systems/CollisionSystem.cpp src/Scene_GameOver.cpp \
       src/Assets.cpp src/systems/MovementSystem.cpp src/systems/AnimationSystem.cpp src/systems/EnemyAISystem.cpp src/systems/Spawner.cpp src/systems/DialogueSystem.cpp src/Scene_StoryText.cpp src/ResourcePath.cpp\
       $(wildcard src/imgui/*.cpp) $(wildcard src/imgui-sfml/*.cpp)
+
 # Object files directory
 OBJ_DIR = build
 
@@ -26,25 +27,20 @@ all: $(TARGET)
 
 # Link object files into the final executable
 $(TARGET): $(OBJ)
-	@mkdir -p $(dir $@) # Ensure the bin directory exists
+	@mkdir -p $(dir $@)
 	$(CXX) $(OBJ) -o $(TARGET) $(LDFLAGS)
 
-# Ensure asset directories exist
+# Ensure asset directories exist and copy all assets
 	@mkdir -p bin
-	@mkdir -p bin/assets
-	@mkdir -p bin/fonts
-	@mkdir -p bin/images
-	@mkdir -p bin/levels  # Create new levels directory
-
-# Copy assets correctly
-	cp -r src/fonts/* bin/fonts/       # Copy all fonts
-	cp -r src/images/* bin/images/     # Copy all images
-	cp -r src/levels/* bin/levels/     # Copy all level text files
-	cp -r src/assets/* bin/assets/     # Copy entire assets folder (including assets.txt)
+	# Copy and preserve full directory structure for each resource folder
+	rsync -a src/images/ bin/images/
+	rsync -a src/fonts/ bin/fonts/
+	rsync -a src/assets/ bin/assets/
+	rsync -a src/levels/ bin/levels/
 
 # Rule to compile source files into object files
 $(OBJ_DIR)/%.o: %.cpp
-	@mkdir -p $(dir $@) # Ensure subdirectories in build/ exist
+	@mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 # Clean up build files
