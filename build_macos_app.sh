@@ -1,6 +1,6 @@
 #!/bin/bash
 
-APP_NAME="Rome Interdimensional Journey"
+APP_NAME="Rome Interstellar Paradox"
 APP_DIR="${APP_NAME}.app"
 CONTENTS_DIR="${APP_DIR}/Contents"
 MACOS_DIR="${CONTENTS_DIR}/MacOS"

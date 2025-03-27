@@ -315,7 +315,7 @@ void Scene_Play::initializeDialogues()
         if (m_language == "English") {
             std::vector<DialogueMessage> Dialogue0 = {
                 {
-                    "Alien Legionary (Comrade)",                               // speaker
+                    "Alien Legionary (Ally)",                               // speaker
                     "HELP!!!",                                       // message
                     basePath + "alien_ancient_right.png",  // portraitPath
                     false,                                           // portraitOnLeft
@@ -328,7 +328,7 @@ void Scene_Play::initializeDialogues()
                     true                                            // useTypewriterEffect - immediate display
                 },
                 {
-                    "Alien Legionary (Comrade)",
+                    "Alien Legionary (Ally)",
                     "WE ARE BEING INVADED!!",
                     basePath + "alien_ancient_right.png",
                     false,
@@ -442,7 +442,7 @@ void Scene_Play::initializeDialogues()
             m_dialogueSystem->addDialogueTrigger(1700, Dialogue2);
             std::vector<DialogueMessage> introDialogue = {
                 {
-                    "Alien Legionary (Comrade)",                               // speaker
+                    "Alien Legionary (Ally)",                               // speaker
                     "RUN!!!",                                       // message
                     basePath + "alien_ancient_right.png",  // portraitPath
                     false,                                           // portraitOnLeft
@@ -455,7 +455,7 @@ void Scene_Play::initializeDialogues()
                     true                                            // useTypewriterEffect - immediate display
                 },
                 {
-                    "Alien Legionary (Comrade)",
+                    "Alien Legionary (Ally)",
                     "THEY ARE INVINCIBLE!!",
                     basePath + "alien_ancient_right.png",
                     false,
@@ -529,7 +529,7 @@ void Scene_Play::initializeDialogues()
             m_dialogueSystem->addDialogueTrigger(6500, Dialogue4);
             std::vector<DialogueMessage> Dialogue5 = {
                 {
-                    "Alien Legionary (Comrade)",                               // speaker
+                    "Alien Legionary (Ally)",                               // speaker
                     "AAAHH!!",            // message
                     basePath + "alien_ancient_right.png",        // portraitPath
                     false,                                            // portraitOnLeft
@@ -542,7 +542,7 @@ void Scene_Play::initializeDialogues()
                     true                                             // useTypewriterEffect
                 },
                 {
-                    "Alien Legionary (Comrade)",                               // speaker
+                    "Alien Legionary (Ally)",                               // speaker
                     "HELP!!!",            // message
                     basePath + "alien_ancient_right.png",        // portraitPath
                     false,                                            // portraitOnLeft
@@ -905,7 +905,7 @@ void Scene_Play::initializeDialogues()
             m_dialogueSystem->addDialogueTrigger(2200, Dialogue1);
             std::vector<DialogueMessage> Dialogue2 = {
                 {
-                    "Alien Legionary (Comrade)",                               // speaker
+                    "Alien Legionary (Ally)",                               // speaker
                     "I SAW THEM COMING OUT OF THAT BLACK HOLE!!!",            // message
                     basePath + "alien_ancient_right.png",        // portraitPath
                     false,                                            // portraitOnLeft

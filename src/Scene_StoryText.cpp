@@ -32,54 +32,53 @@ void Scene_StoryText::loadStoryText(StoryType type) {
     
     if (type == StoryType::INTRO) {
         if (language == "Japanese") {
-            // Improved Japanese intro text
-            m_storyLines.push_back("ローマ銀河パラドックス");
+            m_storyLines.push_back("ローマ・インターステラーパラドックス");
             m_storyLines.push_back(" ");
-            m_storyLines.push_back("無限の宇宙と並行して存在する数多の現実があると言われています。");
+            m_storyLines.push_back("宇宙は無限に存在し、");
+            m_storyLines.push_back("無数の現実が並行して存在していると言われている。");
             m_storyLines.push_back(" ");
-            m_storyLines.push_back("理論物理学によれば、ブラックホールは異なる次元間の");
-            m_storyLines.push_back("移動を可能にし、様々なマルチバースを繋げる鍵となり得ます。");
+            m_storyLines.push_back("理論物理学によれば、ブラックホールは");
+            m_storyLines.push_back("異なる現実をつなぐ可能性があり、");
+            m_storyLines.push_back("まったく別の次元への入り口となり得るという。");
             m_storyLines.push_back(" ");
-            m_storyLines.push_back("このゲームでは、地球とは異なる発展を遂げた");
-            m_storyLines.push_back("ローマ帝国の宇宙に存在するエイリアンとして冒険します。");
+            m_storyLines.push_back("あなたは、そうした宇宙のひとつから来た異星人。");
+            m_storyLines.push_back("そこではローマ帝国が、");
+            m_storyLines.push_back("地球で知られる歴史とはまったく異なる進化を遂げていた。");
             m_storyLines.push_back(" ");
-            m_storyLines.push_back("無数の宇宙には無限のローマ帝国が存在し、");
-            m_storyLines.push_back("それぞれが独自の歴史と発展の道を歩んでいます。");
+            m_storyLines.push_back("ある日突然、");
+            m_storyLines.push_back("未来のローマ兵たちによる侵略が始まる。");
             m_storyLines.push_back(" ");
-            m_storyLines.push_back("平穏な日常を過ごしていたある日、突如として");
-            m_storyLines.push_back("未来の軍団兵による侵略に見舞われることになります。");
+            m_storyLines.push_back("次元の混乱を乗り越え、");
+            m_storyLines.push_back("この時空を越えた襲撃の謎を解き明かせ……");
             m_storyLines.push_back(" ");
-            m_storyLines.push_back("あなたは脱出し、この謎めいた侵略の真相を解き明かさなければなりません...");
             
-            m_continueText = "スペースキーを押して冒険を始める";
+            m_continueText = "スペースキーを押して旅を始めよう";
         } else {
-            // Default English intro text
-            m_storyLines.push_back("ROME INTERGALACTIC PARADOX");
+            m_storyLines.push_back("ROMAN INTERSTELLAR PARADOX");
             m_storyLines.push_back(" ");
-            m_storyLines.push_back("It is said that there are infinite universes");
-            m_storyLines.push_back("and multiple realities existing in parallel.");
+            m_storyLines.push_back("It is said that there are infinite universes,");
+            m_storyLines.push_back("with countless realities existing in parallel.");
             m_storyLines.push_back(" ");
             m_storyLines.push_back("Theoretical physics suggests that black holes");
-            m_storyLines.push_back("could allow travel between different dimensions,");
-            m_storyLines.push_back("connecting various multiverses together.");
+            m_storyLines.push_back("might connect these realities—");
+            m_storyLines.push_back("gateways to entirely different dimensions.");
             m_storyLines.push_back(" ");
-            m_storyLines.push_back("In this game, you play as an alien in a universe");
-            m_storyLines.push_back("where the Roman Empire developed differently than on Earth.");
-            m_storyLines.push_back(" ");
-            m_storyLines.push_back("There are infinite Roman Empires across multiple universes,");
-            m_storyLines.push_back("each with its own history and development.");
+            m_storyLines.push_back("You play as an alien from one such universe—");
+            m_storyLines.push_back("a world where the Roman Empire");
+            m_storyLines.push_back("evolved along a very different path than the one known on Earth.");
             m_storyLines.push_back(" ");
             m_storyLines.push_back("During what seemed like a normal day,");
-            m_storyLines.push_back("you suddenly find yourself invaded by futuristic Legionaries.");
+            m_storyLines.push_back("your world is suddenly invaded by futuristic Legionaries.");
             m_storyLines.push_back(" ");
-            m_storyLines.push_back("You must escape and discover the truth behind this invasion...");
+            m_storyLines.push_back("You must escape through the dimensional chaos");
+            m_storyLines.push_back("and uncover the mystery behind this temporal assault...");
+            m_storyLines.push_back(" ");
             
             m_continueText = "Press SPACE to begin your journey";
         }
     }
     else if (type == StoryType::ENDING) {
         if (language == "Japanese") {
-            // Improved Japanese ending text
             m_storyLines.push_back("ローマ銀河パラドックス");
             m_storyLines.push_back(" ");
             m_storyLines.push_back("そして歴史は繰り返される...");
@@ -98,8 +97,7 @@ void Scene_StoryText::loadStoryText(StoryType type) {
             
             m_continueText = "スペースキーを押してメインメニューに戻る";
         } else {
-            // Default English ending text
-            m_storyLines.push_back("ROME INTERGALACTIC PARADOX");
+            m_storyLines.push_back("ROME INTERSTELLAR PARADOX");
             m_storyLines.push_back(" ");
             m_storyLines.push_back("And so the history repeats itself...");
             m_storyLines.push_back(" ");
@@ -155,7 +153,7 @@ void Scene_StoryText::renderStoryText() {
     text.setStyle(sf::Text::Regular);
     
     float startY = 80.0f;  // Start higher
-    float lineSpacing = 35.0f;  // Slightly reduced spacing
+    float lineSpacing = 30.0f;  // Slightly reduced spacing
     float maxY = m_game.window().getSize().y - 150.0f; // Leave plenty of room at bottom
     
     // Calculate total content height
