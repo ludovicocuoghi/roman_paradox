@@ -227,8 +227,9 @@ void PlayRenderer::render() {
             sprite.setPosition(transform.pos.x, transform.pos.y);
             sprite.setOrigin(anim.animation.getSize().x / 2.f,
                              anim.animation.getSize().y / 2.f);
-            // Apply dark palette if needed
-            sprite.setColor(darkFilterLevel2);
+            if (m_game.getCurrentLevel().find("ancient") != std::string::npos) {
+                sprite.setColor(darkFilterLevel2);
+            }
             m_game.window().draw(sprite);
         }
     }
@@ -244,17 +245,24 @@ void PlayRenderer::render() {
             sprite.setOrigin(animation.animation.getSize().x / 2.f,
                              animation.animation.getSize().y / 2.f);
     
-            // Default to level 3
-            sf::Color appliedColor = darkFilterLevel3;
-    
-            const std::string& animName = animation.animation.getName();
-    
-            if (animName.find("Treasure") != std::string::npos) {
+            sf::Color appliedColor = normalFilter;
+
+            const std::string& levelName = m_game.getCurrentLevel();
+            const std::string& animName  = animation.animation.getName();
+            
+            if (animName.find("FutureArmor") != std::string::npos) {
                 appliedColor = normalFilter;
-            } else if (animName.find("Box") != std::string::npos) {
+            }
+            else if (animName.find("Treasure") != std::string::npos) {
+                appliedColor = normalFilter;
+            }
+            else if (levelName.find("ancient") != std::string::npos) {
+                appliedColor = darkFilterLevel3;
+            }
+            else {
                 appliedColor = darkFilterLevel2;
             }
-    
+            
             sprite.setColor(appliedColor);
             m_game.window().draw(sprite);
         }
@@ -297,7 +305,7 @@ void PlayRenderer::render() {
             sprite.setOrigin(anim.animation.getSize().x / 2.f,
                             anim.animation.getSize().y / 2.f);
             // Apply dark palette if needed
-            sprite.setColor(darkFilterLevel1);
+            //sprite.setColor(darkFilterLevel1);
             m_game.window().draw(sprite);
         }
         if (m_showBoundingBoxes && item->has<CBoundingBox>()) {
@@ -629,7 +637,9 @@ void PlayRenderer::render() {
                     sf::Sprite sprite = animation.animation.getSprite();
                     sprite.setPosition(eTrans.pos);
                     sprite.setOrigin(animation.animation.getSize().x * 0.5f, animation.animation.getSize().y * 0.5f);
-                    sprite.setColor(darkFilterLevel1);
+                    if (m_game.getCurrentLevel().find("ancient") != std::string::npos) {
+                        sprite.setColor(darkFilterLevel1);
+                    }
                     m_game.window().draw(sprite);
                 }
             }
