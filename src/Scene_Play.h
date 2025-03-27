@@ -86,6 +86,7 @@ public:
 
     bool m_firstCameraUpdate = true;
     void selectRandomBackground();
+    bool m_isPaused = false;
 
 private:
     std::string m_levelPath;              // (1)

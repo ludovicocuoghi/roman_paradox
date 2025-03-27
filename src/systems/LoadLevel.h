@@ -91,12 +91,12 @@ public:
     // Enemy bullet damage
     // =======================================
     static constexpr int   BULLET_DAMAGE_PLAYER = 5;
-    static constexpr int   BULLET_DAMAGE_ENEMY_NORMAL = 4;
-    static constexpr int   BULLET_DAMAGE_ENEMY_FAST = 3;
-    static constexpr int   BULLET_DAMAGE_ENEMY_STRONG = 10;
-    static constexpr int   BULLET_DAMAGE_ENEMY_ELITE = 12;
-    static constexpr int   BULLET_DAMAGE_ENEMY_SUPER = 99999;
-    static constexpr int   BULLET_DAMAGE_ENEMY_EMPEROR = 12;
+    static constexpr int   BULLET_DAMAGE_ENEMY_NORMAL = 5;
+    static constexpr int   BULLET_DAMAGE_ENEMY_FAST = 4;
+    static constexpr int   BULLET_DAMAGE_ENEMY_STRONG = 8;
+    static constexpr int   BULLET_DAMAGE_ENEMY_ELITE = 10;
+    static constexpr int   BULLET_DAMAGE_ENEMY_SUPER = 999;
+    static constexpr int   BULLET_DAMAGE_ENEMY_EMPEROR = 15;
 
     // =======================================
     // Enemy attack parameters

@@ -128,13 +128,13 @@ void Scene_Play::selectBackgroundFromLevel(const std::string& levelPath) {
     } else if (levelName == "ancient_rome_level_5_day_v2.txt") {
         m_backgroundPath = basePath + "/ancient_rome/ancient_rome_level_1_day.png";
         m_timeofday = "ANCIENT ROME (DAY 2)";
-    } else if (levelName == "future_rome_level_1.txt") {
+    } else if (levelName == "future_rome_level_1_day.txt") {
         m_backgroundPath = basePath + "/future_rome/morning_future_3.png";
         m_timeofday = "FUTURE ROME (DAY)";
-    } else if (levelName == "future_rome_level_2.txt") {
+    } else if (levelName == "future_rome_level_2_sunset.txt") {
         m_backgroundPath = basePath + "/future_rome/future_sunset3.png";
         m_timeofday = "FUTURE ROME (SUNSET)";
-    } else if (levelName == "future_rome_level_3.txt") {
+    } else if (levelName == "future_rome_level_3_night.txt") {
         m_backgroundPath = basePath + "/future_rome/future_rome_night.png";
         m_timeofday = "FUTURE ROME (NIGHT)";
     } else if (levelName == "future_rome_level_4_emperor_room.txt") {
@@ -2807,7 +2807,7 @@ void Scene_Play::initializeDialogues()
             m_dialogueSystem->addDialogueTrigger(-950, Dialogue2);
         }
     }
-    else if (levelName ==  "future_rome_level_1.txt") {
+    else if (levelName ==  "future_rome_level_1_day.txt") {
         if (m_language == "English") {
             std::vector<DialogueMessage> Dialogue0 = {
                 {
@@ -3669,7 +3669,7 @@ void Scene_Play::initializeDialogues()
         m_dialogueSystem->addDialogueTrigger(6400, Dialogue5);
         }
     }
-    else if (levelName ==  "future_rome_level_3.txt") {
+    else if (levelName ==  "future_rome_level_3_night.txt") {
         if (m_language == "English") {
             std::vector<DialogueMessage> Dialogue0 = {
                 {
@@ -5311,14 +5311,15 @@ void Scene_Play::sDoAction(const Action& action)
                 }
             }
         }
-
-        if (action.name() == "TOGGLE_GRID") {
-            m_showGrid = !m_showGrid;
-        }
-        else if (action.name() == "TOGGLE_BB") {
-            m_showBoundingBoxes = !m_showBoundingBoxes;
-        }
-        else if (action.name() == "ATTACK") {
+        // Toggle grid for debugging
+        // if (action.name() == "TOGGLE_GRID") {
+        //     m_showGrid = !m_showGrid;
+        // }
+        // Toggle Bouding Box for debugging
+        // else if (action.name() == "TOGGLE_BB") {
+        //     m_showBoundingBoxes = !m_showBoundingBoxes;
+        // }
+        if (action.name() == "ATTACK") {
             // Check cooldowns first
             if (state.bulletCooldown > 0.f) {
                 // std::cout << "[DEBUG] Attack on cooldown! " << state.bulletCooldown << "s left.\n";

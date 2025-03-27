@@ -205,14 +205,16 @@ void PlayRenderer::render() {
     sf::Color darkFilterLevel2 = normalFilter;
     sf::Color darkFilterLevel3 = normalFilter;
     
-    if (m_game.getCurrentLevel().find("night") != std::string::npos) {
+    //if ((m_game.getCurrentLevel().find("night") != std::string::npos) && (m_game.getCurrentLevel().find("ancient") != std::string::npos)){
+    if (m_game.getCurrentLevel().find("night") != std::string::npos){
         darkFilterLevel1 = sf::Color(150, 150, 150, 255);
         darkFilterLevel2 = sf::Color(100, 100, 100, 255);
         darkFilterLevel3 = sf::Color(70, 70, 70, 255);
+    //} else if ((m_game.getCurrentLevel().find("sunset") != std::string::npos) && (m_game.getCurrentLevel().find("ancient") != std::string::npos)) {
     } else if (m_game.getCurrentLevel().find("sunset") != std::string::npos) {
-        darkFilterLevel1 = sf::Color(255, 220, 180, 255); 
-        darkFilterLevel2 = sf::Color(240, 180, 130, 255); 
-        darkFilterLevel3 = sf::Color(200, 140, 100, 255); 
+        darkFilterLevel1 = sf::Color(255, 235, 200, 255);  // Soft warm light
+        darkFilterLevel2 = sf::Color(255, 210, 170, 255);  // Light orange glow
+        darkFilterLevel3 = sf::Color(245, 180, 140, 255);  // Mild dusk tone
     }
 
 
