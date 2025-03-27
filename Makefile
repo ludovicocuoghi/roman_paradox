@@ -25,25 +25,25 @@ OBJ = $(patsubst %.cpp, $(OBJ_DIR)/%.o, $(SRC))
 # Default target
 all: $(TARGET)
 
-# Link object files into executable
+# Link object files into the final executable
 $(TARGET): $(OBJ)
 	@mkdir -p $(dir $@)
 	$(CXX) $(OBJ) -o $(TARGET) $(LDFLAGS)
 
-# Copy assets cleanly
-	# Clean old resource folders before copying
+# Clean up old resource folders and avoid macOS folder auto-renaming
 	@rm -rf bin/images
+	@rm -rf bin/images\ 2 bin/images\ 3 bin/images\ 4 bin/images\ 5
 	@rm -rf bin/fonts
 	@rm -rf bin/assets
 	@rm -rf bin/levels
 
-	# Recreate needed directories
+# Recreate only the clean asset folders
 	@mkdir -p bin/images
 	@mkdir -p bin/fonts
 	@mkdir -p bin/assets
 	@mkdir -p bin/levels
 
-	# Copy only whitelisted resource folders
+# Copy only whitelisted and valid folders
 	cp -r src/images/Player      bin/images/
 	cp -r src/images/Collectables bin/images/
 	cp -r src/images/Tile        bin/images/
@@ -63,7 +63,7 @@ $(OBJ_DIR)/%.o: %.cpp
 	@mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-# Clean everything
+# Clean target
 clean:
 	rm -rf $(OBJ_DIR) $(TARGET) bin
 
