@@ -994,6 +994,7 @@ Tile Box1 80 5
 Tile Box1 78 5
 Tile Box1 77 5
 Tile Treasure 78 8
+Tile Ground 4 15
 Player 1 16
 Dec BushTall 0 19
 Dec BushTall 2 19

@@ -586,20 +586,20 @@ void Scene_Play::initializeDialogues()
                     },
                     {
                         "***ガイド***",                              // speaker (could also leave it as GUIDE)
-                        "AキーまたはDキーで左右に移動",               // message
+                        "(AキーまたはDキーで左右に移動)",               // message
                         basePath + "ancient_alien_right.png",        // portraitPath
                         true,                                       // portraitOnLeft
                         sf::Color::Magenta,
                         sf::Color::White,
                         sf::Vector2f(0.f, 200.f),
-                        900.f,                                      // boxWidth
+                        950.f,                                      // boxWidth
                         150.f,                                       // boxHeight
                         50,                                          // messageFontSize
                         true                                         // useTypewriterEffect
                     },
                     {
                         "***ガイド***",
-                        "Wキーでジャンプ",
+                        "(Wキーでジャンプ)",
                         basePath + "ancient_alien_right.png",
                         true,
                         sf::Color::Magenta,
@@ -676,7 +676,7 @@ void Scene_Play::initializeDialogues()
                         sf::Color::Magenta,
                         sf::Color::White,
                         sf::Vector2f(50.f, 450.f),
-                        650.f,                                           // boxWidth - medium for medium message
+                        700.f,                                           // boxWidth - medium for medium message
                         150.f,                                           // boxHeight
                         35,                                              // messageFontSize - still emphasized
                         true                                             // useTypewriterEffect
@@ -692,7 +692,7 @@ void Scene_Play::initializeDialogues()
                         sf::Color::Yellow,                               // speakerColor
                         sf::Color::Red,                                  // messageColor
                         sf::Vector2f(800.f, 450.f),                      // dialogueBoxPosition
-                        650.f,                                           // boxWidth - compact for short message
+                        700.f,                                           // boxWidth - compact for short message
                         150.f,                                           // boxHeight
                         50,                                              // messageFontSize - larger for emphasis
                         true                                            // useTypewriterEffect - immediate display
@@ -705,7 +705,7 @@ void Scene_Play::initializeDialogues()
                         sf::Color::Yellow,
                         sf::Color::Red,
                         sf::Vector2f(800.f, 450.f),
-                        650.f,                                           // boxWidth - medium for medium message
+                        700.f,                                           // boxWidth - medium for medium message
                         150.f,                                           // boxHeight
                         40,                                              // messageFontSize - still emphasized
                         true                                             // useTypewriterEffect
@@ -741,7 +741,6 @@ void Scene_Play::initializeDialogues()
                 }
             };
             m_dialogueSystem->addDialogueTrigger(4300, Dialogue3);
-        
             std::vector<DialogueMessage> Dialogue4 = {
                 {
                     "エイリアン兵士",
@@ -781,7 +780,7 @@ void Scene_Play::initializeDialogues()
                     sf::Color::Yellow,
                     sf::Color::Red,
                     sf::Vector2f(800.f, 500.f),
-                    650.f,
+                    700.f,
                     150.f,
                     40,
                     true
@@ -794,7 +793,7 @@ void Scene_Play::initializeDialogues()
                     sf::Color::Yellow,
                     sf::Color::Red,
                     sf::Vector2f(800.f, 500.f),
-                    650.f,
+                    700.f,
                     150.f,
                     40,
                     true
@@ -1080,7 +1079,7 @@ void Scene_Play::initializeDialogues()
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(100.f, 300.f),
-                    650.f,                                           // boxWidth - medium for medium message
+                    800.f,                                           // boxWidth - medium for medium message
                     150.f,                                           // boxHeight
                     60,                                              // messageFontSize - still emphasized
                     true                                             // useTypewriterEffect
@@ -1106,10 +1105,10 @@ void Scene_Play::initializeDialogues()
                     "ブラックホールは時空を超える通路だと聞いたことがある...",            // message
                     basePath + "alien_ancient.png",        // portraitPath
                     true,                                            // portraitOnLeft
-                    sf::Color::Yellow,
+                    sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 400.f),
-                    1000.f,                                           // boxWidth - medium for medium message
+                    1050.f,                                           // boxWidth - medium for medium message
                     150.f,                                           // boxHeight
                     30,                                              // messageFontSize - still emphasized
                     true                                             // useTypewriterEffect
@@ -1163,8 +1162,8 @@ void Scene_Play::initializeDialogues()
                     true,                                            // portraitOnLeft
                     sf::Color::Magenta,
                     sf::Color::White,
-                    sf::Vector2f(150.f, 500.f),
-                    850.f,                                           // boxWidth - medium for medium message
+                    sf::Vector2f(50.f, 500.f),
+                    1000.f,                                           // boxWidth - medium for medium message
                     150.f,                                           // boxHeight
                     40,                                              // messageFontSize - still emphasized
                     true                                             // useTypewriterEffect
@@ -1375,7 +1374,7 @@ void Scene_Play::initializeDialogues()
             std::vector<DialogueMessage> Dialogue6 = {
                 {
                     "***GUIDE***",
-                    "You can find items inside boxes and chests.",
+                    "(You can find items inside boxes and chests.)",
                     basePath + "ancient_alien_right.png",
                     false,
                     sf::Color::Magenta,
@@ -1388,7 +1387,7 @@ void Scene_Play::initializeDialogues()
                 },
                 {
                     "***GUIDE***",
-                    "Grapes restore health. Chicken refills stamina (Defense Time).",
+                    "(Grapes restore health. Chicken refills stamina (Defense Time).)",
                     basePath + "ancient_alien_right.png",
                     false,
                     sf::Color::Magenta,
@@ -1401,7 +1400,7 @@ void Scene_Play::initializeDialogues()
                 },
                 {
                     "***GUIDE***",
-                    "Coins increase Score. Full HP is restored when score = 100.",
+                    "(Coins increase Score. Full HP is restored when score = 100.)",
                     basePath + "ancient_alien_right.png",
                     false,
                     sf::Color::Magenta,
@@ -1415,7 +1414,6 @@ void Scene_Play::initializeDialogues()
             };
             m_dialogueSystem->addDialogueTrigger(5000, Dialogue6);
         } else {
-            // Japanese translation
             std::vector<DialogueMessage> Dialogue0 = {
                 {
                     "エイリアン兵士",                               // speaker
@@ -1441,7 +1439,7 @@ void Scene_Play::initializeDialogues()
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 400.f),
-                    700.f,                                           // boxWidth - medium for medium message
+                    650.f,                                           // boxWidth - medium for medium message
                     150.f,                                           // boxHeight
                     30,                                              // messageFontSize - still emphasized
                     true                                             // useTypewriterEffect
@@ -1454,7 +1452,7 @@ void Scene_Play::initializeDialogues()
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 400.f),
-                    1000.f,                                           // boxWidth - medium for medium message
+                    650.f,                                           // boxWidth - medium for medium message
                     150.f,                                           // boxHeight
                     30,                                              // messageFontSize - still emphasized
                     true                                             // useTypewriterEffect
@@ -1467,7 +1465,7 @@ void Scene_Play::initializeDialogues()
                     sf::Color::Magenta,
                     sf::Color::Red,
                     sf::Vector2f(0.f, 400.f),
-                    700.f,                                           // boxWidth - medium for medium message
+                    650.f,                                           // boxWidth - medium for medium message
                     150.f,                                           // boxHeight
                     60,                                              // messageFontSize - still emphasized
                     true                                             // useTypewriterEffect
@@ -1587,8 +1585,8 @@ void Scene_Play::initializeDialogues()
                 },
                 {
                     "***GUIDE***",
-                    "スペースキーで攻撃。",
-                    basePath + "ancient_alien_right.png",
+                    "(スペースキーで攻撃。)",
+                    basePath + "ancient_alien.png",
                     false,
                     sf::Color::Magenta,
                     sf::Color::White,
@@ -1600,8 +1598,8 @@ void Scene_Play::initializeDialogues()
                 },
                 {
                     "***GUIDE***",
-                    "Mキー長押しで防御 （スタミナ消費）。",
-                    basePath + "ancient_alien_right.png",
+                    "(Mキー長押しで防御 （スタミナ消費）。)",
+                    basePath + "ancient_alien.png",
                     false,
                     sf::Color::Magenta,
                     sf::Color::White,
@@ -1612,12 +1610,12 @@ void Scene_Play::initializeDialogues()
                     true
                 }
             };
-            m_dialogueSystem->addDialogueTrigger(3000, Dialogue5);
+            m_dialogueSystem->addDialogueTrigger(2600, Dialogue5);
             std::vector<DialogueMessage> Dialogue6 = {
                 {
                     "***GUIDE***",
-                    "箱や宝箱の中にはアイテムが入っています。",
-                    basePath + "ancient_alien_right.png",
+                    "(箱や宝箱の中にはアイテムが入っています。)",
+                    basePath + "ancient_alien.png",
                     false,
                     sf::Color::Magenta,
                     sf::Color::White,
@@ -1629,26 +1627,26 @@ void Scene_Play::initializeDialogues()
                 },
                 {
                     "***GUIDE***",
-                    "ぶどうは体力を回復します。チキンはスタミナ（防御時間）を回復します。",
-                    basePath + "ancient_alien_right.png",
+                    "(ぶどうは体力回復。チキンはスタミナ（防御時間）回復。)",
+                    basePath + "ancient_alien.png",
                     false,
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 200.f),
-                    1450.f,
+                    950.f,
                     150.f,
                     35,
                     true
                 },
                 {
                     "***GUIDE***",
-                    "コインを集めるとスコアが上がります。スコア100で体力が全回復します。",
-                    basePath + "ancient_alien_right.png",
+                    "(コインを集めるとスコア上昇。スコア100で体力全回復。)",
+                    basePath + "ancient_alien.png",
                     false,
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 200.f),
-                    1400.f,
+                    950.f,
                     150.f,
                     35,
                     true
@@ -1757,7 +1755,7 @@ void Scene_Play::initializeDialogues()
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 200.f),
-                    800.f,                                           // boxWidth - medium for medium message
+                    700.f,                                           // boxWidth - medium for medium message
                     150.f,                                           // boxHeight
                     26,                                              // messageFontSize - still emphasized
                     true                                             // useTypewriterEffect
@@ -1770,7 +1768,7 @@ void Scene_Play::initializeDialogues()
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 200.f),
-                    800.f,                                           // boxWidth - medium for medium message
+                    700.f,                                           // boxWidth - medium for medium message
                     150.f,                                           // boxHeight
                     26,                                              // messageFontSize - still emphasized
                     true                                             // useTypewriterEffect
@@ -1783,7 +1781,7 @@ void Scene_Play::initializeDialogues()
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 200.f),
-                    800.f,                                           // boxWidth - medium for medium message
+                    700.f,                                           // boxWidth - medium for medium message
                     150.f,                                           // boxHeight
                     26,                                              // messageFontSize - still emphasized
                     true                                             // useTypewriterEffect
@@ -1809,7 +1807,7 @@ void Scene_Play::initializeDialogues()
             std::vector<DialogueMessage> Dialogue3 = {
                 {
                     "エイリアン兵士",                               // speaker
-                    "wwwww",            // message
+                    "笑笑笑",            // message
                     basePath + "alien_ancient.png",        // portraitPath
                     true,                                            // portraitOnLeft
                     sf::Color::Magenta,
@@ -1994,7 +1992,7 @@ void Scene_Play::initializeDialogues()
                     sf::Vector2f(700.f, 450.f),
                     700.f,                                           // boxWidth - medium for medium message
                     150.f,                                           // boxHeight
-                    50,                                              // messageFontSize - still emphasized
+                    40,                                              // messageFontSize - still emphasized
                     true                                             // useTypewriterEffect
                 }
             };
@@ -2024,7 +2022,7 @@ void Scene_Play::initializeDialogues()
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(750.f, 400.f),
-                    750.f,                                           // boxWidth - medium for medium message
+                    780.f,                                           // boxWidth - medium for medium message
                     150.f,                                           // boxHeight
                     26,                                              // messageFontSize - still emphasized
                     true                                             // useTypewriterEffect
@@ -2363,7 +2361,7 @@ void Scene_Play::initializeDialogues()
                 ,
                 {
                     "エイリアン兵士",                               // speaker
-                    "私は未来から来た...！！",            // message
+                    "私は未来から来た...!!",            // message
                     basePath + "alien_ancient.png",       // portraitPath
                     false,                                            // portraitOnLeft
                     sf::Color::Magenta,
@@ -2424,7 +2422,7 @@ void Scene_Play::initializeDialogues()
                     sf::Color::Yellow,
                     sf::Color::White,
                     sf::Vector2f(800.f, 500.f),
-                    650.f,                                           // boxWidth - medium for medium message
+                    680.f,                                           // boxWidth - medium for medium message
                     150.f,                                           // boxHeight
                     30,                                             // messageFontSize - still emphasized
                     true                                             // useTypewriterEffect
@@ -2447,30 +2445,30 @@ void Scene_Play::initializeDialogues()
             m_dialogueSystem->addDialogueTrigger(400, Dialogue0);
             std::vector<DialogueMessage> LowHPAncientEmperorDialogue = {
                 {
-                    "皇帝",                               // speaker
-                    "我が真の力を見せるしかないようだな...",                           // message
-                    basePath + "ancient_emperor.png", // portraitPath
-                    false,                                   // portraitOnLeft
-                    sf::Color::Cyan,                         // speakerColor
-                    sf::Color::White,                          // messageColor
-                    sf::Vector2f(600.f, 550.f),              // dialogueBoxPosition
-                    910.f,                                   // boxWidth
-                    150.f,                                   // boxHeight
-                    30,                                      // messageFontSize
-                    true                                     // useTypewriterEffect
+                    "皇帝",
+                    "もはや…真の力を解放するしかあるまい…",
+                    basePath + "ancient_emperor.png",
+                    false,
+                    sf::Color::Cyan,
+                    sf::Color::White,
+                    sf::Vector2f(600.f, 550.f),
+                    910.f,
+                    150.f,
+                    30,
+                    true
                 },
                 {
-                    "皇帝",                               // speaker
-                    "力よ！",                           // message
-                    basePath + "ancient_emperor.png", // portraitPath
-                    false,                                   // portraitOnLeft
-                    sf::Color::Cyan,                         // speakerColor
-                    sf::Color::Red,                          // messageColor
-                    sf::Vector2f(800.f, 550.f),              // dialogueBoxPosition
-                    600.f,                                   // boxWidth
-                    150.f,                                   // boxHeight
-                    60,                                      // messageFontSize
-                    true                                     // useTypewriterEffect
+                    "皇帝",
+                    "来たれ…我が力よ！",
+                    basePath + "ancient_emperor.png",
+                    false,
+                    sf::Color::Cyan,
+                    sf::Color::Red,
+                    sf::Vector2f(800.f, 550.f),
+                    750.f,
+                    150.f,
+                    60,
+                    true
                 }
             };
             // Add the named dialogues to our system
@@ -2572,7 +2570,7 @@ void Scene_Play::initializeDialogues()
                     "Alien Legionary",                               // speaker
                     "Oh, I've returned here...",            // message
                     basePath + "alien_ancient.png",       // portraitPath
-                    false,                                            // portraitOnLeft
+                    true,                                            // portraitOnLeft
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 500.f),
@@ -2586,7 +2584,7 @@ void Scene_Play::initializeDialogues()
                     "Alien Legionary",                              // speaker
                     "Let's see if those golden stairs are accessible now... ",            // message
                     basePath + "alien_ancient.png",       // portraitPath
-                    false,                                            // portraitOnLeft
+                    true,                                            // portraitOnLeft
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 500.f),
@@ -2602,7 +2600,7 @@ void Scene_Play::initializeDialogues()
                     "Alien Legionary",                               // speaker
                     "Oh, the stairs are finally accessible!",            // message
                     basePath + "alien_ancient.png",       // portraitPath
-                    false,                                            // portraitOnLeft
+                    true,                                            // portraitOnLeft
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 500.f),
@@ -2616,7 +2614,7 @@ void Scene_Play::initializeDialogues()
                     "Alien Legionary",                              // speaker
                     "Lets see if I can go get back to the black hole..",            // message
                     basePath + "alien_ancient.png",       // portraitPath
-                    false,                                            // portraitOnLeft
+                    true,                                            // portraitOnLeft
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 500.f),
@@ -2632,7 +2630,7 @@ void Scene_Play::initializeDialogues()
                     "Alien Legionary",                               // speaker
                     "Great! I can actually return now!",            // message
                     basePath + "alien_ancient.png",       // portraitPath
-                    false,                                            // portraitOnLeft
+                    true,                                            // portraitOnLeft
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 500.f),
@@ -2646,7 +2644,7 @@ void Scene_Play::initializeDialogues()
                     "Alien Legionary",                              // speaker
                     "With the Emperor fallen, I wonder if...",            // message
                     basePath + "alien_ancient.png",       // portraitPath
-                    false,                                            // portraitOnLeft
+                    true,                                            // portraitOnLeft
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 500.f),
@@ -2660,7 +2658,7 @@ void Scene_Play::initializeDialogues()
                     "Alien Legionary",                              // speaker
                     "..those dark warriors have been erased from time?",            // message
                     basePath + "alien_ancient.png",       // portraitPath
-                    false,                                            // portraitOnLeft
+                    true,                                            // portraitOnLeft
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 500.f),
@@ -2674,7 +2672,7 @@ void Scene_Play::initializeDialogues()
                     "Alien Legionary",                              // speaker
                     "Only one way to find out!",            // message
                     basePath + "alien_ancient.png",       // portraitPath
-                    false,                                            // portraitOnLeft
+                    true,                                            // portraitOnLeft
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 500.f),
@@ -2692,7 +2690,7 @@ void Scene_Play::initializeDialogues()
                     "エイリアン兵士",                               // speaker
                     "ここに戻ってきたか...",            // message
                     basePath + "alien_ancient.png",       // portraitPath
-                    false,                                            // portraitOnLeft
+                    true,                                            // portraitOnLeft
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 500.f),
@@ -2706,11 +2704,11 @@ void Scene_Play::initializeDialogues()
                     "エイリアン兵士",                              // speaker
                     "あの黄金の階段に今は登れるかな...",            // message
                     basePath + "alien_ancient.png",       // portraitPath
-                    false,                                            // portraitOnLeft
+                    true,                                            // portraitOnLeft
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 500.f),
-                    970.f,                                           // boxWidth - medium for medium message
+                    650.f,                                           // boxWidth - medium for medium message
                     150.f,                                           // boxHeight
                     30,                                             // messageFontSize - still emphasized
                     true                                             // useTypewriterEffect
@@ -2720,13 +2718,13 @@ void Scene_Play::initializeDialogues()
             std::vector<DialogueMessage> Dialogue1 = {
                 {
                     "エイリアン兵士",                               // speaker
-                    "おお、ついに階段に登れるようになった！",            // message
+                    "おお、ついに階段に登れるようになった..",            // message
                     basePath + "alien_ancient.png",       // portraitPath
-                    false,                                            // portraitOnLeft
+                    true,                                            // portraitOnLeft
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 500.f),
-                    700.f,                                           // boxWidth - medium for medium message
+                    780.f,                                           // boxWidth - medium for medium message
                     150.f,                                           // boxHeight
                     30,                                              // messageFontSize - still emphasized
                     true                                             // useTypewriterEffect
@@ -2736,11 +2734,11 @@ void Scene_Play::initializeDialogues()
                     "エイリアン兵士",                              // speaker
                     "ブラックホールに戻れるかどうか見てみよう..",            // message
                     basePath + "alien_ancient.png",       // portraitPath
-                    false,                                            // portraitOnLeft
+                    true,                                            // portraitOnLeft
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 500.f),
-                    900.f,                                           // boxWidth - medium for medium message
+                    810.f,                                           // boxWidth - medium for medium message
                     150.f,                                           // boxHeight
                     30,                                             // messageFontSize - still emphasized
                     true                                             // useTypewriterEffect
@@ -2752,7 +2750,7 @@ void Scene_Play::initializeDialogues()
                     "エイリアン兵士",                               // speaker
                     "よし！これで帰れるぞ！",            // message
                     basePath + "alien_ancient.png",       // portraitPath
-                    false,                                            // portraitOnLeft
+                    true,                                            // portraitOnLeft
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 500.f),
@@ -2766,7 +2764,7 @@ void Scene_Play::initializeDialogues()
                     "エイリアン兵士",                              // speaker
                     "皇帝が倒れたことで...",            // message
                     basePath + "alien_ancient.png",       // portraitPath
-                    false,                                            // portraitOnLeft
+                    true,                                            // portraitOnLeft
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 500.f),
@@ -2780,7 +2778,7 @@ void Scene_Play::initializeDialogues()
                     "エイリアン兵士",                              // speaker
                     "..あの暗黒の戦士たちは時間軸から消えたのかな？",            // message
                     basePath + "alien_ancient.png",       // portraitPath
-                    false,                                            // portraitOnLeft
+                    true,                                            // portraitOnLeft
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 500.f),
@@ -2794,7 +2792,7 @@ void Scene_Play::initializeDialogues()
                     "エイリアン兵士",                              // speaker
                     "確かめる方法はひとつだけだ！",            // message
                     basePath + "alien_ancient.png",       // portraitPath
-                    false,                                            // portraitOnLeft
+                    true,                                            // portraitOnLeft
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 500.f),
@@ -3317,7 +3315,7 @@ void Scene_Play::initializeDialogues()
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 500.f),
-                    750.f,
+                    700.f,
                     150.f,
                     30,
                     true
@@ -3330,7 +3328,7 @@ void Scene_Play::initializeDialogues()
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 500.f),
-                    850.f,
+                    700.f,
                     150.f,
                     30,
                     true
@@ -3343,7 +3341,7 @@ void Scene_Play::initializeDialogues()
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 500.f),
-                    850.f,
+                    700.f,
                     150.f,
                     30,
                     true
@@ -3356,7 +3354,7 @@ void Scene_Play::initializeDialogues()
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 500.f),
-                    850.f,
+                    700.f,
                     150.f,
                     30,
                     true
@@ -3369,7 +3367,7 @@ void Scene_Play::initializeDialogues()
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 500.f),
-                    750.f,
+                    700.f,
                     150.f,
                     30,
                     true
@@ -3382,7 +3380,7 @@ void Scene_Play::initializeDialogues()
                     sf::Color::Magenta,
                     sf::Color::Red,
                     sf::Vector2f(0.f, 500.f),
-                    800.f,
+                    850.f,
                     150.f,
                     40,
                     true
@@ -3400,7 +3398,7 @@ void Scene_Play::initializeDialogues()
                     sf::Vector2f(700.f, 500.f),
                     600.f,                                           // boxWidth - medium for medium message
                     150.f,                                           // boxHeight
-                    30,                                              // messageFontSize - still emphasized
+                    40,                                              // messageFontSize - still emphasized
                     true                                             // useTypewriterEffect
                 }
                 ,
@@ -3438,9 +3436,9 @@ void Scene_Play::initializeDialogues()
                     basePath + "alien_ancient.png",       // portraitPath
                     true,                                            // portraitOnLeft
                     sf::Color::Magenta,
-                    sf::Color::White,
+                    sf::Color::Red,
                     sf::Vector2f(0.f, 500.f),
-                    700.f,                                           // boxWidth - medium for medium message
+                    600.f,                                           // boxWidth - medium for medium message
                     150.f,                                           // boxHeight
                     50,                                             // messageFontSize - still emphasized
                     true                                             // useTypewriterEffect
@@ -3530,7 +3528,7 @@ void Scene_Play::initializeDialogues()
                 sf::Color::Magenta,
                 sf::Color::White,
                 sf::Vector2f(0.f, 500.f),
-                950.f,                                           // boxWidth - medium for medium message
+                750.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
                 30,                                             // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
@@ -3574,7 +3572,7 @@ void Scene_Play::initializeDialogues()
                 sf::Color::Magenta,
                 sf::Color::White,
                 sf::Vector2f(0.f, 500.f),
-                950.f,                                           // boxWidth - medium for medium message
+                700.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
                 30,                                             // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
@@ -3588,7 +3586,7 @@ void Scene_Play::initializeDialogues()
                 sf::Color::Magenta,
                 sf::Color::White,
                 sf::Vector2f(0.f, 500.f),
-                950.f,                                           // boxWidth - medium for medium message
+                900.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
                 30,                                             // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
@@ -3628,11 +3626,11 @@ void Scene_Play::initializeDialogues()
                 "エイリアン兵士",                           // speaker
                 "食らえ、この時空の矛盾め！！！",            // message
                 basePath + "alien_future.png",       // portraitPath
-                false,                                            // portraitOnLeft
+                true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
                 sf::Vector2f(0.f, 500.f),
-                1100.f,                                           // boxWidth - medium for medium message
+                950.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
                 40,                                             // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
@@ -3642,7 +3640,7 @@ void Scene_Play::initializeDialogues()
                 "***ガイド***",                           // speaker
                 "(スペースキーを長押しで連射！)",            // message
                 basePath + "alien_future.png",       // portraitPath
-                false,                                            // portraitOnLeft
+                true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
                 sf::Vector2f(0.f, 200.f),
@@ -3656,7 +3654,7 @@ void Scene_Play::initializeDialogues()
                 "***ガイド***",                           // speaker
                 "(エンターキーで必殺技！！)",            // message
                 basePath + "alien_future.png",       // portraitPath
-                false,                                            // portraitOnLeft
+                true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
                 sf::Vector2f(0.f, 200.f),
@@ -3915,7 +3913,7 @@ void Scene_Play::initializeDialogues()
                     sf::Vector2f(700.f, 450.f),
                     700.f,                                           // boxWidth - medium for medium message
                     150.f,                                           // boxHeight
-                    30,                                              // messageFontSize - still emphasized
+                    40,                                              // messageFontSize - still emphasized
                     true                                             // useTypewriterEffect
                 }
                 ,
@@ -3929,7 +3927,7 @@ void Scene_Play::initializeDialogues()
                     sf::Vector2f(700.f, 450.f),
                     750.f,                                           // boxWidth - medium for medium message
                     150.f,                                           // boxHeight
-                    30,                                             // messageFontSize - still emphasized
+                    40,                                             // messageFontSize - still emphasized
                     true                                             // useTypewriterEffect
                 },
                 };
@@ -3943,7 +3941,7 @@ void Scene_Play::initializeDialogues()
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(50.f, 450.f),
-                    800.f,                                           // boxWidth - medium for medium message
+                    650.f,                                           // boxWidth - medium for medium message
                     150.f,                                           // boxHeight
                     30,                                              // messageFontSize - still emphasized
                     true                                             // useTypewriterEffect
@@ -3957,7 +3955,7 @@ void Scene_Play::initializeDialogues()
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(50.f, 450.f),
-                    750.f,                                           // boxWidth - medium for medium message
+                    650.f,                                           // boxWidth - medium for medium message
                     150.f,                                           // boxHeight
                     30,                                             // messageFontSize - still emphasized
                     true                                             // useTypewriterEffect
@@ -3971,7 +3969,7 @@ void Scene_Play::initializeDialogues()
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(50.f, 450.f),
-                    750.f,                                           // boxWidth - medium for medium message
+                    650.f,                                           // boxWidth - medium for medium message
                     150.f,                                           // boxHeight
                     30,                                             // messageFontSize - still emphasized
                     true                                             // useTypewriterEffect
@@ -3985,7 +3983,7 @@ void Scene_Play::initializeDialogues()
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(50.f, 450.f),
-                    750.f,                                           // boxWidth - medium for medium message
+                    650.f,                                           // boxWidth - medium for medium message
                     150.f,                                           // boxHeight
                     30,                                             // messageFontSize - still emphasized
                     true                                             // useTypewriterEffect
@@ -4001,7 +3999,7 @@ void Scene_Play::initializeDialogues()
                     sf::Color::Red,
                     sf::Color::White,
                     sf::Vector2f(500.f, 400.f),
-                    750.f,                                           // boxWidth - medium for medium message
+                    650.f,                                           // boxWidth - medium for medium message
                     150.f,                                           // boxHeight
                     30,                                             // messageFontSize - still emphasized
                     true                                               // useTypewriterEffect
@@ -4015,7 +4013,7 @@ void Scene_Play::initializeDialogues()
                     sf::Color::Red,
                     sf::Color::White,
                     sf::Vector2f(600.f, 400.f),
-                    780.f,                                           // boxWidth - medium for medium message
+                    650.f,                                           // boxWidth - medium for medium message
                     150.f,                                           // boxHeight
                     30,                                                 // messageFontSize - still emphasized
                     true                                               // useTypewriterEffect
@@ -4029,7 +4027,7 @@ void Scene_Play::initializeDialogues()
                     sf::Color::Red,
                     sf::Color::Red,
                     sf::Vector2f(500.f, 400.f),
-                    780.f,                                           // boxWidth - medium for medium message
+                    650.f,                                           // boxWidth - medium for medium message
                     150.f,                                           // boxHeight
                     45,                                                  // messageFontSize - still emphasized
                     true                                               // useTypewriterEffect
@@ -4043,7 +4041,7 @@ void Scene_Play::initializeDialogues()
                     sf::Color::Red,
                     sf::Color::White,
                     sf::Vector2f(600.f, 400.f),
-                    780.f,                                           // boxWidth - medium for medium message
+                    650.f,                                           // boxWidth - medium for medium message
                     150.f,                                           // boxHeight
                     30,                                                  // messageFontSize - still emphasized
                     true                                               // useTypewriterEffect
@@ -4057,7 +4055,7 @@ void Scene_Play::initializeDialogues()
                     sf::Color::Red,
                     sf::Color::White,
                     sf::Vector2f(500.f, 400.f),
-                    900.f,                                           // boxWidth - medium for medium message
+                    650.f,                                           // boxWidth - medium for medium message
                     150.f,                                           // boxHeight
                     30,                                                // messageFontSize - still emphasized
                     true                                             // useTypewriterEffect
@@ -4085,7 +4083,7 @@ void Scene_Play::initializeDialogues()
                     sf::Color::Red,
                     sf::Color::White,
                     sf::Vector2f(500.f, 400.f),
-                    700.f,                                           // boxWidth - medium for medium message
+                    650.f,                                           // boxWidth - medium for medium message
                     150.f,                                           // boxHeight
                     30,                                                // messageFontSize - still emphasized
                     true                                              // useTypewriterEffect
@@ -4099,7 +4097,7 @@ void Scene_Play::initializeDialogues()
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 400.f),
-                    900.f,                                           // boxWidth - medium for medium message
+                    850.f,                                           // boxWidth - medium for medium message
                     150.f,                                           // boxHeight
                     30,                                             // messageFontSize - still emphasized
                     true                                             // useTypewriterEffect
@@ -4115,7 +4113,7 @@ void Scene_Play::initializeDialogues()
                 sf::Color::Red,
                 sf::Color::Red,
                 sf::Vector2f(0.f, 400.f),
-                800.f,                                           // boxWidth - medium for medium message
+                600.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
                 40,                                             // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
@@ -4128,7 +4126,7 @@ void Scene_Play::initializeDialogues()
                 sf::Color::Red,
                 sf::Color::Red,
                 sf::Vector2f(0.f, 400.f),
-                1100.f,                                           // boxWidth - medium for medium message
+                950.f,                                           // boxWidth - medium for medium message
                 150.f,                                           // boxHeight
                 35,                                             // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
@@ -4413,7 +4411,7 @@ void Scene_Play::initializeDialogues()
                     sf::Color::Cyan,
                     sf::Color::White,
                     sf::Vector2f(600.f, 550.f),
-                    900.f,
+                    850.f,
                     150.f,
                     40,
                     true
@@ -4428,7 +4426,7 @@ void Scene_Play::initializeDialogues()
                     basePath + "future_emperor.png",
                     false,
                     sf::Color::Cyan,
-                    sf::Color::White,
+                    sf::Color::Red,
                     sf::Vector2f(800.f, 550.f),
                     600.f,
                     150.f,
@@ -4443,7 +4441,7 @@ void Scene_Play::initializeDialogues()
                     sf::Color::Cyan,
                     sf::Color::White,
                     sf::Vector2f(800.f, 550.f),
-                    600.f,
+                    700.f,
                     150.f,
                     50,
                     true
@@ -4457,7 +4455,7 @@ void Scene_Play::initializeDialogues()
                     sf::Color::Red,
                     sf::Vector2f(800.f, 550.f),
                     550.f,
-                    150.f,
+                    170.f,
                     70,
                     true
                 },
@@ -4482,7 +4480,7 @@ void Scene_Play::initializeDialogues()
                     sf::Color::Cyan,
                     sf::Color::Red,
                     sf::Vector2f(600.f, 550.f),
-                    800.f,
+                    820.f,
                     150.f,
                     50,
                     true
@@ -4510,11 +4508,11 @@ void Scene_Play::initializeDialogues()
                     basePath + "future_emperor.png",
                     false,
                     sf::Color::Cyan,
-                    sf::Color::White,
+                    sf::Color::Red,
                     sf::Vector2f(600.f, 550.f),
                     900.f,
-                    150.f,
-                    40,
+                    180.f,
+                    50,
                     true
                 }
             };
@@ -4541,7 +4539,7 @@ void Scene_Play::initializeDialogues()
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 400.f),
-                    900.f,
+                    600.f,
                     150.f,
                     30,
                     true
@@ -4554,7 +4552,7 @@ void Scene_Play::initializeDialogues()
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 400.f),
-                    900.f,
+                    700.f,
                     150.f,
                     30,
                     true
@@ -4567,7 +4565,7 @@ void Scene_Play::initializeDialogues()
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 400.f),
-                    900.f,
+                    700.f,
                     150.f,
                     30,
                     true
@@ -4583,9 +4581,9 @@ void Scene_Play::initializeDialogues()
                     sf::Color::Cyan,
                     sf::Color::Red,
                     sf::Vector2f(600.f, 550.f),
-                    650.f,
-                    150.f,
-                    30,
+                    700.f,
+                    170.f,
+                    50,
                     true
                 },
                 {
@@ -4596,9 +4594,9 @@ void Scene_Play::initializeDialogues()
                     sf::Color::Cyan,
                     sf::Color::Red,
                     sf::Vector2f(600.f, 550.f),
-                    650.f,
-                    150.f,
-                    40,
+                    700.f,
+                    170.f,
+                    50,
                     true
                 },
                 {
@@ -4610,8 +4608,8 @@ void Scene_Play::initializeDialogues()
                     sf::Color::Red,
                     sf::Vector2f(600.f, 550.f),
                     650.f,
-                    150.f,
-                    50,
+                    170.f,
+                    80,
                     true
                 }
             };
@@ -4971,7 +4969,7 @@ void Scene_Play::initializeDialogues()
             std::vector<DialogueMessage> Dialogue0 = {
                 {
                     "エイリアン兵士",                               // speaker
-                    "ああ、またここに戻ってきたのか...",            // message
+                    "あ、またここに戻ってきたのか...",            // message
                     basePath + "alien_ancient.png",       // portraitPath
                     true,                                            // portraitOnLeft
                     sf::Color::Magenta,
@@ -5035,7 +5033,7 @@ void Scene_Play::initializeDialogues()
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 500.f),
-                    650.f,                                           // boxWidth - medium for medium message
+                    850.f,                                           // boxWidth - medium for medium message
                     150.f,                                           // boxHeight
                     30,                                             // messageFontSize - still emphasized
                     true                                             // useTypewriterEffect
@@ -5062,7 +5060,7 @@ void Scene_Play::initializeDialogues()
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 500.f),
-                    700.f,                                           // boxWidth - medium for medium messageN
+                    850.f,                                           // boxWidth - medium for medium messageN
                     150.f,                                           // boxHeight
                     30,                                             // messageFontSize - still emphasized
                     true                                             // useTypewriterEffect
@@ -5108,7 +5106,7 @@ void Scene_Play::initializeDialogues()
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 500.f),
-                    650.f,                                           // boxWidth - medium for medium message
+                    800.f,                                           // boxWidth - medium for medium message
                     150.f,                                           // boxHeight
                     30,                                             // messageFontSize - still emphasized
                     true                                             // useTypewriterEffect
@@ -5121,7 +5119,7 @@ void Scene_Play::initializeDialogues()
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 500.f),
-                    650.f,                                           // boxWidth - medium for medium message
+                    680.f,                                           // boxWidth - medium for medium message
                     150.f,                                           // boxHeight
                     30,                                              // messageFontSize - still emphasized
                     true                                             // useTypewriterEffect
@@ -5203,8 +5201,8 @@ void Scene_Play::initializeDialogues()
                     false,                                            // portraitOnLeft
                     sf::Color::Cyan,
                     sf::Color::White,
-                    sf::Vector2f(500.f, 400.f),
-                    950.f,                                           // boxWidth - medium for medium message
+                    sf::Vector2f(400.f, 400.f),
+                    1100.f,                                           // boxWidth - medium for medium message
                     150.f,                                           // boxHeight
                     35,                                             // messageFontSize - still emphasized
                     true                                             // useTypewriterEffect
@@ -5258,10 +5256,10 @@ void Scene_Play::initializeDialogues()
                     false,                                            // portraitOnLeft
                     sf::Color::Cyan,
                     sf::Color::Red,
-                    sf::Vector2f(600.f, 400.f),
-                    650.f,                                           // boxWidth - medium for medium message
-                    150.f,                                           // boxHeight
-                    50,                                             // messageFontSize - still emphasized
+                    sf::Vector2f(400.f, 400.f),
+                    1050.f,                                           // boxWidth - medium for medium message
+                    160.f,                                           // boxHeight
+                    60,                                             // messageFontSize - still emphasized
                     true                                             // useTypewriterEffect
                 }
             };
@@ -5862,8 +5860,6 @@ void Scene_Play::lifeCheckEnemyDeath() {
                 // Use the specialized emperor death handler
                 handleEmperorDeath(enemy);
             } else {
-                // Handle unique enemy ID logic (e.g., tile removal)
-                //Spawn the correct grave type
                 m_spawner.spawnEnemyGrave(transform.pos, isEmperor);
 
                 if (enemy->has<CUniqueID>()) {

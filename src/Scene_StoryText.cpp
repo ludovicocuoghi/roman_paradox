@@ -79,7 +79,7 @@ void Scene_StoryText::loadStoryText(StoryType type) {
     }
     else if (type == StoryType::ENDING) {
         if (language == "Japanese") {
-            m_storyLines.push_back("ローマ銀河パラドックス");
+            m_storyLines.push_back("ローマ・インターステラーパラドックス");
             m_storyLines.push_back(" ");
             m_storyLines.push_back("そして歴史は繰り返される...");
             m_storyLines.push_back(" ");

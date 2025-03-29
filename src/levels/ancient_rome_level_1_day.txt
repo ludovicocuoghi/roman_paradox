@@ -1,3 +1,4 @@
+# World: Ancient
 Tile Ground 2 0
 Tile Ground 3 0
 Tile Ground 4 0
@@ -328,7 +329,6 @@ Dec CloudBig 22 11
 Dec CloudBig 46 13
 Dec CloudBig 61 11
 Dec CloudBig 34 14
-Dec CloudBig 12 15
 Dec CloudBig 74 14
 Dec BushSmall 77 2
 Dec BushSmall 87 2
