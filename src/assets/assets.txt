@@ -261,6 +261,8 @@ Animation AncientStandEmperorDefeated TexAncientStandEmperorDefeated 160 250 1 0
 Texture TexFutureStandEmperor1 Enemy/future_rome/emperor/future_emperor_final_phase1.png
 Texture TexFutureStandEmperor2 Enemy/future_rome/emperor/future_emperor_final_phase2.png
 Texture TexFutureStandEmperor3 Enemy/future_rome/emperor/future_emperor_final_phase3.png
+Texture TexFutureStandEmperor4 Enemy/future_rome/emperor/future_emperor_defeated.png
+Texture TexFutureStandEmperorDefeated Enemy/future_rome/emperor/future_emperor_defeated.png
 
 Animation FutureStandEmperor TexFutureStandEmperor1 160 250 1 0
 Animation FutureRunEmperor TexFutureStandEmperor1 160 250 1 0
@@ -273,6 +275,8 @@ Animation FutureHitEmperor2 TexFutureStandEmperor2 160 250 1 0
 Animation FutureStandEmperor3 TexFutureStandEmperor3 160 250 1 0
 Animation FutureRunEmperor3 TexFutureStandEmperor3 160 250 1 0
 Animation FutureHitEmperor3 TexFutureStandEmperor3 160 250 1 0
+
+Animation FutureStandEmperorDefeated TexFutureStandEmperorDefeated 160 250 1 0
 
 Texture TexFutureRedBullet Bullet/future_red_bullet.png
 Texture TexFutureBlueBullet Bullet/future_blue_bullet.png

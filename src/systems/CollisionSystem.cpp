@@ -791,7 +791,7 @@ void CollisionSystem::handleBlackHoleTileCollisions() {
                 std::string blackHoleAnimName = blackHole->get<CAnimation>().animation.getName();
                 
                 // Protect tiles beyond x=3744 only in the emperor room level
-                bool protectedTile = (m_levelPath.find("future_rome_level_4_emperor_room") != std::string::npos && (tileTrans.pos.x < 400 || tileTrans.pos.x > 3600 ||  tileTrans.pos.y < 300));
+                bool protectedTile = (m_levelPath.find("future_rome_level_4_emperor_room") != std::string::npos && (tileTrans.pos.x < 400 || tileTrans.pos.x > 3600 ||  tileTrans.pos.y <-550));
                 if (protectedTile) {
                     continue;
                 }

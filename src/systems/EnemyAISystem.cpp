@@ -192,6 +192,8 @@ void EnemyAISystem::update(float deltaTime)
                 m_triggeredDialogues.find("emperor_ancient_defeated") == m_triggeredDialogues.end()) {
                 m_dialogueSystem->triggerDialogueByID("emperor_ancient_defeated");
                 m_triggeredDialogues["emperor_ancient_defeated"] = true;
+
+
             }
             continue; // Skip to the next enemy
         }
@@ -300,7 +302,8 @@ void EnemyAISystem::update(float deltaTime)
                         if (m_dialogueSystem && m_triggeredDialogues.find("emperor_future_defeated") == m_triggeredDialogues.end() && healthPercentage <= 0.1f) {
                             m_dialogueSystem->triggerDialogueByID("emperor_future_defeated");
                             m_triggeredDialogues["emperor_future_defeated"] = true;
-                            enemyAI.phaseTimer = 0.f; 
+                            enemyAI.phaseTimer = 0.f;
+                            
                         }
                                 
                         std::cout << "[DEBUG] TELEPORT COMPLETE: Emperor teleported\n";
@@ -395,8 +398,18 @@ void EnemyAISystem::update(float deltaTime)
                         // Reset velocities to ensure the emperor stays still
                         enemyTrans.velocity.x = 0.f;
                         enemyTrans.velocity.y = 0.f;
-                        // Enemy can now be defeated, but we don't automatically kill it
-                        // The player must defeat it through regular combat
+
+                        enemyAI.enemyState = EnemyState::Defeated;
+    
+                        // Enemy is now in defeated state
+                        // If you need to update animation:
+                        if (enemy->has<CAnimation>()) {
+                            auto& animation = enemy->get<CAnimation>();
+                            std::string defeatAnim = "FutureStandEmperorDefeated";
+                            if (m_game.assets().hasAnimation(defeatAnim)) {
+                                animation.animation = m_game.assets().getAnimation(defeatAnim);
+                            }
+                        }
                     }
                     
                     // Skip the rest of the logic when in final attack mode
@@ -518,7 +531,6 @@ void EnemyAISystem::update(float deltaTime)
                         } else {
                             runAnim = "FutureRunEmperor3";
                         }
-                        
                         if (m_game.assets().hasAnimation(runAnim)) {
                             animation.animation = m_game.assets().getAnimation(runAnim);
                         }
@@ -542,7 +554,6 @@ void EnemyAISystem::update(float deltaTime)
                         } else {
                             runAnim = "FutureRunEmperor3";
                         }
-                        
                         if (m_game.assets().hasAnimation(runAnim)) {
                             animation.animation = m_game.assets().getAnimation(runAnim);
                         }
@@ -559,14 +570,17 @@ void EnemyAISystem::update(float deltaTime)
                     std::string standAnim;
                     
                     if (m_game.worldType == "Future") {
+                        // Default: choose based on health
                         if (healthPercentage > 0.7f) {
-                            standAnim = "FutureStandEmperor";
-                        } else if (healthPercentage <= 0.7f && healthPercentage > 0.3f) {
-                            standAnim = "FutureStandEmperor2";
+                            standAnim = "FutureRunEmperor";
+                        } else if (healthPercentage > 0.3f) {
+                            standAnim = "FutureRunEmperor2";
                         } else {
-                            standAnim = "FutureStandEmperor3";
+                            standAnim = "FutureRunEmperor3";
                         }
-                        
+                        if (enemyAI.enemyState == EnemyState::Defeated) {
+                            standAnim = "FutureStandEmperorDefeated";
+                        }
                         if (m_game.assets().hasAnimation(standAnim)) {
                             animation.animation = m_game.assets().getAnimation(standAnim);
                         }
@@ -1407,6 +1421,9 @@ void EnemyAISystem::update(float deltaTime)
                     break;
                 case BossPhase::Phase3:
                     desiredAnimName = "FutureStandEmperor3";
+                    break;
+                case BossPhase::Phase4:
+                    desiredAnimName = "FutureStandEmperorDefeated";
                     break;
                 default:
                     desiredAnimName = "FutureStandEmperor";

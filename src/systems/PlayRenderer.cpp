@@ -543,10 +543,17 @@ void PlayRenderer::render() {
                     bossPhase = enemy->get<CBossPhase>().phase;
                 }
         
-                // If defeated, force defeat animation (Ancient Emperor only)
+                // If defeated, force defeat animation 
                 if (enemyAI.enemyState == EnemyState::Defeated) {
                     if (m_game.worldType == "Ancient") {
                         std::string defeatAnimName = "AncientStandEmperorDefeated";
+                        if (animation.animation.getName() != defeatAnimName) {
+                            animation.animation = m_game.assets().getAnimation(defeatAnimName);
+                            animation.animation.reset();
+                        }
+                    }
+                    else if (m_game.worldType == "Future") {
+                        std::string defeatAnimName = "FutureStandEmperorDefeated";
                         if (animation.animation.getName() != defeatAnimName) {
                             animation.animation = m_game.assets().getAnimation(defeatAnimName);
                             animation.animation.reset();

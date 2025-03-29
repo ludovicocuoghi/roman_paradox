@@ -4229,7 +4229,7 @@ void Scene_Play::initializeDialogues()
                 {
                     "Emperor",
                     "I SPARED YOU ONCE BUT...",
-                    basePath + "future_emperor.png",
+                    basePath + "future_emperor_2.png",
                     false,
                     sf::Color::Cyan,
                     sf::Color::White,
@@ -4242,7 +4242,7 @@ void Scene_Play::initializeDialogues()
                 {
                     "Emperor",
                     "I WON'T MAKE THAT MISTAKE AGAIN!",
-                    basePath + "future_emperor.png",
+                    basePath + "future_emperor_2.png",
                     false,
                     sf::Color::Cyan,
                     sf::Color::White,
@@ -4358,7 +4358,7 @@ void Scene_Play::initializeDialogues()
                 {
                     "Emperor",                               // speaker
                     "...",                           // message
-                    basePath + "future_emperor_3.png", // portraitPath
+                    basePath + "future_emperor_defeated.png", // portraitPath
                     false,                                   // portraitOnLeft
                     sf::Color::Cyan,                         // speakerColor
                     sf::Color::White,                          // messageColor
@@ -4369,11 +4369,40 @@ void Scene_Play::initializeDialogues()
                     true                                     // useTypewriterEffect
                 }
             };
+            std::vector<DialogueMessage> phasedefeatedFutureDialogue2 = {
+                {
+                    "Alien Legionary",                     // speaker
+                    "He's completely depleted....",           // message
+                    basePath + "alien_future.png",         // portraitPath
+                    true,                                  // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 400.f),
+                    900.f,                                 // boxWidth
+                    150.f,                                 // boxHeight
+                    30,                                    // messageFontSize
+                    true                                   // useTypewriterEffect
+                },
+                {
+                    "Alien Legionary",                     // speaker
+                    "Did that last attack drain all his power?", // message
+                    basePath + "alien_future.png",         // portraitPath
+                    true,                                  // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 400.f),
+                    900.f,                                 // boxWidth
+                    150.f,                                 // boxHeight
+                    30,                                    // messageFontSize
+                    true                                   // useTypewriterEffect
+                }
+            };
             // Add the named dialogues to our system
             m_dialogueSystem->addNamedDialogue("emperor_phase2", phase2Dialogue);
             m_dialogueSystem->addNamedDialogue("emperor_phase3", phase3Dialogue);
             m_dialogueSystem->addNamedDialogue("emperor_future_final", phasefinalDialogue);
             m_dialogueSystem->addNamedDialogue("emperor_future_defeated", phasedefeatedFutureDialogue);
+            m_dialogueSystem->addNamedDialogue("emperor_future_defeated2", phasedefeatedFutureDialogue2);
         } if (m_language == "Japanese") {
             std::vector<DialogueMessage> bossDialogue = {
                 {
@@ -4591,7 +4620,7 @@ void Scene_Play::initializeDialogues()
                 {
                     "皇帝",
                     "……",
-                    basePath + "future_emperor_3.png",
+                    basePath + "future_emperor_defeated.png",
                     false,
                     sf::Color::Cyan,
                     sf::Color::White,
@@ -4602,11 +4631,40 @@ void Scene_Play::initializeDialogues()
                     true
                 }
             };
+            std::vector<DialogueMessage> phasedefeatedFutureDialogue2 = {
+                {
+                    "Alien Legionary",
+                    "あいつ、もう動けそうにないな。。。",
+                    basePath + "alien_future.png",
+                    true,
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 400.f),
+                    900.f,
+                    150.f,
+                    30,
+                    true
+                },
+                {
+                    "Alien Legionary",
+                    "最後の一撃で力を使い果たしたか……？",
+                    basePath + "alien_future.png",
+                    true,
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 400.f),
+                    900.f,
+                    150.f,
+                    30,
+                    true
+                }
+            };
         
             m_dialogueSystem->addNamedDialogue("emperor_phase2", phase2Dialogue);
             m_dialogueSystem->addNamedDialogue("emperor_phase3", phase3Dialogue);
             m_dialogueSystem->addNamedDialogue("emperor_future_final", phasefinalDialogue);
             m_dialogueSystem->addNamedDialogue("emperor_future_defeated", phasedefeatedFutureDialogue);
+            m_dialogueSystem->addNamedDialogue("emperor_future_defeated2", phasedefeatedFutureDialogue2);
         }
     }
     else if (levelName ==  "future_rome_level_5_day_v2.txt") {
@@ -5761,8 +5819,6 @@ void Scene_Play::removeTileByID(const std::string& tileID) {
     }
 }
 
-void handleEmperorDeath(std::shared_ptr<Entity> emperor);
-
 void Scene_Play::handleEmperorDeath(std::shared_ptr<Entity> emperor) {
     if (!emperor || !emperor->has<CEnemyAI>() || !emperor->has<CTransform>() || !emperor->has<CHealth>()) {
         return;
@@ -5775,9 +5831,6 @@ void Scene_Play::handleEmperorDeath(std::shared_ptr<Entity> emperor) {
     // Only proceed if this is actually the Emperor and is dead
     if (health.currentHealth <= 0 && enemyAI.enemyType == EnemyType::Emperor) {
         // Set state to defeated if not already
-        if (enemyAI.enemyState != EnemyState::Defeated) {
-            enemyAI.enemyState = EnemyState::Defeated;
-            
             // Get the position where the emperor died
             Vec2<float> deathPosition = enemyTrans.pos;
             
@@ -5799,7 +5852,6 @@ void Scene_Play::handleEmperorDeath(std::shared_ptr<Entity> emperor) {
             
             // Destroy the emperor entity
             emperor->destroy();
-        }
     }
 }
 
@@ -5815,16 +5867,6 @@ void Scene_Play::lifeCheckEnemyDeath() {
 
         bool isOutOfBounds = (transform.pos.y > 1800);
         bool isDead        = (health.currentHealth <= 0);
-
-        // Skip if enemy is in defeated state
-        if (enemyAI.enemyState == EnemyState::Defeated) {
-            // Keep the bounding box, keep it on screen
-            transform.velocity.x = 0.f;
-            transform.velocity.y = 0.f;
-            std::cout << "[DEBUG] (Level4) Emperor health critical, removing pipe...\n";
-            removeTileByID("PipeTall_152");
-            continue;
-        }
 
         if (isOutOfBounds || isDead) {
             bool isEmperor = (enemy->has<CEnemyAI>() && enemy->get<CEnemyAI>().enemyType == EnemyType::Emperor);
