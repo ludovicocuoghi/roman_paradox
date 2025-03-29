@@ -4142,28 +4142,15 @@ void Scene_Play::initializeDialogues()
             std::vector<DialogueMessage> bossDialogue = {
                 {
                     "Emperor",
-                    "... And so you are back...",
+                    "WHO DARES SET FOOT IN MY DOMAIN?",
                     basePath + "future_emperor.png",
                     false,                                    // portraitOnLeft (right side)
                     sf::Color::Cyan,                           // speakerColor
                     sf::Color::White,                         // messageColor
-                    sf::Vector2f(800.f, 550.f),                // dialogueBoxPosition
-                    650.f,                                           // boxWidth - medium for medium message
+                    sf::Vector2f(600.f, 550.f),                // dialogueBoxPosition
+                    900.f,                                           // boxWidth - medium for medium message
                     150.f,                                           // boxHeight
-                    30,                                              // messageFontSize - still emphasized
-                    true                                             // useTypewriterEffect
-                },
-                {
-                    "Emperor",
-                    "I remember you... ",
-                    basePath + "future_emperor.png",
-                    false,
-                    sf::Color::Cyan,
-                    sf::Color::White,
-                    sf::Vector2f(800.f, 550.f),
-                    650.f,                                           // boxWidth - medium for medium message
-                    150.f,                                           // boxHeight
-                    30,                                              // messageFontSize - still emphasized
+                    40,                                              // messageFontSize - still emphasized
                     true                                             // useTypewriterEffect
                 }
             };
@@ -4171,90 +4158,101 @@ void Scene_Play::initializeDialogues()
             std::vector<DialogueMessage> bossDialogue2 = {
                 {
                     "Emperor",
-                    "Thousands of years ago you came here.. ",
+                    "NO...",
                     basePath + "future_emperor.png",
                     false,
                     sf::Color::Cyan,
                     sf::Color::White,
                     sf::Vector2f(800.f, 550.f),
-                    650.f,                                           // boxWidth - medium for medium message
+                    600.f,                                           // boxWidth - medium for medium message
                     150.f,                                           // boxHeight
-                    26,                                              // messageFontSize - still emphasized
+                    50,                                              // messageFontSize - still emphasized
                     true                                             // useTypewriterEffect
-                }
-                ,
+                },
                 {
                     "Emperor",
-                    ".. and I barely survived your wrath.",
+                    "...IT CAN'T BE...",
                     basePath + "future_emperor.png",
                     false,
                     sf::Color::Cyan,
                     sf::Color::White,
                     sf::Vector2f(800.f, 550.f),
-                    650.f,                                           // boxWidth - medium for medium message
+                    600.f,                                           // boxWidth - medium for medium message
                     150.f,                                           // boxHeight
-                    26,                                              // messageFontSize - still emphasized
+                    50,                                              // messageFontSize - still emphasized
                     true                                             // useTypewriterEffect
-                }
-                ,
+                },
                 {
                     "Emperor",
-                    "But this time..",
-                    basePath + "future_emperor.png",
-                    false,
-                    sf::Color::Cyan,
-                    sf::Color::White,
-                    sf::Vector2f(800.f, 550.f),
-                    650.f,                                           // boxWidth - medium for medium message
-                    150.f,                                           // boxHeight
-                    30,                                              // messageFontSize - still emphasized
-                    true                                             // useTypewriterEffect
-                }
-                ,
-                {
-                    "Emperor",
-                    "YOU WILL NOT SURVIVE!!!",
+                    "YOU...",
                     basePath + "future_emperor.png",
                     false,
                     sf::Color::Cyan,
                     sf::Color::Red,
                     sf::Vector2f(800.f, 550.f),
-                    650.f,                                           // boxWidth - medium for medium message
+                    550.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    70,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "Emperor",
+                    "FROM THE ANCIENT PAST...",
+                    basePath + "future_emperor.png",
+                    false,
+                    sf::Color::Cyan,
+                    sf::Color::White,
+                    sf::Vector2f(600.f, 550.f),
+                    800.f,                                           // boxWidth - medium for medium message
                     150.f,                                           // boxHeight
                     40,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+                ,
+                {
+                    "Emperor",
+                    "HOW DID YOU GET HERE??",
+                    basePath + "future_emperor.png",
+                    false,
+                    sf::Color::Cyan,
+                    sf::Color::Red,
+                    sf::Vector2f(600.f, 550.f),
+                    800.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    50,                                              // messageFontSize - still emphasized
                     true                                             // useTypewriterEffect
                 }
             };
             m_dialogueSystem->addDialogueTrigger(700, bossDialogue2);
             std::vector<DialogueMessage> phase2Dialogue = {
                 {
-                    "Emperor",                               // speaker
-                    "You are stronger than I expected...",    // message
-                    basePath + "future_emperor_2.png", // portraitPath (adjust path as needed)
-                    false,                                   // portraitOnLeft
-                    sf::Color::Cyan,                         // speakerColor
-                    sf::Color::White,                        // messageColor
-                    sf::Vector2f(800.f, 550.f),              // dialogueBoxPosition
-                    650.f,                                   // boxWidth
-                    150.f,                                   // boxHeight
-                    30,                                      // messageFontSize
-                    true                                     // useTypewriterEffect
+                    "Emperor",
+                    "I SPARED YOU ONCE BUT...",
+                    basePath + "future_emperor.png",
+                    false,
+                    sf::Color::Cyan,
+                    sf::Color::White,
+                    sf::Vector2f(600.f, 550.f),
+                    800.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    40,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
                 },
                 {
                     "Emperor",
-                    "But this is just the beginning!!",
-                    basePath + "future_emperor_2.png",
+                    "I WON'T MAKE THAT MISTAKE AGAIN!",
+                    basePath + "future_emperor.png",
                     false,
                     sf::Color::Cyan,
-                    sf::Color::Red,
-                    sf::Vector2f(800.f, 550.f),
-                    650.f,
-                    150.f,
-                    35,
-                    true
+                    sf::Color::White,
+                    sf::Vector2f(600.f, 550.f),
+                    900.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    40,                                              // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
                 }
             };
-            
             // Phase 3 dialogue (30% health)
             std::vector<DialogueMessage> phase3Dialogue = {
                 {
@@ -4264,25 +4262,55 @@ void Scene_Play::initializeDialogues()
                     false,                                   // portraitOnLeft
                     sf::Color::Cyan,                         // speakerColor
                     sf::Color::Red,                          // messageColor
-                    sf::Vector2f(800.f, 550.f),              // dialogueBoxPosition
-                    650.f,                                   // boxWidth
+                    sf::Vector2f(500.f, 400.f),              // dialogueBoxPosition
+                    750.f,                                   // boxWidth
                     150.f,                                   // boxHeight
-                    30,                                      // messageFontSize
+                    50,                                      // messageFontSize
                     true                                     // useTypewriterEffect
-                },
-                {
-                    "Emperor",
-                    "IT'S NOT OVER YET!!!",
-                    basePath + "future_emperor_3.png",
-                    false,
-                    sf::Color::Cyan,
-                    sf::Color::Red,
-                    sf::Vector2f(800.f, 550.f),
-                    650.f,
-                    150.f,
-                    40,
-                    true
                 }
+                ,
+                {
+                    "Alien Legionary",                    // speaker
+                    "Something's not right with him...",            // message
+                    basePath + "alien_future.png",       // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 400.f),
+                    900.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                                // messageFontSize - still emphasized
+                    true                                              // useTypewriterEffect
+                }
+                ,
+                {
+                    "Alien Legionary",                    // speaker
+                    "Those black holes are destroying everything...",            // message
+                    basePath + "alien_future.png",       // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 400.f),
+                    900.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                                // messageFontSize - still emphasized
+                    true                                              // useTypewriterEffect
+                }
+                ,
+                {
+                    "Alien Legionary",                              // speaker
+                    "I'd better finish this up quickly!!!",// message
+                    basePath + "alien_future.png",       // portraitPath
+                    true,                                            // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 400.f),
+                    900.f,                                           // boxWidth - medium for medium message
+                    150.f,                                           // boxHeight
+                    30,                                             // messageFontSize - still emphasized
+                    true                                             // useTypewriterEffect
+                }
+
             };
             // Phase 3 dialogue (30% health)
             std::vector<DialogueMessage> phasefinalDialogue = {
@@ -4293,7 +4321,7 @@ void Scene_Play::initializeDialogues()
                     false,                                   // portraitOnLeft
                     sf::Color::Cyan,                         // speakerColor
                     sf::Color::Red,                          // messageColor
-                    sf::Vector2f(800.f, 550.f),              // dialogueBoxPosition
+                    sf::Vector2f(600.f, 550.f),              // dialogueBoxPosition
                     650.f,                                   // boxWidth
                     150.f,                                   // boxHeight
                     30,                                      // messageFontSize
@@ -4306,7 +4334,7 @@ void Scene_Play::initializeDialogues()
                     false,
                     sf::Color::Cyan,
                     sf::Color::Red,
-                    sf::Vector2f(800.f, 550.f),
+                    sf::Vector2f(600.f, 550.f),
                     650.f,
                     150.f,
                     40,
@@ -4319,7 +4347,7 @@ void Scene_Play::initializeDialogues()
                     false,
                     sf::Color::Cyan,
                     sf::Color::Red,
-                    sf::Vector2f(800.f, 550.f),
+                    sf::Vector2f(600.f, 550.f),
                     650.f,
                     150.f,
                     50,
@@ -4350,171 +4378,195 @@ void Scene_Play::initializeDialogues()
             std::vector<DialogueMessage> bossDialogue = {
                 {
                     "皇帝",
-                    "...そして戻ってきたか...",
-                    basePath + "future_emperor.png",
-                    false,                                    // portraitOnLeft (right side)
-                    sf::Color::Cyan,                           // speakerColor
-                    sf::Color::White,                         // messageColor
-                    sf::Vector2f(800.f, 550.f),                // dialogueBoxPosition
-                    650.f,                                           // boxWidth - medium for medium message
-                    150.f,                                           // boxHeight
-                    30,                                              // messageFontSize - still emphasized
-                    true                                             // useTypewriterEffect
-                },
-                {
-                    "皇帝",
-                    "お前のことは覚えている...",
+                    "誰がこの領域に足を踏み入れた？",
                     basePath + "future_emperor.png",
                     false,
                     sf::Color::Cyan,
                     sf::Color::White,
-                    sf::Vector2f(800.f, 550.f),
-                    650.f,                                           // boxWidth - medium for medium message
-                    150.f,                                           // boxHeight
-                    30,                                              // messageFontSize - still emphasized
-                    true                                             // useTypewriterEffect
+                    sf::Vector2f(600.f, 550.f),
+                    900.f,
+                    150.f,
+                    40,
+                    true
                 }
             };
             m_dialogueSystem->addDialogueTrigger(500, bossDialogue);
+        
             std::vector<DialogueMessage> bossDialogue2 = {
                 {
                     "皇帝",
-                    "数千年前、お前はここに来た...",
+                    "まさか…",
                     basePath + "future_emperor.png",
                     false,
                     sf::Color::Cyan,
                     sf::Color::White,
                     sf::Vector2f(800.f, 550.f),
-                    650.f,                                           // boxWidth - medium for medium message
-                    150.f,                                           // boxHeight
-                    26,                                              // messageFontSize - still emphasized
-                    true                                             // useTypewriterEffect
-                }
-                ,
+                    600.f,
+                    150.f,
+                    50,
+                    true
+                },
                 {
                     "皇帝",
-                    "...私はかろうじてお前の怒りから生き延びた",
+                    "…そんなはずはない…！",
                     basePath + "future_emperor.png",
                     false,
                     sf::Color::Cyan,
                     sf::Color::White,
                     sf::Vector2f(800.f, 550.f),
-                    650.f,                                           // boxWidth - medium for medium message
-                    150.f,                                           // boxHeight
-                    26,                                              // messageFontSize - still emphasized
-                    true                                             // useTypewriterEffect
-                }
-                ,
+                    600.f,
+                    150.f,
+                    50,
+                    true
+                },
                 {
                     "皇帝",
-                    "だが今回は...",
-                    basePath + "future_emperor.png",
-                    false,
-                    sf::Color::Cyan,
-                    sf::Color::White,
-                    sf::Vector2f(800.f, 550.f),
-                    650.f,                                           // boxWidth - medium for medium message
-                    150.f,                                           // boxHeight
-                    30,                                              // messageFontSize - still emphasized
-                    true                                             // useTypewriterEffect
-                }
-                ,
-                {
-                    "皇帝",
-                    "お前は生き残れん！！！",
+                    "貴様…",
                     basePath + "future_emperor.png",
                     false,
                     sf::Color::Cyan,
                     sf::Color::Red,
                     sf::Vector2f(800.f, 550.f),
-                    650.f,                                           // boxWidth - medium for medium message
-                    150.f,                                           // boxHeight
-                    40,                                              // messageFontSize - still emphasized
-                    true                                             // useTypewriterEffect
+                    550.f,
+                    150.f,
+                    70,
+                    true
+                },
+                {
+                    "皇帝",
+                    "千年前の過去から来たのか…！",
+                    basePath + "future_emperor.png",
+                    false,
+                    sf::Color::Cyan,
+                    sf::Color::White,
+                    sf::Vector2f(600.f, 550.f),
+                    800.f,
+                    150.f,
+                    40,
+                    true
+                },
+                {
+                    "皇帝",
+                    "どうやってここまで来た！？",
+                    basePath + "future_emperor.png",
+                    false,
+                    sf::Color::Cyan,
+                    sf::Color::Red,
+                    sf::Vector2f(600.f, 550.f),
+                    800.f,
+                    150.f,
+                    50,
+                    true
                 }
             };
             m_dialogueSystem->addDialogueTrigger(700, bossDialogue2);
+        
             std::vector<DialogueMessage> phase2Dialogue = {
                 {
-                    "皇帝",                               // speaker
-                    "予想以上に強いようだな...",    // message
-                    basePath + "future_emperor_2.png", // portraitPath (adjust path as needed)
-                    false,                                   // portraitOnLeft
-                    sf::Color::Cyan,                         // speakerColor
-                    sf::Color::White,                        // messageColor
-                    sf::Vector2f(800.f, 550.f),              // dialogueBoxPosition
-                    650.f,                                   // boxWidth
-                    150.f,                                   // boxHeight
-                    30,                                      // messageFontSize
-                    true                                     // useTypewriterEffect
+                    "皇帝",
+                    "一度は命を見逃してやったが…",
+                    basePath + "future_emperor.png",
+                    false,
+                    sf::Color::Cyan,
+                    sf::Color::White,
+                    sf::Vector2f(600.f, 550.f),
+                    800.f,
+                    150.f,
+                    40,
+                    true
                 },
                 {
                     "皇帝",
-                    "だがこれはほんの始まりだ！！",
-                    basePath + "future_emperor_2.png",
+                    "今度はそうはいかん！",
+                    basePath + "future_emperor.png",
                     false,
                     sf::Color::Cyan,
-                    sf::Color::Red,
-                    sf::Vector2f(800.f, 550.f),
-                    650.f,
+                    sf::Color::White,
+                    sf::Vector2f(600.f, 550.f),
+                    900.f,
                     150.f,
-                    35,
+                    40,
                     true
                 }
             };
-            
-            // Phase 3 dialogue (30% health)
+        
             std::vector<DialogueMessage> phase3Dialogue = {
                 {
-                    "皇帝",                               // speaker
-                    "どうしてこれが可能だ！？",                           // message
-                    basePath + "future_emperor_3.png", // portraitPath
-                    false,                                   // portraitOnLeft
-                    sf::Color::Cyan,                         // speakerColor
-                    sf::Color::Red,                          // messageColor
-                    sf::Vector2f(800.f, 550.f),              // dialogueBoxPosition
-                    650.f,                                   // boxWidth
-                    150.f,                                   // boxHeight
-                    30,                                      // messageFontSize
-                    true                                     // useTypewriterEffect
-                },
-                {
                     "皇帝",
-                    "まだ終わっていない！！！",
+                    "なぜ…こんなことが…！？",
                     basePath + "future_emperor_3.png",
                     false,
                     sf::Color::Cyan,
                     sf::Color::Red,
-                    sf::Vector2f(800.f, 550.f),
-                    650.f,
+                    sf::Vector2f(500.f, 400.f),
+                    750.f,
                     150.f,
-                    40,
+                    50,
+                    true
+                },
+                {
+                    "エイリアン兵",
+                    "様子が変だ…",
+                    basePath + "alien_future.png",
+                    true,
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 400.f),
+                    900.f,
+                    150.f,
+                    30,
+                    true
+                },
+                {
+                    "エイリアン兵",
+                    "ブラックホールが全てを壊してる…！",
+                    basePath + "alien_future.png",
+                    true,
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 400.f),
+                    900.f,
+                    150.f,
+                    30,
+                    true
+                },
+                {
+                    "エイリアン兵",
+                    "急いで片付けないと！！",
+                    basePath + "alien_future.png",
+                    true,
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 400.f),
+                    900.f,
+                    150.f,
+                    30,
                     true
                 }
             };
-            // Phase 3 dialogue (30% health)
+        
             std::vector<DialogueMessage> phasefinalDialogue = {
                 {
-                    "皇帝",                               // speaker
-                    "あり得ない！！！",                           // message
-                    basePath + "future_emperor_3.png", // portraitPath
-                    false,                                   // portraitOnLeft
-                    sf::Color::Cyan,                         // speakerColor
-                    sf::Color::Red,                          // messageColor
-                    sf::Vector2f(800.f, 550.f),              // dialogueBoxPosition
-                    650.f,                                   // boxWidth
-                    150.f,                                   // boxHeight
-                    30,                                      // messageFontSize
-                    true                                     // useTypewriterEffect
-                },
-                {
                     "皇帝",
-                    "今こそ見せてやろう...",
+                    "ありえんッ！！",
                     basePath + "future_emperor_3.png",
                     false,
                     sf::Color::Cyan,
                     sf::Color::Red,
-                    sf::Vector2f(800.f, 550.f),
+                    sf::Vector2f(600.f, 550.f),
+                    650.f,
+                    150.f,
+                    30,
+                    true
+                },
+                {
+                    "皇帝",
+                    "見せてやるぞ…",
+                    basePath + "future_emperor_3.png",
+                    false,
+                    sf::Color::Cyan,
+                    sf::Color::Red,
+                    sf::Vector2f(600.f, 550.f),
                     650.f,
                     150.f,
                     40,
@@ -4522,34 +4574,35 @@ void Scene_Play::initializeDialogues()
                 },
                 {
                     "皇帝",
-                    "真の力を！",
+                    "真の力を！！",
                     basePath + "future_emperor_3.png",
                     false,
                     sf::Color::Cyan,
                     sf::Color::Red,
-                    sf::Vector2f(800.f, 550.f),
+                    sf::Vector2f(600.f, 550.f),
                     650.f,
                     150.f,
                     50,
                     true
                 }
             };
+        
             std::vector<DialogueMessage> phasedefeatedFutureDialogue = {
                 {
-                    "皇帝",                               // speaker
-                    "...",                           // message
-                    basePath + "future_emperor_3.png", // portraitPath
-                    false,                                   // portraitOnLeft
-                    sf::Color::Cyan,                         // speakerColor
-                    sf::Color::White,                          // messageColor
-                    sf::Vector2f(800.f, 550.f),              // dialogueBoxPosition
-                    650.f,                                   // boxWidth
-                    150.f,                                   // boxHeight
-                    30,                                      // messageFontSize
-                    true                                     // useTypewriterEffect
+                    "皇帝",
+                    "……",
+                    basePath + "future_emperor_3.png",
+                    false,
+                    sf::Color::Cyan,
+                    sf::Color::White,
+                    sf::Vector2f(800.f, 550.f),
+                    650.f,
+                    150.f,
+                    30,
+                    true
                 }
             };
-            // Add the named dialogues to our system
+        
             m_dialogueSystem->addNamedDialogue("emperor_phase2", phase2Dialogue);
             m_dialogueSystem->addNamedDialogue("emperor_phase3", phase3Dialogue);
             m_dialogueSystem->addNamedDialogue("emperor_future_final", phasefinalDialogue);
@@ -5311,10 +5364,10 @@ void Scene_Play::sDoAction(const Action& action)
                 }
             }
         }
-        // Toggle grid for debugging
-        // if (action.name() == "TOGGLE_GRID") {
-        //     m_showGrid = !m_showGrid;
-        // }
+        //Toggle grid for debugging
+        if (action.name() == "TOGGLE_GRID") {
+            m_showGrid = !m_showGrid;
+        }
         // Toggle Bouding Box for debugging
         // else if (action.name() == "TOGGLE_BB") {
         //     m_showBoundingBoxes = !m_showBoundingBoxes;

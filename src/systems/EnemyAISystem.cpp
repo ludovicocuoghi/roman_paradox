@@ -350,7 +350,7 @@ void EnemyAISystem::update(float deltaTime)
                             
                             // Scale the sprite - increase size for final attack
                             auto& sprite = massiveBlackHole->get<CAnimation>().animation.getMutableSprite();
-                            float scale_int = 8.0f;
+                            float scale_int = 10.0f;
                             sprite.setScale(scale_int, scale_int);
                             massiveBlackHole->add<CBoundingBox>(boxSize, halfSize);
                             

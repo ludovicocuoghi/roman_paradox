@@ -14,7 +14,7 @@ void CollisionSystem::updateCollisions() {
     if (m_score >=100) {
         for (auto& player : m_entityManager.getEntities("player")) {
             auto& health = player->get<CHealth>();
-            health.heal(100);
+            health.heal(health.maxHealth);
         m_score -=100;
         }
     }
@@ -791,7 +791,7 @@ void CollisionSystem::handleBlackHoleTileCollisions() {
                 std::string blackHoleAnimName = blackHole->get<CAnimation>().animation.getName();
                 
                 // Protect tiles beyond x=3744 only in the emperor room level
-                bool protectedTile = (m_levelPath.find("future_rome_level_4_emperor_room") != std::string::npos && (tileTrans.pos.x < 400 || tileTrans.pos.x > 3600 ||  tileTrans.pos.y < 400));
+                bool protectedTile = (m_levelPath.find("future_rome_level_4_emperor_room") != std::string::npos && (tileTrans.pos.x < 400 || tileTrans.pos.x > 3600 ||  tileTrans.pos.y < 300));
                 if (protectedTile) {
                     continue;
                 }
