@@ -1,3 +1,4 @@
+# World: Ancient
 Tile Ground 0 0
 Tile Ground 1 0
 Tile Ground 3 0
@@ -183,7 +184,6 @@ Tile Ground 89 1
 Tile Ground 78 1
 Tile Ground 78 0
 Tile Ground 86 0
-Tile Treasure 82 8
 Tile Ground 91 0
 Tile Ground 92 0
 Tile Ground 94 0
@@ -892,15 +892,8 @@ Tile Ground 29 32
 Tile Ground 28 33
 Tile Ground 28 34
 Tile Ground 27 35
-Tile Ground 66 4
-Tile Ground 67 4
-Tile Ground 68 4
-Tile Ground 69 4
-Tile Ground 70 4
-Tile Ground 65 3
 Tile Ground 65 2
 Tile Ground 65 1
-Tile Ground 71 3
 Tile Ground 71 2
 Tile Ground 71 1
 Tile Ground 71 0
@@ -913,9 +906,6 @@ Tile Ground 73 1
 Tile Ground 63 1
 Tile Ground 74 1
 Tile Ground 75 1
-Tile Box2 81 5
-Tile Box2 83 5
-Tile Box1 82 5
 Tile Ground 123 2
 Tile Box2 146 4
 Tile Ground 110 21
@@ -993,6 +983,17 @@ Tile Ground 100 20
 Tile Ground 104 19
 Tile Treasure 50 17
 Tile Treasure 51 17
+Tile Ground 66 2
+Tile Ground 67 2
+Tile Ground 69 2
+Tile Ground 70 2
+Tile Ground 68 2
+Tile Box1 76 5
+Tile Box1 79 5
+Tile Box1 80 5
+Tile Box1 78 5
+Tile Box1 77 5
+Tile Treasure 78 8
 Player 1 16
 Dec BushTall 0 19
 Dec BushTall 2 19
@@ -1092,9 +1093,9 @@ Dec CloudBig 113 15
 Dec CloudBig 114 14
 Dec CloudBig 123 22
 Dec BushTall 98 25
-Dec BushTall 66 8
-Dec BushTall 70 8
 Dec BushTall 113 25
+Dec BushTall 64 6
+Dec BushTall 72 6
 Enemy EnemyFast 22 1
 Enemy EnemyFast 26 1
 Enemy EnemyNormal 10 1
@@ -1114,5 +1115,5 @@ Enemy EnemyNormal 105 22
 Enemy EnemyNormal 128 2
 Enemy EnemyNormal 11 16
 Enemy EnemyNormal 52 15
-Enemy EnemyNormal 68 5
 Enemy EnemyNormal 78 2
+Enemy EnemyNormal 67 3

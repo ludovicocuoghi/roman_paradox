@@ -308,9 +308,6 @@ Tile Ground 1 19
 Tile Ground 33 16
 Tile Ground 36 16
 Tile Ground 40 16
-Tile Ground 39 4
-Tile Ground 37 7
-Tile Ground 38 6
 Tile Ground 15 7
 Tile Ground 5 4
 Tile Ground 9 4
@@ -438,6 +435,8 @@ Tile Ground 46 22
 Tile Ground 46 24
 Tile Ground 46 23
 Tile Ground 46 25
+Tile Ground 37 7
+Tile Ground 40 4
 Player 1 2
 Dec PipeTall 0 5
 Dec PipeTall 1 5

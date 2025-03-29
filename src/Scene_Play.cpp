@@ -321,8 +321,8 @@ void Scene_Play::initializeDialogues()
                     false,                                           // portraitOnLeft
                     sf::Color::Yellow,                               // speakerColor
                     sf::Color::Red,                                  // messageColor
-                    sf::Vector2f(800.f, 450.f),                      // dialogueBoxPosition
-                    650.f,                                           // boxWidth - compact for short message
+                    sf::Vector2f(700.f, 450.f),                      // dialogueBoxPosition
+                    750.f,                                           // boxWidth - compact for short message
                     150.f,                                           // boxHeight
                     50,                                              // messageFontSize - larger for emphasis
                     true                                            // useTypewriterEffect - immediate display
@@ -334,8 +334,8 @@ void Scene_Play::initializeDialogues()
                     false,
                     sf::Color::Yellow,
                     sf::Color::Red,
-                    sf::Vector2f(800.f, 450.f),
-                    650.f,                                           // boxWidth - medium for medium message
+                    sf::Vector2f(700.f, 450.f),
+                    750.f,                                           // boxWidth - medium for medium message
                     150.f,                                           // boxHeight
                     40,                                              // messageFontSize - still emphasized
                     true                                             // useTypewriterEffect
@@ -348,7 +348,7 @@ void Scene_Play::initializeDialogues()
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 200.f),
-                    1100.f,                                           // boxWidth - medium for medium message
+                    900.f,                                           // boxWidth - medium for medium message
                     150.f,                                           // boxHeight
                     40,                                             // messageFontSize - still emphasized
                     true                                             // useTypewriterEffect
@@ -362,7 +362,7 @@ void Scene_Play::initializeDialogues()
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 200.f),
-                    1100.f,                                           // boxWidth - medium for medium message
+                    900.f,                                           // boxWidth - medium for medium message
                     150.f,                                           // boxHeight
                     40,                                             // messageFontSize - still emphasized
                     true                                             // useTypewriterEffect
@@ -448,8 +448,8 @@ void Scene_Play::initializeDialogues()
                     false,                                           // portraitOnLeft
                     sf::Color::Yellow,                               // speakerColor
                     sf::Color::Red,                                  // messageColor
-                    sf::Vector2f(800.f, 450.f),                      // dialogueBoxPosition
-                    650.f,                                           // boxWidth - compact for short message
+                    sf::Vector2f(700.f, 450.f),
+                    750.f,                                             // boxWidth - compact for short message
                     150.f,                                           // boxHeight
                     50,                                              // messageFontSize - larger for emphasis
                     true                                            // useTypewriterEffect - immediate display
@@ -461,8 +461,8 @@ void Scene_Play::initializeDialogues()
                     false,
                     sf::Color::Yellow,
                     sf::Color::Red,
-                    sf::Vector2f(800.f, 450.f),
-                    650.f,                                           // boxWidth - medium for medium message
+                    sf::Vector2f(700.f, 450.f),
+                    750.f,                                          // boxWidth - medium for medium message
                     150.f,                                           // boxHeight
                     40,                                              // messageFontSize - still emphasized
                     true                                             // useTypewriterEffect
@@ -535,8 +535,8 @@ void Scene_Play::initializeDialogues()
                     false,                                            // portraitOnLeft
                     sf::Color::Yellow,
                     sf::Color::Red,
-                    sf::Vector2f(800.f, 500.f),
-                    650.f,                                           // boxWidth - medium for medium message
+                    sf::Vector2f(700.f, 450.f),
+                    750.f,                                             // boxWidth - medium for medium message
                     150.f,                                           // boxHeight
                     40,                                              // messageFontSize - still emphasized
                     true                                             // useTypewriterEffect
@@ -548,8 +548,8 @@ void Scene_Play::initializeDialogues()
                     false,                                            // portraitOnLeft
                     sf::Color::Yellow,
                     sf::Color::Red,
-                    sf::Vector2f(800.f, 500.f),
-                    650.f,                                           // boxWidth - medium for medium message
+                    sf::Vector2f(700.f, 450.f),
+                    750.f,                                              // boxWidth - medium for medium message
                     150.f,                                           // boxHeight
                     40,                                              // messageFontSize - still emphasized
                     true                                             // useTypewriterEffect
@@ -1207,13 +1207,13 @@ void Scene_Play::initializeDialogues()
                 },
                 {
                     "Alien Legionary",                               // speaker
-                    "could it be possible that I moved to the dark warrios..",            // message
+                    "could it be possible that I moved to the dark warriors...",            // message
                     basePath + "alien_ancient.png",        // portraitPath
                     true,                                            // portraitOnLeft
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 400.f),
-                    1000.f,                                           // boxWidth - medium for medium message
+                    1050.f,                                           // boxWidth - medium for medium message
                     150.f,                                           // boxHeight
                     30,                                              // messageFontSize - still emphasized
                     true                                             // useTypewriterEffect
@@ -1663,7 +1663,7 @@ void Scene_Play::initializeDialogues()
             std::vector<DialogueMessage> Dialogue1 = {
                 {
                     "Alien Legionary",                               // speaker
-                    "I think I really am in the past..",            // message
+                    "I think I really am in the past...",            // message
                     basePath + "alien_ancient.png",        // portraitPath
                     true,                                            // portraitOnLeft
                     sf::Color::Magenta,
@@ -1676,7 +1676,7 @@ void Scene_Play::initializeDialogues()
                 },
                 {
                     "Alien Legionary",                               // speaker
-                    "I guess I should continue exploring..",            // message
+                    "I guess I should continue exploring...",            // message
                     basePath + "alien_ancient.png",        // portraitPath
                     true,                                            // portraitOnLeft
                     sf::Color::Magenta,
@@ -2107,7 +2107,7 @@ void Scene_Play::initializeDialogues()
                     "Alien Legionary",                               // speaker
                     "I came from the future...!!",            // message
                     basePath + "alien_ancient.png",       // portraitPath
-                    false,                                            // portraitOnLeft
+                    true,                                            // portraitOnLeft
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 500.f),
@@ -2121,7 +2121,7 @@ void Scene_Play::initializeDialogues()
                     "Alien Legionary",                              // speaker
                     "Your future kingdom invaded my planet",            // message
                     basePath + "alien_ancient.png",       // portraitPath
-                    false,                                            // portraitOnLeft
+                    true,                                            // portraitOnLeft
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 500.f),
@@ -2135,7 +2135,7 @@ void Scene_Play::initializeDialogues()
                     "Alien Legionary",                              // speaker
                     "And I came here through a black hole while escaping...",            // message
                     basePath + "alien_ancient.png",       // portraitPath
-                    false,                                            // portraitOnLeft
+                    true,                                            // portraitOnLeft
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 500.f),
@@ -4743,7 +4743,7 @@ void Scene_Play::initializeDialogues()
                 },
                 {
                     "Alien Legionary",                               // speaker
-                    "but I had no other choices..",            // message
+                    "but I had no other choice..",            // message
                     basePath + "alien_ancient.png",       // portraitPath
                     true,                                            // portraitOnLeft
                     sf::Color::Magenta,
@@ -5820,38 +5820,25 @@ void Scene_Play::removeTileByID(const std::string& tileID) {
 }
 
 void Scene_Play::handleEmperorDeath(std::shared_ptr<Entity> emperor) {
-    if (!emperor || !emperor->has<CEnemyAI>() || !emperor->has<CTransform>() || !emperor->has<CHealth>()) {
-        return;
+    // Only spawn grave and destroy emperor if in Future world
+    auto& enemyHealth= emperor->get<CHealth>();
+
+    if (m_game.worldType == "Future" &&enemyHealth.currentHealth <= 0) {
+        auto& enemyTrans = emperor->get<CTransform>();
+    
+        Vec2<float> deathPosition = enemyTrans.pos;
+        
+        m_spawner.spawnEnemyGrave(deathPosition, true); // true = isEmperor
+        
+        std::cout << "[DEBUG] Future Emperor defeated. Grave spawned at position (" 
+                    << deathPosition.x << "," << deathPosition.y << ")\n";
+                
+        emperor->destroy();
     }
-    
-    auto& enemyAI = emperor->get<CEnemyAI>();
-    auto& enemyTrans = emperor->get<CTransform>();
-    auto& health = emperor->get<CHealth>();
-    
-    // Only proceed if this is actually the Emperor and is dead
-    if (health.currentHealth <= 0 && enemyAI.enemyType == EnemyType::Emperor) {
-        // Set state to defeated if not already
-            // Get the position where the emperor died
-            Vec2<float> deathPosition = enemyTrans.pos;
-            
-            // Spawn the emperor's grave at the same position
-            m_spawner.spawnEnemyGrave(deathPosition, true); // true = isEmperor
-            
-            std::cout << "[DEBUG] Emperor defeated. Grave spawned at position (" 
-                      << deathPosition.x << "," << deathPosition.y << ")\n";
-            
-            std::string levelName = extractLevelName(m_levelPath);
-            if (levelName.find("emperor_room") != std::string::npos) {
-                // Check world type to find the appropriate pipe ID
-                if (m_game.worldType == "Future") {
-                    removeTileByID("PipeTall_148"); // Future emperor room pipe
-                } else {
-                    removeTileByID("PipeTall_150"); // Ancient emperor room pipe
-                }
-            }
-            
-            // Destroy the emperor entity
-            emperor->destroy();
+    if (m_game.worldType == "Future") {
+        removeTileByID("PipeTall_148"); // Future emperor room pipe
+    } else {
+        removeTileByID("PipeTall_152"); // Ancient emperor room pipe
     }
 }
 
@@ -5867,22 +5854,18 @@ void Scene_Play::lifeCheckEnemyDeath() {
 
         bool isOutOfBounds = (transform.pos.y > 1800);
         bool isDead        = (health.currentHealth <= 0);
+        bool isDefeated = (enemyAI.enemyState == EnemyState::Defeated);
 
-        if (isOutOfBounds || isDead) {
+        if (isOutOfBounds || isDead || isDefeated) {
             bool isEmperor = (enemy->has<CEnemyAI>() && enemy->get<CEnemyAI>().enemyType == EnemyType::Emperor);
-
-            // std::cout << "[DEBUG] Enemy ID " << enemy->id() << " is dead! Spawning " 
-            //           << (isEmperor ? "Emperor" : "normal") << " grave...\n";
-            
-
-            //Spawn the correct grave type
-            m_spawner.spawnEnemyGrave(transform.pos, isEmperor);
-
             if (isEmperor) {
                 // Use the specialized emperor death handler
                 handleEmperorDeath(enemy);
             } else {
                 // Handle unique enemy ID logic (e.g., tile removal)
+                //Spawn the correct grave type
+                m_spawner.spawnEnemyGrave(transform.pos, isEmperor);
+
                 if (enemy->has<CUniqueID>()) {
                     auto& uniqueID = enemy->get<CUniqueID>();
                     std::string levelName = extractLevelName(m_levelPath);

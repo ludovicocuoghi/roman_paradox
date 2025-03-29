@@ -1,3 +1,4 @@
+# World: Future
 Tile Ground 0 0
 Tile Ground 1 0
 Tile Ground 2 0
@@ -411,8 +412,6 @@ Tile Treasure 99 6
 Tile Treasure 118 11
 Tile Treasure 117 11
 Player 2 10
-Dec BushTall 2 5
-Dec BushTall 0 5
 Dec BushSmall 21 2
 Dec BushTall 48 5
 Dec BushTall 52 5
@@ -428,6 +427,8 @@ Dec BushTall 139 5
 Dec BushTall 138 5
 Dec BushTall 62 7
 Dec BushTall 64 7
+Dec BushTall 3 5
+Dec BushTall 1 5
 Enemy EnemyNormal 104 2
 Enemy EnemyNormal 118 6
 Enemy EnemyNormal 130 2

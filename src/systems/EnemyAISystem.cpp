@@ -430,8 +430,8 @@ void EnemyAISystem::update(float deltaTime)
                         enemyAI.finalBurstTimer = 0.f;
                         enemyAI.burstCount = 0;
                         enemyAI.defeatTimer = 0.f; // Initialize the timer
-                        
                         std::cout << "[DEBUG] Ancient Emperor entering final attack state!\n";
+                        
                     }
                     enemyTrans.velocity.x = 0.f;
                     enemyTrans.velocity.y = 0.f;

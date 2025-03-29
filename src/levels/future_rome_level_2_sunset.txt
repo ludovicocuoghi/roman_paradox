@@ -1,3 +1,4 @@
+# World: Future
 Tile Ground 0 0
 Tile Ground 1 0
 Tile Ground 2 0
@@ -412,8 +413,6 @@ Dec BushTall 130 5
 Dec BushTall 129 5
 Dec BushTall 128 5
 Dec BushTall 104 11
-Dec BushTall 77 11
-Dec BushTall 79 11
 Dec BushTall 30 7
 Dec BushSmall 65 2
 Dec BushSmall 57 2
