@@ -922,7 +922,7 @@ void Scene_Play::initializeDialogues()
                     "I heard black holes allow travel through space-time...",            // message
                     basePath + "alien_ancient.png",        // portraitPath
                     true,                                            // portraitOnLeft
-                    sf::Color::Yellow,
+                    sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 400.f),
                     1000.f,                                           // boxWidth - medium for medium message
@@ -5738,7 +5738,7 @@ void Scene_Play::handleEmperorDeath(std::shared_ptr<Entity> emperor) {
             if (levelName.find("emperor_room") != std::string::npos) {
                 // Check world type to find the appropriate pipe ID
                 if (m_game.worldType == "Future") {
-                    removeTileByID("PipeTall_151"); // Future emperor room pipe
+                    removeTileByID("PipeTall_148"); // Future emperor room pipe
                 } else {
                     removeTileByID("PipeTall_150"); // Ancient emperor room pipe
                 }

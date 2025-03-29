@@ -135,9 +135,6 @@ public:
     // Emperor enemy attack params
 
     // Emperor enemy attack params
-    static constexpr int   EMPEROR_RADIAL_BULLETS_COUNT = 8;  // Number of bullets in a radial pattern
-    static constexpr float EMPEROR_RADIAL_BULLETS_RADIUS = 50.f;  // Spawn radius for bullets
-    static constexpr float EMPEROR_RADIAL_BULLETS_SPEED = 350.f;  // Speed of radial bullets
     static constexpr float BULLET_DURATION = 3.0f;  // Lifetime of bullets
 
     // Existing emperor params

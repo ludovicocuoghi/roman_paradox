@@ -224,6 +224,7 @@ void EnemyAISystem::update(float deltaTime)
                 skipAttack = true;
             }
             }
+
             // 2) Emperor-Specific Logic
             if (enemyAI.enemyType == EnemyType::Emperor)
             {
@@ -344,7 +345,7 @@ void EnemyAISystem::update(float deltaTime)
                             
                             // Configure size
                             sf::Vector2i animSize = blackHoleAnim.getSize();
-                            Vec2<float> boxSize(animSize.x * 3.1, animSize.y * 3.1);
+                            Vec2<float> boxSize(animSize.x * 2.6, animSize.y * 2.6);
                             Vec2<float> halfSize(boxSize.x * 0.5f, boxSize.y * 0.5f);
                             
                             // Scale the sprite - increase size for final attack
@@ -589,20 +590,21 @@ void EnemyAISystem::update(float deltaTime)
             // Update phase based on healthPercentage (only for Future world)
             if (m_game.worldType == "Future" && enemy->has<CBossPhase>()) {
                 auto& bossPhase = enemy->get<CBossPhase>().phase;
-                if (healthPercentage > 0.7f && bossPhase != BossPhase::Phase1) {
+                if (healthPercentage > 0.8f && bossPhase != BossPhase::Phase1) {
                     bossPhase = BossPhase::Phase1;
-                } else if (healthPercentage <= 0.7f && healthPercentage > 0.4f && bossPhase != BossPhase::Phase2) {
+                } else if (healthPercentage <= 0.8f && healthPercentage > 0.5f && bossPhase != BossPhase::Phase2) {
                     bossPhase = BossPhase::Phase2;
                     // Trigger phase 2 dialogue if dialogue system is available
                     if (m_dialogueSystem && m_triggeredDialogues.find("emperor_phase2") == m_triggeredDialogues.end()) {
                         m_dialogueSystem->triggerDialogueByID("emperor_phase2");
                         m_triggeredDialogues["emperor_phase2"] = true;
                     }
-                } else if (healthPercentage <= 0.4f && bossPhase != BossPhase::Phase3) {
+                } else if (healthPercentage <= 0.5f &&  bossPhase != BossPhase::Phase3) {
                     bossPhase = BossPhase::Phase3;
                     // Trigger phase 3 dialogue if dialogue system is available
                     if (m_dialogueSystem && m_triggeredDialogues.find("emperor_phase3") == m_triggeredDialogues.end()) {
                         m_dialogueSystem->triggerDialogueByID("emperor_phase3");
+                        
                         m_triggeredDialogues["emperor_phase3"] = true;
                     }
                 }
@@ -611,9 +613,8 @@ void EnemyAISystem::update(float deltaTime)
             // Normal attacks based on health percentage
             if (enemyAI.enemyState != EnemyState::FinalAttack) {
                 if (m_game.worldType == "Future") {
-                    // FUTURE EMPEROR ATTACKS
-                    // Phase 1: Continuous firing for 3 seconds, then 10-second cooldown
-                    if (healthPercentage > 0.7f) {
+                    // Phase 1: 100-80% health - Shoots normal bullets in radial pattern
+                    if (healthPercentage > 0.8f) {
                         // Track total time in current state (either firing or cooldown)
                         enemyAI.phaseTimer += deltaTime;
                         
@@ -640,7 +641,6 @@ void EnemyAISystem::update(float deltaTime)
                                 enemyAI.phaseTimer = 0.f;
                                 enemyAI.burstCooldownActive = true;
                                 enemyAI.radialAttackTimer = 0.f; // Reset the attack timer
-                                // std::cout << "[DEBUG] Emperor Phase 1: 3-second firing complete, entering cooldown\n";
                             }
                         } else {
                             // COOLDOWN PHASE - lasts for 10 seconds
@@ -649,12 +649,11 @@ void EnemyAISystem::update(float deltaTime)
                             if (enemyAI.phaseTimer >= 10.0f) {
                                 enemyAI.phaseTimer = 0.f;
                                 enemyAI.burstCooldownActive = false;
-                                // std::cout << "[DEBUG] Emperor Phase 1: 10-second cooldown ended, resuming firing\n";
                             }
                         }
                     }
-                    // Phase 2: Stronger bullets with longer firing period and shorter cooldown (70-50% health)
-                    else if (healthPercentage <= 0.8f && healthPercentage > 0.6f) {
+                    // Phase 2: 80-70% health - Horizontal bullets and sometimes black holes toward player
+                    else if (healthPercentage <= 0.8f && healthPercentage > 0.7f) {
                         // Track total time in current state
                         enemyAI.phaseTimer += deltaTime;
                         
@@ -664,19 +663,56 @@ void EnemyAISystem::update(float deltaTime)
                         if (!enemyAI.burstCooldownActive) {
                             // FIRING PHASE - lasts for 4 seconds
                             
-                            // Fire a radial burst every 0.6 seconds
+                            // Fire horizontal bullets every 0.8 seconds
                             enemyAI.radialAttackTimer += deltaTime;
-                            if (enemyAI.radialAttackTimer >= 0.6f) {
+                            if (enemyAI.radialAttackTimer >= 0.8f) {
                                 enemyAI.radialAttackTimer = 0.f;
                                 
-                                // Spawn a radial burst with more bullets
-                                m_spawner->spawnEmperorBulletsRadial(
-                                    enemy,
-                                    EMPEROR_RADIAL_BULLETS_COUNT * 1.5, // 50% more bullets
-                                    EMPEROR_RADIAL_BULLETS_RADIUS,
-                                    EMPEROR_RADIAL_BULLETS_SPEED,
-                                    "Emperor" 
-                                );
+                                // Spawn horizontal bullets (only 0 and 180 degrees)
+                                auto& eTrans = enemy->get<CTransform>();
+                                float bulletSpeed = EMPEROR_RADIAL_BULLETS_SPEED;
+                                
+                                // Spawn bullet going right (0 degrees)
+                                {
+                                    auto bullet = m_entityManager.addEntity("enemyBullet");
+                                    bullet->add<CTransform>(eTrans.pos);
+                                    bullet->add<CLifeSpan>(8.0f);
+                                    bullet->add<CState>(std::to_string(enemy->id()));
+                                    
+                                    std::string bulletType = "Emperor";
+                                    if (m_game.assets().hasAnimation(bulletType + "Bullet")) {
+                                        auto& bulletAnim = m_game.assets().getAnimation(bulletType + "Bullet");
+                                        bullet->add<CAnimation>(bulletAnim, true);
+                                        
+                                        sf::Vector2i animSize = bulletAnim.getSize();
+                                        Vec2<float> boxSize(animSize.x, animSize.y);
+                                        Vec2<float> halfSize(boxSize.x * 0.5f, boxSize.y * 0.5f);
+                                        bullet->add<CBoundingBox>(boxSize, halfSize);
+                                    }
+                                    
+                                    bullet->get<CTransform>().velocity = Vec2<float>(bulletSpeed, 0);
+                                }
+                                
+                                // Spawn bullet going left (180 degrees)
+                                {
+                                    auto bullet = m_entityManager.addEntity("enemyBullet");
+                                    bullet->add<CTransform>(eTrans.pos);
+                                    bullet->add<CLifeSpan>(8.0f);
+                                    bullet->add<CState>(std::to_string(enemy->id()));
+                                    
+                                    std::string bulletType = "Emperor";
+                                    if (m_game.assets().hasAnimation(bulletType + "Bullet")) {
+                                        auto& bulletAnim = m_game.assets().getAnimation(bulletType + "Bullet");
+                                        bullet->add<CAnimation>(bulletAnim, true);
+                                        
+                                        sf::Vector2i animSize = bulletAnim.getSize();
+                                        Vec2<float> boxSize(animSize.x, animSize.y);
+                                        Vec2<float> halfSize(boxSize.x * 0.5f, boxSize.y * 0.5f);
+                                        bullet->add<CBoundingBox>(boxSize, halfSize);
+                                    }
+                                    
+                                    bullet->get<CTransform>().velocity = Vec2<float>(-bulletSpeed, 0);
+                                }
                             }
                             
                             // After 4 seconds of firing, switch to cooldown mode
@@ -684,127 +720,6 @@ void EnemyAISystem::update(float deltaTime)
                                 enemyAI.phaseTimer = 0.f;
                                 enemyAI.burstCooldownActive = true;
                                 enemyAI.radialAttackTimer = 0.f;
-                                // std::cout << "[DEBUG] Emperor Phase 2: 4-second firing complete, entering cooldown\n";
-                            }
-                        } else {
-                            // COOLDOWN PHASE - lasts for 8 seconds
-                            
-                            // After 8 seconds of cooldown, switch back to firing mode
-                            if (enemyAI.phaseTimer >= 8.0f) {
-                                enemyAI.phaseTimer = 0.f;
-                                enemyAI.burstCooldownActive = false;
-                                // std::cout << "[DEBUG] Emperor Phase 2: 8-second cooldown ended, resuming firing\n";
-                            }
-                        }
-                        
-                        // BLACK HOLE ATTACK: 2 directions (0 and 180 degrees) every 30 seconds
-                        if (enemyAI.blackHoleTimer >= 10.0f) {
-                            enemyAI.blackHoleTimer = 0.f;
-                            
-                            // Manual spawning for 2 black holes in opposite directions
-                            auto& eTrans = enemy->get<CTransform>();
-                            float centerX = eTrans.pos.x;
-                            float centerY = eTrans.pos.y;
-                            float radius = EMPEROR_RADIAL_BULLETS_RADIUS * 0.8f;
-                            float blackHoleSpeed = EMPEROR_RADIAL_BULLETS_SPEED * 0.3f;
-                            
-                            // Spawn black hole at 0 degrees (right)
-                            {
-                                float angleDeg = 0.f;
-                                float angleRad = angleDeg * 3.1415926535f / 180.f;
-                                float offsetX = std::cos(angleRad) * radius;
-                                float offsetY = std::sin(angleRad) * radius;
-                                Vec2<float> spawnPos(centerX + offsetX, centerY + offsetY);
-                                
-                                auto blackHole = m_entityManager.addEntity("emperorBlackHole");
-                                blackHole->add<CTransform>(spawnPos);
-                                blackHole->add<CLifeSpan>(5.0f);
-                                blackHole->add<CState>(std::to_string(enemy->id()));
-                                
-                                std::string animName = "AlienBlackHoleAttack";
-                                if (m_game.assets().hasAnimation(animName)) {
-                                    auto& blackHoleAnim = m_game.assets().getAnimation(animName);
-                                    blackHole->add<CAnimation>(blackHoleAnim, true);
-                                    
-                                    sf::Vector2i animSize = blackHoleAnim.getSize();
-                                    Vec2<float> boxSize(animSize.x, animSize.y);
-                                    Vec2<float> halfSize(boxSize.x * 0.5f, boxSize.y * 0.5f);
-                                    blackHole->add<CBoundingBox>(boxSize, halfSize);
-                                }
-                                
-                                float vx = std::cos(angleRad) * blackHoleSpeed;
-                                float vy = std::sin(angleRad) * blackHoleSpeed;
-                                blackHole->get<CTransform>().velocity = Vec2<float>(vx, vy);
-                            }
-                            
-                            // Spawn black hole at 180 degrees (left)
-                            {
-                                float angleDeg = 180.f;
-                                float angleRad = angleDeg * 3.1415926535f / 180.f;
-                                float offsetX = std::cos(angleRad) * radius;
-                                float offsetY = std::sin(angleRad) * radius;
-                                Vec2<float> spawnPos(centerX + offsetX, centerY + offsetY);
-                                
-                                auto blackHole = m_entityManager.addEntity("emperorBlackHole");
-                                blackHole->add<CTransform>(spawnPos);
-                                blackHole->add<CLifeSpan>(5.0f);
-                                blackHole->add<CState>(std::to_string(enemy->id()));
-                                
-                                std::string animName = "AlienBlackHoleAttack";
-                                if (m_game.assets().hasAnimation(animName)) {
-                                    auto& blackHoleAnim = m_game.assets().getAnimation(animName);
-                                    blackHole->add<CAnimation>(blackHoleAnim, true);
-                                    
-                                    sf::Vector2i animSize = blackHoleAnim.getSize();
-                                    Vec2<float> boxSize(animSize.x, animSize.y);
-                                    Vec2<float> halfSize(boxSize.x * 0.5f, boxSize.y * 0.5f);
-                                    blackHole->add<CBoundingBox>(boxSize, halfSize);
-                                }
-                                
-                                float vx = std::cos(angleRad) * blackHoleSpeed;
-                                float vy = std::sin(angleRad) * blackHoleSpeed;
-                                blackHole->get<CTransform>().velocity = Vec2<float>(vx, vy);
-                            }
-                            
-                            // std::cout << "[DEBUG] Emperor Phase 2 (70-50%): Black hole attack - 2 directions\n";
-                        }
-                    }
-                    // Phase 3: Alternating bullet types with increased firing rate (50-30% health)
-                    else if (healthPercentage <= 0.6f && healthPercentage > 0.5f) {
-                        // Track total time in current state
-                        enemyAI.phaseTimer += deltaTime;
-                        
-                        // Track black hole timer
-                        enemyAI.blackHoleTimer += deltaTime;
-                        
-                        if (!enemyAI.burstCooldownActive) {
-                            // FIRING PHASE - lasts for 5 seconds
-                            
-                            // Fire a radial burst every 0.6 seconds
-                            enemyAI.radialAttackTimer += deltaTime;
-                            if (enemyAI.radialAttackTimer >= 0.6f) {
-                                enemyAI.radialAttackTimer = 0.f;
-                                
-                                // Alternate between Elite (black) and Strong (red) bullets
-                                std::string bulletType = (enemyAI.burstCount % 2 == 0) ? "Elite" : "Strong";
-                                enemyAI.burstCount++; // Just used for alternating bullet types
-                                
-                                m_spawner->spawnEmperorBulletsRadial(
-                                    enemy,
-                                    EMPEROR_RADIAL_BULLETS_COUNT * 1.8, // 80% more bullets
-                                    EMPEROR_RADIAL_BULLETS_RADIUS,
-                                    EMPEROR_RADIAL_BULLETS_SPEED * 1.1f, // 10% faster bullets
-                                    bulletType
-                                );
-                            }
-                            
-                            // After 5 seconds of firing, switch to cooldown mode
-                            if (enemyAI.phaseTimer >= 5.0f) {
-                                enemyAI.phaseTimer = 0.f;
-                                enemyAI.burstCooldownActive = true;
-                                enemyAI.radialAttackTimer = 0.f;
-                                // Keep burstCount as is (don't reset) to maintain bullet type alternation
-                                // std::cout << "[DEBUG] Emperor Phase 3: 5-second firing complete, entering cooldown\n";
                             }
                         } else {
                             // COOLDOWN PHASE - lasts for 6 seconds
@@ -813,38 +728,49 @@ void EnemyAISystem::update(float deltaTime)
                             if (enemyAI.phaseTimer >= 6.0f) {
                                 enemyAI.phaseTimer = 0.f;
                                 enemyAI.burstCooldownActive = false;
-                                // std::cout << "[DEBUG] Emperor Phase 3: 6-second cooldown ended, resuming firing\n";
                             }
                         }
                         
-                        // BLACK HOLE ATTACK: 6 directions every 10 seconds
-                        if (enemyAI.blackHoleTimer >= 10.0f) {
+                        // BLACK HOLE ATTACK: Every 15 seconds, spawn 2 black holes toward player
+                        if (enemyAI.blackHoleTimer >= 7.0f) {
                             enemyAI.blackHoleTimer = 0.f;
                             
-                            // Spawn 6 black holes in different directions
+                            // Get player position
+                            Vec2<float> playerPos;
+                            auto players = m_entityManager.getEntities("player");
+                            if (!players.empty() && players[0]->has<CTransform>()) {
+                                playerPos = players[0]->get<CTransform>().pos;
+                            } else {
+                                playerPos = Vec2<float>(m_game.window().getSize().x * 0.5f, 
+                                                    m_game.window().getSize().y * 0.5f);
+                            }
+                            
+                            // Calculate direction to player
                             auto& eTrans = enemy->get<CTransform>();
-                            float centerX = eTrans.pos.x;
-                            float centerY = eTrans.pos.y;
-                            float radius = EMPEROR_RADIAL_BULLETS_RADIUS * 0.8f;
-                            float blackHoleSpeed = EMPEROR_RADIAL_BULLETS_SPEED * 0.4f;
-                            int blackHoleCount = 4;
+                            Vec2<float> baseDirection = playerPos - eTrans.pos;
+                            float dist = std::sqrt(baseDirection.x * baseDirection.x + baseDirection.y * baseDirection.y);
                             
-                            // Generate a random angle offset for this burst (between 0 and 36 degrees)
-                            float randomAngleOffset = (std::rand() % 36);
+                            // Normalize direction
+                            if (dist > 0) {
+                                baseDirection.x /= dist;
+                                baseDirection.y /= dist;
+                            }
                             
-                            for (int i = 0; i < blackHoleCount; i++) {
-                                // Calculate angle for radial distribution
-                                float angleDeg = (360.f / blackHoleCount) * i + randomAngleOffset;
-                                float angleRad = angleDeg * 3.1415926535f / 180.f;
+                            // Spawn 2 black holes with slight angle variation
+                            for (int i = 0; i < 2; i++) {
+                                // Create a slight angle variation for each black hole (±15 degrees)
+                                float angleVariation = (std::rand() % 31 - 15) * 3.1415926535f / 180.f;
+                                float cosAngle = std::cos(angleVariation);
+                                float sinAngle = std::sin(angleVariation);
                                 
-                                // Calculate position offset
-                                float offsetX = std::cos(angleRad) * radius;
-                                float offsetY = std::sin(angleRad) * radius;
-                                Vec2<float> spawnPos(centerX + offsetX, centerY + offsetY);
+                                // Rotate the base direction by the angle variation
+                                Vec2<float> direction;
+                                direction.x = baseDirection.x * cosAngle - baseDirection.y * sinAngle;
+                                direction.y = baseDirection.x * sinAngle + baseDirection.y * cosAngle;
                                 
                                 // Create black hole entity
                                 auto blackHole = m_entityManager.addEntity("emperorBlackHole");
-                                blackHole->add<CTransform>(spawnPos);
+                                blackHole->add<CTransform>(eTrans.pos);
                                 blackHole->add<CLifeSpan>(5.0f);
                                 blackHole->add<CState>(std::to_string(enemy->id()));
                                 
@@ -854,28 +780,33 @@ void EnemyAISystem::update(float deltaTime)
                                     auto& blackHoleAnim = m_game.assets().getAnimation(animName);
                                     blackHole->add<CAnimation>(blackHoleAnim, true);
                                     
+                                    // Create a slightly larger collision box (more efficient collision)
                                     sf::Vector2i animSize = blackHoleAnim.getSize();
-                                    Vec2<float> boxSize(animSize.x, animSize.y);
+                                    Vec2<float> boxSize(animSize.x * 1.5f, animSize.y * 1.5f);
                                     Vec2<float> halfSize(boxSize.x * 0.5f, boxSize.y * 0.5f);
                                     blackHole->add<CBoundingBox>(boxSize, halfSize);
+                                    
+                                    // Explicitly set scale for consistent rendering
+                                    auto& sprite = blackHole->get<CAnimation>().animation.getMutableSprite();
+                                    sprite.setScale(1.0f, 1.0f);
                                 }
                                 
-                                // Set velocity
-                                float vx = std::cos(angleRad) * blackHoleSpeed;
-                                float vy = std::sin(angleRad) * blackHoleSpeed;
-                                blackHole->get<CTransform>().velocity = Vec2<float>(vx, vy);
+                                // Set velocity towards player with variation
+                                float blackHoleSpeed = EMPEROR_RADIAL_BULLETS_SPEED * 0.45f;
+                                blackHole->get<CTransform>().velocity = Vec2<float>(
+                                    direction.x * blackHoleSpeed,
+                                    direction.y * blackHoleSpeed
+                                );
                             }
-                            
-                            // std::cout << "[DEBUG] Emperor Phase 3 (50-30%): Black hole attack - 6 directions\n";
                         }
                     }
-                    // Phase 4: Black hole attacks every 10 seconds (50-30% health)
-                    else if (healthPercentage <= 0.5f && healthPercentage > 0.2f) {
+                    // Phase 3: 70-50% health - Big black holes toward player
+                    else if (healthPercentage <= 0.7f && healthPercentage > 0.5f) {
                         // Track black hole timer
                         enemyAI.blackHoleTimer += deltaTime;
                         
-                        // MASSIVE BLACK HOLE ATTACK TARGETED AT PLAYER: Every 10 seconds
-                        if (enemyAI.blackHoleTimer >= 7.0f) {
+                        // BIG BLACK HOLE ATTACK: Every 10 seconds
+                        if (enemyAI.blackHoleTimer >= 6.0f) {
                             enemyAI.blackHoleTimer = 0.f;
                             
                             // Get player position
@@ -902,37 +833,137 @@ void EnemyAISystem::update(float deltaTime)
                             // Spawn central black hole aimed at player
                             std::string animName = "AlienBlackHoleAttack";
                             if (m_game.assets().hasAnimation(animName)) {
-                                // Create massive black hole
-                                auto massiveBlackHole = m_entityManager.addEntity("emperorBlackHole");
-                                massiveBlackHole->add<CTransform>(enemyTrans.pos);
-                                massiveBlackHole->add<CLifeSpan>(15.0f);
-                                massiveBlackHole->add<CState>(std::to_string(enemy->id()));
+                                // Create big black hole (not as big as massive)
+                                auto bigBlackHole = m_entityManager.addEntity("emperorBlackHole");
+                                bigBlackHole->add<CTransform>(enemyTrans.pos);
+                                bigBlackHole->add<CLifeSpan>(10.0f);
+                                bigBlackHole->add<CState>(std::to_string(enemy->id()));
                                 
                                 // Animation setup
                                 auto& blackHoleAnim = m_game.assets().getAnimation(animName);
-                                massiveBlackHole->add<CAnimation>(blackHoleAnim, true);
+                                bigBlackHole->add<CAnimation>(blackHoleAnim, true);
                                 
                                 // Configure size
                                 sf::Vector2i animSize = blackHoleAnim.getSize();
-                                Vec2<float> boxSize(animSize.x * 3, animSize.y * 3);
+                                Vec2<float> boxSize(animSize.x * 2, animSize.y * 2);
                                 Vec2<float> halfSize(boxSize.x * 0.5f, boxSize.y * 0.5f);
                                 
-                                // Scale the sprite
-                                auto& sprite = massiveBlackHole->get<CAnimation>().animation.getMutableSprite();
-                                float scale_int = 10.0f;
+                                // Scale the sprite (smaller than massive)
+                                auto& sprite = bigBlackHole->get<CAnimation>().animation.getMutableSprite();
+                                float scale_int = 5.0f;
                                 sprite.setScale(scale_int, scale_int);
-                                massiveBlackHole->add<CBoundingBox>(boxSize, halfSize);
+                                bigBlackHole->add<CBoundingBox>(boxSize, halfSize);
                                 
-                                // Set velocity - slow but steady towards player
-                                float blackHoleSpeed = EMPEROR_RADIAL_BULLETS_SPEED * 0.3f;
-                                massiveBlackHole->get<CTransform>().velocity = Vec2<float>(
+                                // Set velocity - moderate speed towards player
+                                float blackHoleSpeed = EMPEROR_RADIAL_BULLETS_SPEED * 0.35f;
+                                bigBlackHole->get<CTransform>().velocity = Vec2<float>(
                                     direction.x * blackHoleSpeed,
                                     direction.y * blackHoleSpeed
                                 );
+                            }
+                        }
+                    }
+                    // Phase 4: 50-20% health - Berserk mode with big and small black holes
+                    // Note: Changed from 50-30% to 50-20% to avoid conflict with final move
+                    else if (healthPercentage <= 0.5f && healthPercentage > 0.2f) {
+                        // Track black hole timer
+                        enemyAI.blackHoleTimer += deltaTime;
+                        
+                        // BERSERK MODE: Spawn black holes every 3 seconds
+                        if (enemyAI.blackHoleTimer >= 3.0f) {
+                            enemyAI.blackHoleTimer = 0.f;
+                            
+                            auto& enemyTrans = enemy->get<CTransform>();
+                            
+                            // 50% chance to spawn a big black hole toward player
+                            if (std::rand() % 2 == 0) {
+                                // Get player position
+                                Vec2<float> playerPos;
+                                auto players = m_entityManager.getEntities("player");
+                                if (!players.empty() && players[0]->has<CTransform>()) {
+                                    playerPos = players[0]->get<CTransform>().pos;
+                                } else {
+                                    playerPos = Vec2<float>(m_game.window().getSize().x * 0.5f, 
+                                                        m_game.window().getSize().y * 0.5f);
+                                }
                                 
-                                // std::cout << "[DEBUG] Emperor Phase 4 (50-30%): Launched massive black hole attack at player!\n";
-                            } else {
-                                // std::cout << "[ERROR] Missing animation: " << animName << " for black hole!\n";
+                                // Calculate direction to player
+                                Vec2<float> direction = playerPos - enemyTrans.pos;
+                                float dist = std::sqrt(direction.x * direction.x + direction.y * direction.y);
+                                
+                                // Normalize direction
+                                if (dist > 0) {
+                                    direction.x /= dist;
+                                    direction.y /= dist;
+                                }
+                                
+                                // Spawn big black hole aimed at player
+                                std::string animName = "AlienBlackHoleAttack";
+                                if (m_game.assets().hasAnimation(animName)) {
+                                    auto bigBlackHole = m_entityManager.addEntity("emperorBlackHole");
+                                    bigBlackHole->add<CTransform>(enemyTrans.pos);
+                                    bigBlackHole->add<CLifeSpan>(10.0f);
+                                    bigBlackHole->add<CState>(std::to_string(enemy->id()));
+                                    
+                                    auto& blackHoleAnim = m_game.assets().getAnimation(animName);
+                                    bigBlackHole->add<CAnimation>(blackHoleAnim, true);
+                                    
+                                    sf::Vector2i animSize = blackHoleAnim.getSize();
+                                    Vec2<float> boxSize(animSize.x * 2, animSize.y * 2);
+                                    Vec2<float> halfSize(boxSize.x * 0.5f, boxSize.y * 0.5f);
+                                    
+                                    auto& sprite = bigBlackHole->get<CAnimation>().animation.getMutableSprite();
+                                    float scale_int = 5.0f;
+                                    sprite.setScale(scale_int, scale_int);
+                                    bigBlackHole->add<CBoundingBox>(boxSize, halfSize);
+                                    
+                                    float blackHoleSpeed = EMPEROR_RADIAL_BULLETS_SPEED * 0.35f;
+                                    bigBlackHole->get<CTransform>().velocity = Vec2<float>(
+                                        direction.x * blackHoleSpeed,
+                                        direction.y * blackHoleSpeed
+                                    );
+                                }
+                            } 
+                            // Otherwise spawn 3 small black holes in random directions
+                            else {
+                                // Spawn 3 small black holes in random directions
+                                for (int i = 0; i < 3; i++) {
+                                    // Random angle
+                                    float angle = (std::rand() % 360) * 3.1415926535f / 180.f;
+                                    
+                                    // Direction based on random angle
+                                    Vec2<float> direction(std::cos(angle), std::sin(angle));
+                                    
+                                    // Create small black hole entity
+                                    auto blackHole = m_entityManager.addEntity("emperorBlackHole");
+                                    blackHole->add<CTransform>(enemyTrans.pos);
+                                    blackHole->add<CLifeSpan>(5.0f);
+                                    blackHole->add<CState>(std::to_string(enemy->id()));
+                                    
+                                    // Set animation
+                                    std::string animName = "AlienBlackHoleAttack";
+                                    if (m_game.assets().hasAnimation(animName)) {
+                                        auto& blackHoleAnim = m_game.assets().getAnimation(animName);
+                                        blackHole->add<CAnimation>(blackHoleAnim, true);
+                                        
+                                        // Create a slightly larger collision box
+                                        sf::Vector2i animSize = blackHoleAnim.getSize();
+                                        Vec2<float> boxSize(animSize.x * 1.5f, animSize.y * 1.5f);
+                                        Vec2<float> halfSize(boxSize.x * 0.5f, boxSize.y * 0.5f);
+                                        blackHole->add<CBoundingBox>(boxSize, halfSize);
+                                        
+                                        // Explicitly set scale
+                                        auto& sprite = blackHole->get<CAnimation>().animation.getMutableSprite();
+                                        sprite.setScale(1.0f, 1.0f);
+                                    }
+                                    
+                                    // Set velocity in random direction
+                                    float blackHoleSpeed = EMPEROR_RADIAL_BULLETS_SPEED * 0.45f;
+                                    blackHole->get<CTransform>().velocity = Vec2<float>(
+                                        direction.x * blackHoleSpeed,
+                                        direction.y * blackHoleSpeed
+                                    );
+                                }
                             }
                         }
                     }
@@ -964,6 +995,7 @@ void EnemyAISystem::update(float deltaTime)
                     }
                     else if (healthPercentage <= 0.5f) {
                         if (!enemyAI.burstCooldownActive) {
+                            std::cout << "[DEBUG] Ancient Emperor: Burst attack active!\n";
                             float attackInterval = 3.0f; // Default attack interval
                             
                             if (distance > 600.f) {

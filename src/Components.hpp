@@ -406,7 +406,8 @@ enum class EnemyState {
 enum class BossPhase {
     Phase1,
     Phase2,
-    Phase3
+    Phase3,
+    Phase4
 };
 
 class CBossPhase : public Component {

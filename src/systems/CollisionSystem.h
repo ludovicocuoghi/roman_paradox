@@ -31,7 +31,7 @@ public:
 
     // Collectible values
     static constexpr int COLLECTIBLE_SMALL_GRAPE_POINTS = 50;
-    static constexpr int COLLECTIBLE_BIG_GRAPE_HEAL = 80;
+    static constexpr int COLLECTIBLE_BIG_GRAPE_HEAL = 100;
     static constexpr int COLLECTIBLE_GOLD_COIN_POINTS = 101;
     static constexpr int COLLECTIBLE_SILVER_COIN_POINTS = 99;
     static constexpr int COLLECTIBLE_BRONZE_COIN_POINTS = 60;

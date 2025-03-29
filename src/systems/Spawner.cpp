@@ -149,7 +149,7 @@ std::shared_ptr<Entity> Spawner::spawnEnemyBullet(std::shared_ptr<Entity> enemy)
         case EnemyType::Super2:   animationName = "AlienBlackHoleAttack"; break;  
         default:
             std::cerr << "[WARNING] Unhandled EnemyType in Spawner! Defaulting to FutureRedBullet.\n";
-            animationName = "FutureRedBullet"; // Default case for safety
+            animationName = "FuturePurpleBullet"; // Default case for safety
             break;
     }
     // Load bullet animation
@@ -474,7 +474,7 @@ std::shared_ptr<Entity> Spawner::spawnItem(const Vec2<float>& position, const st
 
         if (roll < 20) {
             itemName = m_game.worldType + "CoinGold";
-        } else if (roll < 60) {
+        } else if (roll < 70) {
             itemName = m_game.worldType + "GrapeBig";
         } else if (roll < 100) {
             itemName = m_game.worldType + "ChickenBig";
@@ -534,28 +534,6 @@ void Spawner::updateFragments(float deltaTime) {
             fragment->destroy();
         }
     }
-}
-
-std::shared_ptr<Entity> Spawner::spawnBlackHoleAfterTileDestruction(const Vec2<float>& position)
-{
-    auto blackHoleTile = m_entityManager.addEntity("tile");
-    blackHoleTile->add<CTransform>(position);
-
-    if (m_game.assets().hasAnimation("AlienBlackHoleAttack")) {
-        auto& tileAnim = m_game.assets().getAnimation("AlienBlackHoleAttack");
-        blackHoleTile->add<CAnimation>(tileAnim, true); // loop
-        sf::Vector2i animSize = tileAnim.getSize();
-        Vec2<float> boxSize(animSize.x, animSize.y);
-        Vec2<float> boxOffset(boxSize.x * 0.5f, boxSize.y * 0.5f);
-        blackHoleTile->add<CBoundingBox>(boxSize, boxOffset);
-    } else {
-        std::cerr << "[ERROR] Missing AlienBlackHoleRedSmall animation!\n";
-    }
-
-    // std::cout << "[DEBUG] Spawned BlackHoleVanish + lethal BlackHoleTilc at (" 
-    //           << position.x << ", " << position.y << ")\n";
-
-    return blackHoleTile;
 }
 
 void Spawner::updateGraves(float deltaTime) {

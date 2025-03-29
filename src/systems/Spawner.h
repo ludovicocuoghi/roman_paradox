@@ -92,7 +92,6 @@ public:
     std::shared_ptr<Entity> spawnItem(const Vec2<float>& position, const std::string& tileType);
     std::shared_ptr<Entity> spawnEmperorSwordOffset(std::shared_ptr<Entity> enemy);
     std::shared_ptr<Entity> spawnPlayerBullet(std::shared_ptr<Entity> player);
-    std::shared_ptr<Entity> spawnBlackHoleAfterTileDestruction(const Vec2<float>& position);
 
 
     void spawnEmperorSwordsRadial(std::shared_ptr<Entity> enemy, int swordCount, float radius, float swordSpeed);

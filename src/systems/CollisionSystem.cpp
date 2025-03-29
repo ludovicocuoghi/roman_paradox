@@ -774,6 +774,14 @@ void CollisionSystem::handleBlackHoleTileCollisions() {
             if (!tile->has<CTransform>() || !tile->has<CBoundingBox>())
                 continue;
 
+            // Skip collision detection if tile is PipeTall or LevelDoor
+            if (tile->has<CAnimation>()) {
+                std::string tileAnimName = tile->get<CAnimation>().animation.getName();
+                if (tileAnimName == "PipeTall" || tileAnimName == "LevelDoor") {
+                    continue; // Skip this tile
+                }
+            }
+
             auto& tileTrans = tile->get<CTransform>();
             auto& tileBB = tile->get<CBoundingBox>();
             sf::FloatRect tileRect = tileBB.getRect(tileTrans.pos);
@@ -783,8 +791,7 @@ void CollisionSystem::handleBlackHoleTileCollisions() {
                 std::string blackHoleAnimName = blackHole->get<CAnimation>().animation.getName();
                 
                 // Protect tiles beyond x=3744 only in the emperor room level
-                bool protectedTile = (m_levelPath == "future_rome_level_4_emperor_room.txt" && tileTrans.pos.x > 3200);
-                
+                bool protectedTile = (m_levelPath.find("future_rome_level_4_emperor_room") != std::string::npos && (tileTrans.pos.x < 400 || tileTrans.pos.x > 3600 ||  tileTrans.pos.y < 400));
                 if (protectedTile) {
                     continue;
                 }
@@ -792,7 +799,7 @@ void CollisionSystem::handleBlackHoleTileCollisions() {
                 // std::cout << "[DEBUG] Black hole destroyed a tile at position (" 
                 //           << tileTrans.pos.x << "," << tileTrans.pos.y << ")\n";
                 
-                auto& tileAnim      = tile->get<CAnimation>().animation;
+                auto& tileAnim = tile->get<CAnimation>().animation;
                 std::string animName = tileAnim.getName();
                 m_spawner->createBlockFragments(tileTrans.pos, animName);
                 tile->destroy();
@@ -800,6 +807,7 @@ void CollisionSystem::handleBlackHoleTileCollisions() {
                 break; // Move to the next black hole after handling one tile collision
             }
         }
+        
         // Also check for player collision
         for (auto& player : m_entityManager.getEntities("player")) {
             if (!player->has<CTransform>() || !player->has<CBoundingBox>())
@@ -816,7 +824,6 @@ void CollisionSystem::handleBlackHoleTileCollisions() {
                     
                     // Force health to 0 for instant death
                     health.currentHealth = 0;
-                    
                 }
 
                 // Destroy the black hole after hitting player
