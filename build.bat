@@ -1,7 +1,7 @@
 @echo off
 set PATH=C:\mingw64\bin;%PATH%
 set SFML=C:\SFML
-set OUTDIR=bin
+set OUTDIR=windows_build
 
 if not exist %OUTDIR% mkdir %OUTDIR%
 
@@ -26,7 +26,7 @@ src\imgui\imgui_demo.cpp ^
 src\imgui-sfml\imgui-SFML.cpp ^
 resources.o ^
 -L %SFML%\lib -lsfml-graphics -lsfml-window -lsfml-system -lopengl32 -lgdi32 ^
--o %OUTDIR%\rome_journey.exe
+-o %OUTDIR%\rome_interstellar_paradox.exe
 
 :: Show compiler error if it failed
 if errorlevel 1 (
@@ -42,5 +42,11 @@ echo [INFO] Compilation succeeded. Copying files...
 copy /Y "%SFML%\bin\sfml-graphics-2.dll" "%OUTDIR%"
 copy /Y "%SFML%\bin\sfml-window-2.dll" "%OUTDIR%"
 copy /Y "%SFML%\bin\sfml-system-2.dll" "%OUTDIR%"
+
+:: Copy assets
+xcopy /E /I src\assets %OUTDIR%\assets
+xcopy /E /I src\fonts %OUTDIR%\fonts
+xcopy /E /I src\images %OUTDIR%\images
+xcopy /E /I src\levels %OUTDIR%\levels
 
 echo [INFO] Build complete.
