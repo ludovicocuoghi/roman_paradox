@@ -282,7 +282,6 @@ Tile GoldGround 9 14
 Tile GoldGround 8 14
 Tile GoldGround 11 14
 Tile GoldGround 14 14
-Tile GoldGround 2 18
 Tile GoldGround 16 14
 Tile GoldGround 17 14
 Tile GoldGround 19 13

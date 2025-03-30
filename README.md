@@ -1,139 +1,139 @@
-# Time-Traveling Alien Legionary Game
+# 時間旅行する宇宙人レジオナリーゲーム
 
-## Overview
+## 概要
 
-This game follows the journey of an Alien Legionary who travels through time, experiencing different eras of Rome while fighting enemies and unraveling a mysterious plot connecting past, present, and future.
+このゲームは、時間を旅する宇宙人レジオナリーの冒険を描いています。彼は古代ローマの異なる時代を体験しながら、敵と戦い、過去・現在・未来をつなぐ謎めいた陰謀を解き明かしていきます。
 
-## Game Structure
+## ゲーム構造
 
-### Scene Management
+### シーン管理
 
-The game uses a scene-based architecture where different scenes (Menu, Play, GameOver, StoryText) handle specific game states. The key scene is `Scene_Play` which manages gameplay, entities, collisions, and dialogue.
+ゲームは、異なるゲーム状態を扱う様々なシーン（メニュー、プレイ、ゲームオーバー、ストーリーテキスト）を使用したアーキテクチャを採用しています。中心となるのは`Scene_Play`で、ゲームプレイ、エンティティ、衝突判定、会話を管理します。
 
-### Entity-Component System
+### エンティティ・コンポーネントシステム
 
-- **Entities**: Base game objects (players, enemies, obstacles, etc.)
-- **Components**: Building blocks that define entity behavior (CTransform, CAnimation, CState, etc.)
-- **Systems**: Process entities with specific components (AnimationSystem, CollisionSystem, etc.)
+- **エンティティ**: 基本的なゲームオブジェクト（プレイヤー、敵、障害物など）
+- **コンポーネント**: エンティティの動作を定義する構成要素（CTransform、CAnimation、CStateなど）
+- **システム**: 特定のコンポーネントを持つエンティティを処理する（AnimationSystem、CollisionSystemなど）
 
-## Key Features
+## 主な機能
 
-### Level Structure
+### レベル構造
 
-The game progresses through multiple eras:
-- **Alien Rome**: The starting point, under invasion by mysterious dark warriors
-- **Ancient Rome**: Where the player first time-travels to after entering a black hole
-- **Future Rome**: A paradoxical timeline created by the player's actions in the past
+ゲームは複数の時代を通じて進行します：
+- **宇宙人のローマ**: 開始地点。謎の暗黒戦士による侵略を受けています
+- **古代ローマ**: プレイヤーがブラックホールに入った後、最初に時間旅行する場所
+- **未来のローマ**: 過去でのプレイヤーの行動によって作られたパラドックスの時間軸
 
-### Player Mechanics
+### プレイヤーの機能
 
-- Basic movement (left/right/jump) with momentum-based physics
-- Melee combat with sword attacks
-- Defense mechanism using stamina
-- Special abilities (in Future Rome):
-  - Burst fire shooting
-  - Super move
+- 基本的な移動（左/右/ジャンプ）と運動量ベースの物理挙動
+- 剣による近接戦闘
+- スタミナを使用した防御メカニズム
+- 特殊能力（未来のローマにて）：
+  - バーストファイア射撃
+  - 必殺技
 
-### Enemy AI System
+### 敵AI システム
 
-The `EnemyAISystem` handles different enemy behaviors:
+`EnemyAISystem`は様々な敵の行動を制御します：
 
-1. **Basic Enemies**:
-   - Patrol within boundaries
-   - Chase player when in detection range
-   - Attack when in striking distance
+1. **基本的な敵**:
+   - 境界内でのパトロール
+   - 探知範囲内にプレイヤーがいると追跡
+   - 攻撃可能距離内に入ると攻撃
 
-2. **Elite Enemies**:
-   - More aggressive chasing
-   - Special attacks with longer range
-   - Higher health and damage
+2. **エリート敵**:
+   - より攻撃的な追跡
+   - より長い射程の特殊攻撃
+   - より高い体力とダメージ
 
-3. **Boss Enemies**:
-   - Phase-based combat
-   - Special attack patterns
-   - Dialogue triggers at specific health thresholds
+3. **ボス敵**:
+   - フェーズベースの戦闘
+   - 特殊な攻撃パターン
+   - 特定の体力閾値でダイアログをトリガー
 
-### Dialogue System
+### ダイアログシステム
 
-An interactive dialogue system presents the story through character conversations:
-- Supports multiple languages (English/Japanese)
-- Dialogue triggers based on position and events
-- Character portraits with customizable text formatting
-- Special dialogue for boss encounters and key story moments
+インタラクティブなダイアログシステムがキャラクター会話を通してストーリーを展開します：
+- 複数言語対応（英語/日本語）
+- 位置とイベントに基づくダイアログトリガー
+- カスタマイズ可能なテキスト書式を備えたキャラクターポートレート
+- ボス戦やストーリーの重要な瞬間の特別なダイアログ
 
-### Camera System
+### カメラシステム
 
-- Smooth following camera that tracks the player
-- Zoom and offset settings for optimal viewing
-- Camera boundaries to prevent viewing outside level bounds
+- プレイヤーを追跡するスムーズな追従カメラ
+- 最適な視野のためのズームとオフセット設定
+- レベル境界外を見せないカメラ境界
 
-### Resource Management
+### リソース管理
 
-- Health system with visual feedback
-- Stamina for defensive actions
-- Score system with rewards at threshold values
-- Items and power-ups found in containers
+- ビジュアルフィードバック付きの体力システム
+- 防御行動用のスタミナ
+- 閾値報酬を持つスコアシステム
+- コンテナ内で見つかるアイテムとパワーアップ
 
-### Visual Effects
+### ビジュアルエフェクト
 
-- Animation system for smooth character movements
-- Particle effects for impacts and special moves
-- Environmental visuals unique to each time period
+- スムーズなキャラクター動作用のアニメーションシステム
+- 衝撃や特殊技のためのパーティクルエフェクト
+- 各時代に固有の環境ビジュアル
 
-## Controls
+## 操作方法
 
-- **A/D**: Move left/right
-- **W**: Jump
-- **Space**: Attack (also used for burst fire in Future Rome)
-- **M**: Defend (uses stamina)
-- **Enter**: Super move (Future Rome only)
-- **G**: Toggle grid display (debug)
-- **B**: Toggle bounding boxes (debug)
+- **A/D**: 左右移動
+- **W**: ジャンプ
+- **Space**: 攻撃（未来のローマではバーストファイアにも使用）
+- **M**: 防御（スタミナを消費）
+- **Enter**: 必殺技（未来のローマのみ）
+- **G**: グリッド表示の切り替え（デバッグ用）
+- **B**: バウンディングボックスの切り替え（デバッグ用）
 
-## Level Design
+## レベルデザイン
 
-Each level features:
-- Unique backgrounds representing different time periods
-- Platforms and obstacles requiring precise jumps
-- Enemy placements for strategic combat
-- Items and power-ups in chests and containers
-- Story progression through dialogue and boss encounters
+各レベルの特徴：
+- 異なる時代を表す独自の背景
+- 正確なジャンプが必要なプラットフォームと障害物
+- 戦略的な戦闘のための敵の配置
+- チェストやコンテナ内のアイテムとパワーアップ
+- ダイアログとボス戦を通したストーリー進行
 
-## Technical Implementation
+## 技術的実装
 
-### Physics System
+### 物理システム
 
-- Gravity-based movement
-- Platform collision detection
-- Momentum and velocity calculations
+- 重力ベースの移動
+- プラットフォームの衝突検出
+- 運動量と速度の計算
 
-### Collision System
+### 衝突システム
 
-- Bounding box collision detection
-- Different collision responses based on entity types
-- Damage calculation based on attack types
+- バウンディングボックスによる衝突検出
+- エンティティタイプに基づく異なる衝突応答
+- 攻撃タイプに基づくダメージ計算
 
-### Spawning System
+### スポーンシステム
 
-- Dynamic enemy spawning at designated points
-- Item generation from destroyed containers
-- Visual effects for enemy deaths and item appearance
+- 指定ポイントでの動的な敵スポーン
+- 破壊されたコンテナからのアイテム生成
+- 敵の死亡やアイテム出現のビジュアルエフェクト
 
-### Game State Management
+### ゲーム状態管理
 
-- Scene transitions between different game states
-- Save/load functionality for level progress
-- Score tracking across levels
+- 異なるゲーム状態間のシーン遷移
+- レベル進行のためのセーブ/ロード機能
+- レベル間のスコア追跡
 
-## Development Guidelines
+## 開発ガイドライン
 
-- Use the entity-component system for new game elements
-- Follow the established dialogue format for story additions
-- Maintain consistent physics parameters for predictable gameplay
-- Test thoroughly across all game levels and scenes
+- 新しいゲーム要素にはエンティティ・コンポーネントシステムを使用
+- ストーリー追加には確立されたダイアログ形式に従う
+- 予測可能なゲームプレイのために一貫した物理パラメータを維持
+- すべてのゲームレベルとシーンで徹底的にテスト
 
-## Future Enhancements
+## 将来の拡張
 
-- Additional time periods and alternate timelines
-- More enemy types with unique behaviors
-- Extended dialogue and story branches
+- 追加の時代と代替タイムライン
+- 独自の行動を持つ新たな敵タイプ
+- 拡張されたダイアログとストーリーブランチ

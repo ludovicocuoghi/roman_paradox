@@ -103,7 +103,7 @@ void Scene_Menu::sRender() {
     float spacing = 40.f;
 
     // Render title
-    text.setString("ROME INTERGALACTIC PARADOX");
+    text.setString("ROME INTERSTELLAR PARADOX");
     text.setPosition(m_game.window().getSize().x / 2 - text.getLocalBounds().width / 2, 50.f);
     m_game.window().draw(text);
 
@@ -129,26 +129,19 @@ void Scene_Menu::sRender() {
     
     std::string controlInstructions;
     
-    if (m_game.getLanguage() == "Japanese")
-    {
+    if (m_state == MenuState::LANGUAGE) {
+        controlInstructions = "DOWN: S  SELECT: D / 下: S   決定: D";
+    } else if (m_game.getLanguage() == "Japanese"){
         // Japanese
-        if (m_state == MenuState::LANGUAGE) {
-            controlInstructions = "下: S   決定: D";
-        } 
-        else if (m_state == MenuState::MAIN) {
+        if (m_state == MenuState::MAIN) {
             controlInstructions = "下: S   決定: D   戻る: ESC";
         } 
         else { // LEVEL_SELECT
             controlInstructions = "下: S   決定: D   戻る: ESC";
         }
-    }
-    else
-    {
+    } else {
         // English
-        if (m_state == MenuState::LANGUAGE) {
-            controlInstructions = "DOWN: S  SELECT: D";
-        } 
-        else if (m_state == MenuState::MAIN) {
+        if (m_state == MenuState::MAIN) {
             controlInstructions = "DOWN: S  SELECT: D  BACK: ESC";
         } 
         else { // LEVEL_SELECT
