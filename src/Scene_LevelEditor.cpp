@@ -628,9 +628,6 @@ void Scene_LevelEditor::saveLevelToFile(const std::string& savePath) {
         return fullName;
     };
 
-    // Add a comment to track world category
-    out << "# World: " << worldcategory << "\n";
-
     // ========================
     // Save Tiles
     // ========================
