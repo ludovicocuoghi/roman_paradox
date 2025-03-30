@@ -1,79 +1,139 @@
+# Time-Traveling Alien Legionary Game
 
-# Shape Wars 2D Game
+## Overview
 
-**Shape Wars 2D** is a fast-paced action game where the player controls a randomly generated shape and fights against a variety of enemy shapes. The goal is to survive as long as possible, earn points, and achieve the highest score. The game utilizes **SFML** for graphics and input handling.
+This game follows the journey of an Alien Legionary who travels through time, experiencing different eras of Rome while fighting enemies and unraveling a mysterious plot connecting past, present, and future.
 
+## Game Structure
 
-**Video Demo** [Watch the video demo](https://www.youtube.com/watch?v=sr0TglMLr-w)
+### Scene Management
 
-## Features
+The game uses a scene-based architecture where different scenes (Menu, Play, GameOver, StoryText) handle specific game states. The key scene is `Scene_Play` which manages gameplay, entities, collisions, and dialogue.
 
-- **Random Shape Generation**: The player’s shape is randomly generated, and enemy shapes appear at random locations.
-- **Shooting Mechanism**: Players can fire bullets to destroy enemies, with a cooldown mechanic for regular bullets and a powerful supermove that fires bullets in all directions.
-- **Survival Gameplay**: The player earns points by surviving and defeating enemies. The longer the player survives, the higher the score.
-- **Enemy AI**: Enemies spawn in waves, move towards the player, and rotate while trying to collide with the player.
-- **HUD Display**: Real-time information like score, lives remaining, and supermove availability is displayed.
-- **Supermove**: A special ability that clears enemies in all directions, available after a cooldown period.
+### Entity-Component System
 
-## Technologies Used
+- **Entities**: Base game objects (players, enemies, obstacles, etc.)
+- **Components**: Building blocks that define entity behavior (CTransform, CAnimation, CState, etc.)
+- **Systems**: Process entities with specific components (AnimationSystem, CollisionSystem, etc.)
 
-- **SFML**: Used for rendering graphics, handling window events, and managing input.
-- **C++**: The core programming language for game logic and mechanics.
-  
-## Gameplay
+## Key Features
 
-- **Player Movement**: The player can move the shape using arrow keys and shoot with spacebar.
-- **Enemies**: Different enemy shapes spawn randomly. The player must avoid collision while trying to destroy as many enemies as possible.
-- **Lives**: The player starts with 3 lives. If a collision occurs with an enemy, the player loses a life.
-- **Supermove**: Activated after a cooldown, this powerful attack allows the player to shoot bullets in all directions to clear nearby enemies.
+### Level Structure
 
-## Installation
+The game progresses through multiple eras:
+- **Alien Rome**: The starting point, under invasion by mysterious dark warriors
+- **Ancient Rome**: Where the player first time-travels to after entering a black hole
+- **Future Rome**: A paradoxical timeline created by the player's actions in the past
 
-### Prerequisites
+### Player Mechanics
 
-- **SFML**: Ensure that SFML is installed and properly linked to your project.
-  
-You can install SFML on macOS via Homebrew:
+- Basic movement (left/right/jump) with momentum-based physics
+- Melee combat with sword attacks
+- Defense mechanism using stamina
+- Special abilities (in Future Rome):
+  - Burst fire shooting
+  - Super move
 
-```bash
-brew install sfml
-```
+### Enemy AI System
 
-### Clone the Repository
+The `EnemyAISystem` handles different enemy behaviors:
 
-```bash
-git clone https://github.com/ludovicocuoghi/CPP_2D_Shooting_Shapes.git
-cd CPP_2D_Shooting_Shapes
-```
+1. **Basic Enemies**:
+   - Patrol within boundaries
+   - Chase player when in detection range
+   - Attack when in striking distance
 
-### Build the Project
+2. **Elite Enemies**:
+   - More aggressive chasing
+   - Special attacks with longer range
+   - Higher health and damage
 
-1. Open the terminal in the project folder.
-2. Use the following command to compile and run the project:
+3. **Boss Enemies**:
+   - Phase-based combat
+   - Special attack patterns
+   - Dialogue triggers at specific health thresholds
 
-```bash
-make
-./Shape_Wars_2d_project
-```
+### Dialogue System
 
-## Gameplay Mechanics
+An interactive dialogue system presents the story through character conversations:
+- Supports multiple languages (English/Japanese)
+- Dialogue triggers based on position and events
+- Character portraits with customizable text formatting
+- Special dialogue for boss encounters and key story moments
 
-- **Movement**: Use the arrow keys to move the player’s shape.
-- **Shoot**: Press the spacebar to shoot bullets.
-- **Supermove**: Press the supermove key (if available) to shoot in all directions.
-- **Score**: The score increases as the player destroys enemies. The best score for each shape is tracked.
+### Camera System
+
+- Smooth following camera that tracks the player
+- Zoom and offset settings for optimal viewing
+- Camera boundaries to prevent viewing outside level bounds
+
+### Resource Management
+
+- Health system with visual feedback
+- Stamina for defensive actions
+- Score system with rewards at threshold values
+- Items and power-ups found in containers
+
+### Visual Effects
+
+- Animation system for smooth character movements
+- Particle effects for impacts and special moves
+- Environmental visuals unique to each time period
 
 ## Controls
 
-- **Arrow keys**: Move the player’s shape.
-- **Spacebar**: Fire a bullet.
-- **Supermove (if available)**: Fires bullets in all directions.
+- **A/D**: Move left/right
+- **W**: Jump
+- **Space**: Attack (also used for burst fire in Future Rome)
+- **M**: Defend (uses stamina)
+- **Enter**: Super move (Future Rome only)
+- **G**: Toggle grid display (debug)
+- **B**: Toggle bounding boxes (debug)
 
-## Game States
+## Level Design
 
-- **Playing**: The game is ongoing, and the player can control the character and shoot enemies.
-- **Game Over**: Triggered when the player loses all lives. The game displays the final score and the best score for the player's shape.
+Each level features:
+- Unique backgrounds representing different time periods
+- Platforms and obstacles requiring precise jumps
+- Enemy placements for strategic combat
+- Items and power-ups in chests and containers
+- Story progression through dialogue and boss encounters
 
-## Contributions
+## Technical Implementation
 
-Feel free to fork the repository and contribute! For contributions, open an issue or submit a pull request with your improvements.
+### Physics System
+
+- Gravity-based movement
+- Platform collision detection
+- Momentum and velocity calculations
+
+### Collision System
+
+- Bounding box collision detection
+- Different collision responses based on entity types
+- Damage calculation based on attack types
+
+### Spawning System
+
+- Dynamic enemy spawning at designated points
+- Item generation from destroyed containers
+- Visual effects for enemy deaths and item appearance
+
+### Game State Management
+
+- Scene transitions between different game states
+- Save/load functionality for level progress
+- Score tracking across levels
+
+## Development Guidelines
+
+- Use the entity-component system for new game elements
+- Follow the established dialogue format for story additions
+- Maintain consistent physics parameters for predictable gameplay
+- Test thoroughly across all game levels and scenes
+
+## Future Enhancements
+
+- Additional time periods and alternate timelines
+- More enemy types with unique behaviors
+- Extended dialogue and story branches
