@@ -3,5 +3,5 @@ echo "build/" >> .gitignore
 echo "bin/*.exe" >> .gitignore
 echo "bin/*.dll" >> .gitignore
 echo "bin/imgui.ini" >> .gitignore
-echo "mac_build/*.zip" >> .gitignore
-echo "windows_build/*.zip" >> .gitignore
+echo "mac_build/" >> .gitignore
+echo "windows_build/" >> .gitignore
