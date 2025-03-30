@@ -897,7 +897,7 @@ void PlayRenderer::render() {
             // Japanese era text
             if      (m_game.worldType == "Alien")   centerEra = "現在 (西暦: 2135年)";
             else if (m_game.worldType == "Ancient") centerEra = "過去 (西暦: 225年)";
-            else if (m_game.worldType == "Future")  centerEra = "変化した現在 (西暦: 2135年)";
+            else if (m_game.worldType == "Future")  centerEra = "改変現在 (西暦: 2135年)";
             
             // Add Universe number in Japanese
             m_game.worldType == "Alien" ? centerEra += " | 宇宙 #" + std::to_string(m_game.universeNumber) 

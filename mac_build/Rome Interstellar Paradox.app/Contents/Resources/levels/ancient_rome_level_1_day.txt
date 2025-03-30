@@ -22,9 +22,7 @@ Tile Ground 44 1
 Tile Ground 44 0
 Tile Ground 45 1
 Tile Ground 45 0
-Tile Pipe 39 3
 Tile Ground 36 4
-Tile Pipe 40 3
 Tile Ground 47 1
 Tile Ground 46 0
 Tile Ground 46 1
@@ -239,7 +237,6 @@ Tile Ground 19 5
 Tile Ground 20 6
 Tile Ground 39 1
 Tile Ground 39 0
-Tile Ground 38 3
 Tile Ground 38 2
 Tile Ground 38 1
 Tile Ground 38 0
@@ -321,6 +318,15 @@ Tile Box1 59 4
 Tile Box2 56 4
 Tile Box2 58 4
 Tile Box2 60 4
+Tile Ground 33 5
+Tile Ground 34 4
+Tile Ground 35 3
+Tile Ground 37 2
+Tile Ground 36 2
+Tile Ground 37 1
+Tile Ground 37 0
+Tile Ground 36 1
+Tile Ground 36 0
 Player 4 8
 Dec CloudBig 1 10
 Dec CloudSmall 10 9
@@ -358,4 +364,5 @@ Enemy EnemyNormal 80 2
 Enemy EnemyFast 94 2
 Enemy EnemyNormal 104 6
 Enemy EnemyNormal 34 7
-Enemy EnemyNormal 37 4
+Enemy EnemyNormal 50 2
+Enemy EnemyNormal 59 2

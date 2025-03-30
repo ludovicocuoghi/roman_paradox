@@ -443,7 +443,6 @@ Tile Brick 46 10
 Tile Brick 49 13
 Tile Brick 48 13
 Tile Brick 47 13
-Tile Brick 49 16
 Tile Brick 48 19
 Tile Brick 47 19
 Tile Brick 46 13
@@ -454,10 +453,8 @@ Tile Brick 44 10
 Tile Brick 44 13
 Tile Brick 43 10
 Tile Brick 42 10
-Tile Brick 43 13
 Tile Brick 44 16
 Tile Brick 43 16
-Tile Brick 46 19
 Tile Brick 106 12
 Tile Brick 99 12
 Tile Brick 96 12
@@ -521,12 +518,9 @@ Tile Brick 40 13
 Tile Ground 41 5
 Tile Ground 42 6
 Tile Ground 49 10
-Tile Ground 42 13
 Tile Ground 40 10
 Tile Ground 42 16
-Tile Ground 50 16
 Tile Ground 42 19
-Tile Ground 45 19
 Tile Ground 51 21
 Tile Ground 51 20
 Tile Ground 26 28
@@ -538,6 +532,9 @@ Tile Ground 32 33
 Tile Ground 50 9
 Tile Treasure 40 16
 Tile Treasure 42 22
+Tile Ground 43 13
+Tile Ground 49 16
+Tile Ground 46 19
 Player 1 2
 Dec BushTall 0 5
 Dec BushTall 2 5

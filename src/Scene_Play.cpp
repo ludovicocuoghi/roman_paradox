@@ -341,29 +341,29 @@ void Scene_Play::initializeDialogues()
                     true                                             // useTypewriterEffect
                 },
                 {
-                    "***GUIDE**",                           // speaker
-                    "Press A or D to move LEFT or RIGHT",            // message
-                    basePath + "alien_ancient_right.png",       // portraitPath
+                    "***GUIDE***",                           // speaker
+                    "(Press A or D to move LEFT or RIGHT)",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
                     true,                                            // portraitOnLeft
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 200.f),
                     900.f,                                           // boxWidth - medium for medium message
-                    150.f,                                           // boxHeight
+                    160.f,                                           // boxHeight
                     40,                                             // messageFontSize - still emphasized
                     true                                             // useTypewriterEffect
                 }
                 ,
                 {
                     "***GUIDE***",                           // speaker
-                    "Press W to JUMP",            // message
-                    basePath + "alien_ancient_right.png",       // portraitPath
+                    "(Press W to JUMP)",            // message
+                    basePath + "alien_ancient.png",       // portraitPath
                     true,                                            // portraitOnLeft
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 200.f),
                     900.f,                                           // boxWidth - medium for medium message
-                    150.f,                                           // boxHeight
+                    160.f,                                           // boxHeight
                     40,                                             // messageFontSize - still emphasized
                     true                                             // useTypewriterEffect
                 }
@@ -1345,27 +1345,27 @@ void Scene_Play::initializeDialogues()
                 },
                 {
                     "***GUIDE***",
-                    "Press SPACE to attack.",
-                    basePath + "alien_ancient_right.png",
+                    "(Press SPACE to attack.)",
+                    basePath + "alien_ancient.png",
                     true,
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 200.f),
                     900.f,
-                    150.f,
+                    160.f,
                     50,
                     true
                 },
                 {
                     "***GUIDE***",
-                    "Hold M to defend (uses stamina).",
-                    basePath + "alien_ancient_right.png",
+                    "(Hold M to defend (uses stamina).)",
+                    basePath + "alien_ancient.png",
                     true,
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 200.f),
                     1000.f,
-                    150.f,
+                    160.f,
                     50,
                     true
                 }
@@ -1375,39 +1375,39 @@ void Scene_Play::initializeDialogues()
                 {
                     "***GUIDE***",
                     "(You can find items inside boxes and chests.)",
-                    basePath + "alien_ancient_right.png",
+                    basePath + "alien_ancient.png",
                     true,
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 200.f),
                     1100.f,
-                    150.f,
+                    160.f,
                     40,
                     true
                 },
                 {
                     "***GUIDE***",
                     "(Grapes restore health. Chicken refills stamina (Defense Time).)",
-                    basePath + "alien_ancient_right.png",
+                    basePath + "alien_ancient.png",
                     true,
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 200.f),
                     1400.f,
-                    150.f,
+                    160.f,
                     40,
                     true
                 },
                 {
                     "***GUIDE***",
                     "(Coins increase Score. Full HP is restored when score = 100.)",
-                    basePath + "alien_ancient_right.png",
+                    basePath + "alien_ancient.png",
                     true,
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 200.f),
                     1400.f,
-                    150.f,
+                    160.f,
                     40,
                     true
                 }
@@ -1604,7 +1604,7 @@ void Scene_Play::initializeDialogues()
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 200.f),
-                    1150.f,
+                    1170.f,
                     150.f,
                     50,
                     true
@@ -1633,7 +1633,7 @@ void Scene_Play::initializeDialogues()
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 200.f),
-                    1150.f,
+                    1180.f,
                     150.f,
                     35,
                     true
@@ -1646,7 +1646,7 @@ void Scene_Play::initializeDialogues()
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 200.f),
-                    1150.f,
+                    1180.f,
                     150.f,
                     35,
                     true
@@ -1781,7 +1781,7 @@ void Scene_Play::initializeDialogues()
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 200.f),
-                    700.f,                                           // boxWidth - medium for medium message
+                    740.f,                                           // boxWidth - medium for medium message
                     150.f,                                           // boxHeight
                     26,                                              // messageFontSize - still emphasized
                     true                                             // useTypewriterEffect
@@ -2363,7 +2363,7 @@ void Scene_Play::initializeDialogues()
                     "エイリアン兵士",                               // speaker
                     "私は未来から来た...!!",            // message
                     basePath + "alien_ancient.png",       // portraitPath
-                    false,                                            // portraitOnLeft
+                    true,                                            // portraitOnLeft
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 500.f),
@@ -2377,7 +2377,7 @@ void Scene_Play::initializeDialogues()
                     "エイリアン兵士",                              // speaker
                     "未来のあなたの王国が私の惑星を侵略した",            // message
                     basePath + "alien_ancient.png",       // portraitPath
-                    false,                                            // portraitOnLeft
+                    true,                                            // portraitOnLeft
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 500.f),
@@ -2391,7 +2391,7 @@ void Scene_Play::initializeDialogues()
                     "エイリアン兵士",                              // speaker
                     "そして逃げている途中でブラックホールを通ってここに...",            // message
                     basePath + "alien_ancient.png",       // portraitPath
-                    false,                                            // portraitOnLeft
+                    true,                                            // portraitOnLeft
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 500.f),
@@ -3209,13 +3209,13 @@ void Scene_Play::initializeDialogues()
             {
                 "***GUIDE***",                           // speaker
                 "(Hold SPACE to shoot bursts of bullets!)",            // message
-                basePath + "alien_future_right.png",       // portraitPath
+                basePath + "alien_ancient.png",       // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
                 sf::Vector2f(0.f, 200.f),
                 1100.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
+                160.f,                                           // boxHeight
                 40,                                             // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
             }
@@ -3229,7 +3229,7 @@ void Scene_Play::initializeDialogues()
                 sf::Color::White,
                 sf::Vector2f(0.f, 200.f),
                 1100.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
+                160.f,                                           // boxHeight
                 40,                                             // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
             }
@@ -3380,7 +3380,7 @@ void Scene_Play::initializeDialogues()
                     sf::Color::Magenta,
                     sf::Color::Red,
                     sf::Vector2f(0.f, 500.f),
-                    850.f,
+                    880.f,
                     150.f,
                     40,
                     true
@@ -3994,13 +3994,13 @@ void Scene_Play::initializeDialogues()
                 {
                     "兵士（精鋭）",                           // speaker
                     "この奇妙な兵士は誰だ？",            // message
-                    basePath + "future_elite.png",       // portraitPath
+                    basePath + "future_elite_right.png",       // portraitPath
                     true,                                            // portraitOnLeft
                     sf::Color::Red,
                     sf::Color::White,
                     sf::Vector2f(500.f, 400.f),
                     650.f,                                           // boxWidth - medium for medium message
-                    150.f,                                           // boxHeight
+                    170.f,                                           // boxHeight
                     30,                                             // messageFontSize - still emphasized
                     true                                               // useTypewriterEffect
                 }
@@ -4022,13 +4022,13 @@ void Scene_Play::initializeDialogues()
                 {
                     "兵士（精鋭）",                           // speaker
                     "ありえない",            // message
-                    basePath + "future_elite.png",       // portraitPath
+                    basePath + "future_elite_right.png",       // portraitPath
                     true,                                            // portraitOnLeft
                     sf::Color::Red,
                     sf::Color::Red,
                     sf::Vector2f(500.f, 400.f),
                     650.f,                                           // boxWidth - medium for medium message
-                    150.f,                                           // boxHeight
+                    170.f,                                           // boxHeight
                     45,                                                  // messageFontSize - still emphasized
                     true                                               // useTypewriterEffect
                 }
@@ -4055,7 +4055,7 @@ void Scene_Play::initializeDialogues()
                     sf::Color::Red,
                     sf::Color::White,
                     sf::Vector2f(500.f, 400.f),
-                    650.f,                                           // boxWidth - medium for medium message
+                    680.f,                                           // boxWidth - medium for medium message
                     150.f,                                           // boxHeight
                     30,                                                // messageFontSize - still emphasized
                     true                                             // useTypewriterEffect
@@ -4064,13 +4064,13 @@ void Scene_Play::initializeDialogues()
                 {
                     "兵士（精鋭）",                             // speaker
                     "消え去った戦士...",            // message
-                    basePath + "future_elite.png",       // portraitPath
+                    basePath + "future_elite_right.png",       // portraitPath
                     true,                                            // portraitOnLeft
                     sf::Color::Red,
                     sf::Color::White,
                     sf::Vector2f(600.f, 400.f),
                     650.f,                                           // boxWidth - medium for medium message
-                    150.f,                                           // boxHeight
+                    170.f,                                           // boxHeight
                     50,                                                // messageFontSize - still emphasized
                     true                                             // useTypewriterEffect
                 }
@@ -4092,7 +4092,7 @@ void Scene_Play::initializeDialogues()
                 {
                     "エイリアン兵士",                              // speaker
                     "なるほど...本当に時間を超えたんだな...",// message
-                    basePath + "alien_future.png",       // portraitPath
+                    basePath + "future_elite_right.png",       // portraitPath
                     true,                                            // portraitOnLeft
                     sf::Color::Magenta,
                     sf::Color::White,
@@ -4108,26 +4108,26 @@ void Scene_Play::initializeDialogues()
             {
                 "兵士（精鋭）",                                // speaker
                 "侵入者を止めろ！！！",// message
-                basePath + "future_elite.png",       // portraitPath
+                basePath + "future_elite_right.png",       // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Red,
                 sf::Color::Red,
                 sf::Vector2f(0.f, 400.f),
                 600.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
+                170.f,                                           // boxHeight
                 40,                                             // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
             },
             {
                 "兵士（精鋭）",                                // speaker
-                "今すぐ止めろ！歴史は繰り返してはならない！",// message
-                basePath + "future_elite.png",       // portraitPath
-                true,                                            // portraitOnLeft
+                "歴史は繰り返してはならない！",// message
+                basePath + "future_elite_right.png",       // portraitPath
+                false,                                            // portraitOnLeft
                 sf::Color::Red,
                 sf::Color::Red,
                 sf::Vector2f(0.f, 400.f),
-                950.f,                                           // boxWidth - medium for medium message
-                150.f,                                           // boxHeight
+                750.f,                                           // boxWidth - medium for medium message
+                170.f,                                           // boxHeight
                 35,                                             // messageFontSize - still emphasized
                 true                                             // useTypewriterEffect
             }
@@ -4370,7 +4370,20 @@ void Scene_Play::initializeDialogues()
             std::vector<DialogueMessage> phasedefeatedFutureDialogue2 = {
                 {
                     "Alien Legionary",                     // speaker
-                    "He's completely depleted....",           // message
+                    "I think I really defeated him this time..",           // message
+                    basePath + "alien_future.png",         // portraitPath
+                    true,                                  // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 400.f),
+                    1000.f,                                 // boxWidth
+                    150.f,                                 // boxHeight
+                    30,                                    // messageFontSize
+                    true                                   // useTypewriterEffect
+                },
+                {
+                    "Alien Legionary",                     // speaker
+                    "He looked completely depleted....",           // message
                     basePath + "alien_future.png",         // portraitPath
                     true,                                  // portraitOnLeft
                     sf::Color::Magenta,
@@ -4395,12 +4408,11 @@ void Scene_Play::initializeDialogues()
                     true                                   // useTypewriterEffect
                 }
             };
-            // Add the named dialogues to our system
+            m_dialogueSystem->addDialogueTrigger(4800, phasedefeatedFutureDialogue2);
             m_dialogueSystem->addNamedDialogue("emperor_phase2", phase2Dialogue);
             m_dialogueSystem->addNamedDialogue("emperor_phase3", phase3Dialogue);
             m_dialogueSystem->addNamedDialogue("emperor_future_final", phasefinalDialogue);
             m_dialogueSystem->addNamedDialogue("emperor_future_defeated", phasedefeatedFutureDialogue);
-            m_dialogueSystem->addNamedDialogue("emperor_future_defeated2", phasedefeatedFutureDialogue2);
         } if (m_language == "Japanese") {
             std::vector<DialogueMessage> bossDialogue = {
                 {
@@ -4510,8 +4522,8 @@ void Scene_Play::initializeDialogues()
                     sf::Color::Cyan,
                     sf::Color::Red,
                     sf::Vector2f(600.f, 550.f),
-                    900.f,
-                    180.f,
+                    750.f,
+                    150.f,
                     50,
                     true
                 }
@@ -4526,7 +4538,7 @@ void Scene_Play::initializeDialogues()
                     sf::Color::Cyan,
                     sf::Color::Red,
                     sf::Vector2f(500.f, 400.f),
-                    750.f,
+                    800.f,
                     150.f,
                     50,
                     true
@@ -4540,7 +4552,7 @@ void Scene_Play::initializeDialogues()
                     sf::Color::White,
                     sf::Vector2f(0.f, 400.f),
                     600.f,
-                    150.f,
+                    170.f,
                     30,
                     true
                 },
@@ -4553,7 +4565,7 @@ void Scene_Play::initializeDialogues()
                     sf::Color::White,
                     sf::Vector2f(0.f, 400.f),
                     700.f,
-                    150.f,
+                    170.f,
                     30,
                     true
                 },
@@ -4566,7 +4578,7 @@ void Scene_Play::initializeDialogues()
                     sf::Color::White,
                     sf::Vector2f(0.f, 400.f),
                     700.f,
-                    150.f,
+                    170.f,
                     30,
                     true
                 }
@@ -4631,38 +4643,51 @@ void Scene_Play::initializeDialogues()
             };
             std::vector<DialogueMessage> phasedefeatedFutureDialogue2 = {
                 {
-                    "Alien Legionary",
-                    "あいつ、もう動けそうにないな。。。",
-                    basePath + "alien_future.png",
-                    true,
+                    "エイリアン兵士",                     // speaker
+                    "今度こそ本当に倒したようだな…",            // message
+                    basePath + "alien_future.png",         // portraitPath
+                    true,                                  // portraitOnLeft
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 400.f),
-                    900.f,
-                    150.f,
-                    30,
-                    true
+                    1000.f,                                 // boxWidth
+                    150.f,                                 // boxHeight
+                    30,                                    // messageFontSize
+                    true                                   // useTypewriterEffect
                 },
                 {
-                    "Alien Legionary",
-                    "最後の一撃で力を使い果たしたか……？",
-                    basePath + "alien_future.png",
-                    true,
+                    "エイリアン兵士",                     // speaker
+                    "完全に力尽きていたように見えたが…",            // message
+                    basePath + "alien_future.png",         // portraitPath
+                    true,                                  // portraitOnLeft
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 400.f),
-                    900.f,
-                    150.f,
-                    30,
-                    true
+                    900.f,                                 // boxWidth
+                    150.f,                                 // boxHeight
+                    30,                                    // messageFontSize
+                    true                                   // useTypewriterEffect
+                },
+                {
+                    "エイリアン兵士",                     // speaker
+                    "さっきの攻撃で奴の力をすべて奪ったのか…？",   // message
+                    basePath + "alien_future.png",         // portraitPath
+                    true,                                  // portraitOnLeft
+                    sf::Color::Magenta,
+                    sf::Color::White,
+                    sf::Vector2f(0.f, 400.f),
+                    900.f,                                 // boxWidth
+                    150.f,                                 // boxHeight
+                    30,                                    // messageFontSize
+                    true                                   // useTypewriterEffect
                 }
             };
+            m_dialogueSystem->addDialogueTrigger(4800, phasedefeatedFutureDialogue2);
         
             m_dialogueSystem->addNamedDialogue("emperor_phase2", phase2Dialogue);
             m_dialogueSystem->addNamedDialogue("emperor_phase3", phase3Dialogue);
             m_dialogueSystem->addNamedDialogue("emperor_future_final", phasefinalDialogue);
             m_dialogueSystem->addNamedDialogue("emperor_future_defeated", phasedefeatedFutureDialogue);
-            m_dialogueSystem->addNamedDialogue("emperor_future_defeated2", phasedefeatedFutureDialogue2);
         }
     }
     else if (levelName ==  "future_rome_level_5_day_v2.txt") {

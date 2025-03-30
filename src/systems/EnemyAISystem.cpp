@@ -348,12 +348,12 @@ void EnemyAISystem::update(float deltaTime)
                             
                             // Configure size
                             sf::Vector2i animSize = blackHoleAnim.getSize();
-                            Vec2<float> boxSize(animSize.x * 2.6, animSize.y * 2.6);
+                            Vec2<float> boxSize(animSize.x * 3.1, animSize.y * 3.1);
                             Vec2<float> halfSize(boxSize.x * 0.5f, boxSize.y * 0.5f);
                             
                             // Scale the sprite - increase size for final attack
                             auto& sprite = massiveBlackHole->get<CAnimation>().animation.getMutableSprite();
-                            float scale_int = 10.0f;
+                            float scale_int = 12.0f;
                             sprite.setScale(scale_int, scale_int);
                             massiveBlackHole->add<CBoundingBox>(boxSize, halfSize);
                             

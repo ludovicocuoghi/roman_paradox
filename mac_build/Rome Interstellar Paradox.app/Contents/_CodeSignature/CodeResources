@@ -30,7 +30,7 @@
 		</data>
 		<key>Resources/images/Background/.DS_Store</key>
 		<data>
-		9lUu4VMxfmXeySERRGhGecjieoA=
+		XcjbggO9ZYkggT+xVRzLbuA4azc=
 		</data>
 		<key>Resources/images/Background/alien_rome/.DS_Store</key>
 		<data>
@@ -728,6 +728,10 @@
 		<data>
 		clxsfkOmhd2rGKD/6gpMM4TXMKo=
 		</data>
+		<key>Resources/images/Portraits/future_elite_right.png</key>
+		<data>
+		/v3AeiLNl7rasxiOiYYHY62+Vqw=
+		</data>
 		<key>Resources/images/Portraits/future_emperor.png</key>
 		<data>
 		Uc/pmONHEd5/76E5SPhBzNRS6YA=
@@ -754,7 +758,7 @@
 		</data>
 		<key>Resources/images/Tile/.DS_Store</key>
 		<data>
-		Z9UOVcUQZizjWhknjY2gt8YwTD8=
+		Qb0lHIwF8j7bEWmbTzgYsmBUqwc=
 		</data>
 		<key>Resources/images/Tile/alien_rome/.DS_Store</key>
 		<data>
@@ -962,7 +966,7 @@
 		</data>
 		<key>Resources/levels/ancient_rome_level_1_day.txt</key>
 		<data>
-		XrkjKCk0s0ilMwfL0yeXi2Y2vmU=
+		Pxx2N2vGISTsn2lMt5pn1y8FcNQ=
 		</data>
 		<key>Resources/levels/ancient_rome_level_2_sunset.txt</key>
 		<data>
@@ -970,7 +974,7 @@
 		</data>
 		<key>Resources/levels/ancient_rome_level_3_night.txt</key>
 		<data>
-		CFjRIK0xFIfX7/pwYdUFqZqH8TQ=
+		N8LhvS2Do7uB0DCmAKjRqts6gj0=
 		</data>
 		<key>Resources/levels/ancient_rome_level_4_emperor_room.txt</key>
 		<data>
@@ -2148,6 +2152,13 @@
 			QDZhOaTHRhMkhFAOz+KwihO9LJnkrEs5+ArRI39i2ns=
 			</data>
 		</dict>
+		<key>Resources/images/Portraits/future_elite_right.png</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			5W3ZFOItnjb+GYJtq5vU+2Vdc45Ykx1LF+qiKQeTAKs=
+			</data>
+		</dict>
 		<key>Resources/images/Portraits/future_emperor.png</key>
 		<dict>
 			<key>hash2</key>
@@ -2523,7 +2534,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			quGZCU39u3t+L+I+X9F9JrwQ+L3vNN3ObjijfSd/EMo=
+			z+zBcS00GnVnZiOnK6hJMxRmcLmz+sC9ixWeMJTC/MI=
 			</data>
 		</dict>
 		<key>Resources/levels/ancient_rome_level_2_sunset.txt</key>
@@ -2537,7 +2548,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			AFzNDVd/GQJD/B7XxZtgoXrDS2eoJhkyCWOYLTu3VLM=
+			hiBZ6QrvKUWJw9/EroNXWcva2lOD38mL3G/v0LJ4XCQ=
 			</data>
 		</dict>
 		<key>Resources/levels/ancient_rome_level_4_emperor_room.txt</key>
