@@ -1739,7 +1739,7 @@ void EnemyAISystem::update(float deltaTime)
                         }
                     }
                 }
-                else if (m_game.worldType != "Future") {
+                else if (!(m_game.worldType == "Future" || (m_game.worldType == "Alien" && enemyAI.enemyType == EnemyType::Fast))) {
                     // Normal sword for non-future regular enemies
                     m_spawner->spawnEnemySword(enemy);
                 }

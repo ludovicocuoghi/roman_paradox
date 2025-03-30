@@ -344,7 +344,7 @@ void Scene_Play::initializeDialogues()
                     "***GUIDE**",                           // speaker
                     "Press A or D to move LEFT or RIGHT",            // message
                     basePath + "alien_ancient_right.png",       // portraitPath
-                    false,                                            // portraitOnLeft
+                    true,                                            // portraitOnLeft
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 200.f),
@@ -358,7 +358,7 @@ void Scene_Play::initializeDialogues()
                     "***GUIDE***",                           // speaker
                     "Press W to JUMP",            // message
                     basePath + "alien_ancient_right.png",       // portraitPath
-                    false,                                            // portraitOnLeft
+                    true,                                            // portraitOnLeft
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 200.f),
@@ -585,7 +585,7 @@ void Scene_Play::initializeDialogues()
                         true                                             // useTypewriterEffect
                     },
                     {
-                        "***ガイド***",                              // speaker (could also leave it as GUIDE)
+                        "***ガイド***",                              // speaker 
                         "(AキーまたはDキーで左右に移動)",               // message
                         basePath + "alien_ancient_right.png",        // portraitPath
                         true,                                       // portraitOnLeft
@@ -1079,7 +1079,7 @@ void Scene_Play::initializeDialogues()
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(100.f, 300.f),
-                    800.f,                                           // boxWidth - medium for medium message
+                    850.f,                                           // boxWidth - medium for medium message
                     150.f,                                           // boxHeight
                     60,                                              // messageFontSize - still emphasized
                     true                                             // useTypewriterEffect
@@ -1347,7 +1347,7 @@ void Scene_Play::initializeDialogues()
                     "***GUIDE***",
                     "Press SPACE to attack.",
                     basePath + "alien_ancient_right.png",
-                    false,
+                    true,
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 200.f),
@@ -1360,7 +1360,7 @@ void Scene_Play::initializeDialogues()
                     "***GUIDE***",
                     "Hold M to defend (uses stamina).",
                     basePath + "alien_ancient_right.png",
-                    false,
+                    true,
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 200.f),
@@ -1376,7 +1376,7 @@ void Scene_Play::initializeDialogues()
                     "***GUIDE***",
                     "(You can find items inside boxes and chests.)",
                     basePath + "alien_ancient_right.png",
-                    false,
+                    true,
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 200.f),
@@ -1389,7 +1389,7 @@ void Scene_Play::initializeDialogues()
                     "***GUIDE***",
                     "(Grapes restore health. Chicken refills stamina (Defense Time).)",
                     basePath + "alien_ancient_right.png",
-                    false,
+                    true,
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 200.f),
@@ -1402,7 +1402,7 @@ void Scene_Play::initializeDialogues()
                     "***GUIDE***",
                     "(Coins increase Score. Full HP is restored when score = 100.)",
                     basePath + "alien_ancient_right.png",
-                    false,
+                    true,
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 200.f),
@@ -1551,7 +1551,7 @@ void Scene_Play::initializeDialogues()
                     false,                                            // portraitOnLeft
                     sf::Color::Yellow,
                     sf::Color::White,
-                    sf::Vector2f(850.f, 450.f),
+                    sf::Vector2f(600.f, 450.f),
                     650.f,                                           // boxWidth - medium for medium message
                     150.f,                                           // boxHeight
                     40,                                              // messageFontSize - still emphasized
@@ -1565,7 +1565,7 @@ void Scene_Play::initializeDialogues()
                     sf::Color::Yellow,
                     sf::Color::White,
                     sf::Vector2f(600.f, 450.f),
-                    800.f,                                           // boxWidth - medium for medium message
+                    650.f,                                           // boxWidth - medium for medium message
                     150.f,                                           // boxHeight
                     40,                                              // messageFontSize - still emphasized
                     true                                             // useTypewriterEffect
@@ -1584,10 +1584,10 @@ void Scene_Play::initializeDialogues()
                     true                                             // useTypewriterEffect
                 },
                 {
-                    "***GUIDE***",
+                    "***ガイド***",
                     "(スペースキーで攻撃。)",
-                    basePath + "ancient_alien.png",
-                    false,
+                    basePath + "ancient_alien_right.png",
+                    true,
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 200.f),
@@ -1597,26 +1597,26 @@ void Scene_Play::initializeDialogues()
                     true
                 },
                 {
-                    "***GUIDE***",
+                    "***ガイド***",
                     "(Mキー長押しで防御 （スタミナ消費）。)",
-                    basePath + "ancient_alien.png",
-                    false,
+                    basePath + "ancient_alien_right.png",
+                    true,
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 200.f),
-                    1100.f,
+                    1150.f,
                     150.f,
                     50,
                     true
                 }
             };
-            m_dialogueSystem->addDialogueTrigger(2600, Dialogue5);
+            m_dialogueSystem->addDialogueTrigger(2500, Dialogue5);
             std::vector<DialogueMessage> Dialogue6 = {
                 {
-                    "***GUIDE***",
+                    "***ガイド***",
                     "(箱や宝箱の中にはアイテムが入っています。)",
-                    basePath + "ancient_alien.png",
-                    false,
+                    basePath + "ancient_alien_right.png",
+                    true,
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 200.f),
@@ -1626,27 +1626,27 @@ void Scene_Play::initializeDialogues()
                     true
                 },
                 {
-                    "***GUIDE***",
+                    "***ガイド***",
                     "(ぶどうは体力回復。チキンはスタミナ（防御時間）回復。)",
-                    basePath + "ancient_alien.png",
-                    false,
+                    basePath + "ancient_alien_right.png",
+                    true,
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 200.f),
-                    950.f,
+                    1150.f,
                     150.f,
                     35,
                     true
                 },
                 {
-                    "***GUIDE***",
+                    "***ガイド***",
                     "(コインを集めるとスコア上昇。スコア100で体力全回復。)",
-                    basePath + "ancient_alien.png",
-                    false,
+                    basePath + "ancient_alien_right.png",
+                    true,
                     sf::Color::Magenta,
                     sf::Color::White,
                     sf::Vector2f(0.f, 200.f),
-                    950.f,
+                    1150.f,
                     150.f,
                     35,
                     true
@@ -3209,8 +3209,8 @@ void Scene_Play::initializeDialogues()
             {
                 "***GUIDE***",                           // speaker
                 "(Hold SPACE to shoot bursts of bullets!)",            // message
-                basePath + "alien_future.png",       // portraitPath
-                false,                                            // portraitOnLeft
+                basePath + "alien_future_right.png",       // portraitPath
+                true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
                 sf::Vector2f(0.f, 200.f),
@@ -3223,8 +3223,8 @@ void Scene_Play::initializeDialogues()
             {
                 "***GUIDE***",                           // speaker
                 "(Press ENTER to activate the supermove!!)",            // message
-                basePath + "alien_future.png",       // portraitPath
-                false,                                            // portraitOnLeft
+                basePath + "alien_future_right.png",       // portraitPath
+                true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
                 sf::Vector2f(0.f, 200.f),
@@ -3639,7 +3639,7 @@ void Scene_Play::initializeDialogues()
             {
                 "***ガイド***",                           // speaker
                 "(スペースキーを長押しで連射！)",            // message
-                basePath + "alien_future.png",       // portraitPath
+                basePath + "alien_future_right.png",       // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -3653,7 +3653,7 @@ void Scene_Play::initializeDialogues()
             {
                 "***ガイド***",                           // speaker
                 "(エンターキーで必殺技！！)",            // message
-                basePath + "alien_future.png",       // portraitPath
+                basePath + "alien_future_right.png",       // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,

@@ -284,8 +284,6 @@ void PlayRenderer::render() {
             sprite.setOrigin(anim.animation.getSize().x / 2.f,
                             anim.animation.getSize().y / 2.f);
             sprite.setScale(0.5f, 0.5f);
-            // Apply dark palette if needed
-            sprite.setColor(darkFilterLevel2);
             m_game.window().draw(sprite);
         }
     }

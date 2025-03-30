@@ -700,6 +700,10 @@
 		<data>
 		Gae2jrJdFVWjEUAJtnoPxxPgQis=
 		</data>
+		<key>Resources/images/Portraits/alien_future_right.png</key>
+		<data>
+		rqDiGeNaaP1x6lPOeGM21Z3bJM8=
+		</data>
 		<key>Resources/images/Portraits/alien_super2.png</key>
 		<data>
 		mXSs1vOXZ4rWJq0Q4pdhNphGnoQ=
@@ -2093,6 +2097,13 @@
 			<key>hash2</key>
 			<data>
 			l2BCkcBNAnHQDsAr/JOh8xl0jJxjPu95Iq2+8UsWS/s=
+			</data>
+		</dict>
+		<key>Resources/images/Portraits/alien_future_right.png</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			Pski1m7T9kjlZZNK4ZrprQ9+B79t4mb58iUGetFvg1k=
 			</data>
 		</dict>
 		<key>Resources/images/Portraits/alien_super2.png</key>
