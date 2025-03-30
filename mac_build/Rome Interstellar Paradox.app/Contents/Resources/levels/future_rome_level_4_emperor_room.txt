@@ -1,4 +1,4 @@
-# World: Future
+
 Tile Ground 0 1
 Tile Ground 0 0
 Tile Ground 1 0
