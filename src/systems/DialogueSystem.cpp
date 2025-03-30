@@ -23,14 +23,14 @@ DialogueSystem::DialogueSystem(GameEngine& game, EntityManager& entityManager)
       m_dialogueActive(false),
       m_completionTimer(0.0f),
       m_waitingAfterCompletion(false),
+      dialogueFont(),          
+      japaneseFontJpn(),
+      m_language(game.getLanguage()),
       dialogueBox(),
       continueText(),
       speakerText(),
       messageText(),
-      portraitSprite(),
-      dialogueFont(),
-      japaneseFontJpn(),
-      m_language(game.getLanguage())
+      portraitSprite()         
 {
     // Load default font
     if (!dialogueFont.loadFromFile(getResourcePath("fonts/jpn.ttf"))) {
@@ -72,7 +72,7 @@ void DialogueSystem::setLanguage(const std::string& language)
     
     // Skip update if language is already set
     if (m_language == language) {
-        std::cout << "[DEBUG] Language already set to: " << language << ", skipping update\n";
+        // std::cout << "[DEBUG] Language already set to: " << language << ", skipping update\n";
         return;
     }
     
@@ -189,7 +189,7 @@ void DialogueSystem::updateTypewriterEffect(float deltaTime)
     if (!currentMessage.useTypewriterEffect) {
         m_displayedText = currentMessage.message;
         m_isTyping = false;
-        std::cout << "[DEBUG] Typewriter effect skipped for message\n";
+        // std::cout << "[DEBUG] Typewriter effect skipped for message\n";
         return;
     }
 
@@ -199,7 +199,7 @@ void DialogueSystem::updateTypewriterEffect(float deltaTime)
     if (static_cast<size_t>(charCount) >= currentMessage.message.length()) {
         m_displayedText = currentMessage.message;
         m_isTyping = false;
-        std::cout << "[DEBUG] Finished typing message\n";
+        // std::cout << "[DEBUG] Finished typing message\n";
     } else {
         m_displayedText = currentMessage.message.substr(0, charCount);
     }
@@ -330,15 +330,15 @@ void DialogueSystem::triggerDialogueByID(const std::string& dialogueID) {
             startNewMessage(m_currentDialogue[0]);
         }
         
-        std::cout << "[DEBUG] Triggered dialogue by ID: " << dialogueID << "\n";
+        // std::cout << "[DEBUG] Triggered dialogue by ID: " << dialogueID << "\n";
     } else {
-        std::cout << "[WARNING] Could not find dialogue with ID: " << dialogueID << "\n";
+        //std::cout << "[WARNING] Could not find dialogue with ID: " << dialogueID << "\n";
     }
 }
 
 
 void DialogueSystem::addNamedDialogue(const std::string& dialogueID, const std::vector<DialogueMessage>& dialogue) {
     m_namedDialogues[dialogueID] = dialogue;
-    std::cout << "[DEBUG] Added named dialogue: " << dialogueID << " with " 
-              << dialogue.size() << " messages\n";
+    // std::cout << "[DEBUG] Added named dialogue: " << dialogueID << " with " 
+    //           << dialogue.size() << " messages\n";
 }

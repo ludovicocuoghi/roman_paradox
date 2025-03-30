@@ -51,7 +51,7 @@ Scene_Menu::Scene_Menu(GameEngine& game)
     // 4) Update menu translations according to the *current* language
     updateMenuTranslations();
     
-    std::cout << "[DEBUG] Scene_Menu created; language = " << m_language << std::endl;
+    //std::cout << "[DEBUG] Scene_Menu created; language = " << m_language << std::endl;
 }
 
 // Modify updateMenuTranslations to populate both arrays

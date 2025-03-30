@@ -74,10 +74,6 @@ void PlayRenderer::renderDialogue(DialogueSystem* dialogueSystem)
     dialogueSystem->portraitSprite.setPosition(portraitX, boxY + 15.f);
 
     float textX = message->portraitOnLeft ? portraitX + portraitSize + 15.f : boxX + 15.f;
-    // Calculate max text width to avoid overlapping with portrait
-    float maxTextWidth = message->portraitOnLeft ? 
-                         boxWidth - (portraitSize + 30.f) : 
-                         boxWidth - portraitSize - 30.f;
 
     // Choose the right font based on language
     const sf::Font& fontToUse = (m_game.getLanguage() == "Japanese") ? 

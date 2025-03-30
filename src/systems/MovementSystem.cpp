@@ -102,11 +102,11 @@ void MovementSystem::updateCamera()
         m_currentZoom = targetZoomStrength;
 
         // Debug prints:
-        std::cout << "Current zoom factor: " << m_currentZoom << "\n";
-        std::cout << "Zooming view by: " << zoomFactor << "\n";
+        // std::cout << "Current zoom factor: " << m_currentZoom << "\n";
+        // std::cout << "Zooming view by: " << zoomFactor << "\n";
         
-        auto size = m_cameraView.getSize();
-        std::cout << "View size after zoom: " << size.x << " x " << size.y << "\n";
+        //auto size = m_cameraView.getSize();
+        // std::cout << "View size after zoom: " << size.x << " x " << size.y << "\n";
     }
 
     // Apply the final camera

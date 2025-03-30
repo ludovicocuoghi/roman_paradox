@@ -450,11 +450,6 @@ void CollisionSystem::handlePlayerEnemyCollisions() {
         auto& enemyBB    = enemy->get<CBoundingBox>();
         sf::FloatRect enemyRect = enemyBB.getRect(enemyTrans.pos);
 
-        // Check enemy on-ground state
-        bool enemyOnGround = false;
-        if (enemy->has<CState>())
-            enemyOnGround = enemy->get<CState>().onGround;
-
         for (auto& player : m_entityManager.getEntities("player")) {
             if (!player->has<CTransform>() || !player->has<CBoundingBox>() || !player->has<CState>())
                 continue;

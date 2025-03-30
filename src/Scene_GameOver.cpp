@@ -150,14 +150,14 @@ void Scene_GameOver::sDoAction(const Action& action)
             if (m_selectedOption == 0) {
                 // Restart current level
                 if (!m_levelPath.empty()) {
-                    std::cout << "[DEBUG] Restarting level: " << m_levelPath << std::endl;
-                    m_game.restartLevel(m_levelPath);
+                    //std::cout << "[DEBUG] Restarting level: " << m_levelPath << std::endl;
+                    m_game.restartLevel();
                 } else {
                     // fallback
                     std::string currentLevel = m_game.getCurrentLevel();
                     if (!currentLevel.empty()) {
-                        std::cout << "[DEBUG] Using fallback: " << currentLevel << std::endl;
-                        m_game.restartLevel(currentLevel);
+                        //std::cout << "[DEBUG] Using fallback: " << currentLevel << std::endl;
+                        m_game.restartLevel();
                     } else {
                         goToLevelSelection();
                     }

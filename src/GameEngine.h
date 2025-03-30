@@ -23,7 +23,7 @@ public:
     std::string getNextLevelPath();
     void setCurrentLevel(const std::string& levelPath);
     const std::string& getCurrentLevel() const;
-    void restartLevel(const std::string& levelPath);
+    void restartLevel();
     void scheduleLevelChange(const std::string& levelPath);
     bool isFinalLevel(const std::string& levelPath);
     void showEnding();

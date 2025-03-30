@@ -158,13 +158,13 @@ void Scene_Play::selectBackgroundFromLevel(const std::string& levelPath) {
     if (!file.good()) {
         std::cerr << "[ERROR] Background image does not exist: " << m_backgroundPath << std::endl;
     } else {
-        std::cout << "[DEBUG] Background image file exists." << std::endl;
+       // std::cout << "[DEBUG] Background image file exists." << std::endl;
     }
 }
 
 void Scene_Play::init()
 {
-    std::cout << "[DEBUG] Scene_Play::init() - Start\n";
+    //std::cout << "[DEBUG] Scene_Play::init() - Start\n";
 
     //Reset movement keys
     leftKeyPressed = false;
@@ -182,7 +182,7 @@ void Scene_Play::init()
     registerAction(sf::Keyboard::B, "TOGGLE_BB");
     registerAction(sf::Keyboard::Enter, "SUPERMOVE");
 
-    std::cout << "[DEBUG] Scene_Play::init() - Loading level: " << m_levelPath << std::endl;
+    // << "[DEBUG] Scene_Play::init() - Loading level: " << m_levelPath << std::endl;
 
     if (m_levelPath.empty()) {
         std::cerr << "[ERROR] Cannot load level: Level path is empty!\n";
@@ -343,7 +343,7 @@ void Scene_Play::initializeDialogues()
                 {
                     "***GUIDE**",                           // speaker
                     "Press A or D to move LEFT or RIGHT",            // message
-                    basePath + "ancient_alien_right.png",       // portraitPath
+                    basePath + "alien_ancient_right.png",       // portraitPath
                     false,                                            // portraitOnLeft
                     sf::Color::Magenta,
                     sf::Color::White,
@@ -357,7 +357,7 @@ void Scene_Play::initializeDialogues()
                 {
                     "***GUIDE***",                           // speaker
                     "Press W to JUMP",            // message
-                    basePath + "ancient_alien_right.png",       // portraitPath
+                    basePath + "alien_ancient_right.png",       // portraitPath
                     false,                                            // portraitOnLeft
                     sf::Color::Magenta,
                     sf::Color::White,
@@ -587,7 +587,7 @@ void Scene_Play::initializeDialogues()
                     {
                         "***ガイド***",                              // speaker (could also leave it as GUIDE)
                         "(AキーまたはDキーで左右に移動)",               // message
-                        basePath + "ancient_alien_right.png",        // portraitPath
+                        basePath + "alien_ancient_right.png",        // portraitPath
                         true,                                       // portraitOnLeft
                         sf::Color::Magenta,
                         sf::Color::White,
@@ -600,7 +600,7 @@ void Scene_Play::initializeDialogues()
                     {
                         "***ガイド***",
                         "(Wキーでジャンプ)",
-                        basePath + "ancient_alien_right.png",
+                        basePath + "alien_ancient_right.png",
                         true,
                         sf::Color::Magenta,
                         sf::Color::White,
@@ -1346,7 +1346,7 @@ void Scene_Play::initializeDialogues()
                 {
                     "***GUIDE***",
                     "Press SPACE to attack.",
-                    basePath + "ancient_alien_right.png",
+                    basePath + "alien_ancient_right.png",
                     false,
                     sf::Color::Magenta,
                     sf::Color::White,
@@ -1359,7 +1359,7 @@ void Scene_Play::initializeDialogues()
                 {
                     "***GUIDE***",
                     "Hold M to defend (uses stamina).",
-                    basePath + "ancient_alien_right.png",
+                    basePath + "alien_ancient_right.png",
                     false,
                     sf::Color::Magenta,
                     sf::Color::White,
@@ -1375,7 +1375,7 @@ void Scene_Play::initializeDialogues()
                 {
                     "***GUIDE***",
                     "(You can find items inside boxes and chests.)",
-                    basePath + "ancient_alien_right.png",
+                    basePath + "alien_ancient_right.png",
                     false,
                     sf::Color::Magenta,
                     sf::Color::White,
@@ -1388,7 +1388,7 @@ void Scene_Play::initializeDialogues()
                 {
                     "***GUIDE***",
                     "(Grapes restore health. Chicken refills stamina (Defense Time).)",
-                    basePath + "ancient_alien_right.png",
+                    basePath + "alien_ancient_right.png",
                     false,
                     sf::Color::Magenta,
                     sf::Color::White,
@@ -1401,7 +1401,7 @@ void Scene_Play::initializeDialogues()
                 {
                     "***GUIDE***",
                     "(Coins increase Score. Full HP is restored when score = 100.)",
-                    basePath + "ancient_alien_right.png",
+                    basePath + "alien_ancient_right.png",
                     false,
                     sf::Color::Magenta,
                     sf::Color::White,
@@ -5365,27 +5365,6 @@ void Scene_Play::sDoAction(const Action& action)
     bool inDefense = (state.state == "defense");
     bool hasFutureArmor = player->has<CPlayerEquipment>() && 
                           player->get<CPlayerEquipment>().hasFutureArmor;
-
-    // Static flags for original system compatibility
-    static bool isMovingLeft = false;
-    static bool isMovingRight = false;
-
-    // Keep these flags in sync with key state for compatibility
-    isMovingLeft = leftKeyPressed;
-    isMovingRight = rightKeyPressed;
-
-    if (action.name() == "WINDOW_LOST_FOCUS") {
-        // When app loses focus, reset all movement flags
-        leftKeyPressed = false;
-        rightKeyPressed = false;
-        isMovingLeft = false;
-        isMovingRight = false;
-        vel.x = 0.f;
-        if (state.state != "air") {
-            state.state = "idle";
-        }
-        return;
-    }
     
     if (action.type() == "START")
     {
@@ -5693,7 +5672,7 @@ void Scene_Play::sAmmoSystem(float dt)
         if (ammo.currentReloadTime >= ammo.reloadTime) {
             ammo.currentBullets = ammo.maxBullets;
             ammo.isReloading = false;
-            std::cout << "[DEBUG] Reload complete. Bullets: " << ammo.currentBullets << "\n";
+            // << "[DEBUG] Reload complete. Bullets: " << ammo.currentBullets << "\n";
         }
     }
 }
@@ -5763,7 +5742,7 @@ void Scene_Play::updateBurstFire(float deltaTime)
         m_spawner.spawnPlayerBullet(player);
         
         if (player->has<CAmmo>()) {
-            auto& ammo = player->get<CAmmo>();
+            //auto& ammo = player->get<CAmmo>();
             // std::cout << "[DEBUG] Burst bullet #" << state.bulletsShot << ", Ammo left: " << ammo.currentBullets << "\n";
         } else {
             // std::cout << "[DEBUG] Burst bullet #" << state.bulletsShot << "\n";
@@ -5828,8 +5807,8 @@ void Scene_Play::handleEmperorDeath(std::shared_ptr<Entity> emperor) {
         
         m_spawner.spawnEnemyGrave(deathPosition, true); // true = isEmperor
         
-        std::cout << "[DEBUG] Future Emperor defeated. Grave spawned at position (" 
-                    << deathPosition.x << "," << deathPosition.y << ")\n";
+        // std::cout << "[DEBUG] Future Emperor defeated. Grave spawned at position (" 
+        //             << deathPosition.x << "," << deathPosition.y << ")\n";
                 
         emperor->destroy();
     }

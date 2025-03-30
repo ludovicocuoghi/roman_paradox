@@ -265,7 +265,7 @@ void EnemyAISystem::update(float deltaTime)
                         }
                     }
                     
-                    std::cout << "[DEBUG] Emperor entering final attack state! Health: " << healthPercentage << "\n";
+                    //std::cout << "[DEBUG] Emperor entering final attack state! Health: " << healthPercentage << "\n";
                 }
                 // Future Emperor final attack logic
                 if (m_game.worldType == "Future" && enemyAI.enemyState == EnemyState::FinalAttack) {
@@ -283,10 +283,10 @@ void EnemyAISystem::update(float deltaTime)
                     
                     // Use burstCount to track phases
                     if (enemyAI.burstCount == 0) {
-                        float screenWidth = m_game.window().getSize().x;
-                        float screenHeight = m_game.window().getSize().y;
 
-                        std::cout << screenWidth << screenHeight << std::endl;
+                        // float screenWidth = m_game.window().getSize().x;
+                        // float screenHeight = m_game.window().getSize().y;
+                        //std::cout << screenWidth << screenHeight << std::endl;
                         
                         enemyTrans.pos = Vec2<float>(5000, -1000);
                         enemyAI.burstCount = 1; // Mark teleport as complete
@@ -306,7 +306,7 @@ void EnemyAISystem::update(float deltaTime)
                             
                         }
                                 
-                        std::cout << "[DEBUG] TELEPORT COMPLETE: Emperor teleported\n";
+                        //std::cout << "[DEBUG] TELEPORT COMPLETE: Emperor teleported\n";
                     }
                     else if (enemyAI.burstCount == 1 && enemyAI.phaseTimer >= 1.0f) {
                         // Phase 1: Fire the black hole after charging
@@ -387,7 +387,7 @@ void EnemyAISystem::update(float deltaTime)
                             }
                         }
                         
-                        std::cout << "[DEBUG] FINAL TELEPORT: Emperor teleported to final position at (3777, 0)\n";
+                        //std::cout << "[DEBUG] FINAL TELEPORT: Emperor teleported to final position at (3777, 0)\n";
                     }
                     else if (enemyAI.burstCount == 3) {
                         if (m_dialogueSystem && m_triggeredDialogues.find("emperor_future_defeated") == m_triggeredDialogues.end()) {
@@ -430,7 +430,7 @@ void EnemyAISystem::update(float deltaTime)
                         enemyAI.finalBurstTimer = 0.f;
                         enemyAI.burstCount = 0;
                         enemyAI.defeatTimer = 0.f; // Initialize the timer
-                        std::cout << "[DEBUG] Ancient Emperor entering final attack state!\n";
+                        // << "[DEBUG] Ancient Emperor entering final attack state!\n";
                         
                     }
                     enemyTrans.velocity.x = 0.f;
@@ -510,7 +510,7 @@ void EnemyAISystem::update(float deltaTime)
             if (enemyTrans.pos.y > groundLevel) {
                 enemyTrans.pos.y = groundLevel;
                 enemyTrans.velocity.y = -50.f; // Small upward velocity to push back up
-                std::cout << "[DEBUG] Emperor hit minimum height boundary, repositioning\n";
+                //std::cout << "[DEBUG] Emperor hit minimum height boundary, repositioning\n";
             }
             
             // Horizontal movement logic
@@ -1009,7 +1009,7 @@ void EnemyAISystem::update(float deltaTime)
                     }
                     else if (healthPercentage <= 0.5f) {
                         if (!enemyAI.burstCooldownActive) {
-                            std::cout << "[DEBUG] Ancient Emperor: Burst attack active!\n";
+                            //std::cout << "[DEBUG] Ancient Emperor: Burst attack active!\n";
                             float attackInterval = 3.0f; // Default attack interval
                             
                             if (distance > 600.f) {
@@ -1059,9 +1059,9 @@ void EnemyAISystem::update(float deltaTime)
         }
         // 3) Knockback Handling
         if (enemyAI.enemyState == EnemyState::Knockback) {
-            std::cout << "[DEBUG] Knockback: vel.x=" << enemyTrans.velocity.x
-                      << " pos.x=" << enemyTrans.pos.x
-                      << " timer=" << enemyAI.knockbackTimer << "\n";
+            // std::cout << "[DEBUG] Knockback: vel.x=" << enemyTrans.velocity.x
+            //           << " pos.x=" << enemyTrans.pos.x
+            //           << " timer=" << enemyAI.knockbackTimer << "\n";
 
             // Destroy associated swords
             auto enemySwords = m_entityManager.getEntities("enemySword");
@@ -1295,14 +1295,14 @@ void EnemyAISystem::update(float deltaTime)
                     auto& anim = enemy->get<CAnimation>();
                     anim.animation = m_game.assets().getAnimation(attackAnimName);
                     anim.repeat = false;
-                    std::cout << "[DEBUG] Setting attack animation: " << attackAnimName << std::endl;
+                    //std::cout << "[DEBUG] Setting attack animation: " << attackAnimName << std::endl;
                     if (enemyAI.facingDirection < 0) {
                         flipSpriteLeft(anim.animation.getMutableSprite());
                     } else {
                         flipSpriteRight(anim.animation.getMutableSprite());
                     }
                 } else {
-                    std::cout << "[DEBUG] ERROR: Attack animation not found: " << attackAnimName << std::endl;
+                    //std::cout << "[DEBUG] ERROR: Attack animation not found: " << attackAnimName << std::endl;
                 }
             }
             enemyTrans.velocity.x = 0.f;
@@ -1401,11 +1401,11 @@ void EnemyAISystem::update(float deltaTime)
 
         // (Animation) Running State
        
-        float healthPercentage = 1.f;
-        if (enemy->has<CHealth>()) {
-            auto& health = enemy->get<CHealth>();
-            healthPercentage = static_cast<float>(health.currentHealth) / static_cast<float>(health.maxHealth);
-        }
+        // float healthPercentage = 1.f;
+        // if (enemy->has<CHealth>()) {
+        //     auto& health = enemy->get<CHealth>();
+        //     healthPercentage = static_cast<float>(health.currentHealth) / static_cast<float>(health.maxHealth);
+        // }
         
         std::string runAnimName;
         if (enemyAI.enemyType == EnemyType::Emperor && m_game.worldType == "Future") {
@@ -1837,7 +1837,7 @@ void EnemyAISystem::updateCitizens(float deltaTime, const CTransform& playerTran
                         if (enemy->has<CHealth>()) {
                             auto& health = enemy->get<CHealth>();
                             health.currentHealth = 0; // Kill the citizen
-                            std::cout << "[DEBUG] Citizen killed by Super enemy!\n";
+                            //std::cout << "[DEBUG] Citizen killed by Super enemy!\n";
                         } else {
                             // If no health component, just destroy the entity
                             enemy->destroy();

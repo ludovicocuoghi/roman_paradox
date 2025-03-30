@@ -80,7 +80,7 @@ std::string GameEngine::getNextLevelPath() {
 
     if (m_levelConnections.find(levelFile) != m_levelConnections.end()) {
         std::string nextLevel = m_levelConnections[levelFile];
-        std::cout << "[DEBUG] Next level found: " << nextLevel << std::endl;
+        //std::cout << "[DEBUG] Next level found: " << nextLevel << std::endl;
         return getResourcePath("levels") + "/" + nextLevel;
     }
 
@@ -91,7 +91,7 @@ std::string GameEngine::getNextLevelPath() {
 void GameEngine::setCurrentLevel(const std::string& levelPath) {
     if (!levelPath.empty()) {
         m_currentLevel = levelPath;
-        std::cout << "[DEBUG] GameEngine current level set to: " << m_currentLevel << std::endl;
+        //std::cout << "[DEBUG] GameEngine current level set to: " << m_currentLevel << std::endl;
     }
 }
 
@@ -103,18 +103,18 @@ const std::string& GameEngine::getCurrentLevel() const {
 void GameEngine::loadLevel(const std::string& levelPath) {
     
     if (levelPath.empty()) {
-        std::cerr << "[ERROR] Attempted to load an empty level path!\n";
+        //std::cerr << "[ERROR] Attempted to load an empty level path!\n";
         return;
     }
     
     // Check if the file exists
     if (!std::filesystem::exists(levelPath)) {
-        std::cerr << "[ERROR] Level file does not exist: " << levelPath << std::endl;
+        //std::cerr << "[ERROR] Level file does not exist: " << levelPath << std::endl;
         return;
     }
     
     m_currentLevel = levelPath;  //  Ensure current level is stored
-    std::cout << "[DEBUG] Loading Level: " << m_currentLevel << std::endl;
+    //std::cout << "[DEBUG] Loading Level: " << m_currentLevel << std::endl;
 
     // Set the world type based on the level name
     std::string levelFile = levelPath.substr(levelPath.find_last_of("/\\") + 1);
@@ -225,9 +225,9 @@ void GameEngine::sUserInput() {
 
 void GameEngine::setLanguage(const std::string& language) 
 { 
-    std::cout << "[DEBUG] GameEngine::setLanguage() called with: " << language << std::endl;
+    //std::cout << "[DEBUG] GameEngine::setLanguage() called with: " << language << std::endl;
     m_language = language;
-    std::cout << "[DEBUG] Language set to: " << m_language << std::endl;
+    //std::cout << "[DEBUG] Language set to: " << m_language << std::endl;
 }
 
 //  Change the active scene properly
@@ -244,7 +244,7 @@ void GameEngine::changeScene(const std::string& sceneName, std::shared_ptr<Scene
         }
     }
 
-    std::cout << "[DEBUG] Switching Scene to: " << sceneName << std::endl;
+    //std::cout << "[DEBUG] Switching Scene to: " << sceneName << std::endl;
 
     clearActions();
     
@@ -257,8 +257,8 @@ void GameEngine::changeScene(const std::string& sceneName, std::shared_ptr<Scene
     }
 }
 
-void GameEngine::restartLevel(const std::string& levelPath) {
-    std::cout << "[DEBUG] Restarting level: " << levelPath << std::endl;
+void GameEngine::restartLevel() {
+    // << "[DEBUG] Restarting level: " << levelPath << std::endl;
     changeScene("PLAY", std::static_pointer_cast<Scene>(std::make_shared<Scene_Play>(*this, m_currentLevel)));
 }
 
@@ -340,7 +340,7 @@ void GameEngine::scheduleLevelChange(const std::string& levelPath) {
     
     if (currentLevelFile == "future_rome_level_5_day_v2.txt") {
         // Player completed the final level, show ending
-        std::cout << "[DEBUG] Final level completed, showing ending screen" << std::endl;
+        //std::cout << "[DEBUG] Final level completed, showing ending screen" << std::endl;
         m_showEndingScreen = true;
         return;
     }

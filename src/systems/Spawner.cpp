@@ -58,7 +58,7 @@ std::shared_ptr<Entity> Spawner::spawnPlayerBullet(std::shared_ptr<Entity> playe
 
     // Add a sanity check to ensure valid facing direction
     if (facingDir == 0.0f) {
-        std::cout << "[WARNING] Zero facing direction detected, defaulting to right.\n";
+        //std::cout << "[WARNING] Zero facing direction detected, defaulting to right.\n";
         facingDir = 1.0f; // Default to facing right if somehow facingDir is 0
     }
     

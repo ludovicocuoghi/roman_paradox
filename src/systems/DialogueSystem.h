@@ -49,9 +49,6 @@ private:
     sf::Font japaneseFontJpn;   // Japanese font
     std::string m_language;     // Current language
     
-    void startNewMessage(const DialogueMessage& message);
-    void advanceDialogue();
-    
 public:
     // UI elements - keeping these public to maintain compatibility with PlayRenderer
     sf::RectangleShape dialogueBox;
@@ -73,6 +70,8 @@ public:
     void handleAttackAction();
     void triggerDialogueByID(const std::string& dialogueID);
     void addNamedDialogue(const std::string& dialogueID, const std::vector<DialogueMessage>& dialogue);
+    void startNewMessage(const DialogueMessage& message);
+    void advanceDialogue();
     
     // Getters for rendering
     bool isDialogueActive() const;

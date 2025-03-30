@@ -16,7 +16,7 @@ Scene_StoryText::Scene_StoryText(GameEngine& game, StoryType type)
     registerAction(sf::Keyboard::Return, "CONTINUE");
     registerAction(sf::Keyboard::Escape, "BACK");
     
-    std::cout << "[DEBUG] Story text scene created, type: " << (type == StoryType::INTRO ? "INTRO" : "ENDING") << std::endl;
+    //std::cout << "[DEBUG] Story text scene created, type: " << (type == StoryType::INTRO ? "INTRO" : "ENDING") << std::endl;
     loadStoryText(type);
     
     // Set proper view
@@ -25,7 +25,7 @@ Scene_StoryText::Scene_StoryText(GameEngine& game, StoryType type)
 
 void Scene_StoryText::loadStoryText(StoryType type) {
     m_storyLines.clear();
-    std::cout << "[DEBUG] Loading story text for " << (type == StoryType::INTRO ? "INTRO" : "ENDING") << std::endl;
+    //std::cout << "[DEBUG] Loading story text for " << (type == StoryType::INTRO ? "INTRO" : "ENDING") << std::endl;
     
     // Get the language from the game engine
     std::string language = m_game.getLanguage();
@@ -117,7 +117,7 @@ void Scene_StoryText::loadStoryText(StoryType type) {
         }
     }
     
-    std::cout << "[DEBUG] Loaded " << m_storyLines.size() << " lines of text" << std::endl;
+    //std::cout << "[DEBUG] Loaded " << m_storyLines.size() << " lines of text" << std::endl;
 }
 
 void Scene_StoryText::update(float deltaTime) {

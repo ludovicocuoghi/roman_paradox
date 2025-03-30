@@ -17,7 +17,6 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
         std::cerr << "[ERROR] Failed to open level file: " << levelPath << std::endl;
         return;
     }
-    const int windowHeight = m_game.window().getSize().y;
     bool playerSpawned = false;
     int tileIndex = 0;
     int decIndex  = 0;
@@ -180,7 +179,7 @@ void LoadLevel::load(const std::string& levelPath, EntityManager& entityManager)
                 state.defenseTimer = 3.0f;
                 state.shieldStamina = LoadLevel::PLAYER_SHIELD_STAMINA;
 
-                std::cout << levelPath << std::endl;
+                //std::cout << levelPath << std::endl;
                 state.shieldStamina = (levelPath.find("ancient_rome_level_4_emperor_room") != std::string::npos) 
                 ? LoadLevel::PLAYER_SHIELD_STAMINA * 2 
                 : LoadLevel::PLAYER_SHIELD_STAMINA;

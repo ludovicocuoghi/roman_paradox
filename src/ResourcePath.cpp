@@ -71,7 +71,7 @@ std::string getResourcePath(const std::string& relativePath) {
         for (const auto& path : possiblePaths) {
             // Check if the path exists
             if (std::filesystem::exists(path)) {
-                std::cout << "Found valid resource path: " << path << std::endl;
+                //std::cout << "Found valid resource path: " << path << std::endl;
                 cachedBasePath = path;
                 break;
             }
@@ -79,11 +79,11 @@ std::string getResourcePath(const std::string& relativePath) {
         
         // If we still didn't find a valid path, use a default
         if (cachedBasePath.empty()) {
-            std::cout << "Warning: Could not determine resource path, using current directory." << std::endl;
+            //std::cout << "Warning: Could not determine resource path, using current directory." << std::endl;
             cachedBasePath = "./";
         }
         
-        std::cout << "Set resource base path to: " << cachedBasePath << std::endl;
+        //std::cout << "Set resource base path to: " << cachedBasePath << std::endl;
     }
     
     // Combine with relative path
@@ -91,7 +91,7 @@ std::string getResourcePath(const std::string& relativePath) {
     
     // Log the path access for debugging
     if (!std::filesystem::exists(fullPath)) {
-        std::cout << "Warning: Resource not found: " << fullPath << std::endl;
+        //std::cout << "Warning: Resource not found: " << fullPath << std::endl;
     }
     
     return fullPath;
@@ -99,9 +99,9 @@ std::string getResourcePath(const std::string& relativePath) {
 
 // Add a debug function to help find resource issues
 void printResourceInfo() {
-    std::cout << "\n--- Resource Path Debug Info ---\n";
-    std::cout << "Current working directory: " << std::filesystem::current_path() << "\n";
-    std::cout << "Resource base path: " << getResourcePath("") << "\n";
+    //std::cout << "\n--- Resource Path Debug Info ---\n";
+    //std::cout << "Current working directory: " << std::filesystem::current_path() << "\n";
+    //std::cout << "Resource base path: " << getResourcePath("") << "\n";
     
     // Try to find some common asset types
     std::vector<std::string> testFiles = {
@@ -112,22 +112,22 @@ void printResourceInfo() {
     };
     
     // Add a test specifically for the levels directory
-    std::cout << "Checking for levels directory: " << getResourcePath("levels") << " (exists: "
-              << (std::filesystem::exists(getResourcePath("levels")) ? "YES" : "NO") << ")\n";
+    //std::cout << "Checking for levels directory: " << getResourcePath("levels") << " (exists: "
+    //          << (std::filesystem::exists(getResourcePath("levels")) ? "YES" : "NO") << ")\n";
     
     // Try to list contents of levels directory if it exists
     std::string levelsPath = getResourcePath("levels");
     if (std::filesystem::exists(levelsPath) && std::filesystem::is_directory(levelsPath)) {
-        std::cout << "Contents of levels directory:\n";
-        for (const auto& entry : std::filesystem::directory_iterator(levelsPath)) {
-            std::cout << "  - " << entry.path().filename().string() << "\n";
-        }
+        //std::cout << "Contents of levels directory:\n";
+        // for (const auto& entry : std::filesystem::directory_iterator(levelsPath)) {
+        //     //std::cout << "  - " << entry.path().filename().string() << "\n";
+        // }
     }
     
     for (const auto& file : testFiles) {
         std::string path = getResourcePath(file);
-        std::cout << "Path for '" << file << "': " << path << " (exists: " 
-                  << (std::filesystem::exists(path) ? "YES" : "NO") << ")\n";
+        //std::cout << "Path for '" << file << "': " << path << " (exists: " 
+        //          << (std::filesystem::exists(path) ? "YES" : "NO") << ")\n";
     }
     
     std::cout << "-------------------------------\n\n";
