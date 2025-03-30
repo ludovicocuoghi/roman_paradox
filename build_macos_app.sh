@@ -72,6 +72,10 @@ EOF
 xattr -dr com.apple.quarantine "${MACOS_DIR}/${APP_BINARY_NAME}" 2>/dev/null
 xattr -dr com.apple.quarantine "${APP_DIR}" 2>/dev/null
 
+# === Clear quarantine only from main executable and app
+xattr -dr com.apple.quarantine "${MACOS_DIR}/${APP_BINARY_NAME}" 2>/dev/null
+xattr -dr com.apple.quarantine "${APP_DIR}" 2>/dev/null
+
 # === Sign the app (ad-hoc) ===
 codesign --force --deep --sign - "${APP_DIR}"
 
