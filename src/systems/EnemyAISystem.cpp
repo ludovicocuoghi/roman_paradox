@@ -1590,14 +1590,6 @@ void EnemyAISystem::update(float deltaTime)
                         enemyAI.bulletsShot++;
 
                         auto bullet = m_spawner->spawnEnemyBullet(enemy);
-                        
-                        // Resize the bullet/black hole if it's a Super2 enemy
-                        if (enemyAI.enemyType == EnemyType::Super2 && bullet && bullet->has<CAnimation>()) {
-                            std::cout << "[DEBUG] Super2 enemy fired small black hole #" << enemyAI.bulletsShot << "\n";
-                        } else {
-                            // std::cout << "[DEBUG] Enemy " << enemy->id()
-                            //         << " fires bullet #" << enemyAI.bulletsShot << "\n";
-                        }
 
                         // Slight random angle for all enemies
                         if (bullet && bullet->has<CTransform>()) {

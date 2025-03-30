@@ -24,6 +24,7 @@ src\imgui\imgui_tables.cpp ^
 src\imgui\imgui_widgets.cpp ^
 src\imgui\imgui_demo.cpp ^
 src\imgui-sfml\imgui-SFML.cpp ^
+resources.o ^
 -L %SFML%\lib -lsfml-graphics -lsfml-window -lsfml-system -lopengl32 -lgdi32 ^
 -o %OUTDIR%\rome_journey.exe
 
@@ -36,3 +37,10 @@ if errorlevel 1 (
 )
 
 echo [INFO] Compilation succeeded. Copying files...
+
+:: Copy SFML DLLs to output directory
+copy /Y "%SFML%\bin\sfml-graphics-2.dll" "%OUTDIR%"
+copy /Y "%SFML%\bin\sfml-window-2.dll" "%OUTDIR%"
+copy /Y "%SFML%\bin\sfml-system-2.dll" "%OUTDIR%"
+
+echo [INFO] Build complete.
