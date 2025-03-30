@@ -4,4 +4,5 @@ echo "bin/*.exe" >> .gitignore
 echo "bin/*.dll" >> .gitignore
 echo "bin/imgui.ini" >> .gitignore
 echo "mac_build/" >> .gitignore
+echo "mac_build.zip" >> .gitignore
 echo "windows_build/" >> .gitignore
