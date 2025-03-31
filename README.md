@@ -69,9 +69,6 @@
 - **テーマ（Theme）**：
   時空を超えて旅するエイリアン・ローマ兵の物語。ブラックホールを通じて異なる宇宙と時代を巡りながら、真実を追う冒険。
 
-- **制作動機（Motivation）**：
-  小学生の頃からゲームが大好きで、「ゲームはどう作られているのか」を学びたくなりました。Game Freakに本気で入りたいという思いから、C++やゲーム設計を独学し、本作を制作しました。
-
 ---
 
 ## ストーリー概要
@@ -111,9 +108,6 @@
 
 - **Theme**:
   Follow the adventure of an alien Roman soldier traveling through space and time, exploring different eras and universes through black holes to uncover the truth behind mysterious invasions.
-
-- **Motivation**:
-  Ever since elementary school, I've been passionate about video games and wanted to understand \"how games are made.\" Driven by my strong aspiration to join Game Freak, I independently learned C++ and game design to create this project.
 
 ---
 
