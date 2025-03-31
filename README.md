@@ -94,6 +94,11 @@
 - 背景画像はGPT-4o（生成AI）を活用して制作。
 ---
 
+## Screenshots
+
+### レベル1：エイリアン・ローマ (Level 1: Alien Rome)
+
+![Alien Rome Level](https://github.com/ludovicocuoghi/roman_paradox/blob/main/screenshots/alien_rome_1.png?raw=true)
 
 ## 現在の課題（Current Issues）
 
