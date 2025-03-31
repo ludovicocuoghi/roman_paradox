@@ -54,7 +54,7 @@ void Scene_StoryText::loadStoryText(StoryType type) {
             
             m_continueText = "スペースキーを押して旅を始めよう";
         } else {
-            m_storyLines.push_back("ROMAN INTERSTELLAR PARADOX");
+            m_storyLines.push_back("ROME INTERSTELLAR PARADOX");
             m_storyLines.push_back(" ");
             m_storyLines.push_back("It is said that there are infinite universes,");
             m_storyLines.push_back("with countless realities existing in parallel.");

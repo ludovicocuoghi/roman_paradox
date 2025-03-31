@@ -775,7 +775,6 @@ Tile Ground 9 5
 Tile Ground 10 6
 Tile Ground 11 6
 Tile Ground 12 6
-Tile Ground 7 4
 Tile Ground 8 5
 Tile Ground 61 16
 Tile Ground 69 16

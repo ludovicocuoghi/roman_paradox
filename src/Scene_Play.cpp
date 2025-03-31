@@ -3196,7 +3196,7 @@ void Scene_Play::initializeDialogues()
                 "Alien Legionary",                           // speaker
                 "TAKE THESE YOU DAMN PARADOX PEOPLE!!!",            // message
                 basePath + "alien_future.png",       // portraitPath
-                false,                                            // portraitOnLeft
+                true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
                 sf::Vector2f(0.f, 500.f),
@@ -3209,7 +3209,7 @@ void Scene_Play::initializeDialogues()
             {
                 "***GUIDE***",                           // speaker
                 "(Hold SPACE to shoot bursts of bullets!)",            // message
-                basePath + "alien_ancient.png",       // portraitPath
+                basePath + "alien_future.png",       // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
@@ -3223,7 +3223,7 @@ void Scene_Play::initializeDialogues()
             {
                 "***GUIDE***",                           // speaker
                 "(Press ENTER to activate the supermove!!)",            // message
-                basePath + "alien_future_right.png",       // portraitPath
+                basePath + "alien_future.png",       // portraitPath
                 true,                                            // portraitOnLeft
                 sf::Color::Magenta,
                 sf::Color::White,
