@@ -6,157 +6,155 @@
 本作は、時間を旅する異星のローマ兵を主人公にした2Dアクションゲームです。  
 プレイヤーは、過去・現在・未来のローマを巡りながら、敵と戦い、時空を超えて繰り返される謎の侵略の真相を追います。
 
+*Roman Interstellar Paradox is a 2D action game featuring a time-traveling alien Roman soldier. Players battle enemies across the past, present, and future of Rome, uncovering the mystery behind repeated invasions spanning different timelines.*
+
 ---
 
-## ゲーム構成
+## ウォークスルー動画（Walkthrough Videos）
 
-### シーン管理
+- 日本語版プレイ動画：[YouTubeリンク](https://www.youtube.com/watch?v=XMydQDvIuoQ)
+- English Gameplay Video: [YouTube Link](https://www.youtube.com/watch?v=46V2ffLu4Bc)
+
+---
+
+## ゲーム構成（Game Structure）
+
+### シーン管理（Scene Management）
 
 ゲームは、異なるゲーム状態を扱う様々なシーン（メニュー、プレイ、ゲームオーバー、ストーリーテキスト）を使用したアーキテクチャを採用しています。  
 中心となるのは `Scene_Play` で、ゲームプレイ、エンティティ、衝突判定、会話を管理します。
 
-### エンティティ・コンポーネントシステム
+*The game uses an architecture based on scenes (menu, play, game over, story text), with `Scene_Play` managing gameplay, entities, collisions, and dialogues.*
 
-- **エンティティ**：プレイヤーや敵、障害物などの基本オブジェクト  
-- **コンポーネント**：エンティティの動作を構成する要素（例：移動、アニメーション、状態）  
-- **システム**：コンポーネントを持つエンティティを処理するロジック（例：当たり判定、アニメーション再生）
+### エンティティ・コンポーネントシステム（Entity Component System）
+
+- **エンティティ (Entities)**：プレイヤーや敵、障害物などの基本オブジェクト *(basic objects like players, enemies, obstacles)*
+- **コンポーネント (Components)**：エンティティの動作を構成する要素（例：移動、アニメーション、状態） *(elements defining entity behaviors, e.g., movement, animation, state)*
+- **システム (Systems)**：コンポーネントを持つエンティティを処理するロジック（例：当たり判定、アニメーション再生） *(logic processing entities with components, e.g., collision detection, animation)*
 
 ---
 
-## 主な特徴
+## 主な特徴（Key Features）
 
-### ステージ構造
+### ステージ構造（Stage Structure）
 
 プレイヤーは以下の時代を順に進んでいきます：
 
-- **エイリアン・ローマ**：侵略を受けているSF的なローマ。物語はここから始まります  
-- **古代ローマ**：ブラックホールに飲み込まれた主人公がたどり着く過去の世界  
-- **未来ローマ**：過去の行動によって生じたパラドックスによる改変された未来
+- **エイリアン・ローマ (Alien Rome)**：侵略を受けているSF的なローマ *(sci-fi Rome under invasion)*
+- **古代ローマ (Ancient Rome)**：ブラックホールに飲み込まれた主人公がたどり着く過去の世界 *(ancient past reached via black hole)*
+- **未来ローマ (Future Rome)**：過去の行動によって生じたパラドックスによる改変された未来 *(future altered by paradoxes from past actions)*
 
 ---
 
-### プレイヤー操作
+### プレイヤー操作（Player Controls）
 
-- 左右移動／ジャンプ（慣性付きの物理挙動）  
-- 剣による近接攻撃  
-- スタミナを使用した防御  
-- 特殊アビリティ（未来ステージ限定）：  
-　- バースト射撃  
-　- スーパー攻撃（必殺技）
-
----
-
-### 敵AI
-
-- **通常兵**：パトロール・追跡・接近時攻撃  
-- **エリート兵**：素早い追跡＋特殊攻撃／高HP  
-- **ボス**：フェーズ制バトル／特殊パターン攻撃／体力による会話トリガー
+- 左右移動／ジャンプ（慣性付きの物理挙動） *(left/right movement, jump with physics-based inertia)*
+- 剣による近接攻撃 *(melee attack with sword)*
+- スタミナを使用した防御 *(stamina-based defense)*
+- 特殊アビリティ（未来ステージ限定）*(special abilities - future stages only)*:
+　- バースト射撃 *(burst shooting)*
+　- スーパー攻撃（必殺技） *(super attack)*
 
 ---
 
-### 会話システム
+### 敵AI（Enemy AI）
 
-- イベントや位置によるストーリーダイアログの発生  
-- キャラクターポートレートとカスタム表示対応  
-- ボス戦や重要イベントで特別な会話あり  
-- 日本語・英語に対応した多言語システム
-
----
-
-### カメラ機能
-
-- プレイヤーに追従するスムーズな視点移動  
-- ズームや位置補正に対応  
-- ステージ外への表示防止処理あり
+- **通常兵 (Regular Soldiers)**：パトロール・追跡・接近時攻撃 *(patrol, chase, close-range attack)*
+- **エリート兵 (Elite Soldiers)**：素早い追跡＋特殊攻撃／高HP *(fast chase, special attacks, high HP)*
+- **ボス (Bosses)**：フェーズ制バトル／特殊パターン攻撃／体力による会話トリガー *(phase-based battles, special pattern attacks, dialogue triggered by HP)*
 
 ---
 
-### リソース管理とUI
+### 会話システム（Dialogue System）
 
-- 体力・スタミナバー（視覚的フィードバック）  
-- スコアシステムとアイテム取得による強化  
-- コンテナからのパワーアップ出現演出あり
-
----
-
-### ビジュアル演出
-
-- パーティクルによるヒットや必殺技の演出  
-- 時代ごとに異なるドット背景と光源効果  
-- 自作のキャラクターアニメーションシステム  
-- 背景画像の一部は GPT-4o（2025年3月版）を使用して生成しました
+- イベントや位置によるストーリーダイアログの発生 *(dialogue triggered by events and locations)*
+- キャラクターポートレートとカスタム表示対応 *(customizable character portraits)*
+- ボス戦や重要イベントで特別な会話あり *(special dialogues during boss fights or key events)*
+- 日本語・英語に対応した多言語システム *(multilingual support: Japanese & English)*
 
 ---
 
-## 操作方法
+### カメラ機能（Camera Features）
 
-| 操作キー  | 機能                    |
-|----------|-------------------------|
-| A/D      | 左右移動                |
-| W        | ジャンプ                |
-| Space    | 攻撃（未来のローマでは射撃） |
-| M        | 防御（スタミナ消費）     |
-| Enter    | 必殺技（未来限定）       |
-| G        | グリッド表示の切替（デバッグ）|
-| B        | 当たり判定表示の切替（デバッグ）|
+- プレイヤーに追従するスムーズな視点移動 *(smooth player-following camera)*
+- ズームや位置補正に対応 *(zoom and positional adjustments)*
+- ステージ外への表示防止処理あり *(prevents displaying areas outside the stage)*
 
 ---
 
-## レベルデザイン
+### リソース管理とUI（Resource Management & UI）
 
-- 異なる時代を表す背景と演出  
-- 正確なジャンプを要するプラットフォーム構成  
-- 戦略的配置の敵キャラとトラップ  
-- チェストやパワーアップによる強化要素  
-- 会話・ボス戦を通じたストーリー進行
+- 体力・スタミナバー（視覚的フィードバック） *(health/stamina bars)*
+- スコアシステムとアイテム取得による強化 *(score system and item-based upgrades)*
+- コンテナからのパワーアップ出現演出あり *(container-based power-up animations)*
 
 ---
 
-## 技術的実装
+### ビジュアル演出（Visual Effects）
 
-### 物理システム
-
-- 重力に基づいたキャラ移動  
-- プラットフォームとの当たり判定  
-- 運動量と速度の計算
-
-### 衝突システム
-
-- バウンディングボックスによる衝突検出  
-- エンティティタイプに応じた反応  
-- 攻撃タイプごとのダメージ計算
-
-### スポーン／エフェクト
-
-- 敵やアイテムの動的生成と演出  
-- コンテナ破壊時のアイテム出現  
-- 敵死亡・アイテム取得のアニメーション
-
-### ゲーム状態管理
-
-- シーン遷移と状態の一貫管理  
-- レベル進行のセーブ・ロード  
-- スコアの累積管理
+- パーティクルによるヒットや必殺技の演出 *(particle effects for hits/super moves)*
+- 時代ごとに異なるドット背景と光源効果 *(era-specific pixel-art backgrounds and lighting effects)*
+- 自作のキャラクターアニメーションシステム *(custom character animation system)*
+- 背景画像の一部は GPT-4o（2025年3月版）を使用して生成しました *(backgrounds partially generated by GPT-4o, March 2025 version)*
 
 ---
 
-## 開発ガイドライン
+## 操作方法（Controls）
 
-- 新要素追加はECSベースで設計  
-- 会話は既存フォーマットを遵守  
-- 物理値や挙動は全体で一貫性を保持  
-- 各レベルでの継続的なバグテスト実施
-
----
-
-## 今後の展開
-
-- さらなる時代・タイムラインの追加  
-- 敵AIのバリエーションとボス種追加  
-- マルチエンディングと会話分岐対応  
-- プレイヤー作成用ステージエディタの拡張
+| 操作キー | 機能 (Function)               |
+|----------|-------------------------------|
+| A/D      | 左右移動 *(Move Left/Right)*  |
+| W        | ジャンプ *(Jump)*             |
+| Space    | 攻撃（未来のローマでは射撃） *(Attack/Shoot in Future Rome)* |
+| M        | 防御 *(Defend)*               |
+| Enter    | 必殺技 *(Super Attack)*       |
+| G        | グリッド表示の切替 *(Toggle Grid - Debug)* |
+| B        | 当たり判定表示の切替 *(Toggle Collision Boxes - Debug)* |
 
 ---
 
-本作は C++ / SFML / ImGui を用いて、アートから実装まですべて個人で開発しました。  
-ぜひプレイしてみてください！
+## レベルデザイン（Level Design）
+
+- 異なる時代を表す背景と演出 *(distinct visuals for each era)*
+- 正確なジャンプを要するプラットフォーム構成 *(precise platforming challenges)*
+- 戦略的配置の敵キャラとトラップ *(strategically placed enemies/traps)*
+- チェストやパワーアップによる強化要素 *(chests and upgrades)*
+- 会話・ボス戦を通じたストーリー進行 *(story progress via dialogue/boss fights)*
+
+---
+
+## 技術的実装（Technical Implementations）
+
+### 物理システム (Physics System)
+
+- 重力に基づいたキャラ移動 *(gravity-based character movement)*
+- プラットフォームとの当たり判定 *(platform collisions)*
+- 運動量と速度の計算 *(momentum and velocity calculations)*
+
+### 衝突システム (Collision System)
+
+- バウンディングボックスによる衝突検出 *(bounding-box collision detection)*
+- エンティティタイプに応じた反応 *(entity-specific collision responses)*
+- 攻撃タイプごとのダメージ計算 *(attack-based damage calculation)*
+
+---
+
+## 開発ガイドライン（Development Guidelines）
+
+- ECSベースで設計 *(design using ECS)*
+- 会話フォーマット遵守 *(adhere to dialogue format)*
+- 一貫性ある物理値や挙動 *(consistent physics/behavior)*
+- 継続的なバグテスト *(ongoing bug testing)*
+
+---
+
+## 今後の展開（Future Plans）
+
+- 追加時代・タイムライン *(more eras/timelines)*
+- 敵AI・ボス拡張 *(expanded enemy AI/bosses)*
+- マルチエンディング・会話分岐 *(multiple endings/dialogue branches)*
+- ステージエディタ拡張 *(enhanced level editor)*
+
+---
+
+本作はC++ / SFML / ImGuiを用いて個人開発しました。ぜひプレイしてください！
