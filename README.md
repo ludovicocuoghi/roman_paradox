@@ -3,10 +3,10 @@
 
 ## 概要（Overview）
 
-本作は、時間を旅する異星のローマ兵を主人公にしたシングルプレイヤーの2Dアクションゲームです。  
-プレイヤーは、過去・現在・未来のローマを巡りながら、敵と戦い、時空を超えて繰り返される謎の侵略の真相を追います。
+本作は、ブラックホールを通じて異なる時代や宇宙を旅するエイリアンのローマ兵を主人公としたシングルプレイヤーの2Dアクションゲームです。  
+プレイヤーは、各時代のローマ兵たちと戦いながら、時空を超えて繰り返される謎の侵略の真相に迫ります。
 
-*Rome Interstellar Paradox is a single-player 2D action game featuring a time-traveling alien Roman soldier. The Player battles enemies across the past, present, and future of Rome, uncovering the mystery behind repeated invasions spanning different timelines.*
+*Rome Interstellar Paradox is a single-player 2D action game featuring an alien Roman soldier who travels through black holes to different eras and universes. The player must battle against Roman warriors from various timelines, uncovering the truth behind a mysterious invasion repeating across time and space.*
 
 ---
 
