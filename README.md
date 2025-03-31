@@ -17,6 +17,38 @@
 
 ---
 
+
+## レベルスクリーンショット（Level Screenshots）
+
+### エイリアン・ローマ（Alien Rome）
+
+![Alien Rome - Level 1](https://github.com/ludovicocuoghi/roman_paradox/blob/main/screenshots/alien_rome_1.png?raw=true)
+
+---
+
+### 古代ローマ（Ancient Rome）
+
+#### Example 1
+![Ancient Rome - Level 1](https://github.com/ludovicocuoghi/roman_paradox/blob/main/screenshots/ancient_rome_1.png?raw=true)
+
+#### Example 2
+![Ancient Rome - Level 2](https://github.com/ludovicocuoghi/roman_paradox/blob/main/screenshots/ancient_rome_2.png?raw=true)
+
+#### Example 3
+![Ancient Rome - Level 3](https://github.com/ludovicocuoghi/roman_paradox/blob/main/screenshots/ancient_rome_3.png?raw=true)
+
+---
+
+### 未来ローマ（Future Rome）
+
+#### Example 1
+![Future Rome - Level 1](https://github.com/ludovicocuoghi/roman_paradox/blob/main/screenshots/future_rome_1.png?raw=true)
+
+#### Example 2
+![Future Rome - Level 2](https://github.com/ludovicocuoghi/roman_paradox/blob/main/screenshots/future_rome_2.png?raw=true)
+
+---
+
 (English is below)
 
 # ゲーム基本情報
@@ -102,37 +134,6 @@
 - Visual design blends Roman aesthetics (green, white, gold) with nebula-inspired dark purple tones.
 - Introduces paradoxes where past events affect future outcomes.
 - Future Rome visuals inspired by futuristic aesthetics similar to \"Tron.\"
-
----
-
-## レベルスクリーンショット（Level Screenshots）
-
-### エイリアン・ローマ（Alien Rome）
-
-![Alien Rome - Level 1](https://github.com/ludovicocuoghi/roman_paradox/blob/main/screenshots/alien_rome_1.png?raw=true)
-
----
-
-### 古代ローマ（Ancient Rome）
-
-#### Example 1
-![Ancient Rome - Level 1](https://github.com/ludovicocuoghi/roman_paradox/blob/main/screenshots/ancient_rome_1.png?raw=true)
-
-#### Example 2
-![Ancient Rome - Level 2](https://github.com/ludovicocuoghi/roman_paradox/blob/main/screenshots/ancient_rome_2.png?raw=true)
-
-#### Example 3
-![Ancient Rome - Level 3](https://github.com/ludovicocuoghi/roman_paradox/blob/main/screenshots/ancient_rome_3.png?raw=true)
-
----
-
-### 未来ローマ（Future Rome）
-
-#### Example 1
-![Future Rome - Level 1](https://github.com/ludovicocuoghi/roman_paradox/blob/main/screenshots/future_rome_1.png?raw=true)
-
-#### Example 2
-![Future Rome - Level 2](https://github.com/ludovicocuoghi/roman_paradox/blob/main/screenshots/future_rome_2.png?raw=true)
 
 ---
 
