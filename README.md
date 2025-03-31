@@ -17,7 +17,9 @@
 
 ---
 
-## ゲーム基本情報（Game Information）
+(English is below)
+
+# ゲーム基本情報
 
 - **ゲームタイトル（Game Title）**：
   ローマ・インターステラー・パラドックス（和訳：ローマの星間パラドックス）
@@ -40,7 +42,7 @@
 
 ---
 
-## ストーリー概要（Story Overview）
+## ストーリー概要
 
 - プレイヤーは異なる進化を遂げたローマ帝国のエイリアン兵士。
 - ある日、突如として未来のローマ兵たちによる侵略を受け、次元の混乱から逃れ、時空を越えて真実を追う旅が始まる。
@@ -49,7 +51,7 @@
 
 ---
 
-## ストーリー着想・テーマ（Story Inspiration & Themes）
+## ストーリー着想・テーマ
 
 - 一般相対性理論を学び始め、ブラックホールや多元宇宙に興味を持つ。
 - ブラックホールによって異なる次元（古代ローマ、エイリアンローマ、未来ローマ）をつなぐ発想。
@@ -60,24 +62,98 @@
 
 ---
 
-## ゲームメニュー構成（Game Menu Structure）
+# Game Information (English)
 
-- **言語選択（Language Selection）**：
+- **Game Title**:  
+  Rome Interstellar Paradox
+
+- **Genre**:  
+  2D Platformer (story/dialogue-focused) + Action (swordplay, shooting, defense)
+
+- **Engine**:  
+  Custom-built C++ game engine using SFML
+
+- **Game Features**:
+  - Time-travel stage design, allowing movement between different eras and universes via black holes.
+  - Story-driven gameplay where player actions create paradoxes that influence the future.
+
+- **Theme**:
+  Follow the adventure of an alien Roman soldier traveling through space and time, exploring different eras and universes through black holes to uncover the truth behind mysterious invasions.
+
+- **Motivation**:
+  Ever since elementary school, I've been passionate about video games and wanted to understand \"how games are made.\" Driven by my strong aspiration to join Game Freak, I independently learned C++ and game design to create this project.
+
+---
+
+## Story Overview
+
+- You play as an alien soldier from an alternate-evolution Roman Empire.
+- One day, you're suddenly invaded by soldiers from future Rome. Escaping dimensional chaos, you embark on a journey across space-time to discover the truth.
+- Your actions alter the future, creating paradoxes throughout the story.
+- In the end, another Roman soldier in a different universe begins a journey for revenge, causing history to infinitely repeat itself.
+
+---
+
+## Story Inspiration & Themes
+
+- Inspired by learning general relativity, black holes, and multiverse theories.
+- Concept connecting various dimensions (Ancient Rome, Alien Rome, Future Rome) through black holes.
+- Future Rome incorporates black hole matter into advanced weaponry and armor.
+- Visual design blends Roman aesthetics (green, white, gold) with nebula-inspired dark purple tones.
+- Introduces paradoxes where past events affect future outcomes.
+- Future Rome visuals inspired by futuristic aesthetics similar to \"Tron.\"
+
+---
+
+## レベルスクリーンショット（Level Screenshots）
+
+### エイリアン・ローマ（Alien Rome）
+
+![Alien Rome - Level 1](https://github.com/ludovicocuoghi/roman_paradox/blob/main/screenshots/alien_rome_1.png?raw=true)
+
+---
+
+### 古代ローマ（Ancient Rome）
+
+#### Example 1
+![Ancient Rome - Level 1](https://github.com/ludovicocuoghi/roman_paradox/blob/main/screenshots/ancient_rome_1.png?raw=true)
+
+#### Example 2
+![Ancient Rome - Level 2](https://github.com/ludovicocuoghi/roman_paradox/blob/main/screenshots/ancient_rome_2.png?raw=true)
+
+#### Example 3
+![Ancient Rome - Level 3](https://github.com/ludovicocuoghi/roman_paradox/blob/main/screenshots/ancient_rome_3.png?raw=true)
+
+---
+
+### 未来ローマ（Future Rome）
+
+#### Example 1
+![Future Rome - Level 1](https://github.com/ludovicocuoghi/roman_paradox/blob/main/screenshots/future_rome_1.png?raw=true)
+
+#### Example 2
+![Future Rome - Level 2](https://github.com/ludovicocuoghi/roman_paradox/blob/main/screenshots/future_rome_2.png?raw=true)
+
+---
+
+## ゲームメニュー構成
+
+- **言語選択**：
   起動時に英語または日本語を選択可能。
 
-- **モード選択（Game Modes）**：
+- **モード選択**：
   - ストーリーモード
   - 単体レベルプレイ
   - レベルエディター
 
-- **レベルエディター機能（Level Editor Features）**：
+- **レベルエディター機能**：
   - グリッドシステムでオリジナルステージ作成可能。
   - 作成したレベルはテキストファイル（.txt）で保存。
   - 各タイルの座標とサイズ（96ピクセル）で構成。
 
 ---
 
-## レベル構成（Level Structure：全12ステージ）
+## レベル構成
 
 ### エイリアンローマ（Alien Rome） - 2ステージ
 - ゲーム導入部。プレイヤーは逃げながら世界観を理解する。
@@ -90,15 +166,45 @@
 ### 未来ローマ（Future Rome） - 3ステージ＋ボス＋特殊ステージ
 - 古代ローマに近い構成だが、技術や演出が進化。
 - プレイヤー能力や敵の戦術も変化。
-
 - 背景画像はGPT-4o（生成AI）を活用して制作。
+
 ---
 
-## Screenshots
 
-### レベル1：エイリアン・ローマ (Level 1: Alien Rome)
+## Game Menu Structure
 
-![Alien Rome Level](https://github.com/ludovicocuoghi/roman_paradox/blob/main/screenshots/alien_rome_1.png?raw=true)
+- **Language Selection**:
+  Players can select either English or Japanese upon launching the game.
+
+- **Game Modes**:
+  - Story Mode
+  - Single-Level Play
+  - Level Editor
+
+- **Level Editor Features**:
+  - Create original stages using a grid-based system.
+  - Levels saved as text files (.txt).
+  - Each tile defined by coordinates and size (96 pixels).
+
+---
+
+## Level Structure (Total: 12 Stages)
+
+### Alien Rome - 2 stages
+- Introduction to the game. Player learns the world while escaping danger.
+
+### Ancient Rome - 3 stages + Boss + Special stage
+- Close-combat focused gameplay, centered around sword-and-shield combat.
+- Includes boss fights.
+- Special Stage (1 stage): Reverse-direction revisit of the initial stage (right-to-left).
+
+### Future Rome - 3 stages + Boss + Special stage
+- Similar layout to Ancient Rome but with advanced technology and visual effects.
+- Player abilities and enemy tactics evolve.
+- Background images generated using GPT-4o (Generative AI).
+
+---  
+
 
 ## 現在の課題（Current Issues）
 
