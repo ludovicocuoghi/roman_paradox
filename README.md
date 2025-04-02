@@ -165,6 +165,27 @@
 
 ---
 
+### リポジトリをクローン
+
+```
+git clone https://github.com/ludovicocuoghi/roman_paradox.git
+cd roman_paradox
+```
+
+### プロジェクトのビルド
+
+```
+make clean
+make
+```
+
+##　ゲームの実行
+
+```
+.bin/sfml_app
+```
+
+--- 
 
 ## Game Menu Structure
 
@@ -199,6 +220,28 @@
 - Background images generated using GPT-4o (Generative AI).
 
 ---  
+
+### How to clone the repository
+
+```
+git clone https://github.com/ludovicocuoghi/roman_paradox.git
+cd roman_paradox
+```
+
+### How to build the game
+
+```
+make clean
+make
+```
+
+##　How to run the game
+
+```
+.bin/sfml_app
+```
+
+--- 
 
 
 ## 現在の課題（Current Issues）
