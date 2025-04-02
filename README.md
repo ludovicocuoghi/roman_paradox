@@ -10,12 +10,21 @@
 
 ---
 
+## ゲームダウンロード（Game Download Link）
+
+- GAME DOWNLOAD (ダウンロード):　[Download Link](https://drive.google.com/drive/folders/17wYT-CI7sIc6n5fEiSxCtxFQZH2QnwVn?usp=sharing)
+（Google Drive）
+NOTE  (注意)
+This game is not from a certified developer, so macOS or Windows may block it at first launch. Follow the steps below to run it safely.
+本ゲームは開発者証明のない個人制作アプリのため、macOS または Windows によって初回起動時にブロックされる場合があります。以下の手順で起動してください。
+[起動方法 / How to Launch（macOS / Windows）](https://docs.google.com/document/d/16mZmaFGL8ybLnUFN28xre7pt-7XmgCsGlK-BxprdOJw/edit?tab=t.0)
+
+---
+
 ## ウォークスルー動画（Walkthrough Videos）
 
 - 日本語版プレイ動画：[YouTubeリンク](https://www.youtube.com/watch?v=XMydQDvIuoQ)
 - English Gameplay Video: [YouTube Link](https://www.youtube.com/watch?v=46V2ffLu4Bc)
-
-- GAME DOWNLOAD (ダウンロード):　[Download Link](https://drive.google.com/drive/folders/17wYT-CI7sIc6n5fEiSxCtxFQZH2QnwVn?usp=sharing)
 
 ---
 
