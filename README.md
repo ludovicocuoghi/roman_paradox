@@ -235,7 +235,7 @@ make clean
 make
 ```
 
-##　How to run the game
+###　How to run the game
 
 ```
 .bin/sfml_app
