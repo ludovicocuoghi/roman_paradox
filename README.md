@@ -15,7 +15,7 @@
 - 日本語版プレイ動画：[YouTubeリンク](https://www.youtube.com/watch?v=XMydQDvIuoQ)
 - English Gameplay Video: [YouTube Link](https://www.youtube.com/watch?v=46V2ffLu4Bc)
 
-- GAME DOWNLOAD (ダウンロード):　[Download Link] (https://drive.google.com/drive/folders/17wYT-CI7sIc6n5fEiSxCtxFQZH2QnwVn?usp=sharing)
+- GAME DOWNLOAD (ダウンロード):　[Download Link](https://drive.google.com/drive/folders/17wYT-CI7sIc6n5fEiSxCtxFQZH2QnwVn?usp=sharing)
 
 ---
 
