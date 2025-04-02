@@ -17,7 +17,10 @@
 ### 起動方法 / How to Launch（macOS / Windows）  (注意)
 
 This game is not from a certified developer, so macOS or Windows may block it at first launch. Follow the steps below to run it safely.
-本ゲームは開発者証明のない個人制作アプリのため、macOS または Windows によって初回起動時にブロックされる場合があります。以下の手順で起動してください。
+
+本ゲームは開発者証明のない個人制作アプリのため、macOS または Windows によって初回起動時にブロックされる場合があります。
+
+以下の手順で起動してください。
 
 [起動方法 / How to Launch（macOS / Windows）](https://docs.google.com/document/d/16mZmaFGL8ybLnUFN28xre7pt-7XmgCsGlK-BxprdOJw/edit?tab=t.0)
 
