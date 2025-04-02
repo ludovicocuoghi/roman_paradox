@@ -179,7 +179,7 @@ make clean
 make
 ```
 
-###　ゲームの実行
+### ゲームの実行
 
 ```
 .bin/sfml_app
@@ -235,7 +235,7 @@ make clean
 make
 ```
 
-###　How to run the game
+### How to run the game
 
 ```
 .bin/sfml_app
