@@ -43,10 +43,16 @@ copy /Y "%SFML%\bin\sfml-graphics-2.dll" "%OUTDIR%"
 copy /Y "%SFML%\bin\sfml-window-2.dll" "%OUTDIR%"
 copy /Y "%SFML%\bin\sfml-system-2.dll" "%OUTDIR%"
 
-:: Copy assets
-xcopy /E /I src\assets %OUTDIR%\assets
-xcopy /E /I src\fonts %OUTDIR%\fonts
-xcopy /E /I src\images %OUTDIR%\images
-xcopy /E /I src\levels %OUTDIR%\levels
+:: Copy all MinGW runtime DLLs
+copy /Y "C:\mingw64\bin\libgcc_*.dll" "%OUTDIR%"
+copy /Y "C:\mingw64\bin\libstdc++*.dll" "%OUTDIR%"
+copy /Y "C:\mingw64\bin\libwinpthread*.dll" "%OUTDIR%"
+copy /Y "C:\mingw64\bin\libssp*.dll" "%OUTDIR%"
+
+:: Copy assets with /Y to automatically respond "Yes to All"
+xcopy /E /I /Y src\assets %OUTDIR%\assets
+xcopy /E /I /Y src\fonts %OUTDIR%\fonts
+xcopy /E /I /Y src\images %OUTDIR%\images
+xcopy /E /I /Y src\levels %OUTDIR%\levels
 
 echo [INFO] Build complete.
