@@ -120,11 +120,9 @@ void Scene_Menu::sRender() {
             break;
     }
 
-    // Render control info
-    text.setCharacterSize(20);
-    text.setFillColor(sf::Color::White);
-    
-    text.setCharacterSize(20);
+    // Render control info);
+
+    text.setCharacterSize(40);
     text.setFillColor(sf::Color::White);
     
     std::string controlInstructions;
@@ -149,12 +147,22 @@ void Scene_Menu::sRender() {
         }
     }
     
+    // First set the text string
     text.setString(sf::String::fromUtf8(
         controlInstructions.begin(),
         controlInstructions.end()
     ));
-    
-    text.setPosition(20.f, m_game.window().getSize().y - 40.f);
+
+    // Center the text origin at its center
+    text.setOrigin(text.getLocalBounds().width / 2, 0);
+
+    // Position the text centered horizontally and near the bottom of the screen
+    text.setPosition(
+        m_game.window().getSize().x / 2,  
+        m_game.window().getSize().y - 60.f  // Increased from -40.f to prevent cutting off
+    );
+
+m_game.window().draw(text);
     m_game.window().draw(text);
 
     m_game.window().display();
