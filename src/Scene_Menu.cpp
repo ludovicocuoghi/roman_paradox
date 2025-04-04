@@ -25,16 +25,16 @@ Scene_Menu::Scene_Menu(GameEngine& game)
     m_game.window().setView(defaultView);
     sf::Mouse::setPosition(sf::Vector2i(0, 0), m_game.window());
 
-    // 1) Grab whatever language the GameEngine already has
+    // Grab whatever language the GameEngine already has
     std::string currentLang = m_game.getLanguage();
 
-    // 2) If it’s empty, this must be the very start — default to English
+    // If it’s empty, this must be the very start — default to English
     if (currentLang.empty()) {
         currentLang = "English";
         m_game.setLanguage("English");
     }
 
-    // 3) Store in Menu’s own field
+    // Store in Menu’s own field
     m_language = currentLang;
 
     // Initialize language options
@@ -48,7 +48,7 @@ Scene_Menu::Scene_Menu(GameEngine& game)
     registerAction(sf::Keyboard::D, "SELECT");
     registerAction(sf::Keyboard::Escape, "BACK");
 
-    // 4) Update menu translations according to the *current* language
+    // Update menu translations according to the *current* language
     updateMenuTranslations();
     
     //std::cout << "[DEBUG] Scene_Menu created; language = " << m_language << std::endl;

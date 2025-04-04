@@ -8,7 +8,7 @@ if not exist %OUTDIR% mkdir %OUTDIR%
 echo [INFO] Starting compilation...
 
 :: Compile
-g++ -std=c++20 -Wall -fdiagnostics-color=always ^
+g++ -std=c++20 -Wall -fdiagnostics-color=always -static-libgcc -static-libstdc++ ^
 -I %SFML%\include ^
 -I src ^
 -I src\imgui ^
