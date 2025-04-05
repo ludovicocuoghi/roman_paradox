@@ -120,7 +120,7 @@ void Scene_LevelEditor::update(float deltaTime) {
                 sf::Vector2f mousePosWorld = m_game.window().mapPixelToCoords(mousePosScreen, m_cameraView);
                 int cellX = static_cast<int>(mousePosWorld.x / tileSize);
                 int cellY = static_cast<int>(mousePosWorld.y / tileSize);
-                std::cout << "[DEBUG] Click sinistro in (" << cellX << ", " << cellY << ")\n";
+                std::cout << "[DEBUG] Left click on (" << cellX << ", " << cellY << ")\n";
                 if (m_mode == 0)
                     placeTile(cellX, cellY);
                 else if (m_mode == 1)
@@ -139,7 +139,7 @@ void Scene_LevelEditor::update(float deltaTime) {
                 sf::Vector2f mousePosWorld = m_game.window().mapPixelToCoords(mousePosScreen, m_cameraView);
                 int cellX = static_cast<int>(mousePosWorld.x / tileSize);
                 int cellY = static_cast<int>(mousePosWorld.y / tileSize);
-                std::cout << "[DEBUG] Click destro in (" << cellX << ", " << cellY << ")\n";
+                std::cout << "[DEBUG] Right click on (" << cellX << ", " << cellY << ")\n";
                 if (m_mode == 0)
                     removeTile(cellX, cellY);
                 else if (m_mode == 1)
@@ -269,18 +269,18 @@ void Scene_LevelEditor::placePlayer(int gridX, int gridY) {
     auto player = m_entityManager.addEntity("player");
     player->add<CTransform>(Vec2<float>(realX, realY));
     
-    // Add the player animation
+// Add the player animation
     std::string fullName = "PlayerStand";
     if (m_game.assets().hasAnimation(fullName)) {
         player->add<CAnimation>(m_game.assets().getAnimation(fullName), true);
-        std::cout << "[DEBUG] Player posizionato in (" << gridX << ", " << gridY << ")\n";
+        std::cout << "[DEBUG] Player positioned at (" << gridX << ", " << gridY << ")\n";
     }
     else {
-        std::cerr << "[ERROR] Animazione mancante per: " << fullName << "\n";
+        std::cerr << "[ERROR] Missing animation for: " << fullName << "\n";
         // Fallback to a default player animation if the world-specific one doesn't exist
         if (m_game.assets().hasAnimation("PlayerStand")) {
             player->add<CAnimation>(m_game.assets().getAnimation("PlayerStand"), true);
-            std::cout << "[DEBUG] Player posizionato con animazione di fallback in (" << gridX << ", " << gridY << ")\n";
+            std::cout << "[DEBUG] Player positioned with fallback animation at (" << gridX << ", " << gridY << ")\n";
         }
     }
 }
@@ -291,9 +291,9 @@ void Scene_LevelEditor::removePlayer() {
         for (auto& player : players) {
             player->destroy();
         }
-        std::cout << "[DEBUG] Player rimosso\n";
+        std::cout << "[DEBUG] Player removed\n";
     } else {
-        std::cout << "[DEBUG] Nessun player trovato da rimuovere.\n";
+        std::cout << "[DEBUG] No player found to remove.\n";
     }
 }
 
@@ -304,7 +304,7 @@ void Scene_LevelEditor::placeTile(int gridX, int gridY) {
         auto& transform = tile->get<CTransform>();
         if (std::abs(transform.pos.x - realX) < 0.1f &&
             std::abs(transform.pos.y - realY) < 0.1f) {
-            std::cout << "[DEBUG] Tile già presente in (" << gridX << ", " << gridY << "), salto.\n";
+            std::cout << "[DEBUG] Tile already present at (" << gridX << ", " << gridY << "), skipping.\n";
             return;
         }
     }
@@ -313,10 +313,10 @@ void Scene_LevelEditor::placeTile(int gridX, int gridY) {
     std::string fullName = worldcategory + m_selectedTile;
     if (m_game.assets().hasAnimation(fullName)) {
         tile->add<CAnimation>(m_game.assets().getAnimation(fullName), true);
-        std::cout << "[DEBUG] Tile posizionata: " << fullName << " in (" << gridX << ", " << gridY << ")\n";
+        std::cout << "[DEBUG] Tile placed: " << fullName << " at (" << gridX << ", " << gridY << ")\n";
     }
     else
-        std::cerr << "[ERROR] Animazione mancante per: " << fullName << "\n";
+        std::cerr << "[ERROR] Missing animation for: " << fullName << "\n";
 }
 
 void Scene_LevelEditor::placeDec(int gridX, int gridY) {
@@ -326,7 +326,7 @@ void Scene_LevelEditor::placeDec(int gridX, int gridY) {
         auto& transform = dec->get<CTransform>();
         if (std::abs(transform.pos.x - realX) < 0.1f &&
             std::abs(transform.pos.y - realY) < 0.1f) {
-            std::cout << "[DEBUG] Decorazione già presente in (" << gridX << ", " << gridY << "), salto.\n";
+            std::cout << "[DEBUG] Decoration already present at (" << gridX << ", " << gridY << "), skipping.\n";
             return;
         }
     }
@@ -335,10 +335,10 @@ void Scene_LevelEditor::placeDec(int gridX, int gridY) {
     std::string fullName = worldcategory + m_selectedDec;
     if (m_game.assets().hasAnimation(fullName)) {
         dec->add<CAnimation>(m_game.assets().getAnimation(fullName), true);
-        std::cout << "[DEBUG] Decorazione posizionata: " << fullName << " in (" << gridX << ", " << gridY << ")\n";
+        std::cout << "[DEBUG] Decoration placed: " << fullName << " at (" << gridX << ", " << gridY << ")\n";
     }
     else
-        std::cerr << "[ERROR] Animazione mancante per: " << fullName << "\n";
+        std::cerr << "[ERROR] Missing animation for: " << fullName << "\n";
 }
 
 void Scene_LevelEditor::placeEnemy(int gridX, int gridY) {
@@ -348,7 +348,7 @@ void Scene_LevelEditor::placeEnemy(int gridX, int gridY) {
         auto& transform = enemy->get<CTransform>();
         if (std::abs(transform.pos.x - realX) < 0.1f &&
             std::abs(transform.pos.y - realY) < 0.1f) {
-            std::cout << "[DEBUG] Enemy già presente in (" << gridX << ", " << gridY << "), salto.\n";
+            std::cout << "[DEBUG] Enemy already present at (" << gridX << ", " << gridY << "), skipping.\n";
             return;
         }
     }
@@ -358,11 +358,10 @@ void Scene_LevelEditor::placeEnemy(int gridX, int gridY) {
     if (m_game.assets().hasAnimation(fullName))
         enemy->add<CAnimation>(m_game.assets().getAnimation(fullName), true);
     else
-        std::cerr << "[ERROR] Animazione mancante per: " << fullName << "\n";
+        std::cerr << "[ERROR] Missing animation for: " << fullName << "\n";
     enemy->add<CEnemyAI>(getEnemyType(m_selectedEnemy));
-    std::cout << "[DEBUG] Enemy posizionato: " << m_selectedEnemy << " in (" << gridX << ", " << gridY << ")\n";
+    std::cout << "[DEBUG] Enemy placed: " << m_selectedEnemy << " at (" << gridX << ", " << gridY << ")\n";
 }
-
 
 void Scene_LevelEditor::removeTile(int gridX, int gridY) {
     float realX = gridX * tileSize;
@@ -374,13 +373,12 @@ void Scene_LevelEditor::removeTile(int gridX, int gridY) {
         if (std::abs(transform.pos.x - realX) < 0.1f &&
             std::abs(transform.pos.y - realY) < 0.1f) {
             tile->destroy();
-            std::cout << "[DEBUG] Tile rimossa in (" << gridX << ", " << gridY << ")\n";
+            std::cout << "[DEBUG] Tile removed at (" << gridX << ", " << gridY << ")\n";
             return;
         }
     }
-    std::cout << "[DEBUG] Nessuna tile trovata in (" << gridX << ", " << gridY << ") per rimuovere.\n";
+    std::cout << "[DEBUG] No tile found at (" << gridX << ", " << gridY << ") to be removed.\n";
 }
-
 void Scene_LevelEditor::removeDec(int gridX, int gridY) {
     float realX = gridX * tileSize;
     float realY = gridY * tileSize;
@@ -436,7 +434,7 @@ void Scene_LevelEditor::drawGrid() {
 void Scene_LevelEditor::renderImGui() {
     ImGui::Begin("Level Editor");
 
-    ImGui::Text("Modalità:");
+    ImGui::Text("Mode:");
     ImGui::RadioButton("Tile", &m_mode, 0);
     ImGui::SameLine();
     ImGui::RadioButton("Decoration", &m_mode, 1);
@@ -451,7 +449,7 @@ void Scene_LevelEditor::renderImGui() {
 
     // Display available assets based on mode
     if (m_mode == 0) {
-        ImGui::Text("Seleziona una Tile:");
+        ImGui::Text("Select a Tile:");
         for (const auto& tile : m_tileOptions) {
             if (ImGui::Selectable(tile.c_str(), m_selectedTile == tile)) {
                 m_selectedTile = tile;
@@ -460,7 +458,7 @@ void Scene_LevelEditor::renderImGui() {
         }
     }
     else if (m_mode == 1) {
-        ImGui::Text("Seleziona una Decorazione:");
+        ImGui::Text("Select a Decoration:");
         for (const auto& dec : m_decOptions) {
             if (ImGui::Selectable(dec.c_str(), m_selectedDec == dec)) {
                 m_selectedDec = dec;
@@ -469,7 +467,7 @@ void Scene_LevelEditor::renderImGui() {
         }
     }
     else if (m_mode == 2) {
-        ImGui::Text("Seleziona un Enemy:");
+        ImGui::Text("Select an Enemy:");
         for (const auto& enemy : m_enemyOptions) {
             if (ImGui::Selectable(enemy.c_str(), m_selectedEnemy == enemy)) {
                 m_selectedEnemy = enemy;

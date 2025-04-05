@@ -5428,10 +5428,10 @@ void Scene_Play::sDoAction(const Action& action)
         if (action.name() == "TOGGLE_GRID") {
             m_showGrid = !m_showGrid;
         }
-        // Toggle Bouding Box for debugging
-        // else if (action.name() == "TOGGLE_BB") {
-        //     m_showBoundingBoxes = !m_showBoundingBoxes;
-        // }
+        //Toggle Bouding Box for debugging
+        else if (action.name() == "TOGGLE_BB") {
+            m_showBoundingBoxes = !m_showBoundingBoxes;
+        }
         if (action.name() == "ATTACK") {
             // Check cooldowns first
             if (state.bulletCooldown > 0.f) {
