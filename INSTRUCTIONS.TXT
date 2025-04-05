@@ -1,0 +1,46 @@
+**ゲームコントロール / Game Controls**
+
+**プレイヤー操作 / Player Controls:**
+- ジャンプ / Jump: W
+- 左右移動 / Move: A (左/Left), D (右/Right)
+- 攻撃 / Attack: Space
+- 防御 / Defend: M
+- 超必殺技（未来ローマのみ）/ Super Move (Future Rome only): Enter
+
+**メニュー操作 / Menu Navigation:**
+- 上下選択 / Navigate: W (上/Up), S (下/Down)
+- 決定 / Select: D
+
+---
+
+**起動方法 / How to Launch（macOS / Windows）**
+**日本語**
+**macOS の場合**
+アプリは署名されていないため、初回起動時にブロックされることがあります。以下の手順で起動できます(アップルの公式ガイド：https://support.apple.com/ja-jp/102445)。
+1. アプリ（.app）を**一度クリックして開こうとする**
+2. 「開発元を確認できないため開けません」という警告が出たら、一度キャンセル
+3. 「システム環境設定」→「セキュリティとプライバシー」を開く
+4. 「このまま開く」ボタンが表示されるのでクリック
+5. 確認ダイアログが出たら「開く」を選択
+2回目以降は通常通り起動できます。
+**Windows の場合**
+1. .exe ファイルをダブルクリック
+2. 「Windows によって PC が保護されました」という画面が出たら「詳細情報」をクリック
+3. 「実行」ボタンを押して起動
+セキュリティソフトによって警告が出ることがありますが、ファイルに問題はありません。
+
+
+**English**
+**On macOS:**
+Since the app is not from an identified developer, macOS may block it the first time. You can launch it with the following steps: (Apple Official Guide:https://support.apple.com/en-us/102445)
+1. Try to open the .app file (you'll get a warning)
+2. Click "Cancel" on the warning
+3. Go to **System Settings > Security & Privacy**
+4. You'll see a button saying **"Open Anyway"** — click it
+5. In the next dialog, choose **"Open"**
+From the second time onward, it will open normally.
+**On Windows:**
+1. Double-click the .exe file
+2. If you see "Windows protected your PC," click **"More info"**
+3. Then click **"Run anyway"** to launch the game
+Depending on your antivirus, you may receive a warning, but the file is safe.

@@ -215,17 +215,19 @@ git clone https://github.com/ludovicocuoghi/roman_paradox.git
 cd roman_paradox
 ```
 
-### プロジェクトのビルド
+### プロジェクトのビルド・実行方法
+
+【macOSの場合】
 
 ```
-make clean
-make
+make clean  
+make  
+./bin/sfml_app 
 ```
 
-### ゲームの実行
-
+【Windowsの場合】
 ```
-.bin/sfml_app
+./build.bat 
 ```
 
 --- 
@@ -271,17 +273,18 @@ git clone https://github.com/ludovicocuoghi/roman_paradox.git
 cd roman_paradox
 ```
 
-### How to build the game
+### How to build　and run the game
 
+[MacOS]
 ```
 make clean
 make
+./bin/sfml_app 
 ```
 
-### How to run the game
-
+[Windows]
 ```
-.bin/sfml_app
+./build.bat 
 ```
 
 --- 
