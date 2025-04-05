@@ -65,6 +65,33 @@ This game is not from a certified developer, so macOS or Windows may block it at
 
 ---
 
+### デバッグ用にバウンディングボックスを表示は可能 (Visualiation of Boudning Box for Debug Purpose)
+
+#### Example 1
+![Bounding Box - Ancient Rome](https://github.com/ludovicocuoghi/roman_paradox/blob/main/screenshots/bouding_box_ancient.png?raw=true)
+
+#### Example 2
+![Bounding Box - Future Rome](https://github.com/ludovicocuoghi/roman_paradox/blob/main/screenshots/bounding_box_future.png?raw=true)
+
+--- 
+
+### デバッグ用にグリッドを表示は可能 (Visualiation of Tile Grid for Debug Purpose)
+
+#### Example
+![Grid Display - Ancient Rome](https://github.com/ludovicocuoghi/roman_paradox/blob/main/screenshots/grid_ancient.png?raw=true)
+
+--- 
+
+### レベルエディター：IMGUIメニューで簡単にレベル作成 (Easy level creation through a custom made Level Editor)
+
+#### Example 1
+![Level Editor - Ancient Rome](https://github.com/ludovicocuoghi/roman_paradox/blob/main/screenshots/level_editor_ancient.png?raw=true)
+
+#### Example 2
+![Level Editor - Past](https://github.com/ludovicocuoghi/roman_paradox/blob/main/screenshots/level_editor_past.png?raw=true)
+
+---
+
 (English is below)
 
 # ゲーム基本情報
